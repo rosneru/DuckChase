@@ -84,12 +84,30 @@ Section
 0 1 1 0
 4
 File
+1 "DatatypesPicture.cpp"
+"DatatypesPicture.cpp"
+"DatatypesPicture.h"
+Storm Shell Project (Dependencies)
+"objects_debug/DatatypesPicture.o" "objects_debug/DatatypesPicture.debug"
+""
+1 1
+File
 1 "DuckChase.cpp"
 "DuckChase.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/DuckChase.o" "objects_debug/DuckChase.debug"
 ""
 1 1
+Section
+2 1 95
+0 1 1 0
+2
+File
+2 "DatatypesPicture.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
 Section
 10 1 40
 0 0 0 0
