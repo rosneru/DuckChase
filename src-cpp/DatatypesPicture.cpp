@@ -1,9 +1,11 @@
 #include "DatatypesPicture.h"
 
 
-DatatypesPicture::DatatypesPicture()
-  : m_pObject(NULL),
+DatatypesPicture::DatatypesPicture(const char*& p_pFilePath)
+  : m_pFilePath(p_pFilePath),
+    m_pObject(NULL),
     m_pBitmap(NULL),
+    m_pBitmapHeader(NULL),
     m_pPalette(NULL),
     m_NumberOfColors(0)
 {
@@ -16,13 +18,14 @@ DatatypesPicture::~DatatypesPicture()
 }
 
 
-bool DatatypesPicture::Load(char *p_pFileName)
+bool DatatypesPicture::Load(struct Screen* p_pScreen)
 {
   clear();
 
-  m_pObject = NewDTObject(p_pFileName,
+  m_pObject = NewDTObject((void*)m_pFilePath,
                           DTA_GroupID, GID_PICTURE,
-                          PDTA_Remap, FALSE,
+                          PDTA_Remap, TRUE,
+                          PDTA_Screen, p_pScreen,
                           TAG_END);
 
   if (m_pObject == NULL)
@@ -35,6 +38,7 @@ bool DatatypesPicture::Load(char *p_pFileName)
   GetDTAttrs(m_pObject,
              PDTA_NumColors, &m_NumberOfColors,
              PDTA_CRegs, &m_pPalette,
+             PDTA_BitMapHeader, &m_pBitmapHeader,
              PDTA_DestBitMap, &m_pBitmap,
              TAG_END);
 
@@ -45,6 +49,11 @@ bool DatatypesPicture::Load(char *p_pFileName)
 struct BitMap* DatatypesPicture::GetBitmap()
 {
   return m_pBitmap;
+}
+
+struct BitMapHeader* DatatypesPicture::GetBitmapHeader()
+{
+  return m_pBitmapHeader;
 }
 
 
@@ -62,11 +71,14 @@ long DatatypesPicture::GetNumberOfColors()
 
 void DatatypesPicture::clear()
 {
-  if((m_pBitmap != NULL) || (m_pPalette != NULL))
+  if((m_pBitmap != NULL)
+    || (m_pBitmapHeader != NULL)
+    || (m_pPalette != NULL))
   {
     DisposeDTObject(m_pObject);
     m_pObject = NULL;
     m_pBitmap = NULL;
+    m_pBitmapHeader = NULL;
     m_pPalette = NULL;
     m_NumberOfColors = 0;
   }

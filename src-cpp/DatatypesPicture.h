@@ -18,17 +18,20 @@
 class DatatypesPicture
 {
 public:
-  DatatypesPicture();
+  DatatypesPicture(const char*& p_pFilePath);
   ~DatatypesPicture();
 
-  bool Load(char *p_pFileName);
+  bool Load(struct Screen* p_pScreen);
 
   struct BitMap* GetBitmap();
+  struct BitMapHeader* GetBitmapHeader();
   ULONG* GetPalette();
   long GetNumberOfColors();
 
 private:
+  const char*& m_pFilePath;
   Object *m_pObject;
+  struct BitMapHeader* m_pBitmapHeader;
   struct BitMap* m_pBitmap;
   ULONG* m_pPalette;
   long m_NumberOfColors;

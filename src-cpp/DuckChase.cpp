@@ -5,6 +5,8 @@
 #include <proto/datatypes.h>
 #include <datatypes/pictureclass.h>
 
+#include "DatatypesPicture.h"
+
 long min (long a,long b)
 {
   return (a < b ? a : b);
@@ -12,16 +14,8 @@ long min (long a,long b)
 
 int main (void)
 {
-  static struct {
-    char *file;
-    char *pubscreen;
-  } args = {NULL};
-
   int rc = RETURN_ERROR;
   struct Screen *scr;
-  Object *o;
-  struct BitMapHeader *bmhd;
-  struct BitMap *bm;
   long imgx,imgy;
   long imgw,imgh;
   long winw,winh;
@@ -31,23 +25,17 @@ int main (void)
   struct IntuiMessage *mess;
 
   const char* pPubScreenName = "StormScreen";
-  const char* pBgImgName = "/gfx/pic_background.iff";
+  const char* pBgPicPath = "/gfx/pic_background.iff";
 
   if (scr = LockPubScreen (pPubScreenName))
   {
-    if (o = NewDTObject ((void*)pBgImgName,
-        DTA_GroupID,GID_PICTURE,
-        PDTA_Remap,TRUE,
-        PDTA_Screen,scr,
-        TAG_END))
+    DatatypesPicture bgPic(pBgPicPath);
+
+    if (bgPic.Load(scr) == true)
 
     {
-      DoDTMethod (o,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE);
-
-      GetDTAttrs (o,
-        PDTA_BitMapHeader,&bmhd,
-        PDTA_DestBitMap,&bm,
-        TAG_END);
+      struct BitMapHeader *bmhd = bgPic.GetBitmapHeader();
+      struct BitMap *bm = bgPic.GetBitmap();
 
       imgw = bmhd->bmh_Width;
       imgh = bmhd->bmh_Height;
@@ -102,8 +90,6 @@ int main (void)
 
         CloseWindow (win);
       }
-
-      DisposeDTObject (o);
     }
 
     UnlockPubScreen (NULL,scr);
