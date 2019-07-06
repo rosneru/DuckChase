@@ -12,8 +12,6 @@ long min (long a,long b)
 
 int main (void)
 {
-  struct RDArgs *rdargs;
-
   static struct {
     char *file;
     char *pubscreen;
@@ -32,86 +30,83 @@ int main (void)
   BOOL cont;
   struct IntuiMessage *mess;
 
-  const char* pTemplate = "FILE/A,PUBSCREEN/K";
-  if (rdargs = ReadArgs (pTemplate, (APTR)&args, NULL))
+  const char* pPubScreenName = "StormScreen";
+  const char* pBgImgName = "/gfx/pic_background.iff";
+
+  if (scr = LockPubScreen (pPubScreenName))
   {
-    if (scr = LockPubScreen (args.pubscreen))
+    if (o = NewDTObject ((void*)pBgImgName,
+        DTA_GroupID,GID_PICTURE,
+        PDTA_Remap,TRUE,
+        PDTA_Screen,scr,
+        TAG_END))
+
     {
-      if (o = NewDTObject (args.file,
-          DTA_GroupID,GID_PICTURE,
-          PDTA_Remap,TRUE,
-          PDTA_Screen,scr,
+      DoDTMethod (o,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE);
+
+      GetDTAttrs (o,
+        PDTA_BitMapHeader,&bmhd,
+        PDTA_DestBitMap,&bm,
+        TAG_END);
+
+      imgw = bmhd->bmh_Width;
+      imgh = bmhd->bmh_Height;
+      imgx = scr->WBorLeft;
+      imgy = scr->WBorTop;
+
+      winw = min(scr->Width, imgw);
+      winw += scr->WBorLeft + scr->WBorRight;
+
+      winh = min(scr->Height, imgh);
+      winh += scr->WBorTop + scr->WBorBottom;
+
+
+      winx = (scr->Width  - winw) >> 1;
+      winy = (scr->Height - winh) >> 1;
+
+      if (win = OpenWindowTags (NULL,
+          WA_CustomScreen,scr,
+          WA_Left,winx,
+          WA_Top,winy,
+          WA_Width,winw,
+          WA_Height,winh,
+          WA_Flags,WFLG_ACTIVATE,
+          WA_IDCMP,IDCMP_MOUSEBUTTONS|IDCMP_VANILLAKEY,
           TAG_END))
-
       {
-        DoDTMethod (o,NULL,NULL,DTM_PROCLAYOUT,NULL,TRUE);
+        BltBitMapRastPort (bm,0,0,win->RPort,imgx,imgy,imgw,imgh,0xC0);
 
-        GetDTAttrs (o,
-          PDTA_BitMapHeader,&bmhd,
-          PDTA_DestBitMap,&bm,
-          TAG_END);
+        rc = RETURN_OK;
 
-        imgw = bmhd->bmh_Width;
-        imgh = bmhd->bmh_Height;
-        imgx = scr->WBorLeft;
-        imgy = scr->WBorTop;
-
-        winw = min(scr->Width, imgw);
-        winw += scr->WBorLeft + scr->WBorRight;
-
-        winh = min(scr->Height, imgh);
-        winh += scr->WBorTop + scr->WBorBottom;
-
-
-        winx = (scr->Width  - winw) >> 1;
-        winy = (scr->Height - winh) >> 1;
-
-        if (win = OpenWindowTags (NULL,
-            WA_CustomScreen,scr,
-            WA_Left,winx,
-            WA_Top,winy,
-            WA_Width,winw,
-            WA_Height,winh,
-            WA_Flags,WFLG_ACTIVATE,
-            WA_IDCMP,IDCMP_MOUSEBUTTONS|IDCMP_VANILLAKEY,
-            TAG_END))
+        cont = TRUE;
+        do
         {
-          BltBitMapRastPort (bm,0,0,win->RPort,imgx,imgy,imgw,imgh,0xC0);
-
-          rc = RETURN_OK;
-
-          cont = TRUE;
-          do
+          WaitPort (win->UserPort);
+          while (mess = (struct IntuiMessage *)GetMsg (win->UserPort))
           {
-            WaitPort (win->UserPort);
-            while (mess = (struct IntuiMessage *)GetMsg (win->UserPort))
+            switch (mess->Class)
             {
-              switch (mess->Class)
-              {
-              case IDCMP_MOUSEBUTTONS:
-                if (mess->Code == IECODE_LBUTTON)
-                  cont = FALSE;
-                break;
-              case IDCMP_VANILLAKEY:
-                if (mess->Code == 0x1b) /* Esc */
-                  cont = FALSE;
-                break;
-              }
-              ReplyMsg ((struct Message *)mess);
+            case IDCMP_MOUSEBUTTONS:
+              if (mess->Code == IECODE_LBUTTON)
+                cont = FALSE;
+              break;
+            case IDCMP_VANILLAKEY:
+              if (mess->Code == 0x1b) /* Esc */
+                cont = FALSE;
+              break;
             }
+            ReplyMsg ((struct Message *)mess);
           }
-          while (cont);
-
-          CloseWindow (win);
         }
+        while (cont);
 
-        DisposeDTObject (o);
+        CloseWindow (win);
       }
 
-      UnlockPubScreen (NULL,scr);
+      DisposeDTObject (o);
     }
 
-    FreeArgs (rdargs);
+    UnlockPubScreen (NULL,scr);
   }
 
   PrintFault (IoErr(),NULL);
