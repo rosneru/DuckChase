@@ -94,6 +94,7 @@ Storm Shell Project (Dependencies)
 File
 1 "DuckChase.cpp"
 "DuckChase.cpp"
+"DatatypesPicture.h"
 Storm Shell Project (Dependencies)
 "objects_debug/DuckChase.o" "objects_debug/DuckChase.debug"
 ""
@@ -104,6 +105,7 @@ Section
 2
 File
 2 "DatatypesPicture.h"
+"DatatypesPicture.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
