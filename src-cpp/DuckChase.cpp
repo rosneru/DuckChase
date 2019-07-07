@@ -84,39 +84,45 @@ int main (void)
       pBob1ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
       pBob2ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
 
-      pBob1ImageData[0] = 0xffff;
-      pBob1ImageData[1] = 0x0003;
-      pBob1ImageData[2] = 0xfff0;
-      pBob1ImageData[3] = 0x0003;
-      pBob1ImageData[4] = 0xfff0;
-      pBob1ImageData[5] = 0x0003;
-      pBob1ImageData[6] = 0xffff;
-      pBob1ImageData[7] = 0x0003;
-      pBob1ImageData[8] = 0x3fff;
-      pBob1ImageData[9] = 0xfffc;
-      pBob1ImageData[10] = 0x3ff0;
-      pBob1ImageData[11] = 0x0ffc;
-      pBob1ImageData[12] = 0x3ff0;
-      pBob1ImageData[13] = 0x0ffc;
-      pBob1ImageData[14] = 0x3fff;
-      pBob1ImageData[15] = 0xfffc;
+      // Bob1, plane 1
+      pBob1ImageData[0]  = 0xffff;  // 1111111111111111 
+      pBob1ImageData[1]  = 0x0003;  // 0000000000000011 
+      pBob1ImageData[2]  = 0xfff0;  // 1111111111110000 
+      pBob1ImageData[3]  = 0x0003;  // 0000000000000011 
+      pBob1ImageData[4]  = 0xfff0;  // 1111111111110000 
+      pBob1ImageData[5]  = 0x0003;  // 0000000000000011 
+      pBob1ImageData[6]  = 0xffff;  // 1111111111111111 
+      pBob1ImageData[7]  = 0x0003;  // 0000000000000011 
+      
+      // Bob1, plane 2
+      pBob1ImageData[8]  = 0x3fff;  // 0011111111111111 
+      pBob1ImageData[9]  = 0xfffc;  // 1111111111111100 
+      pBob1ImageData[10] = 0x3ff0;  // 0011111111110000 
+      pBob1ImageData[11] = 0x0ffc;  // 0000111111111100 
+      pBob1ImageData[12] = 0x3ff0;  // 0011111111110000 
+      pBob1ImageData[13] = 0x0ffc;  // 0000111111111100 
+      pBob1ImageData[14] = 0x3fff;  // 0011111111111111 
+      pBob1ImageData[15] = 0xfffc;  // 1111111111111100 
 
-      pBob2ImageData[0] = 0xc000;
-      pBob2ImageData[1] = 0xffff;
-      pBob2ImageData[2] = 0xc000;
-      pBob2ImageData[3] = 0x0fff;
-      pBob2ImageData[4] = 0xc000;
-      pBob2ImageData[5] = 0x0fff;
-      pBob2ImageData[6] = 0xc000;
-      pBob2ImageData[7] = 0xffff;
-      pBob2ImageData[8] = 0x3fff;
-      pBob2ImageData[9] = 0xfffc;
-      pBob2ImageData[10] = 0x3ff0;
-      pBob2ImageData[11] = 0x0ffc;
-      pBob2ImageData[12] = 0x3ff0;
-      pBob2ImageData[13] = 0x0ffc;
-      pBob2ImageData[14] = 0x3fff;
-      pBob2ImageData[15] = 0xfffc;
+      // Bob2, plane 1
+      pBob2ImageData[0]  = 0xc000;  // 1100000000000000
+      pBob2ImageData[1]  = 0xffff;  // 1111111111111111
+      pBob2ImageData[2]  = 0xc000;  // 1100000000000000
+      pBob2ImageData[3]  = 0x0fff;  // 0000111111111111
+      pBob2ImageData[4]  = 0xc000;  // 1100000000000000
+      pBob2ImageData[5]  = 0x0fff;  // 0000111111111111
+      pBob2ImageData[6]  = 0xc000;  // 1100000000000000
+      pBob2ImageData[7]  = 0xffff;  // 1111111111111111
+      
+      // Bob2, plane 2
+      pBob2ImageData[8]  = 0x3fff;  // 0011111111111111
+      pBob2ImageData[9]  = 0xfffc;  // 1111111111111100
+      pBob2ImageData[10] = 0x3ff0;  // 0011111111110000
+      pBob2ImageData[11] = 0x0ffc;  // 0000111111111100
+      pBob2ImageData[12] = 0x3ff0;  // 0011111111110000
+      pBob2ImageData[13] = 0x0ffc;  // 0000111111111100
+      pBob2ImageData[14] = 0x3fff;  // 0011111111111111
+      pBob2ImageData[15] = 0xfffc;  // 1111111111111100
 
       NEWBOB myNewBob =
       {
