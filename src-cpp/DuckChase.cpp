@@ -56,8 +56,8 @@ int main (void)
       int width = dtPicDuck1.GetBitmapHeader()->bmh_Width;
 
       int numWords = width / 16;
-      bool bIsBigger = (width % 16) > 0;
-      if(bIsBigger == true)
+      bool bExpand = (width % 16) > 0;
+      if(bExpand == true)
       {
         numWords++;
       }
