@@ -1,7 +1,7 @@
 #include "DatatypesPicture.h"
 
 
-DatatypesPicture::DatatypesPicture(const char*& p_pFilePath)
+DatatypesPicture::DatatypesPicture(const char* p_pFilePath)
   : m_pFilePath(p_pFilePath),
     m_pObject(NULL),
     m_pBitmap(NULL),

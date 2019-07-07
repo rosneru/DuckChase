@@ -19,28 +19,6 @@
 VOID bobDrawGList(struct RastPort *rport, struct ViewPort *vport);
 int do_Bob(struct Window *win);
 
-/*
-NEWBOB myNewBob =
-{
-  NULL,               // Image data
-  4,                  // Bob width (in number of 16-pixel-words)
-  21,                 // Bob height in lines
-  3,                  // Image depth
-  3,                  // Planes that get image data (TODO whats this??)
-  0,                  // Unused planes to turn on
-  SAVEBACK | OVERLAY, // Bog flags
-  0,                  // DoubleBuffering. Set to '1' to activate.
-  2,                  // Depth of the raster
-  160,                // Initial x position
-  100,                // Initial y position
-  0,                  // Hit mask
-  0,                  // Me mask
-};
-*/
-
-#define GEL_SIZE 4
-
-
 long min (long a,long b)
 {
   return (a < b ? a : b);
@@ -49,39 +27,33 @@ long min (long a,long b)
 int main (void)
 {
   int rc = RETURN_ERROR;
-  struct Screen *scr;
+  struct Screen *pScreen;
   long imgx,imgy;
   long imgw,imgh;
   long winw,winh;
   long winx,winy;
-  struct Window *win;
-  BOOL cont;
+  struct Window *pWindow;
   struct IntuiMessage *pMsg;
 
-  const char* pPubScreenName = "StormScreen";
-  const char* pBgPicPath = "/gfx/pic_background.iff";
-  const char* pDuck1PicPath = "/gfx/ente1_brush.iff";
-  const char* pDuck2PicPath = "/gfx/ente2_brush.iff";
+  WORD* pDuck1BobImageData = NULL;
+  WORD* pDuck2BobImageData = NULL;
 
-  WORD* pBob1ImageData = NULL;
-  WORD* pBob2ImageData = NULL;
-
-  if (scr = LockPubScreen (pPubScreenName))
+  if (pScreen = LockPubScreen ("StormScreen"))
   {
-    DatatypesPicture bgPic(pBgPicPath);
-    DatatypesPicture duck1Pic(pDuck1PicPath);
-    DatatypesPicture duck2Pic(pDuck2PicPath);
+    DatatypesPicture dtPicBackground("/gfx/pic_background.iff");
+    DatatypesPicture dtPicDuck1("/gfx/ente1_brush.iff");
+    DatatypesPicture dtPicDuck2("/gfx/ente2_brush.iff");
 
-    if ((bgPic.Load(scr) == true)
-     && (duck1Pic.Load(scr) == true)
-     && (duck2Pic.Load(scr) == true))
+    if ((dtPicBackground.Load(pScreen) == true)
+     && (dtPicDuck1.Load(pScreen) == true)
+     && (dtPicDuck2.Load(pScreen) == true))
     {
-      struct BitMapHeader *bmhd = bgPic.GetBitmapHeader();
-      struct BitMap *bm = bgPic.GetBitmap();
+      struct BitMapHeader *bmhd = dtPicBackground.GetBitmapHeader();
+      struct BitMap *bm = dtPicBackground.GetBitmap();
 
-      int depth = duck1Pic.GetBitmapHeader()->bmh_Depth;
-      int numLines = duck1Pic.GetBitmapHeader()->bmh_Height;
-      int width = duck1Pic.GetBitmapHeader()->bmh_Width;
+      int depth = dtPicDuck1.GetBitmapHeader()->bmh_Depth;
+      int numLines = dtPicDuck1.GetBitmapHeader()->bmh_Height;
+      int width = dtPicDuck1.GetBitmapHeader()->bmh_Width;
 
       int numWords = width / 16;
       bool bIsBigger = (width % 16) > 0;
@@ -90,101 +62,54 @@ int main (void)
         numWords++;
       }
 
-      struct BitMap *pBmDuck1 = duck1Pic.GetBitmap();
-      int allocSize = depth * numWords * numLines * 2; // * 2 because 2 Bytes needed to alloc one Word
-      pBob1ImageData = (WORD*) AllocVec(allocSize, MEMF_CHIP|MEMF_CLEAR);
-      int counter = 0;
-      for(int i = 0; i < depth; i++)
-      {
-        for(int j = 0; j < numWords; j++)
-        {
-          WORD val = pBmDuck1->Planes[j][i];
-          pBob1ImageData[counter++] = val;
-        }
-      }
+      struct BitMap *pBmDuck1 = dtPicDuck1.GetBitmap();
 
-      //pBob1ImageData = (WORD*) duck1Pic.GetBitmap();
+      struct BitMap* pBmNew = AllocBitMap(width,
+                                          numLines,
+                                          depth,
+                                          BMF_DISPLAYABLE,
+                                          NULL);
 
+      BltBitMap(pBmDuck1, 0, 0, pBmNew, 0, 0, width, numLines, 0xc0,
+                0xff, NULL);
 
-      pBob2ImageData = (WORD*) duck2Pic.GetBitmap();
-//      pBob1ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
-//      pBob2ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
-/*
-      // Bob1, plane 1
-      pBob1ImageData[0]  = 0xffff;  // 1111111111111111
-      pBob1ImageData[1]  = 0x0003;  // 0000000000000011
-      pBob1ImageData[2]  = 0xfff0;  // 1111111111110000
-      pBob1ImageData[3]  = 0x0003;  // 0000000000000011
-      pBob1ImageData[4]  = 0xfff0;  // 1111111111110000
-      pBob1ImageData[5]  = 0x0003;  // 0000000000000011
-      pBob1ImageData[6]  = 0xffff;  // 1111111111111111
-      pBob1ImageData[7]  = 0x0003;  // 0000000000000011
+      pDuck1BobImageData = (WORD*)*pBmNew->Planes;
 
-      // Bob1, plane 2
-      pBob1ImageData[8]  = 0x3fff;  // 0011111111111111
-      pBob1ImageData[9]  = 0xfffc;  // 1111111111111100
-      pBob1ImageData[10] = 0x3ff0;  // 0011111111110000
-      pBob1ImageData[11] = 0x0ffc;  // 0000111111111100
-      pBob1ImageData[12] = 0x3ff0;  // 0011111111110000
-      pBob1ImageData[13] = 0x0ffc;  // 0000111111111100
-      pBob1ImageData[14] = 0x3fff;  // 0011111111111111
-      pBob1ImageData[15] = 0xfffc;  // 1111111111111100
-
-      // Bob2, plane 1
-      pBob2ImageData[0]  = 0xc000;  // 1100000000000000
-      pBob2ImageData[1]  = 0xffff;  // 1111111111111111
-      pBob2ImageData[2]  = 0xc000;  // 1100000000000000
-      pBob2ImageData[3]  = 0x0fff;  // 0000111111111111
-      pBob2ImageData[4]  = 0xc000;  // 1100000000000000
-      pBob2ImageData[5]  = 0x0fff;  // 0000111111111111
-      pBob2ImageData[6]  = 0xc000;  // 1100000000000000
-      pBob2ImageData[7]  = 0xffff;  // 1111111111111111
-
-      // Bob2, plane 2
-      pBob2ImageData[8]  = 0x3fff;  // 0011111111111111
-      pBob2ImageData[9]  = 0xfffc;  // 1111111111111100
-      pBob2ImageData[10] = 0x3ff0;  // 0011111111110000
-      pBob2ImageData[11] = 0x0ffc;  // 0000111111111100
-      pBob2ImageData[12] = 0x3ff0;  // 0011111111110000
-      pBob2ImageData[13] = 0x0ffc;  // 0000111111111100
-      pBob2ImageData[14] = 0x3fff;  // 0011111111111111
-      pBob2ImageData[15] = 0xfffc;  // 1111111111111100
-*/
       NEWBOB myNewBob =
       {
-        pBob1ImageData,     // Image data
-        numWords,           // Bob width (in number of 16-pixel-words)
-        numLines,           // Bob height in lines
-        depth,              // Image depth
-        3,                  // Planes that get image data (TODO whats this??)
-        0,                  // Unused planes to turn on
-        SAVEBACK | OVERLAY, // Bog flags
-        0,                  // DoubleBuffering. Set to '1' to activate.
-        2,                  // Depth of the raster
-        160,                // Initial x position
-        100,                // Initial y position
-        0,                  // Hit mask
-        0,                  // Me mask
+        (WORD*)pDuck1BobImageData,  // Image data
+        numWords,                   // Bob width (in number of 16-pixel-words)
+        numLines,                   // Bob height in lines
+        depth,                      // Image depth
+        3,                          // Planes that get image data (TODO whats this??)
+        0,                          // Unused planes to turn on
+        SAVEBACK | OVERLAY,         // Bog flags
+        0,                          // DoubleBuffering. Set to '1' to activate.
+        2,                          // Depth of the raster
+        160,                        // Initial x position
+        100,                        // Initial y position
+        0,                          // Hit mask
+        0,                          // Me mask
       };
 
 
       imgw = bmhd->bmh_Width;
       imgh = bmhd->bmh_Height;
-      imgx = scr->WBorLeft;
-      imgy = scr->WBorTop;
+      imgx = pScreen->WBorLeft;
+      imgy = pScreen->WBorTop;
 
-      winw = min(scr->Width, imgw);
-      winw += scr->WBorLeft + scr->WBorRight;
+      winw = min(pScreen->Width, imgw);
+      winw += pScreen->WBorLeft + pScreen->WBorRight;
 
-      winh = min(scr->Height, imgh);
-      winh += scr->WBorTop + scr->WBorBottom;
+      winh = min(pScreen->Height, imgh);
+      winh += pScreen->WBorTop + pScreen->WBorBottom;
 
 
-      winx = (scr->Width  - winw) >> 1;
-      winy = (scr->Height - winh) >> 1;
+      winx = (pScreen->Width  - winw) >> 1;
+      winy = (pScreen->Height - winh) >> 1;
 
-      if (win = OpenWindowTags (NULL,
-          WA_CustomScreen,scr,
+      if (pWindow = OpenWindowTags (NULL,
+          WA_CustomScreen,pScreen,
           WA_Left,winx,
           WA_Top,winy,
           WA_Width,winw,
@@ -193,32 +118,34 @@ int main (void)
           WA_IDCMP,IDCMP_MOUSEBUTTONS|IDCMP_VANILLAKEY|IDCMP_INTUITICKS,
           TAG_END))
       {
-        BltBitMapRastPort (bm, 0, 0, win->RPort, imgx, imgy, imgw, imgh, 0xC0);
+        BltBitMapRastPort (bm, 0, 0, pWindow->RPort, imgx, imgy, imgw, imgh, 0xC0);
 
         struct Bob         *myBob;
         struct GelsInfo    *my_ginfo;
 
-        if ((my_ginfo = setupGelSys(win->RPort, 0x03)) != NULL)
+        if ((my_ginfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
         {
 
           if ((myBob = makeBob(&myNewBob)) != NULL)
           {
-            AddBob(myBob, win->RPort);
-            bobDrawGList(win->RPort, ViewPortAddress(win));
+            AddBob(myBob, pWindow->RPort);
+            bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
 
             rc = RETURN_OK;
-            cont = TRUE;
+            bool bContinue = true;
 
             do
             {
-              WaitPort (win->UserPort);
-              while (pMsg = (struct IntuiMessage *)GetMsg (win->UserPort))
+              WaitPort (pWindow->UserPort);
+              while (pMsg = (struct IntuiMessage *)GetMsg (pWindow->UserPort))
               {
                 switch (pMsg->Class)
                 {
                 case IDCMP_VANILLAKEY:
                   if (pMsg->Code == 0x1b) /* Esc */
-                    cont = FALSE;
+                  {
+                    bContinue = false;
+                  }
                   break;
                 }
 
@@ -230,37 +157,27 @@ int main (void)
 
               // After getting a message, change the image data on the fly
 //              myBob->BobVSprite->ImageData =
-//                (myBob->BobVSprite->ImageData == pBob1ImageData) ?
- //                 pBob2ImageData : pBob1ImageData;
+//                (myBob->BobVSprite->ImageData == pDuck1BobImageData) ?
+ //                 pDuck2BobImageData : pDuck1BobImageData;
 
               InitMasks(myBob->BobVSprite);
-              bobDrawGList(win->RPort, ViewPortAddress(win));
+              bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
             }
-            while (cont);
+            while (bContinue == true);
 
             RemBob(myBob);
-            bobDrawGList(win->RPort, ViewPortAddress(win));
+            bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
             freeBob(myBob, myNewBob.nb_RasDepth);
           }
 
-          cleanupGelSys(my_ginfo,win->RPort);
+          cleanupGelSys(my_ginfo,pWindow->RPort);
         }
 
-        CloseWindow (win);
+        CloseWindow (pWindow);
       }
     }
 
-    if(pBob1ImageData != NULL)
-    {
-      FreeVec(pBob1ImageData);
-    }
-/*
-    if(pBob2ImageData != NULL)
-    {
-      FreeVec(pBob2ImageData);
-    }
-*/
-    UnlockPubScreen (NULL,scr);
+    UnlockPubScreen (NULL, pScreen);
   }
 
   PrintFault (IoErr(),NULL);

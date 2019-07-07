@@ -18,7 +18,7 @@
 class DatatypesPicture
 {
 public:
-  DatatypesPicture(const char*& p_pFilePath);
+  DatatypesPicture(const char* p_pFilePath);
   ~DatatypesPicture();
 
   bool Load(struct Screen* p_pScreen);
@@ -29,7 +29,7 @@ public:
   long GetNumberOfColors();
 
 private:
-  const char*& m_pFilePath;
+  const char* m_pFilePath;
   Object *m_pObject;
   struct BitMapHeader* m_pBitmapHeader;
   struct BitMap* m_pBitmap;
