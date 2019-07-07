@@ -20,14 +20,22 @@
 VOID bobDrawGList(struct RastPort *rport, struct ViewPort *vport);
 int do_Bob(struct Window *win);
 
-#define GEL_SIZE 21 // Number of lines of the bob
-
-NEWBOB myNewBob =                     /* Data for the new bob structure defined in animtools.h */
-        {                             /* Initial image, WORD width, line height                */
-        NULL, 2,  GEL_SIZE,      /* Image depth, plane pick, plane on off, VSprite flags  */
-        2, 3, 0, SAVEBACK | OVERLAY,  /* dbuf (0=false), raster depth, x,y position, hit mask, */
-        0, 2, 160, 100,  0,0,         /* me mask                                               */
-        };
+NEWBOB myNewBob =
+{
+  NULL,               // Image data
+  4,                  // Bob width (in number of 16-pixel-words)
+  21,                 // Bob height in lines
+  3,                  // Image depth
+  3,                  // Planes that get image data (TODO whats this??)
+  0,                  // Unused planes to turn on
+  SAVEBACK | OVERLAY, // Bog flags
+  0,                  // DoubleBuffering. Set to '1' to activate.
+  2,                  // Depth of the raster
+  160,                // Initial x position
+  100,                // Initial y position
+  0,                  // Hit mask
+  0,                  // Me mask
+};
 
 
 
@@ -88,7 +96,7 @@ int main (void)
           WA_Width,winw,
           WA_Height,winh,
           WA_Flags,WFLG_ACTIVATE,
-          WA_IDCMP,IDCMP_MOUSEBUTTONS|IDCMP_VANILLAKEY,
+          WA_IDCMP,IDCMP_MOUSEBUTTONS|IDCMP_VANILLAKEY|IDCMP_INTUITICKS,
           TAG_END))
       {
         BltBitMapRastPort (bm, 0, 0, win->RPort, imgx, imgy, imgw, imgh, 0xC0);
