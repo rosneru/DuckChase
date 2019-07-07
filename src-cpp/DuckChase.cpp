@@ -20,6 +20,7 @@
 VOID bobDrawGList(struct RastPort *rport, struct ViewPort *vport);
 int do_Bob(struct Window *win);
 
+/*
 NEWBOB myNewBob =
 {
   NULL,               // Image data
@@ -36,6 +37,27 @@ NEWBOB myNewBob =
   0,                  // Hit mask
   0,                  // Me mask
 };
+*/
+
+#define GEL_SIZE 4
+
+NEWBOB myNewBob =
+{
+  NULL,               // Image data
+  2,                  // Bob width (in number of 16-pixel-words)
+  GEL_SIZE,                 // Bob height in lines
+  2,                  // Image depth
+  3,                  // Planes that get image data (TODO whats this??)
+  0,                  // Unused planes to turn on
+  SAVEBACK | OVERLAY, // Bog flags
+  0,                  // DoubleBuffering. Set to '1' to activate.
+  2,                  // Depth of the raster
+  160,                // Initial x position
+  100,                // Initial y position
+  0,                  // Hit mask
+  0,                  // Me mask
+};
+
 
 
 
@@ -61,6 +83,9 @@ int main (void)
   const char* pDuck1PicPath = "/gfx/ente1_brush.iff";
   const char* pDuck2PicPath = "/gfx/ente2_brush.iff";
 
+  WORD* pBob1ImageData = NULL;
+  WORD* pBob2ImageData = NULL;
+
   if (scr = LockPubScreen (pPubScreenName))
   {
     DatatypesPicture bgPic(pBgPicPath);
@@ -73,6 +98,8 @@ int main (void)
     {
       struct BitMapHeader *bmhd = bgPic.GetBitmapHeader();
       struct BitMap *bm = bgPic.GetBitmap();
+      pBob1ImageData = (WORD*) duck1Pic.GetBitmap();
+      pBob2ImageData = (WORD*) duck2Pic.GetBitmap();
 
       imgw = bmhd->bmh_Width;
       imgh = bmhd->bmh_Height;
@@ -101,7 +128,7 @@ int main (void)
       {
         BltBitMapRastPort (bm, 0, 0, win->RPort, imgx, imgy, imgw, imgh, 0xC0);
 
-        myNewBob.nb_Image = (WORD*) duck1Pic.GetBitmap();
+        myNewBob.nb_Image = pBob1ImageData;
         struct Bob         *myBob;
         struct GelsInfo    *my_ginfo;
 
@@ -140,8 +167,9 @@ int main (void)
               }
 
               // After getting a message, change the image data on the fly
-              myBob->BobVSprite->ImageData = (myBob->BobVSprite->ImageData == (WORD*)duck1Pic.GetBitmap())
-                ? (WORD*)duck2Pic.GetBitmap() : (WORD*)duck1Pic.GetBitmap();
+              myBob->BobVSprite->ImageData =
+                (myBob->BobVSprite->ImageData == pBob1ImageData) ?
+                  pBob2ImageData : pBob1ImageData;
 
               InitMasks(myBob->BobVSprite);
               bobDrawGList(win->RPort, ViewPortAddress(win));
