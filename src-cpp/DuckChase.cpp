@@ -9,7 +9,6 @@
 #include <graphics/gfxbase.h>
 #include <graphics/gels.h>
 #include <libraries/dos.h>
-#include <stdlib.h>
 #include <datatypes/pictureclass.h>
 
 #include "DatatypesPicture.h"
@@ -79,30 +78,57 @@ int main (void)
     {
       struct BitMapHeader *bmhd = bgPic.GetBitmapHeader();
       struct BitMap *bm = bgPic.GetBitmap();
-      //pBob1ImageData = (WORD*) duck1Pic.GetBitmap();
-      //pBob2ImageData = (WORD*) duck2Pic.GetBitmap();
-      pBob1ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
-      pBob2ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
 
+      int depth = duck1Pic.GetBitmapHeader()->bmh_Depth;
+      int numLines = duck1Pic.GetBitmapHeader()->bmh_Height;
+      int width = duck1Pic.GetBitmapHeader()->bmh_Width;
+
+      int numWords = width / 16;
+      bool bIsBigger = (width % 16) > 0;
+      if(bIsBigger == true)
+      {
+        numWords++;
+      }
+
+      struct BitMap *pBmDuck1 = duck1Pic.GetBitmap();
+      int allocSize = depth * numWords * numLines * 2; // * 2 because 2 Bytes needed to alloc one Word
+      pBob1ImageData = (WORD*) AllocVec(allocSize, MEMF_CHIP|MEMF_CLEAR);
+      int counter = 0;
+      for(int i = 0; i < depth; i++)
+      {
+        for(int j = 0; j < numWords; j++)
+        {
+          WORD val = pBmDuck1->Planes[j][i];
+          pBob1ImageData[counter++] = val;
+        }
+      }
+
+      //pBob1ImageData = (WORD*) duck1Pic.GetBitmap();
+
+
+      pBob2ImageData = (WORD*) duck2Pic.GetBitmap();
+//      pBob1ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
+//      pBob2ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
+/*
       // Bob1, plane 1
-      pBob1ImageData[0]  = 0xffff;  // 1111111111111111 
-      pBob1ImageData[1]  = 0x0003;  // 0000000000000011 
-      pBob1ImageData[2]  = 0xfff0;  // 1111111111110000 
-      pBob1ImageData[3]  = 0x0003;  // 0000000000000011 
-      pBob1ImageData[4]  = 0xfff0;  // 1111111111110000 
-      pBob1ImageData[5]  = 0x0003;  // 0000000000000011 
-      pBob1ImageData[6]  = 0xffff;  // 1111111111111111 
-      pBob1ImageData[7]  = 0x0003;  // 0000000000000011 
-      
+      pBob1ImageData[0]  = 0xffff;  // 1111111111111111
+      pBob1ImageData[1]  = 0x0003;  // 0000000000000011
+      pBob1ImageData[2]  = 0xfff0;  // 1111111111110000
+      pBob1ImageData[3]  = 0x0003;  // 0000000000000011
+      pBob1ImageData[4]  = 0xfff0;  // 1111111111110000
+      pBob1ImageData[5]  = 0x0003;  // 0000000000000011
+      pBob1ImageData[6]  = 0xffff;  // 1111111111111111
+      pBob1ImageData[7]  = 0x0003;  // 0000000000000011
+
       // Bob1, plane 2
-      pBob1ImageData[8]  = 0x3fff;  // 0011111111111111 
-      pBob1ImageData[9]  = 0xfffc;  // 1111111111111100 
-      pBob1ImageData[10] = 0x3ff0;  // 0011111111110000 
-      pBob1ImageData[11] = 0x0ffc;  // 0000111111111100 
-      pBob1ImageData[12] = 0x3ff0;  // 0011111111110000 
-      pBob1ImageData[13] = 0x0ffc;  // 0000111111111100 
-      pBob1ImageData[14] = 0x3fff;  // 0011111111111111 
-      pBob1ImageData[15] = 0xfffc;  // 1111111111111100 
+      pBob1ImageData[8]  = 0x3fff;  // 0011111111111111
+      pBob1ImageData[9]  = 0xfffc;  // 1111111111111100
+      pBob1ImageData[10] = 0x3ff0;  // 0011111111110000
+      pBob1ImageData[11] = 0x0ffc;  // 0000111111111100
+      pBob1ImageData[12] = 0x3ff0;  // 0011111111110000
+      pBob1ImageData[13] = 0x0ffc;  // 0000111111111100
+      pBob1ImageData[14] = 0x3fff;  // 0011111111111111
+      pBob1ImageData[15] = 0xfffc;  // 1111111111111100
 
       // Bob2, plane 1
       pBob2ImageData[0]  = 0xc000;  // 1100000000000000
@@ -113,7 +139,7 @@ int main (void)
       pBob2ImageData[5]  = 0x0fff;  // 0000111111111111
       pBob2ImageData[6]  = 0xc000;  // 1100000000000000
       pBob2ImageData[7]  = 0xffff;  // 1111111111111111
-      
+
       // Bob2, plane 2
       pBob2ImageData[8]  = 0x3fff;  // 0011111111111111
       pBob2ImageData[9]  = 0xfffc;  // 1111111111111100
@@ -123,13 +149,13 @@ int main (void)
       pBob2ImageData[13] = 0x0ffc;  // 0000111111111100
       pBob2ImageData[14] = 0x3fff;  // 0011111111111111
       pBob2ImageData[15] = 0xfffc;  // 1111111111111100
-
+*/
       NEWBOB myNewBob =
       {
         pBob1ImageData,     // Image data
-        2,                  // Bob width (in number of 16-pixel-words)
-        GEL_SIZE,           // Bob height in lines
-        2,                  // Image depth
+        numWords,           // Bob width (in number of 16-pixel-words)
+        numLines,           // Bob height in lines
+        depth,              // Image depth
         3,                  // Planes that get image data (TODO whats this??)
         0,                  // Unused planes to turn on
         SAVEBACK | OVERLAY, // Bog flags
@@ -169,7 +195,6 @@ int main (void)
       {
         BltBitMapRastPort (bm, 0, 0, win->RPort, imgx, imgy, imgw, imgh, 0xC0);
 
- //       myNewBob.nb_Image = pBob1ImageData;
         struct Bob         *myBob;
         struct GelsInfo    *my_ginfo;
 
@@ -204,9 +229,9 @@ int main (void)
               }
 
               // After getting a message, change the image data on the fly
-              myBob->BobVSprite->ImageData =
-                (myBob->BobVSprite->ImageData == pBob1ImageData) ?
-                  pBob2ImageData : pBob1ImageData;
+//              myBob->BobVSprite->ImageData =
+//                (myBob->BobVSprite->ImageData == pBob1ImageData) ?
+ //                 pBob2ImageData : pBob1ImageData;
 
               InitMasks(myBob->BobVSprite);
               bobDrawGList(win->RPort, ViewPortAddress(win));
@@ -229,12 +254,12 @@ int main (void)
     {
       FreeVec(pBob1ImageData);
     }
-
+/*
     if(pBob2ImageData != NULL)
     {
       FreeVec(pBob2ImageData);
     }
-
+*/
     UnlockPubScreen (NULL,scr);
   }
 
