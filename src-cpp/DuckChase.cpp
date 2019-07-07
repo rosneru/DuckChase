@@ -41,25 +41,6 @@ NEWBOB myNewBob =
 
 #define GEL_SIZE 4
 
-NEWBOB myNewBob =
-{
-  NULL,               // Image data
-  2,                  // Bob width (in number of 16-pixel-words)
-  GEL_SIZE,                 // Bob height in lines
-  2,                  // Image depth
-  3,                  // Planes that get image data (TODO whats this??)
-  0,                  // Unused planes to turn on
-  SAVEBACK | OVERLAY, // Bog flags
-  0,                  // DoubleBuffering. Set to '1' to activate.
-  2,                  // Depth of the raster
-  160,                // Initial x position
-  100,                // Initial y position
-  0,                  // Hit mask
-  0,                  // Me mask
-};
-
-
-
 
 long min (long a,long b)
 {
@@ -98,8 +79,62 @@ int main (void)
     {
       struct BitMapHeader *bmhd = bgPic.GetBitmapHeader();
       struct BitMap *bm = bgPic.GetBitmap();
-      pBob1ImageData = (WORD*) duck1Pic.GetBitmap();
-      pBob2ImageData = (WORD*) duck2Pic.GetBitmap();
+      //pBob1ImageData = (WORD*) duck1Pic.GetBitmap();
+      //pBob2ImageData = (WORD*) duck2Pic.GetBitmap();
+      pBob1ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
+      pBob2ImageData = (WORD*)AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
+
+      pBob1ImageData[0] = 0xffff;
+      pBob1ImageData[1] = 0x0003;
+      pBob1ImageData[2] = 0xfff0;
+      pBob1ImageData[3] = 0x0003;
+      pBob1ImageData[4] = 0xfff0;
+      pBob1ImageData[5] = 0x0003;
+      pBob1ImageData[6] = 0xffff;
+      pBob1ImageData[7] = 0x0003;
+      pBob1ImageData[8] = 0x3fff;
+      pBob1ImageData[9] = 0xfffc;
+      pBob1ImageData[10] = 0x3ff0;
+      pBob1ImageData[11] = 0x0ffc;
+      pBob1ImageData[12] = 0x3ff0;
+      pBob1ImageData[13] = 0x0ffc;
+      pBob1ImageData[14] = 0x3fff;
+      pBob1ImageData[15] = 0xfffc;
+
+      pBob2ImageData[0] = 0xc000;
+      pBob2ImageData[1] = 0xffff;
+      pBob2ImageData[2] = 0xc000;
+      pBob2ImageData[3] = 0x0fff;
+      pBob2ImageData[4] = 0xc000;
+      pBob2ImageData[5] = 0x0fff;
+      pBob2ImageData[6] = 0xc000;
+      pBob2ImageData[7] = 0xffff;
+      pBob2ImageData[8] = 0x3fff;
+      pBob2ImageData[9] = 0xfffc;
+      pBob2ImageData[10] = 0x3ff0;
+      pBob2ImageData[11] = 0x0ffc;
+      pBob2ImageData[12] = 0x3ff0;
+      pBob2ImageData[13] = 0x0ffc;
+      pBob2ImageData[14] = 0x3fff;
+      pBob2ImageData[15] = 0xfffc;
+
+      NEWBOB myNewBob =
+      {
+        pBob1ImageData,     // Image data
+        2,                  // Bob width (in number of 16-pixel-words)
+        GEL_SIZE,           // Bob height in lines
+        2,                  // Image depth
+        3,                  // Planes that get image data (TODO whats this??)
+        0,                  // Unused planes to turn on
+        SAVEBACK | OVERLAY, // Bog flags
+        0,                  // DoubleBuffering. Set to '1' to activate.
+        2,                  // Depth of the raster
+        160,                // Initial x position
+        100,                // Initial y position
+        0,                  // Hit mask
+        0,                  // Me mask
+      };
+
 
       imgw = bmhd->bmh_Width;
       imgh = bmhd->bmh_Height;
@@ -128,7 +163,7 @@ int main (void)
       {
         BltBitMapRastPort (bm, 0, 0, win->RPort, imgx, imgy, imgw, imgh, 0xC0);
 
-        myNewBob.nb_Image = pBob1ImageData;
+ //       myNewBob.nb_Image = pBob1ImageData;
         struct Bob         *myBob;
         struct GelsInfo    *my_ginfo;
 
@@ -150,10 +185,6 @@ int main (void)
               {
                 switch (pMsg->Class)
                 {
-//                case IDCMP_MOUSEBUTTONS:
-//                  if (pMsg->Code == IECODE_LBUTTON)
-//                    cont = FALSE;
-//                  break;
                 case IDCMP_VANILLAKEY:
                   if (pMsg->Code == 0x1b) /* Esc */
                     cont = FALSE;
@@ -186,6 +217,16 @@ int main (void)
 
         CloseWindow (win);
       }
+    }
+
+    if(pBob1ImageData != NULL)
+    {
+      FreeVec(pBob1ImageData);
+    }
+
+    if(pBob2ImageData != NULL)
+    {
+      FreeVec(pBob2ImageData);
     }
 
     UnlockPubScreen (NULL,scr);
