@@ -64,32 +64,40 @@ int main (void)
 
       struct BitMap *pBmDuck1 = dtPicDuck1.GetBitmap();
 
-      struct BitMap* pBmNew = AllocBitMap(width,
-                                          numLines,
-                                          depth,
-                                          BMF_DISPLAYABLE,
-                                          NULL);
+      // RASSIZE is a macro. It calculates how much memory is needed
+      // for one bitplane of given size. Its fitting the width to the
+      // next word size and calculates the number of bytes, then
+      // multiplies them with the height.
+      int s = RASSIZE(width, numLines);
 
-      BltBitMap(pBmDuck1, 0, 0, pBmNew, 0, 0, width, numLines, 0xc0,
-                0xff, NULL);
+      UBYTE* ptr = (UBYTE*)AllocMem(s * depth, MEMF_CHIP);
+      struct BitMap b;
+      InitBitMap(&b, depth, width, numLines);
+      for(int i = 0;i < depth;i++)
+      {
+        b.Planes[i] = ptr;
+        ptr += s;
+      }
 
-      pDuck1BobImageData = (WORD*)*pBmNew->Planes;
+      BltBitMap(pBmDuck1, 0, 0, &b, 0, 0, width, numLines, 0xC0, 0xff, NULL);
+
+      pDuck1BobImageData = (WORD*)*b.Planes;
 
       NEWBOB myNewBob =
       {
-        (WORD*)pDuck1BobImageData,  // Image data
-        numWords,                   // Bob width (in number of 16-pixel-words)
-        numLines,                   // Bob height in lines
-        depth,                      // Image depth
-        3,                          // Planes that get image data (TODO whats this??)
-        0,                          // Unused planes to turn on
-        SAVEBACK | OVERLAY,         // Bog flags
-        0,                          // DoubleBuffering. Set to '1' to activate.
-        2,                          // Depth of the raster
-        160,                        // Initial x position
-        100,                        // Initial y position
-        0,                          // Hit mask
-        0,                          // Me mask
+        pDuck1BobImageData,   // Image data
+        numWords,             // Bob width (in number of 16-pixel-words)
+        numLines,             // Bob height in lines
+        depth,                // Image depth
+        3,                    // Planes that get image data
+        0,                    // Unused planes to turn on
+        SAVEBACK | OVERLAY,   // Bog flags
+        0,                    // DoubleBuffering. Set to '1' to activate.
+        2,                    // Depth of the raster
+        160,                  // Initial x position
+        100,                  // Initial y position
+        0,                    // Hit mask
+        0,                    // Me mask
       };
 
 
@@ -119,6 +127,8 @@ int main (void)
           TAG_END))
       {
         BltBitMapRastPort (bm, 0, 0, pWindow->RPort, imgx, imgy, imgw, imgh, 0xC0);
+        BltBitMapRastPort (pBmDuck1, 0, 0, pWindow->RPort, imgx, imgy, 59, 21, 0xC0);
+        BltBitMapRastPort (&b, 0, 0, pWindow->RPort, imgx + 70, imgy, 59, 21, 0xC0);
 
         struct Bob         *myBob;
         struct GelsInfo    *my_ginfo;
@@ -175,6 +185,9 @@ int main (void)
 
         CloseWindow (pWindow);
       }
+
+      //WaitBlit();
+      FreeBitMap(&b);
     }
 
     UnlockPubScreen (NULL, pScreen);
