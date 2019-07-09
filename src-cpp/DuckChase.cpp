@@ -39,10 +39,11 @@ int main (void)
   WORD* pDuck2BobImageData = NULL;
 
   if (pScreen = LockPubScreen ("StormScreen"))
+//  if (pScreen = LockPubScreen (NULL))
   {
     DatatypesPicture dtPicBackground("/gfx/pic_background.iff");
-    DatatypesPicture dtPicDuck1("/gfx/ente1_brush.iff");
-    DatatypesPicture dtPicDuck2("/gfx/ente2_brush.iff");
+    DatatypesPicture dtPicDuck1("/gfx/ente1_hires.iff");
+    DatatypesPicture dtPicDuck2("/gfx/ente2_hires.iff");
 
     if ((dtPicBackground.Load(pScreen) == true)
      && (dtPicDuck1.Load(pScreen) == true)
@@ -52,44 +53,38 @@ int main (void)
       struct BitMap *bm = dtPicBackground.GetBitmap();
 
       int depth = dtPicDuck1.GetBitmapHeader()->bmh_Depth;
-      int numLines = dtPicDuck1.GetBitmapHeader()->bmh_Height;
+      int height = dtPicDuck1.GetBitmapHeader()->bmh_Height;
       int width = dtPicDuck1.GetBitmapHeader()->bmh_Width;
 
-      int numWords = width / 16;
-      bool bExpand = (width % 16) > 0;
-      if(bExpand == true)
-      {
-        numWords++;
-      }
+      int widthWords = ((width + 15) & -16) >> 4;
 
       struct BitMap *pBmDuck1 = dtPicDuck1.GetBitmap();
 
       // RASSIZE is a macro. It calculates how much memory is needed
-      // for one bitplane of given size. Its fitting the width to the
-      // next word size and calculates the number of bytes, then
+      // for one bitplane of given size. It is fitting the width to
+      // the next word size and calculates the number of bytes, then
       // multiplies them with the height.
-      int s = RASSIZE(width, numLines);
+      int s = RASSIZE(width, height);
 
-      UBYTE* ptr = (UBYTE*)AllocMem(s * depth, MEMF_CHIP);
+      UBYTE* ptr = (UBYTE*)AllocMem(s * depth, MEMF_CHIP|MEMF_CLEAR);
       struct BitMap b;
-      InitBitMap(&b, depth, width, numLines);
+      InitBitMap(&b, depth, width, height);
+
       for(int i = 0;i < depth;i++)
       {
         b.Planes[i] = ptr;
         ptr += s;
       }
 
-      int numWords2 = ((width + 15) & -16) >> 3;
-      int numLines2 = ((numLines + 15) & -16) >> 3;
-      BltBitMap(pBmDuck1, 0, 0, &b, 0, 0, numWords2, numLines2, 0xC0, 0xff, NULL);
+      BltBitMap(pBmDuck1, 0, 0, &b, 0, 0, width, height, 0xC0, 0xFF, NULL);
 
-      pDuck1BobImageData = (WORD*)*b.Planes;
+      pDuck1BobImageData = (WORD*)b.Planes[0];
 
       NEWBOB myNewBob =
       {
         pDuck1BobImageData,   // Image data
-        numWords,             // Bob width (in number of 16-pixel-words)
-        numLines,             // Bob height in lines
+        widthWords,           // Bob width (in number of 16-pixel-words)
+        height,               // Bob height in lines
         depth,                // Image depth
         3,                    // Planes that get image data
         0,                    // Unused planes to turn on
