@@ -79,7 +79,9 @@ int main (void)
         ptr += s;
       }
 
-      BltBitMap(pBmDuck1, 0, 0, &b, 0, 0, width, numLines, 0xC0, 0xff, NULL);
+      int numWords2 = ((width + 15) & -16) >> 3;
+      int numLines2 = ((numLines + 15) & -16) >> 3;
+      BltBitMap(pBmDuck1, 0, 0, &b, 0, 0, numWords2, numLines2, 0xC0, 0xff, NULL);
 
       pDuck1BobImageData = (WORD*)*b.Planes;
 
