@@ -87,10 +87,10 @@ int main (void)
         height,               // Bob height in lines
         depth,                // Image depth
         3,                    // Planes that get image data
-        0,                    // Unused planes to turn on
+        3,                    // Unused planes to turn on
         SAVEBACK | OVERLAY,   // Bog flags
         0,                    // DoubleBuffering. Set to '1' to activate.
-        2,                    // Depth of the raster
+        3,                    // Depth of the raster
         160,                  // Initial x position
         100,                  // Initial y position
         0,                    // Hit mask
