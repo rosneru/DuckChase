@@ -92,22 +92,18 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "DuckChase.cpp"
-"DuckChase.cpp"
-"DatatypesPicture.h"
-"animtools.h"
-"animtools_proto.h"
-Storm Shell Project (Dependencies)
-"objects_debug/DuckChase.o" "objects_debug/DuckChase.debug"
-""
-1 1
-File
 1 "animtools.c"
 "animtools.c"
 "animtools.h"
 "animtools_proto.h"
 Storm Shell Project (Dependencies)
 "objects_debug/animtools.o" "objects_debug/animtools.debug"
+""
+1 1
+File
+1 "main.cpp"
+Storm Shell Project (Dependencies)
+"objects_debug/main.o" "objects_debug/main.debug"
 ""
 1 1
 Section
@@ -141,7 +137,6 @@ Section
 7
 File
 10 "DuckChase"
-"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
