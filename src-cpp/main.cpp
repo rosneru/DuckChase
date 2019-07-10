@@ -2,6 +2,9 @@
 
 #include <exec/types.h>
 #include <exec/memory.h>
+
+#include <graphics/modeid.h>
+
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
 
@@ -9,208 +12,148 @@
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
 
+#include "animtools.h"
+#include "animtools_proto.h"
 
 
-// characteristics of the pScreen
-#define SCR_WIDTH  (640)
-#define SCR_HEIGHT (256)
-#define SCR_DEPTH    (3)
+#define GEL_SIZE 4
+
+void bobDrawGList(struct RastPort *rport, struct ViewPort *vport);
 
 
-// Prototypes for our functions
-VOID   runDBuff(struct Screen *, struct BitMap **);
-struct BitMap **setupBitMaps(LONG, LONG, LONG);
-VOID   freeBitMaps(struct BitMap **, LONG, LONG, LONG);
-LONG   setupPlanes(struct BitMap *, LONG, LONG, LONG);
-VOID    freePlanes(struct BitMap *, LONG, LONG, LONG);
-
-
-/**
- * Main routine.  Setup for using the double buffered pScreen.
- * Clean up all resources when done or on any error.
- */
 int main(int argc, char **argv)
 {
-  struct BitMap **pMyBitmapsArray;
-  struct Screen  *pScreen;
-  struct NewScreen myNewScreen;
 
-  pMyBitmapsArray = setupBitMaps(SCR_DEPTH, SCR_WIDTH, SCR_HEIGHT);
+  UWORD pens[] = { ~0 };
 
-  if (pMyBitmapsArray != NULL)
+  struct Screen* pScreen = OpenScreenTags(NULL,
+    SA_Pens, pens,
+    SA_Depth, 3,
+    SA_Top, 0,
+    SA_Left, 0,
+    SA_Width, 640,
+    SA_Height, 256,
+    SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
+    TAG_END);
+
+  if (pScreen != NULL)
   {
-    //
-    // Open a simple quiet pScreen that is using the first of the two
-    // bitmaps.
-    //
-    myNewScreen.LeftEdge = 0;
-    myNewScreen.TopEdge = 0;
-    myNewScreen.Width = SCR_WIDTH;
-    myNewScreen.Height = SCR_HEIGHT;
-    myNewScreen.Depth = SCR_DEPTH;
-    myNewScreen.DetailPen = 0;
-    myNewScreen.BlockPen = 1;
-    myNewScreen.ViewModes = HIRES;
-    myNewScreen.Type = CUSTOMSCREEN | CUSTOMBITMAP | SCREENQUIET;
-    myNewScreen.Font = NULL;
-    myNewScreen.DefaultTitle = NULL;
-    myNewScreen.Gadgets = NULL;
-    myNewScreen.CustomBitMap = pMyBitmapsArray[0];
+    struct Window* pWindow = OpenWindowTags (NULL,
+        WA_CustomScreen, pScreen,
+        WA_Left, 0,
+        WA_Top, 0,
+        WA_Width, 640,
+        WA_Height,256,
+        WA_Flags, WFLG_ACTIVATE,
+        WA_IDCMP, IDCMP_VANILLAKEY|IDCMP_INTUITICKS,
+        TAG_END);
 
-    pScreen = OpenScreen(&myNewScreen);
-    if (pScreen != NULL)
+    if(pWindow != NULL)
     {
-      // Indicate that the rastport is double buffered.
-      pScreen->RastPort.Flags = DBUFFER;
+      WORD* pBob1ImageData = (WORD*)
+        AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
 
-      runDBuff(pScreen, pMyBitmapsArray);
+      pBob1ImageData[0] = 0xffff;
+      pBob1ImageData[1] = 0x0003;
+      pBob1ImageData[2] = 0xfff0;
+      pBob1ImageData[3] = 0x0003;
+      pBob1ImageData[4] = 0xfff0;
+      pBob1ImageData[5] = 0x0003;
+      pBob1ImageData[6] = 0xffff;
+      pBob1ImageData[7] = 0x0003;
+      pBob1ImageData[8] = 0x3fff;
+      pBob1ImageData[9] = 0xfffc;
+      pBob1ImageData[10] = 0x3ff0;
+      pBob1ImageData[11] = 0x0ffc;
+      pBob1ImageData[12] = 0x3ff0;
+      pBob1ImageData[13] = 0x0ffc;
+      pBob1ImageData[14] = 0x3fff;
+      pBob1ImageData[15] = 0xfffc;
 
-      CloseScreen(pScreen);
-    }
-
-    freeBitMaps(pMyBitmapsArray, SCR_DEPTH, SCR_WIDTH, SCR_HEIGHT);
-  }
-}
-
-/**
- * Allocate the bit maps for a double buffered screen.
- */
-struct BitMap** setupBitMaps(LONG depth, LONG width, LONG height)
-{
-  // this must be static -- it mustn't go away when the routine exits.
-  static struct BitMap *pMyBitmapsArray[2];
-
-  pMyBitmapsArray[0] = (struct BitMap *)
-    AllocMem((LONG) sizeof(struct BitMap), MEMF_CLEAR);
-
-  if (pMyBitmapsArray[0] != NULL)
-  {
-    pMyBitmapsArray[1] = (struct BitMap *)
-      AllocMem((LONG) sizeof(struct BitMap), MEMF_CLEAR);
-
-    if (pMyBitmapsArray[1] != NULL)
-    {
-      InitBitMap(pMyBitmapsArray[0], depth, width, height);
-      InitBitMap(pMyBitmapsArray[1], depth, width, height);
-
-      if (setupPlanes(pMyBitmapsArray[0], depth, width, height) != NULL)
+      NEWBOB myNewBob =
       {
-        if (setupPlanes(pMyBitmapsArray[1], depth, width, height) != NULL)
+        pBob1ImageData,     // Image data
+        2,                  // Bob width (in number of 16-pixel-words)
+        GEL_SIZE,           // Bob height in lines
+        2,                  // Image depth
+        3,                  // Planes that get image data (TODO whats this??)
+        0,                  // Unused planes to turn on
+        SAVEBACK | OVERLAY, // Bog flags
+        0,                  // DoubleBuffering. Set to '1' to activate.
+        3,                  // Depth of the raster
+        25,                 // Initial x position
+        25,                 // Initial y position
+        0,                  // Hit mask
+        0,                  // Me mask
+      };
+
+      struct Bob         *myBob;
+      struct GelsInfo    *my_ginfo;
+
+      if ((my_ginfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
+      {
+
+        if ((myBob = makeBob(&myNewBob)) != NULL)
         {
-          return pMyBitmapsArray;
+          AddBob(myBob, pWindow->RPort);
+          bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
+
+          struct IntuiMessage* pMsg;
+          bool bContinue = true;
+
+          do
+          {
+            WaitPort (pWindow->UserPort);
+            while (pMsg = (struct IntuiMessage *)GetMsg (pWindow->UserPort))
+            {
+              switch (pMsg->Class)
+              {
+                case IDCMP_VANILLAKEY:
+                {
+                  if (pMsg->Code == 0x1b) // ESC key
+                  {
+                    bContinue = false;
+                  }
+                  break;
+                }
+              }
+
+              myBob->BobVSprite->X = pMsg->MouseX + 20;
+              myBob->BobVSprite->Y = pMsg->MouseY + 1;
+
+              ReplyMsg ((struct Message *)pMsg);
+            }
+
+            InitMasks(myBob->BobVSprite);
+            bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
+          }
+          while (bContinue);
+
+          RemBob(myBob);
+          bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
+          freeBob(myBob, myNewBob.nb_RasDepth);
         }
 
-        freePlanes(pMyBitmapsArray[0], depth, width, height);
+        cleanupGelSys(my_ginfo, pWindow->RPort);
       }
-      FreeMem(pMyBitmapsArray[1], (LONG) sizeof(struct BitMap));
+
+      FreeVec(pBob1ImageData);
+      CloseWindow(pWindow);
     }
-    FreeMem(pMyBitmapsArray[0], (LONG) sizeof(struct BitMap));
-  }
 
-  return NULL;
-}
-
-/**
- * Allocate the bit planes for a pScreen bit map
- */
-LONG setupPlanes(struct BitMap *bitMap, LONG depth, LONG width, LONG height)
-{
-  SHORT plane_num;
-
-  for (plane_num = 0; plane_num < depth; plane_num++)
-  {
-    bitMap->Planes[plane_num] = (PLANEPTR) AllocRaster(width, height);
-    if (bitMap->Planes[plane_num] != NULL)
-      BltClear(bitMap->Planes[plane_num], (width / 8) * height, 1);
-    else
-    {
-      freePlanes(bitMap, depth, width, height);
-      return(NULL);
-    }
-  }
-
-  return(TRUE);
-}
-
-/**
- * Free the memory allocated by setupPlanes()
- */
-VOID freePlanes(struct BitMap *bitMap, LONG depth, LONG width,
-                LONG height)
-{
-  SHORT plane_num;
-
-  for (plane_num = 0; plane_num < depth; plane_num++)
-  {
-    if (bitMap->Planes[plane_num] != NULL)
-    {
-      FreeRaster(bitMap->Planes[plane_num], width, height);
-    }
+    CloseScreen(pScreen);
   }
 }
 
-
 /**
- * Free the memory allocated by setupBitMaps().
+ * Draw the Bobs into the RastPort.
  */
-VOID freeBitMaps(struct BitMap **pMyBitmapsArray, LONG depth,
-                 LONG width, LONG height)
+void bobDrawGList(struct RastPort *rport, struct ViewPort *vport)
 {
-  freePlanes(pMyBitmapsArray[0], depth, width, height);
-  freePlanes(pMyBitmapsArray[1], depth, width, height);
+  SortGList(rport);
+  DrawGList(rport, vport);
 
-  FreeMem(pMyBitmapsArray[0], (LONG) sizeof(struct BitMap));
-  FreeMem(pMyBitmapsArray[1], (LONG) sizeof(struct BitMap));
-}
-
-
-/**
- * Loop through a number of iterations of drawing into alternate frames
- * of the double-buffered screen.  Note that the object is drawn in
- * color 1.
- */
-VOID runDBuff(struct Screen *pScreen, struct BitMap **pMyBitmapsArray)
-{
-  WORD ktr, xpos, ypos;
-  WORD toggleFrame;
-
-  toggleFrame = 0;
-  SetAPen(&(pScreen->RastPort), 1);
-
-  for (ktr = 1; ktr < 2000; ktr++)
-  {
-    //
-    // Calculate a position to place the object, these
-    // calculations ensure the object will stay on the pScreen
-    // given the range of ktr and the size of the object.
-    //
-    xpos = ktr;
-    if ((ktr % 100) >= 50)
-    {
-      ypos = 50 - (ktr % 50);
-    }
-    else
-    {
-      ypos = ktr % 50;
-    }
-
-    // Switch the bitmap so that we are drawing into the correct place
-    pScreen->RastPort.BitMap = pMyBitmapsArray[toggleFrame];
-    pScreen->ViewPort.RasInfo->BitMap = pMyBitmapsArray[toggleFrame];
-
-    //
-    // Draw the objects.
-    // Here we clear the old frame and draw a simple filled rectangle.
-    //
-    SetRast(&(pScreen->RastPort), 0);
-    RectFill(&(pScreen->RastPort), xpos, ypos, xpos + 100, ypos + 100);
-
-    // Update the physical display to match the newly drawn bitmap
-    MakeScreen(pScreen);  // Tell intuition to do its stuff.
-    RethinkDisplay();     // Intuition compatible MrgCop & LoadView,
-                          // it also does a WaitTOF().
-
-    // Switch the frame number for the next time through
-    toggleFrame ^= 1;
-  }
+  // If the GelsList includes true VSprites, MrgCop() and LoadView()
+  // here
+  WaitTOF() ;
 }
