@@ -8,6 +8,8 @@
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
 
+#include "animtools.h"
+
 struct GelsInfo* setupGelSys(struct RastPort *rPort, BYTE reserved);
 VOID cleanupGelSys(struct GelsInfo *gInfo, struct RastPort *rPort);
 
