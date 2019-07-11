@@ -3,6 +3,8 @@ Settings (Start)
 C/C++ Environment
 "StormC:include"
 0
+"AnimTools/"
+0
 Includepath (End)
 0 "" 80
 1 "objects_debug"
@@ -92,18 +94,16 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "animtools.c"
-"animtools.c"
-"animtools.h"
-"animtools_proto.h"
+1 "main.cpp"
+"main.cpp"
 Storm Shell Project (Dependencies)
-"objects_debug/animtools.o" "objects_debug/animtools.debug"
+"objects_debug/main.o" "objects_debug/main.debug"
 ""
 1 1
 File
-1 "main.cpp"
+1 "AnimTools/animtools.c"
 Storm Shell Project (Dependencies)
-"objects_debug/main.o" "objects_debug/main.debug"
+"objects_debug/animtools.o" "objects_debug/animtools.debug"
 ""
 1 1
 Section
@@ -118,15 +118,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "animtools.h"
-"animtools.h"
+2 "AnimTools/animtools.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "animtools_proto.h"
-"animtools_proto.h"
+2 "AnimTools/animtools_proto.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -137,6 +135,7 @@ Section
 7
 File
 10 "DuckChase"
+"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
