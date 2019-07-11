@@ -14,6 +14,7 @@
 
 #include "animtools.h"
 #include "animtools_proto.h"
+#include "GelsBob.h"
 
 
 #define GEL_SIZE 4
@@ -25,6 +26,22 @@ int main(int argc, char **argv)
 {
 
   UWORD pens[] = { ~0 };
+
+  WORD bob1data1[16] =
+  {
+    /* plane 1 */
+    0xffff, 0x0003,
+    0xfff0, 0x0003,
+    0xfff0, 0x0003,
+    0xffff, 0x0003,
+
+    /* plane 2 */
+    0x3fff, 0xfffc,
+    0x3ff0, 0x0ffc,
+    0x3ff0, 0x0ffc,
+    0x3fff, 0xfffc
+  };
+
 
   struct Screen* pScreen = OpenScreenTags(NULL,
     SA_Pens, pens,
@@ -50,52 +67,18 @@ int main(int argc, char **argv)
 
     if(pWindow != NULL)
     {
-      WORD* pBob1ImageData = (WORD*)
-        AllocVec(2 * 2 * GEL_SIZE * 2, MEMF_CHIP|MEMF_CLEAR);
+      struct GelsInfo* pGelsInfo;
 
-      pBob1ImageData[0] = 0xffff;
-      pBob1ImageData[1] = 0x0003;
-      pBob1ImageData[2] = 0xfff0;
-      pBob1ImageData[3] = 0x0003;
-      pBob1ImageData[4] = 0xfff0;
-      pBob1ImageData[5] = 0x0003;
-      pBob1ImageData[6] = 0xffff;
-      pBob1ImageData[7] = 0x0003;
-      pBob1ImageData[8] = 0x3fff;
-      pBob1ImageData[9] = 0xfffc;
-      pBob1ImageData[10] = 0x3ff0;
-      pBob1ImageData[11] = 0x0ffc;
-      pBob1ImageData[12] = 0x3ff0;
-      pBob1ImageData[13] = 0x0ffc;
-      pBob1ImageData[14] = 0x3fff;
-      pBob1ImageData[15] = 0xfffc;
-
-      NEWBOB myNewBob =
+      if ((pGelsInfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
       {
-        pBob1ImageData,     // Image data
-        2,                  // Bob width (in number of 16-pixel-words)
-        GEL_SIZE,           // Bob height in lines
-        2,                  // Image depth
-        3,                  // Planes that get image data (TODO whats this??)
-        0,                  // Unused planes to turn on
-        SAVEBACK | OVERLAY, // Bog flags
-        0,                  // DoubleBuffering. Set to '1' to activate.
-        3,                  // Depth of the raster
-        25,                 // Initial x position
-        25,                 // Initial y position
-        0,                  // Hit mask
-        0,                  // Me mask
-      };
+        GelsBob gelsBob1(pScreen, 3);
 
-      struct Bob         *myBob;
-      struct GelsInfo    *my_ginfo;
-
-      if ((my_ginfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
-      {
-
-        if ((myBob = makeBob(&myNewBob)) != NULL)
+        if(gelsBob1.CreateFromArray(bob1data1, 32, 4, 2) == true)
         {
-          AddBob(myBob, pWindow->RPort);
+
+          struct Bob* pBob1 = gelsBob1.GetBob();
+
+          AddBob(pBob1, pWindow->RPort);
           bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
 
           struct IntuiMessage* pMsg;
@@ -118,26 +101,24 @@ int main(int argc, char **argv)
                 }
               }
 
-              myBob->BobVSprite->X = pMsg->MouseX + 20;
-              myBob->BobVSprite->Y = pMsg->MouseY + 1;
+              pBob1->BobVSprite->X = pMsg->MouseX + 20;
+              pBob1->BobVSprite->Y = pMsg->MouseY + 1;
 
               ReplyMsg ((struct Message *)pMsg);
             }
 
-            InitMasks(myBob->BobVSprite);
+            InitMasks(pBob1->BobVSprite);
             bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
           }
           while (bContinue);
 
-          RemBob(myBob);
+          RemBob(pBob1);
           bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
-          freeBob(myBob, myNewBob.nb_RasDepth);
         }
 
-        cleanupGelSys(my_ginfo, pWindow->RPort);
+        cleanupGelSys(pGelsInfo, pWindow->RPort);
       }
 
-      FreeVec(pBob1ImageData);
       CloseWindow(pWindow);
     }
 

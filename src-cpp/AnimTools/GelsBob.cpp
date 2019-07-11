@@ -16,7 +16,7 @@ GelsBob::GelsBob(struct Screen* p_pScreen, short p_ScreenDepth)
   m_NewBob.nb_WordWidth = 0;               // Bob width (in number of 16-pixel-words)
   m_NewBob.nb_LineHeight = 0;              // Bob height in lines
   m_NewBob.nb_ImageDepth = 0;              // Image depth
-  m_NewBob.nb_PlanePick = 0;               // Planes that get image data
+  m_NewBob.nb_PlanePick = p_ScreenDepth;   // Planes that get image data
   m_NewBob.nb_PlaneOnOff = 0;              // Unused planes to turn on
   m_NewBob.nb_BFlags = SAVEBACK | OVERLAY; // Bog flags
   m_NewBob.nb_DBuf = 0;                    // DoubleBuffering. Set to '1' to activate.
