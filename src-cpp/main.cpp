@@ -54,10 +54,10 @@ int main(int argc, char **argv)
       {
         GelsBob gelsBob1(pScreen, 3);
 
-        if(gelsBob1.CreateFromRawFile("/gfx/rkrm_bob_data_1.raw",
-                                      32,
-                                      4,
-                                      2) == true)
+        if(gelsBob1.CreateFromRawFile("/gfx/ente1_hires.raw",
+                                      59,
+                                      21,
+                                      3) == true)
         {
 
           struct Bob* pBob1 = gelsBob1.GetBob();

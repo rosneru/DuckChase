@@ -57,11 +57,6 @@ bool GelsBob::CreateFromRawFile(const char* p_pPath,
   Seek(fileHandle, 0, OFFSET_END);
   long fileSize = Seek(fileHandle, 0, OFFSET_BEGINNING);
 
-  if(fileSize != bufSizeInBytes)
-  {
-    return false;
-  }
-
   //
   // Allocate chip memory
   //
@@ -70,7 +65,7 @@ bool GelsBob::CreateFromRawFile(const char* p_pPath,
   //
   // Read the file data into target chip memory buffer
   //
-  if(Read(fileHandle, m_pImageData, bufSizeInBytes) != fileSize)
+  if(Read(fileHandle, m_pImageData, bufSizeInBytes) != bufSizeInBytes)
   {
     Close(fileHandle);
     return false;
