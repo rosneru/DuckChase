@@ -17,31 +17,12 @@
 #include "GelsBob.h"
 
 
-#define GEL_SIZE 4
-
 void bobDrawGList(struct RastPort *rport, struct ViewPort *vport);
 
 
 int main(int argc, char **argv)
 {
-
   UWORD pens[] = { ~0 };
-
-  WORD bob1data1[16] =
-  {
-    /* plane 1 */
-    0xffff, 0x0003,
-    0xfff0, 0x0003,
-    0xfff0, 0x0003,
-    0xffff, 0x0003,
-
-    /* plane 2 */
-    0x3fff, 0xfffc,
-    0x3ff0, 0x0ffc,
-    0x3ff0, 0x0ffc,
-    0x3fff, 0xfffc
-  };
-
 
   struct Screen* pScreen = OpenScreenTags(NULL,
     SA_Pens, pens,
@@ -73,7 +54,10 @@ int main(int argc, char **argv)
       {
         GelsBob gelsBob1(pScreen, 3);
 
-        if(gelsBob1.CreateFromArray(bob1data1, 32, 4, 2) == true)
+        if(gelsBob1.CreateFromRawFile("/gfx/rkrm_bob_data_1.raw",
+                                      32,
+                                      4,
+                                      2) == true)
         {
 
           struct Bob* pBob1 = gelsBob1.GetBob();

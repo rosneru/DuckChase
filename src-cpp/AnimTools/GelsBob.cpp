@@ -70,7 +70,7 @@ bool GelsBob::CreateFromRawFile(const char* p_pPath,
   //
   // Read the file data into target chip memory buffer
   //
-  if(Read(fileHandle, m_pImageData, bufSizeInBytes) != 1)
+  if(Read(fileHandle, m_pImageData, bufSizeInBytes) != fileSize)
   {
     Close(fileHandle);
     return false;
