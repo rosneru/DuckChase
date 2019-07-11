@@ -12,6 +12,8 @@
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
 
+#include <stdio.h>
+
 #include "animtools.h"
 #include "animtools_proto.h"
 #include "GelsBob.h"
@@ -48,6 +50,19 @@ int main(int argc, char **argv)
 
     if(pWindow != NULL)
     {
+      struct ViewPort* pViewPort = ViewPortAddress(pWindow);
+
+      UBYTE colArr[8][3] =
+      {
+        {0xA,0xA,0xA}, {0x0,0x0,0x0}, {0xF,0xF,0xF}, {0x6,0x8,0xB},
+        {0x5,0xA,0x3}, {0xE,0xB,0x0}, {0xB,0x5,0x2}, {0xF,0x8,0x0}
+      };
+
+      for(int i = 0; i < 8; i++)
+      {
+        SetRGB4(pViewPort, i, colArr[i][0], colArr[i][1], colArr[i][2]);
+      }
+
       struct GelsInfo* pGelsInfo;
 
       if ((pGelsInfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
@@ -92,12 +107,12 @@ int main(int argc, char **argv)
             }
 
             InitMasks(pBob1->BobVSprite);
-            bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
+            bobDrawGList(pWindow->RPort, pViewPort);
           }
           while (bContinue);
 
           RemBob(pBob1);
-          bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
+          bobDrawGList(pWindow->RPort, pViewPort);
         }
 
         cleanupGelSys(pGelsInfo, pWindow->RPort);
