@@ -102,6 +102,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "AnimTools/GelsBob.cpp"
+"AnimTools/GelsBob.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
 ""
@@ -140,6 +141,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "AnimTools/GelsBob.h"
+"AnimTools/GelsBob.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

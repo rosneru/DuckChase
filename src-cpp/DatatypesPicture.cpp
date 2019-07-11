@@ -24,7 +24,7 @@ bool DatatypesPicture::Load(struct Screen* p_pScreen)
 
   m_pObject = NewDTObject((void*)m_pFilePath,
                           DTA_GroupID, GID_PICTURE,
-                          PDTA_Remap, TRUE,
+                          PDTA_Remap, FALSE,
                           PDTA_Screen, p_pScreen,
                           TAG_END);
 

@@ -12,10 +12,9 @@
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
 
-#include <stdio.h>
-
 #include "animtools.h"
 #include "animtools_proto.h"
+#include "DatatypesPicture.h"
 #include "GelsBob.h"
 
 
@@ -52,6 +51,9 @@ int main(int argc, char **argv)
     {
       struct ViewPort* pViewPort = ViewPortAddress(pWindow);
 
+      //
+      // Setting the used color table (extracted from pic wit BtoC32)
+      //
       UBYTE colArr[8][3] =
       {
         {0xA,0xA,0xA}, {0x0,0x0,0x0}, {0xF,0xF,0xF}, {0x6,0x8,0xB},
@@ -62,6 +64,18 @@ int main(int argc, char **argv)
       {
         SetRGB4(pViewPort, i, colArr[i][0], colArr[i][1], colArr[i][2]);
       }
+
+      //
+      // Loading background image
+      //
+      DatatypesPicture dtPic("/gfx/pic_background.iff");
+      if(dtPic.Load(pScreen) == true)
+      {
+        BltBitMapRastPort(dtPic.GetBitmap(), 0, 0, pWindow->RPort,
+                          0, 0, 640, 256, 0xC0);
+      }
+
+
 
       struct GelsInfo* pGelsInfo;
 
