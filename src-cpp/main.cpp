@@ -83,7 +83,7 @@ int main(int argc, char **argv)
       {
         GelsBob gelsBob1(pScreen, pWindow, 3, 59, 21, 3);
 
-        if(gelsBob1.CreateFromRawFile("/gfx/ente1_hires.raw") == true)
+        if(gelsBob1.LoadImgFromRawFile("/gfx/ente1_hires.raw") == true)
         {
 
           struct Bob* pBob1 = gelsBob1.Get();
