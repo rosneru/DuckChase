@@ -81,15 +81,12 @@ int main(int argc, char **argv)
 
       if ((pGelsInfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
       {
-        GelsBob gelsBob1(pScreen, 3);
+        GelsBob gelsBob1(pScreen, pWindow, 3, 59, 21, 3);
 
-        if(gelsBob1.CreateFromRawFile("/gfx/ente1_hires.raw",
-                                      59,
-                                      21,
-                                      3) == true)
+        if(gelsBob1.CreateFromRawFile("/gfx/ente1_hires.raw") == true)
         {
 
-          struct Bob* pBob1 = gelsBob1.GetBob();
+          struct Bob* pBob1 = gelsBob1.Get();
 
           AddBob(pBob1, pWindow->RPort);
           bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
