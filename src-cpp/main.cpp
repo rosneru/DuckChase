@@ -68,7 +68,7 @@ int main(int argc, char **argv)
       //
       // Loading background image
       //
-      DatatypesPicture dtPic("/gfx/pic_background.iff");
+      DatatypesPicture dtPic("/gfx/background_hires.iff");
       if(dtPic.Load(pScreen) == true)
       {
         BltBitMapRastPort(dtPic.GetBitmap(), 0, 0, pWindow->RPort,
@@ -81,14 +81,25 @@ int main(int argc, char **argv)
 
       if ((pGelsInfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
       {
-        GelsBob gelsBob1(pScreen, pWindow, 3, 59, 21, 3);
+        GelsBob bobDuck(pScreen, pWindow, 3, 59, 21, 3);
+        bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw");
+        bobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw");
 
-        if(gelsBob1.LoadImgFromRawFile("/gfx/ente1_hires.raw") == true)
+        GelsBob bobHunter(pScreen, pWindow, 3, 16, 22, 3);
+        bobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw");
+        bobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw");
+
+        struct Bob* pBobDuck = bobDuck.Get();
+        struct Bob* pBobHunter = bobHunter.Get();
+
+        if((pBobDuck != NULL) && (pBobHunter != NULL))
         {
+          pBobDuck->BobVSprite->Y = 40;
+          pBobHunter->BobVSprite->Y = 220;
 
-          struct Bob* pBob1 = gelsBob1.Get();
+          AddBob(pBobDuck, pWindow->RPort);
+          AddBob(pBobHunter, pWindow->RPort);
 
-          AddBob(pBob1, pWindow->RPort);
           bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
 
           struct IntuiMessage* pMsg;
@@ -111,18 +122,27 @@ int main(int argc, char **argv)
                 }
               }
 
-              pBob1->BobVSprite->X = pMsg->MouseX + 20;
-              pBob1->BobVSprite->Y = pMsg->MouseY + 1;
+              pBobHunter->BobVSprite->X = pMsg->MouseX + 20;
+              pBobHunter->BobVSprite->Y = pMsg->MouseY + 1;
+
+              pBobDuck->BobVSprite->X -= 4;
+              if(pBobDuck->BobVSprite->X < -40)
+              {
+                pBobDuck->BobVSprite->X = 650;
+              }
 
               ReplyMsg ((struct Message *)pMsg);
             }
 
-            InitMasks(pBob1->BobVSprite);
+            bobDuck.NextImage();
+            InitMasks(pBobDuck->BobVSprite);
             bobDrawGList(pWindow->RPort, pViewPort);
           }
           while (bContinue);
 
-          RemBob(pBob1);
+          RemBob(pBobHunter);
+          RemBob(pBobDuck);
+
           bobDrawGList(pWindow->RPort, pViewPort);
         }
 

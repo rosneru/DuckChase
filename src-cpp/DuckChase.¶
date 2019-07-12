@@ -96,6 +96,7 @@ Storm Shell Project (Dependencies)
 File
 1 "main.cpp"
 "main.cpp"
+"DatatypesPicture.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -103,6 +104,9 @@ Storm Shell Project (Dependencies)
 File
 1 "AnimTools/GelsBob.cpp"
 "AnimTools/GelsBob.cpp"
+"AnimTools/animtools_proto.h"
+"AnimTools/animtools.h"
+"AnimTools/GelsBob.h"
 Storm Shell Project (Dependencies)
 "objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
 ""
