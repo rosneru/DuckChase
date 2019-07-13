@@ -8,9 +8,12 @@
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
 
+#include <libraries/lowlevel.h>
+
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
+#include <clib/lowlevel_protos.h>
 
 #include "animtools.h"
 #include "animtools_proto.h"
@@ -18,11 +21,16 @@
 #include "GelsBob.h"
 
 
-void bobDrawGList(struct RastPort *rport, struct ViewPort *vport);
+void bobDrawGList(struct RastPort *rport,
+                  struct ViewPort *vport);
 
 
 int main(int argc, char **argv)
 {
+  SetJoyPortAttrs(1,
+                  SJA_Type, SJA_TYPE_AUTOSENSE,
+                  TAG_END);
+
   UWORD pens[] = { ~0 };
 
   struct Screen* pScreen = OpenScreenTags(NULL,
@@ -94,7 +102,10 @@ int main(int argc, char **argv)
 
         if((pBobDuck != NULL) && (pBobHunter != NULL))
         {
+          pBobDuck->BobVSprite->X = 200;
           pBobDuck->BobVSprite->Y = 40;
+
+          pBobHunter->BobVSprite->X = 20;
           pBobHunter->BobVSprite->Y = 220;
 
           AddBob(pBobDuck, pWindow->RPort);
@@ -122,8 +133,30 @@ int main(int argc, char **argv)
                 }
               }
 
+/*
               pBobHunter->BobVSprite->X = pMsg->MouseX + 20;
               pBobHunter->BobVSprite->Y = pMsg->MouseY + 1;
+*/
+              ULONG portState = ReadJoyPort(1);
+              if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+              {
+                if((portState & JPF_JOY_RIGHT) != 0)
+                {
+                  pBobHunter->BobVSprite->X += 8;
+                  if(pBobHunter->BobVSprite->X > 640)
+                  {
+                    pBobHunter->BobVSprite->X = -16;
+                  }
+                }
+                else if((portState & JPF_JOY_LEFT) != 0)
+                {
+                  pBobHunter->BobVSprite->X -= 8;
+                  if(pBobHunter->BobVSprite->X < 0)
+                  {
+                    pBobHunter->BobVSprite->X = 656;
+                  }
+                }
+              }
 
               pBobDuck->BobVSprite->X -= 4;
               if(pBobDuck->BobVSprite->X < -40)
@@ -166,5 +199,5 @@ void bobDrawGList(struct RastPort *rport, struct ViewPort *vport)
 
   // If the GelsList includes true VSprites, MrgCop() and LoadView()
   // here
-  WaitTOF() ;
+  //WaitTOF() ;
 }
