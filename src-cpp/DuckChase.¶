@@ -3,11 +3,13 @@ Settings (Start)
 C/C++ Environment
 "StormC:include"
 0
-"AnimTools/"
+"animtools/"
+0
+"gfxtools/"
 0
 Includepath (End)
 0 "" 80
-1 "objects_debug"
+1 "AADevDuck:obj"
 1 0 "makelog.txt"
 ""
 0
@@ -86,36 +88,37 @@ Section
 0 1 1 0
 4
 File
-1 "DatatypesPicture.cpp"
-"DatatypesPicture.cpp"
-"DatatypesPicture.h"
-Storm Shell Project (Dependencies)
-"objects_debug/DatatypesPicture.o" "objects_debug/DatatypesPicture.debug"
-""
-1 1
-File
 1 "main.cpp"
 "main.cpp"
-"DatatypesPicture.h"
 Storm Shell Project (Dependencies)
-"objects_debug/main.o" "objects_debug/main.debug"
+"AADevDuck:obj/main.o" "AADevDuck:obj/main.debug"
 ""
 1 1
 File
-1 "AnimTools/GelsBob.cpp"
-"AnimTools/GelsBob.cpp"
-"AnimTools/animtools_proto.h"
-"AnimTools/animtools.h"
-"AnimTools/GelsBob.h"
+1 "animtools/animtools.c"
+"animtools/animtools.c"
+"animtools/animtools.h"
+"animtools/animtools_proto.h"
 Storm Shell Project (Dependencies)
-"objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
+"AADevDuck:obj/animtools.o" "AADevDuck:obj/animtools.debug"
 ""
 1 1
 File
-1 "AnimTools/animtools.c"
-"AnimTools/animtools.c"
+1 "animtools/GelsBob.cpp"
+"animtools/GelsBob.cpp"
+"animtools/animtools_proto.h"
+"animtools/animtools.h"
+"animtools/GelsBob.h"
 Storm Shell Project (Dependencies)
-"objects_debug/animtools.o" "objects_debug/animtools.debug"
+"AADevDuck:obj/GelsBob.o" "AADevDuck:obj/GelsBob.debug"
+""
+1 1
+File
+1 "gfxtools/DatatypePic.cpp"
+"gfxtools/DatatypePic.cpp"
+"gfxtools/DatatypePic.h"
+Storm Shell Project (Dependencies)
+"AADevDuck:obj/DatatypePic.o" "AADevDuck:obj/DatatypePic.debug"
 ""
 1 1
 Section
@@ -123,29 +126,29 @@ Section
 0 1 1 0
 2
 File
-2 "DatatypesPicture.h"
-"DatatypesPicture.h"
+2 "animtools/animtools.h"
+"animtools/animtools.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "AnimTools/animtools.h"
-"AnimTools/animtools.h"
+2 "animtools/animtools_proto.h"
+"animtools/animtools_proto.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "AnimTools/animtools_proto.h"
-"AnimTools/animtools_proto.h"
+2 "animtools/GelsBob.h"
+"animtools/GelsBob.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "AnimTools/GelsBob.h"
-"AnimTools/GelsBob.h"
+2 "gfxtools/DatatypePic.h"
+"gfxtools/DatatypePic.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

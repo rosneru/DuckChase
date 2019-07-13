@@ -1,0 +1,395 @@
+Global M68K Construktors
+	_INIT_1_DOSBaseDOS_c
+	_INIT_1_IntuitionBaseIntuition_c
+	_INIT_2_GfxBaseGraphics_c
+	_INIT_3_DataTypesBaseDataTypes_c
+	_INIT_3_LowLevelBaseLowlevel_c
+	_INIT_4_MixedMem
+Global M68K Destruktors
+	_EXIT_4_MixedMem
+	_EXIT_3_LowLevelBaseLowlevel_c
+	_EXIT_3_DataTypesBaseDataTypes_c
+	_EXIT_2_GfxBaseGraphics_c
+	_EXIT_1_IntuitionBaseIntuition_c
+	_EXIT_1_DOSBaseDOS_c
+	_EXIT_0_Main
+No Global PPC Destruktors
+No Global PPC Destruktors
+
+M68K Code
+
+
+  Hunk #0 ( Far Public ) 10768 Bytes (0x2a10)
+  __startup68K = 384 (0x180) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/startups/gccstartup.o
+  __cleanup = 396 (0x18c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/startups/gccstartup.o
+  __exit = 404 (0x194) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/startups/gccstartup.o
+  __exit_68k = 434 (0x1b2) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/startups/gccstartup.o
+  abort__STANDARD = 464 (0x1d0) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/startups/gccstartup.o
+  ___16DatatypesPicturePCc = 496 (0x1f0) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  __$_16DatatypesPicture = 534 (0x216) referenced 2 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _Load__16DatatypesPictureP6Screen = 584 (0x248) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _GetBitmap__16DatatypesPicture = 746 (0x2ea) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _GetBitmapHeader__16DatatypesPicture = 762 (0x2fa) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _GetPalette__16DatatypesPicture = 778 (0x30a) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _GetNumberOfColors__16DatatypesPicture = 794 (0x31a) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _clear__16DatatypesPicture = 810 (0x32a) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/DatatypesPicture.o
+  _main = 1014 (0x3f6) referenced 2 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/main.o
+  _bobDrawGList__FP8RastPortP8ViewPort = 2196 (0x894) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/main.o
+  ___7GelsBobP6ScreenP6Windowsiis = 2244 (0x8c4) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  __$_7GelsBob = 2414 (0x96e) referenced 4 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _LoadImgFromRawFile__7GelsBobPCc = 2464 (0x9a0) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _LoadImgFromArray__7GelsBobPCs = 2566 (0xa06) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _Get__7GelsBob = 2644 (0xa54) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _NextImage__7GelsBob = 2706 (0xa92) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _createNextImageData__7GelsBob = 2786 (0xae2) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _clear__7GelsBob = 2876 (0xb3c) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/GelsBob.o
+  _setupGelSys__FP8RastPortSc = 2960 (0xb90) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _cleanupGelSys__FP8GelsInfoP8RastPort = 3256 (0xcb8) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _makeVSprite__FP10newVSprite = 3358 (0xd1e) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _makeBob__FP6newBob = 3574 (0xdf6) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _makeComp__FP6newBobP11newAnimComp = 3908 (0xf44) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _makeSeq__FP6newBobP10newAnimSeq = 4056 (0xfd8) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _freeVSprite__FP7VSprite = 4286 (0x10be) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _freeBob__FP3Bobl = 4362 (0x110a) referenced 1 times
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _freeComp__FP8AnimCompl = 4488 (0x1188) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _freeSeq__FP8AnimCompl = 4530 (0x11b2) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _freeOb__FP6AnimObl = 4592 (0x11f0) unused, maybe local
+    File Shared:DEV/Studies/DuckChase/src-cpp/objects_debug/animtools.o
+  _bzero = 4660 (0x1234) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _memcpy = 4732 (0x127c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _memmove = 4762 (0x129a) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _memcmp = 4816 (0x12d0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _memchr = 4876 (0x130c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _memset = 4914 (0x1332) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _bcmp = 4948 (0x1354) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _bcopy = 5008 (0x1390) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _ffs = 5140 (0x1414) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _malloc = 5744 (0x1670) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _free = 6282 (0x188a) referenced 4 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _calloc = 6300 (0x189c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _realloc = 6392 (0x18f8) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _INIT_4_MixedMem = 6564 (0x19a4) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _EXIT_4_MixedMem = 6720 (0x1a40) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _signal = 6864 (0x1ad0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _raise = 6908 (0x1afc) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _abort = 6952 (0x1b28) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _strcmp = 6968 (0x1b38) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _strncmp = 7024 (0x1b70) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _InitXSemaphore = 7104 (0x1bc0) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _FreeXSemaphore = 7198 (0x1c1e) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _ObtainXSemaphore = 7246 (0x1c4e) referenced 4 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  _ReleaseXSemaphore = 7280 (0x1c70) referenced 5 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+  NewDTObject = 7316 (0x1c94) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _NewDTObject = 7316 (0x1c94) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  DisposeDTObject = 7340 (0x1cac) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _DisposeDTObject = 7340 (0x1cac) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  GetDTAttrs = 7360 (0x1cc0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _GetDTAttrs = 7360 (0x1cc0) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  DoDTMethod = 7388 (0x1cdc) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _DoDTMethod = 7388 (0x1cdc) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  Open = 7420 (0x1cfc) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _Open = 7420 (0x1cfc) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  Close = 7448 (0x1d18) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _Close = 7448 (0x1d18) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  Read = 7468 (0x1d2c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _Read = 7468 (0x1d2c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  GetProgramName = 7496 (0x1d48) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _GetProgramName = 7496 (0x1d48) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  FilePart = 7524 (0x1d64) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _FilePart = 7524 (0x1d64) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  AddPart = 7544 (0x1d78) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _AddPart = 7544 (0x1d78) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  VPrintf = 7572 (0x1d94) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _VPrintf = 7572 (0x1d94) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  AllocMem = 7600 (0x1db0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _AllocMem = 7600 (0x1db0) referenced 5 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  FreeMem = 7624 (0x1dc8) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _FreeMem = 7624 (0x1dc8) referenced 17 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  FindTask = 7648 (0x1de0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _FindTask = 7648 (0x1de0) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  GetMsg = 7668 (0x1df4) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _GetMsg = 7668 (0x1df4) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  ReplyMsg = 7688 (0x1e08) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _ReplyMsg = 7688 (0x1e08) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  WaitPort = 7708 (0x1e1c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _WaitPort = 7708 (0x1e1c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  CloseLibrary = 7728 (0x1e30) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _CloseLibrary = 7728 (0x1e30) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  OpenLibrary = 7748 (0x1e44) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _OpenLibrary = 7748 (0x1e44) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  AllocVec = 7772 (0x1e5c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _AllocVec = 7772 (0x1e5c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  FreeVec = 7796 (0x1e74) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _FreeVec = 7796 (0x1e74) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  AddBob = 7816 (0x1e88) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _AddBob = 7816 (0x1e88) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  DrawGList = 7840 (0x1ea0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _DrawGList = 7840 (0x1ea0) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  InitGels = 7864 (0x1eb8) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _InitGels = 7864 (0x1eb8) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  InitMasks = 7892 (0x1ed4) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _InitMasks = 7892 (0x1ed4) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  SortGList = 7912 (0x1ee8) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _SortGList = 7912 (0x1ee8) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  SetRGB4 = 7932 (0x1efc) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _SetRGB4 = 7932 (0x1efc) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  BltBitMapRastPort = 7964 (0x1f1c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _BltBitMapRastPort = 7964 (0x1f1c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  CloseScreen = 8000 (0x1f40) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _CloseScreen = 8000 (0x1f40) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  CloseWindow = 8020 (0x1f54) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _CloseWindow = 8020 (0x1f54) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  ViewPortAddress = 8040 (0x1f68) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _ViewPortAddress = 8040 (0x1f68) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  EasyRequest = 8060 (0x1f7c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _EasyRequest = 8060 (0x1f7c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  OpenWindowTags = 8092 (0x1f9c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _OpenWindowTags = 8092 (0x1f9c) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  OpenScreenTags = 8116 (0x1fb4) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _OpenScreenTags = 8116 (0x1fb4) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  ReadJoyPort = 8140 (0x1fcc) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _ReadJoyPort = 8140 (0x1fcc) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  SetJoyPortAttrs = 8160 (0x1fe0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _SetJoyPortAttrs = 8160 (0x1fe0) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/amiga.lib
+  _setjmp = 8184 (0x1ff8) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/mathgcc000.lib
+  _longjmp = 8198 (0x2006) referenced 3 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/mathgcc000.lib
+  _wbmain__FP9WBStartup = 8228 (0x2024) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  wbmain(WBStartup *) = 8228 (0x2024) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _wbmain = 8236 (0x202c) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  __gcc_main__ = 8250 (0x203a) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _EXIT_0_Main = 8722 (0x2212) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _EXIT_3_DataTypesBaseDataTypes_c = 8764 (0x223c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _INIT_3_DataTypesBaseDataTypes_c = 8814 (0x226e) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _EXIT_1_DOSBaseDOS_c = 8856 (0x2298) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _INIT_1_DOSBaseDOS_c = 8900 (0x22c4) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _EXIT_2_GfxBaseGraphics_c = 8944 (0x22f0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _INIT_2_GfxBaseGraphics_c = 8994 (0x2322) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _InitModules = 9040 (0x2350) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _CleanupModules = 9122 (0x23a2) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _EXIT_1_IntuitionBaseIntuition_c = 9192 (0x23e8) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _INIT_1_IntuitionBaseIntuition_c = 9242 (0x241a) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  ___8LibBaseCPcUls = 9426 (0x24d2) referenced 5 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  __$_8LibBaseC = 9804 (0x264c) referenced 5 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _version__C8LibBaseC = 9856 (0x2680) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _EXIT_3_LowLevelBaseLowlevel_c = 9884 (0x269c) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _INIT_3_LowLevelBaseLowlevel_c = 9934 (0x26ce) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  ___mulsi3 = 9980 (0x26fc) referenced 7 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___builtin_delete = 10030 (0x272e) referenced 3 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___builtin_vec_delete = 10052 (0x2744) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___dl__FPvRC9nothrow_t = 10074 (0x275a) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___vd__FPvRC9nothrow_t = 10096 (0x2770) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  _exit = 10120 (0x2788) referenced 3 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___default_terminate = 10148 (0x27a4) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___terminate = 10160 (0x27b0) referenced 4 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___throw_type_match = 10176 (0x27c0) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___empty = 10218 (0x27ea) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___get_eh_context = 10290 (0x2832) referenced 1 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___get_eh_info = 10306 (0x2842) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___get_dynamic_handler_chain = 10370 (0x2882) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___sjthrow = 10388 (0x2894) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___sjpopnthrow = 10598 (0x2966) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+
+PowerPC Code
+
+
+Data
+
+
+  Hunk #1 ( Far Public ) 136 Bytes (0x88)
+  _DataTypesBase = 24 (0x18) referenced 4 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _DOSBase = 28 (0x1c) referenced 9 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _GfxBase = 32 (0x20) referenced 7 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _IntuitionBase = 48 (0x30) referenced 7 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  __8LibBaseC$not_open = 52 (0x34) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  _LowLevelBase = 56 (0x38) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  ___stacksize = 60 (0x3c) referenced 2 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccstartup000.lib
+  ___terminate_func = 64 (0x40) unused, maybe local
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/lib/stormgccsupport000.lib
+  ___init_table68k = 72 (0x48) referenced 1 times
+    File <Internal Assembled>
+  ___exit_table68k = 104 (0x68) referenced 1 times
+    File <Internal Assembled>
+
+BSS
+
+
+  Hunk #2 ( Far Public ) 868 Bytes (0x364)
+  _SysBase = 164 (0xa4) referenced 33 times
+    File Workbench3.1.4:Programmieren/StormCpp4/StormSYS/startups/gccstartup.o
+  ___mempool = 168 (0xa8) referenced 33 times
+    File Workbench3.1.4:Programmieren/StormCpp4/Lib/stormgcc.lib
+
+END

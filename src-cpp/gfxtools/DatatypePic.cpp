@@ -1,7 +1,7 @@
-#include "DatatypesPicture.h"
+#include "DatatypePic.h"
 
 
-DatatypesPicture::DatatypesPicture(const char* p_pFilePath)
+DatatypePic::DatatypePic(const char* p_pFilePath)
   : m_pFilePath(p_pFilePath),
     m_pObject(NULL),
     m_pBitmap(NULL),
@@ -12,13 +12,13 @@ DatatypesPicture::DatatypesPicture(const char* p_pFilePath)
 }
 
 
-DatatypesPicture::~DatatypesPicture()
+DatatypePic::~DatatypePic()
 {
   clear();
 }
 
 
-bool DatatypesPicture::Load(struct Screen* p_pScreen)
+bool DatatypePic::Load(struct Screen* p_pScreen)
 {
   clear();
 
@@ -46,30 +46,30 @@ bool DatatypesPicture::Load(struct Screen* p_pScreen)
 }
 
 
-struct BitMap* DatatypesPicture::GetBitmap()
+struct BitMap* DatatypePic::GetBitmap()
 {
   return m_pBitmap;
 }
 
-struct BitMapHeader* DatatypesPicture::GetBitmapHeader()
+struct BitMapHeader* DatatypePic::GetBitmapHeader()
 {
   return m_pBitmapHeader;
 }
 
 
-ULONG* DatatypesPicture::GetPalette()
+ULONG* DatatypePic::GetPalette()
 {
   return m_pPalette;
 }
 
 
-long DatatypesPicture::GetNumberOfColors()
+long DatatypePic::GetNumberOfColors()
 {
   return m_NumberOfColors;
 }
 
 
-void DatatypesPicture::clear()
+void DatatypePic::clear()
 {
   if((m_pBitmap != NULL)
     || (m_pBitmapHeader != NULL)

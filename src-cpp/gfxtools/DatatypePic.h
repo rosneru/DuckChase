@@ -1,5 +1,5 @@
-#ifndef DATATYPES_PICTUREABC
-#define DATATYPES_PICTUREABC
+#ifndef DATATYPES_PIC_H
+#define DATATYPES_PIC_H
 
 #include <proto/exec.h>
 #include <proto/datatypes.h>
@@ -15,11 +15,11 @@
  * @author Uwe Rosner
  * @date 06/07/2019
  */
-class DatatypesPicture
+class DatatypePic
 {
 public:
-  DatatypesPicture(const char* p_pFilePath);
-  ~DatatypesPicture();
+  DatatypePic(const char* p_pFilePath);
+  ~DatatypePic();
 
   bool Load(struct Screen* p_pScreen);
 

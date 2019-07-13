@@ -17,7 +17,7 @@
 
 #include "animtools.h"
 #include "animtools_proto.h"
-#include "DatatypesPicture.h"
+#include "DatatypePic.h"
 #include "GelsBob.h"
 
 
@@ -76,10 +76,10 @@ int main(int argc, char **argv)
       //
       // Loading background image
       //
-      DatatypesPicture dtPic("/gfx/background_hires.iff");
-      if(dtPic.Load(pScreen) == true)
+      DatatypePic picBackgr("/gfx/background_hires.iff");
+      if(picBackgr.Load(pScreen) == true)
       {
-        BltBitMapRastPort(dtPic.GetBitmap(), 0, 0, pWindow->RPort,
+        BltBitMapRastPort(picBackgr.GetBitmap(), 0, 0, pWindow->RPort,
                           0, 0, 640, 256, 0xC0);
       }
 
@@ -199,5 +199,5 @@ void bobDrawGList(struct RastPort *rport, struct ViewPort *vport)
 
   // If the GelsList includes true VSprites, MrgCop() and LoadView()
   // here
-  //WaitTOF() ;
+  WaitTOF() ;
 }
