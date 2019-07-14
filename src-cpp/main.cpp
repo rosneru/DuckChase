@@ -45,135 +45,111 @@ int main(int argc, char **argv)
 
   if (pScreen != NULL)
   {
-    struct Window* pWindow = OpenWindowTags (NULL,
-        WA_CustomScreen, pScreen,
-        WA_Left, 0,
-        WA_Top, 0,
-        WA_Width, 640,
-        WA_Height,256,
-        WA_Flags, WFLG_ACTIVATE,
-        WA_IDCMP, IDCMP_INTUITICKS,
-        TAG_END);
-
-    if(pWindow != NULL)
+    //
+    // Setting the used color table (extracted from pic wit BtoC32)
+    //
+    UBYTE colArr[8][3] =
     {
-      struct ViewPort* pViewPort = ViewPortAddress(pWindow);
+      {0xA,0xA,0xA}, {0x0,0x0,0x0}, {0xF,0xF,0xF}, {0x6,0x8,0xB},
+      {0x5,0xA,0x3}, {0xE,0xB,0x0}, {0xB,0x5,0x2}, {0xF,0x8,0x0}
+    };
 
-      //
-      // Setting the used color table (extracted from pic wit BtoC32)
-      //
-      UBYTE colArr[8][3] =
+    for(int i = 0; i < 8; i++)
+    {
+      SetRGB4(&pScreen->ViewPort, i,
+              colArr[i][0], colArr[i][1], colArr[i][2]);
+    }
+
+    //
+    // Loading background image
+    //
+    DatatypePic picBackgr("/gfx/background_hires.iff");
+    if(picBackgr.Load(pScreen) == true)
+    {
+      BltBitMapRastPort(picBackgr.GetBitmap(), 0, 0, &pScreen->RastPort,
+                        0, 0, 640, 256, 0xC0);
+    }
+
+
+
+    struct GelsInfo* pGelsInfo;
+
+    if ((pGelsInfo = setupGelSys(&pScreen->RastPort, 0x03)) != NULL)
+    {
+      GelsBob bobDuck(pScreen, NULL, 3, 59, 21, 3);
+      bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw");
+      bobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw");
+
+      GelsBob bobHunter(pScreen, NULL, 3, 16, 22, 3);
+      bobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw");
+      bobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw");
+
+      struct Bob* pBobDuck = bobDuck.Get();
+      struct Bob* pBobHunter = bobHunter.Get();
+
+      if((pBobDuck != NULL) && (pBobHunter != NULL))
       {
-        {0xA,0xA,0xA}, {0x0,0x0,0x0}, {0xF,0xF,0xF}, {0x6,0x8,0xB},
-        {0x5,0xA,0x3}, {0xE,0xB,0x0}, {0xB,0x5,0x2}, {0xF,0x8,0x0}
-      };
+        pBobDuck->BobVSprite->X = 200;
+        pBobDuck->BobVSprite->Y = 40;
 
-      for(int i = 0; i < 8; i++)
-      {
-        SetRGB4(pViewPort, i, colArr[i][0], colArr[i][1], colArr[i][2]);
-      }
+        pBobHunter->BobVSprite->X = 20;
+        pBobHunter->BobVSprite->Y = 220;
 
-      //
-      // Loading background image
-      //
-      DatatypePic picBackgr("/gfx/background_hires.iff");
-      if(picBackgr.Load(pScreen) == true)
-      {
-        BltBitMapRastPort(picBackgr.GetBitmap(), 0, 0, pWindow->RPort,
-                          0, 0, 640, 256, 0xC0);
-      }
+        AddBob(pBobDuck, &pScreen->RastPort);
+        AddBob(pBobHunter, &pScreen->RastPort);
 
+        bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
 
+        bool bContinue = true;
 
-      struct GelsInfo* pGelsInfo;
-
-      if ((pGelsInfo = setupGelSys(pWindow->RPort, 0x03)) != NULL)
-      {
-        GelsBob bobDuck(pScreen, pWindow, 3, 59, 21, 3);
-        bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw");
-        bobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw");
-
-        GelsBob bobHunter(pScreen, pWindow, 3, 16, 22, 3);
-        bobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw");
-        bobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw");
-
-        struct Bob* pBobDuck = bobDuck.Get();
-        struct Bob* pBobHunter = bobHunter.Get();
-
-        if((pBobDuck != NULL) && (pBobHunter != NULL))
+        do
         {
-          pBobDuck->BobVSprite->X = 200;
-          pBobDuck->BobVSprite->Y = 40;
-
-          pBobHunter->BobVSprite->X = 20;
-          pBobHunter->BobVSprite->Y = 220;
-
-          AddBob(pBobDuck, pWindow->RPort);
-          AddBob(pBobHunter, pWindow->RPort);
-
-          bobDrawGList(pWindow->RPort, ViewPortAddress(pWindow));
-
-          struct IntuiMessage* pMsg;
-          bool bContinue = true;
-
-          do
+          ULONG key = GetKey();
+          if((key & 0x00ff) == 0x45) // RAW code ESC key
           {
-            WaitPort (pWindow->UserPort);
-            while (pMsg = (struct IntuiMessage *)GetMsg (pWindow->UserPort))
+            bContinue = false;
+          }
+
+          ULONG portState = ReadJoyPort(1);
+          if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+          {
+            if((portState & JPF_JOY_RIGHT) != 0)
             {
-              // Intuiticks received
-              ReplyMsg ((struct Message *)pMsg);
-
-              ULONG key = GetKey();
-              if((key & 0x00ff) == 0x45) // RAW code ESC key
+              pBobHunter->BobVSprite->X += 8;
+              if(pBobHunter->BobVSprite->X > 640)
               {
-                bContinue = false;
-              }
-
-              ULONG portState = ReadJoyPort(1);
-              if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
-              {
-                if((portState & JPF_JOY_RIGHT) != 0)
-                {
-                  pBobHunter->BobVSprite->X += 8;
-                  if(pBobHunter->BobVSprite->X > 640)
-                  {
-                    pBobHunter->BobVSprite->X = -16;
-                  }
-                }
-                else if((portState & JPF_JOY_LEFT) != 0)
-                {
-                  pBobHunter->BobVSprite->X -= 8;
-                  if(pBobHunter->BobVSprite->X < 0)
-                  {
-                    pBobHunter->BobVSprite->X = 656;
-                  }
-                }
-              }
-
-              pBobDuck->BobVSprite->X -= 4;
-              if(pBobDuck->BobVSprite->X < -40)
-              {
-                pBobDuck->BobVSprite->X = 650;
+                pBobHunter->BobVSprite->X = -16;
               }
             }
-
-            bobDuck.NextImage();
-            InitMasks(pBobDuck->BobVSprite);
-            bobDrawGList(pWindow->RPort, pViewPort);
+            else if((portState & JPF_JOY_LEFT) != 0)
+            {
+              pBobHunter->BobVSprite->X -= 8;
+              if(pBobHunter->BobVSprite->X < 0)
+              {
+                pBobHunter->BobVSprite->X = 656;
+              }
+            }
           }
-          while (bContinue);
 
-          RemBob(pBobHunter);
-          RemBob(pBobDuck);
+          pBobDuck->BobVSprite->X -= 4;
+          if(pBobDuck->BobVSprite->X < -40)
+          {
+            pBobDuck->BobVSprite->X = 650;
+          }
 
-          bobDrawGList(pWindow->RPort, pViewPort);
+          bobDuck.NextImage();
+          InitMasks(pBobDuck->BobVSprite);
+          bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
         }
+        while (bContinue);
 
-        cleanupGelSys(pGelsInfo, pWindow->RPort);
+        RemBob(pBobHunter);
+        RemBob(pBobDuck);
+
+        bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
       }
 
-      CloseWindow(pWindow);
+      cleanupGelSys(pGelsInfo, &pScreen->RastPort);
     }
 
     CloseScreen(pScreen);
