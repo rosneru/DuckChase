@@ -23,6 +23,7 @@
 #include "animtools_proto.h"
 #include "DatatypePic.h"
 #include "GelsBob.h"
+#include "StopWatch.h"
 
 
 void bobDrawGList(struct RastPort *rport,
@@ -110,10 +111,16 @@ int main(int argc, char **argv)
         eClockVal.ev_hi = 0;
         eClockVal.ev_lo = 0;
 
-        ULONG elapsed = ElapsedTime(&eClockVal);
+        //ULONG elapsed = ElapsedTime(&eClockVal);
+
+        StopWatch stopWatch;
+        stopWatch.Start();
+
+        long cnt = 0;
 
         do
         {
+          cnt++;
           ULONG key = GetKey();
           if((key & 0x00ff) == 0x45) // RAW code ESC key
           {
@@ -153,21 +160,30 @@ int main(int argc, char **argv)
 
           // Display the FPS value
           char buf[64];
+          /*
           elapsed = ElapsedTime(&eClockVal);
           elapsed &= 0xff00;
-          if(elapsed > 0)
+          */
+
+          double dblElapsed = stopWatch.Stop();
+          stopWatch.Start();
+
+
+          if(dblElapsed >= 0 && (cnt % 5 == 0))
           {
-            short fps = 1000000 / elapsed / 50 * 2;
+            short fps = 1000 / dblElapsed;
             sprintf(buf, "%d FPS", fps);
 
             SetBPen(&pScreen->RastPort, 0);
-            EraseRect(&pScreen->RastPort, 50, 62, 90, 70);
+            EraseRect(&pScreen->RastPort, 52, 62, 130, 72);
 
             Move(&pScreen->RastPort, 50, 70);
             Text(&pScreen->RastPort, buf, strlen(buf));
           }
         }
         while (bContinue);
+
+        stopWatch.Stop();
 
         RemBob(pBobHunter);
         RemBob(pBobDuck);
