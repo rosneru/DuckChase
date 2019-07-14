@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         WA_Width, 640,
         WA_Height,256,
         WA_Flags, WFLG_ACTIVATE,
-        WA_IDCMP, IDCMP_VANILLAKEY|IDCMP_INTUITICKS,
+        WA_IDCMP, IDCMP_INTUITICKS,
         TAG_END);
 
     if(pWindow != NULL)
@@ -121,22 +121,15 @@ int main(int argc, char **argv)
             WaitPort (pWindow->UserPort);
             while (pMsg = (struct IntuiMessage *)GetMsg (pWindow->UserPort))
             {
-              switch (pMsg->Class)
+              // Intuiticks received
+              ReplyMsg ((struct Message *)pMsg);
+
+              ULONG key = GetKey();
+              if((key & 0x00ff) == 0x45) // RAW code ESC key
               {
-                case IDCMP_VANILLAKEY:
-                {
-                  if (pMsg->Code == 0x1b) // ESC key
-                  {
-                    bContinue = false;
-                  }
-                  break;
-                }
+                bContinue = false;
               }
 
-/*
-              pBobHunter->BobVSprite->X = pMsg->MouseX + 20;
-              pBobHunter->BobVSprite->Y = pMsg->MouseY + 1;
-*/
               ULONG portState = ReadJoyPort(1);
               if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
               {
@@ -163,8 +156,6 @@ int main(int argc, char **argv)
               {
                 pBobDuck->BobVSprite->X = 650;
               }
-
-              ReplyMsg ((struct Message *)pMsg);
             }
 
             bobDuck.NextImage();

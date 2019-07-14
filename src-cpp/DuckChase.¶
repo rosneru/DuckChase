@@ -9,7 +9,7 @@ C/C++ Environment
 0
 Includepath (End)
 0 "" 80
-1 "AADevDuck:obj"
+1 "objects_debug"
 1 0 "makelog.txt"
 ""
 0
@@ -91,7 +91,7 @@ File
 1 "main.cpp"
 "main.cpp"
 Storm Shell Project (Dependencies)
-"AADevDuck:obj/main.o" "AADevDuck:obj/main.debug"
+"objects_debug/main.o" "objects_debug/main.debug"
 ""
 1 1
 File
@@ -100,7 +100,7 @@ File
 "animtools/animtools.h"
 "animtools/animtools_proto.h"
 Storm Shell Project (Dependencies)
-"AADevDuck:obj/animtools.o" "AADevDuck:obj/animtools.debug"
+"objects_debug/animtools.o" "objects_debug/animtools.debug"
 ""
 1 1
 File
@@ -110,7 +110,7 @@ File
 "animtools/animtools.h"
 "animtools/GelsBob.h"
 Storm Shell Project (Dependencies)
-"AADevDuck:obj/GelsBob.o" "AADevDuck:obj/GelsBob.debug"
+"objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
 ""
 1 1
 File
@@ -118,7 +118,7 @@ File
 "gfxtools/DatatypePic.cpp"
 "gfxtools/DatatypePic.h"
 Storm Shell Project (Dependencies)
-"AADevDuck:obj/DatatypePic.o" "AADevDuck:obj/DatatypePic.debug"
+"objects_debug/DatatypePic.o" "objects_debug/DatatypePic.debug"
 ""
 1 1
 Section
@@ -159,7 +159,6 @@ Section
 7
 File
 10 "DuckChase"
-"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
