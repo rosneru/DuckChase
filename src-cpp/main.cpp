@@ -15,6 +15,10 @@
 #include <clib/intuition_protos.h>
 #include <clib/lowlevel_protos.h>
 
+#include <devices/timer.h>
+
+#include <stdio.h>
+
 #include "animtools.h"
 #include "animtools_proto.h"
 #include "DatatypePic.h"
@@ -102,6 +106,12 @@ int main(int argc, char **argv)
 
         bool bContinue = true;
 
+        struct EClockVal eClockVal;
+        eClockVal.ev_hi = 0;
+        eClockVal.ev_lo = 0;
+
+        ULONG elapsed = ElapsedTime(&eClockVal);
+
         do
         {
           ULONG key = GetKey();
@@ -140,6 +150,22 @@ int main(int argc, char **argv)
           bobDuck.NextImage();
           InitMasks(pBobDuck->BobVSprite);
           bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
+
+          // Display the FPS value
+          char buf[64];
+          elapsed = ElapsedTime(&eClockVal);
+          elapsed &= 0xff00;
+          if(elapsed > 0)
+          {
+            short fps = 1000000 / elapsed / 50 * 2;
+            sprintf(buf, "%d FPS", fps);
+
+            SetBPen(&pScreen->RastPort, 0);
+            EraseRect(&pScreen->RastPort, 50, 62, 90, 70);
+
+            Move(&pScreen->RastPort, 50, 70);
+            Text(&pScreen->RastPort, buf, strlen(buf));
+          }
         }
         while (bContinue);
 
