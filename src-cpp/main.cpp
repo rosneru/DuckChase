@@ -107,20 +107,11 @@ int main(int argc, char **argv)
 
         bool bContinue = true;
 
-        struct EClockVal eClockVal;
-        eClockVal.ev_hi = 0;
-        eClockVal.ev_lo = 0;
-
-        //ULONG elapsed = ElapsedTime(&eClockVal);
-
         StopWatch stopWatch;
         stopWatch.Start();
 
-        long cnt = 0;
-
         do
         {
-          cnt++;
           ULONG key = GetKey();
           if((key & 0x00ff) == 0x45) // RAW code ESC key
           {
@@ -158,20 +149,16 @@ int main(int argc, char **argv)
           InitMasks(pBobDuck->BobVSprite);
           bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
 
+          //
           // Display the FPS value
-          char buf[64];
-          /*
-          elapsed = ElapsedTime(&eClockVal);
-          elapsed &= 0xff00;
-          */
+          //
+          double dblElapsed = stopWatch.Pick();
 
-          double dblElapsed = stopWatch.Stop();
-          stopWatch.Start();
-
-
-          if(dblElapsed >= 0 && (cnt % 5 == 0))
+          if(dblElapsed >= 0)
           {
             short fps = 1000 / dblElapsed;
+
+            char buf[64];
             sprintf(buf, "%d FPS", fps);
 
             SetBPen(&pScreen->RastPort, 0);
@@ -182,8 +169,6 @@ int main(int argc, char **argv)
           }
         }
         while (bContinue);
-
-        stopWatch.Stop();
 
         RemBob(pBobHunter);
         RemBob(pBobDuck);
