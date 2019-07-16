@@ -5,8 +5,6 @@ C/C++ Environment
 0
 "animtools/"
 0
-"gfxtools/"
-0
 "amigautils/"
 0
 Includepath (End)
@@ -98,6 +96,8 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "amigautils/StopWatch.cpp"
+"amigautils/StopWatch.cpp"
+"amigautils/StopWatch.h"
 Storm Shell Project (Dependencies)
 "objects_debug/StopWatch.o" "objects_debug/StopWatch.debug"
 ""
@@ -122,11 +122,11 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gfxtools/DatatypePic.cpp"
-"gfxtools/DatatypePic.cpp"
-"gfxtools/DatatypePic.h"
+1 "amigautils/Picture.cpp"
+"amigautils/Picture.cpp"
+"amigautils/Picture.h"
 Storm Shell Project (Dependencies)
-"objects_debug/DatatypePic.o" "objects_debug/DatatypePic.debug"
+"objects_debug/Picture.o" "objects_debug/Picture.debug"
 ""
 1 1
 Section
@@ -155,14 +155,15 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gfxtools/DatatypePic.h"
-"gfxtools/DatatypePic.h"
+2 "amigautils/StopWatch.h"
+"amigautils/StopWatch.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "amigautils/StopWatch.h"
+2 "amigautils/Picture.h"
+"amigautils/Picture.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

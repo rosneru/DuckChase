@@ -49,9 +49,7 @@ GelsBob::~GelsBob()
 
 bool GelsBob::LoadImgFromRawFile(const char *p_pPath)
 {
-  //
-  //  Open the file and calculate its sie using Seek()
-  //
+  // Opening the file
   BPTR fileHandle = Open(p_pPath, MODE_OLDFILE);
   if (fileHandle == NULL)
   {
@@ -62,15 +60,14 @@ bool GelsBob::LoadImgFromRawFile(const char *p_pPath)
   if(pImageData == NULL)
   {
     // Image index full or memory allocation failed
+    Close(fileHandle);
     return false;
   }
 
-
-  //
   // Read the file data into target chip memory buffer
-  //
   if (Read(fileHandle, pImageData, m_ImageBufSize) != m_ImageBufSize)
   {
+    // Error while reading
     Close(fileHandle);
     return false;
   }
@@ -88,9 +85,7 @@ bool GelsBob::LoadImgFromArray(const WORD *p_pAddress)
     return false;
   }
 
-  //
   // Copy source data to target chip memory buffer
-  //
   for (int i = 0; i < (m_ImageBufSize / 2); i++)
   {
     pImageData[i] = p_pAddress[i];
@@ -113,9 +108,7 @@ struct Bob *GelsBob::Get()
     // data array pointers
     m_NewBob.nb_Image = m_ppImagesArray[0];
 
-    //
-    // Finally create the Bob
-    //
+    // Create the Bob
     m_pBob = makeBob(&m_NewBob);
 
     if(m_pBob != NULL)
@@ -138,7 +131,7 @@ void GelsBob::NextImage()
 
   // Get the image data for the next image
   int nextIndex = m_CurrentImageIndex + 1;
-  
+
   if(nextIndex >= MAX_IMAGES)
   {
     nextIndex = 0;
@@ -157,7 +150,7 @@ void GelsBob::NextImage()
   }
 
   WORD* pImageData = m_ppImagesArray[nextIndex];
-  
+
   m_pBob->BobVSprite->ImageData = pImageData;
 
   m_CurrentImageIndex = nextIndex;
@@ -184,7 +177,7 @@ WORD* GelsBob::createNextImageData()
   }
 
   // Allocate chip memory
-  m_ppImagesArray[idx] = (WORD*) AllocVec(m_ImageBufSize, 
+  m_ppImagesArray[idx] = (WORD*) AllocVec(m_ImageBufSize,
                                           MEMF_CHIP|MEMF_CLEAR);
 
   return m_ppImagesArray[idx];

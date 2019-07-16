@@ -21,7 +21,7 @@
 
 #include "animtools.h"
 #include "animtools_proto.h"
-#include "DatatypePic.h"
+#include "Picture.h"
 #include "GelsBob.h"
 #include "StopWatch.h"
 
@@ -68,10 +68,13 @@ int main(int argc, char **argv)
     //
     // Loading background image
     //
-    DatatypePic picBackgr("/gfx/background_hires.iff");
-    if(picBackgr.Load(pScreen) == true)
+    Picture picBackgr;
+    bool bOk = picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
+                                         640, 256, 3);
+
+    if(bOk)
     {
-      BltBitMapRastPort(picBackgr.GetBitmap(), 0, 0, &pScreen->RastPort,
+      BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &pScreen->RastPort,
                         0, 0, 640, 256, 0xC0);
     }
 
