@@ -1,15 +1,19 @@
+#include <graphics/gfx.h>
+
 #include <proto/exec.h>
 #include <proto/dos.h>
-
+#include <proto/graphics.h>
 
 #include "Picture.h"
 
+
 Picture::Picture()
   : m_pObject(NULL),
-    m_pBitMapRaw(NULL),
-    m_pBitMapDt(NULL),
     m_pBitMapDtHeader(NULL),
     m_pPaletteDt(NULL),
+    m_pBitMapDt(NULL),
+    m_pBitMapRaw(NULL),
+    m_pPlaneMemoryRaw(NULL),
     m_NumberOfColors(0)
 {
 }
@@ -65,15 +69,20 @@ bool Picture::LoadFromRawFile(const char* p_pPath,
   // Clear formerly used data
   clear();
 
-  // Calculate raw data size. The multiplication result is in bits,
-  // but bytes are needed so it's divided by 8.
-  int bufSize = p_ImageWidth * p_ImageHeight * p_ImageDepth  / 8;
+  // Calculate the size in bytes needed for one bitplane of given
+  // dimension
+  int planeSize = RASSIZE(p_ImageWidth, p_ImageHeight);
+  int bufSize = planeSize * p_ImageDepth;
 
-  m_pBitMapRaw = (struct BitMap*) AllocVec(bufSize,
-                                           MEMF_CHIP|MEMF_CLEAR);
+  m_pPlaneMemoryRaw = (UBYTE*) AllocVec(bufSize, MEMF_CHIP|MEMF_CLEAR);
+  if(m_pPlaneMemoryRaw == NULL)
+  {
+    // Not enough memory
+    return false;
+  }
 
-  // Read the file data into target chip memory buffer
-  if (Read(fileHandle, m_pBitMapRaw, bufSize) != bufSize)
+  // Read the file data into target bit plane buffer
+  if (Read(fileHandle, m_pPlaneMemoryRaw, bufSize) != bufSize)
   {
     // Error while reading
     Close(fileHandle);
@@ -81,6 +90,25 @@ bool Picture::LoadFromRawFile(const char* p_pPath,
   }
 
   Close(fileHandle);
+
+  int bmSize = sizeof(struct BitMap);
+  m_pBitMapRaw = (struct BitMap*) AllocVec(bmSize, MEMF_CLEAR);
+  if(m_pBitMapRaw == NULL)
+  {
+    // Not enough memory
+    return false;
+  }
+
+  InitBitMap(m_pBitMapRaw, p_ImageDepth, p_ImageWidth, p_ImageHeight);
+
+  // Set each plane pointer to its dedicated portion of the data
+  UBYTE* pPlanePtr = m_pPlaneMemoryRaw;
+  for(int i = 0; i < p_ImageDepth; i++)
+  {
+    m_pBitMapRaw->Planes[i] = pPlanePtr;
+    pPlanePtr += planeSize;
+  }
+
   return true;
 }
 
@@ -134,4 +162,11 @@ void Picture::clear()
     FreeVec(m_pBitMapRaw);
     m_pBitMapRaw = NULL;
   }
+
+  if(m_pPlaneMemoryRaw != NULL)
+  {
+    FreeVec(m_pPlaneMemoryRaw);
+    m_pPlaneMemoryRaw = NULL;
+  }
+
 }

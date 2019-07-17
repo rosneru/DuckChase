@@ -40,9 +40,10 @@ public:
 private:
   Object *m_pObject;
   struct BitMapHeader* m_pBitMapDtHeader;
-  struct BitMap* m_pBitMapRaw;
-  struct BitMap* m_pBitMapDt;
   ULONG* m_pPaletteDt;
+  struct BitMap* m_pBitMapDt;
+  struct BitMap* m_pBitMapRaw;
+  UBYTE* m_pPlaneMemoryRaw;
   long m_NumberOfColors;
 
   void clear();
