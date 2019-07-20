@@ -124,7 +124,7 @@ struct Bob *GelsBob::Get()
     if(m_pBob != NULL)
     {
       m_CurrentImageIndex = 0;
-
+/*
       // Create shadow mask (or'ing all bits of all bitplanes)
       m_pImageShadow = (WORD*) AllocVec(m_NewBob.nb_WordWidth * 2
                                           * m_NewBob.nb_LineHeight,
@@ -150,6 +150,7 @@ struct Bob *GelsBob::Get()
 
       // Set the shadow mask to the bob
       m_pBob->ImageShadow = m_pImageShadow;
+*/
     }
   }
 
