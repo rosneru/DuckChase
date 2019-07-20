@@ -1,5 +1,6 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <proto/intuition.h>
 
 #include <graphics/gels.h>
 
@@ -7,39 +8,47 @@
 #include "GelsBob.h"
 
 GelsBob::GelsBob(struct Screen *p_pScreen,
-                 struct Window* p_pWindow,
-                 short p_ScreenDepth,
                  int p_ImageWidth,
                  int p_ImageHeight,
                  short p_ImageDepth)
     : m_pScreen(p_pScreen),
-      m_pWindow(p_pWindow),
       m_pBob(NULL),
       m_CurrentImageIndex(-1)
 {
-  //
+  // Zeroing all image ptrs of this bob
   for(int i = 0; i < MAX_IMAGES; i++)
   {
     m_ppImagesArray[i] = NULL;
   }
 
-  SHORT wordWidth = ((p_ImageWidth + 15) & -16) >> 4;
+  // Getting the depth of the screen
+  struct DrawInfo* pDrawInfo = GetScreenDrawInfo(p_pScreen);
+  if(pDrawInfo == NULL)
+  {
+    // Can't initialize without DrawInfo (needed for screen depth)
+    return;
+  }
 
+  // Determine wordWidth and imageBufSize
+  SHORT wordWidth = ((p_ImageWidth + 15) & -16) >> 4;
   m_ImageBufSize = wordWidth * p_ImageHeight * p_ImageDepth * 2;
 
-  m_NewBob.nb_Image = NULL;                // Image data
-  m_NewBob.nb_WordWidth = wordWidth;       // Bob width
-  m_NewBob.nb_LineHeight = p_ImageHeight;  // Bob height in lines
-  m_NewBob.nb_ImageDepth = p_ImageDepth;   // Image depth
+  // Fill the NewBob struct
+  m_NewBob.nb_Image = NULL;                     // Image data
+  m_NewBob.nb_WordWidth = wordWidth;            // Bob width
+  m_NewBob.nb_LineHeight = p_ImageHeight;       // Bob height in lines
+  m_NewBob.nb_ImageDepth = p_ImageDepth;        // Image depth
   m_NewBob.nb_PlanePick = 7;   // TODO generalize!!             // Planes that get image data
-  m_NewBob.nb_PlaneOnOff = 0;              // Unused planes to turn on
-  m_NewBob.nb_BFlags = SAVEBACK | OVERLAY; // Bog flags
-  m_NewBob.nb_DBuf = 0;                    // DoubleBuffering.
-  m_NewBob.nb_RasDepth = p_ScreenDepth;    // Depth of the raster
-  m_NewBob.nb_X = 0;                       // Initial x position
-  m_NewBob.nb_Y = 0;                       // Initial y position
-  m_NewBob.nb_HitMask = 0;                 // Hit mask
-  m_NewBob.nb_MeMask = 0;                  // Me mask
+  m_NewBob.nb_PlaneOnOff = 0;                   // Unused planes to turn on
+  m_NewBob.nb_BFlags = SAVEBACK | OVERLAY;      // Bog flags
+  m_NewBob.nb_DBuf = 1;                         // DoubleBuffering.
+  m_NewBob.nb_RasDepth = pDrawInfo->dri_Depth;  // Depth of the raster
+  m_NewBob.nb_X = 0;                            // Initial x position
+  m_NewBob.nb_Y = 0;                            // Initial y position
+  m_NewBob.nb_HitMask = 0;                      // Hit mask
+  m_NewBob.nb_MeMask = 0;                       // Me mask
+
+  FreeScreenDrawInfo(p_pScreen, pDrawInfo);
 }
 
 GelsBob::~GelsBob()

@@ -46,6 +46,9 @@ int main(int argc, char **argv)
     SA_Width, 640,
     SA_Height, 256,
     SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
+    SA_Quiet, TRUE,
+    SA_Exclusive, TRUE,
+    SA_Interleaved, TRUE,
     TAG_END);
 
   if (pScreen != NULL)
@@ -84,11 +87,11 @@ int main(int argc, char **argv)
 
     if ((pGelsInfo = setupGelSys(&pScreen->RastPort, 0x03)) != NULL)
     {
-      GelsBob bobDuck(pScreen, NULL, 3, 59, 21, 3);
+      GelsBob bobDuck(pScreen, 59, 21, 3);
       bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw");
       bobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw");
 
-      GelsBob bobHunter(pScreen, NULL, 3, 16, 22, 3);
+      GelsBob bobHunter(pScreen, 16, 22, 3);
       bobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw");
       bobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw");
 
