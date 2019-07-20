@@ -73,6 +73,7 @@ public:
 private:
   struct Screen* m_pScreen;
   struct Bob* m_pBob;
+  WORD* m_pImageShadow;
 
   int m_CurrentImageIndex;
   long m_ImageBufSize;               // Buffer for each image in bytes
