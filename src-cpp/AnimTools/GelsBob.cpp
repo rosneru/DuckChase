@@ -50,8 +50,6 @@ GelsBob::GelsBob(struct Screen *p_pScreen,
   m_NewBob.nb_MeMask = 0;                       // Me mask
 
   FreeScreenDrawInfo(p_pScreen, pDrawInfo);
-
-  m_pImageShadow = (WORD*) AllocVec(wordWidth * 2 * p_ImageHeight, MEMF_CHIP|MEMF_CLEAR);
 }
 
 GelsBob::~GelsBob()
@@ -128,20 +126,22 @@ struct Bob *GelsBob::Get()
       m_CurrentImageIndex = 0;
 
       // Create shadow mask (or'ing all bits of all bitplanes)
+      m_pImageShadow = (WORD*) AllocVec(m_NewBob.nb_WordWidth * 2
+                                          * m_NewBob.nb_LineHeight,
+                                        MEMF_CHIP);
+
       int rasSize = m_NewBob.nb_WordWidth * 2 * m_NewBob.nb_LineHeight;
 
-      for(int i = 0; i < m_NewBob.nb_WordWidth; i++)
+      for(int i = 0; i < m_NewBob.nb_LineHeight; i++)
       {
-        for(int j = 0; j < m_NewBob.nb_LineHeight; j++)
+        for(int j = 0; j < m_NewBob.nb_WordWidth; j++)
         {
           WORD word = 0;
+          int idx = i * m_NewBob.nb_WordWidth + j;
 
-          int idx = i * m_NewBob.nb_LineHeight
-                  + j * m_NewBob.nb_ImageDepth;
-
-          for(int k = 0; m_NewBob.nb_ImageDepth; k++)
+          for(int k = 0; k < m_NewBob.nb_ImageDepth; k++)
           {
-            word |= m_NewBob.nb_Image[idx + k * rasSize];
+            word |= m_NewBob.nb_Image[idx + (k * rasSize)];
           }
 
           m_pImageShadow[idx] = word;
