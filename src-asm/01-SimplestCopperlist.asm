@@ -11,7 +11,7 @@
 *       CubicIDE for coding
 *
 * History
-*   20.03.2019 - SimplestCopperlist
+*   20.07.2019 - SimplestCopperlist
 *
 * Author: Uwe Rosner
 *    https://github.com/rosneru
@@ -60,6 +60,7 @@ loop:
 *======================================================================
 cleanup:
         move.w   #$c000,$dff09a     ;Allow interrupts
+        move.w  #$0020,$dff096      ;Enable sprites
         rts
 
 *======================================================================
