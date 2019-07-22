@@ -47,7 +47,7 @@
         lea     GfxName,a1
         moveq   #0,d0
         jsr     _LVOOpenLibrary(a6)
-        move.l  d0,GfxBase
+        move.l  d0,_GfxBase
         beq     Exit
 
         ;
@@ -56,7 +56,7 @@
         lea     LowLevelName,a1
         moveq   #40,d0
         jsr     _LVOOpenLibrary(a6)
-        move.l  d0,LowLevelBase     ;Save lowlevel base
+        move.l  d0,_LowLevelBase     ;Save lowlevel base
         beq     Exit
 
         ;
@@ -73,7 +73,7 @@
         ;
         ; Takeover the system in a compatible way
         ;
-        move.l  LowLevelBase,a6
+        move.l  _LowLevelBase,a6
         lea     TagList1,a1
         jsr     _LVOSystemControlA(a6)
         move.l  d0,System           ;Result is 0 on success
@@ -88,7 +88,7 @@
         ; the current screen. The order of LoadView(0) and 2xWaitTOF()
         ; is set by Commodore
         ;
-        move.l  GfxBase,a6          ;Use graphics.library
+        move.l  _GfxBase,a6          ;Use graphics.library
         move.l  34(a6),OldView      ;Save current view
         sub.l   a1,a1               ;Clear a1 to display no view
         jsr     _LVOLoadView(a6)
@@ -115,7 +115,7 @@ loop:
 RestoreView:
         move.l  OldView,d0          ;Restore former view
         beq     Exit_1              ;But only if ther was one
-        move.l  GfxBase,a6          ;Use graphics.library
+        move.l  _GfxBase,a6          ;Use graphics.library
         jsr     _LVOWaitTOF(a6)
         jsr     _LVOWaitTOF(a6)
         move.l  OldView,a1
@@ -130,7 +130,7 @@ Exit:
         ; Restore system control if it was acquired sucessfully
         tst.l   System
         bne     Exit_1
-        move.l  LowLevelBase,a6
+        move.l  _LowLevelBase,a6
         lea     TagList2,a1
         jsr     _LVOSystemControlA(a6)
 
@@ -146,7 +146,7 @@ Exit_1:
 Exit_2:
         ; Close lowlevel.library
         move.l  4,a6
-        move.l  LowLevelBase,d0     ;LibBase needed in d-reg for verify
+        move.l  _LowLevelBase,d0     ;LibBase needed in d-reg for verify
         beq     Exit_3
         move.l  d0,a1               ;LibBase needed in a1 for closing
         jsr     _LVOCloseLibrary(a6)
@@ -154,7 +154,7 @@ Exit_2:
 Exit_3:
         ; Close graphics.library
         move.l  4,a6                ;Use exec.library
-        move.l  GfxBase,d0          ;LibBase needed in d-reg for verify
+        move.l  _GfxBase,d0          ;LibBase needed in d-reg for verify
         beq     Exit_4
         move.l  d0,a1               ;LibBase needed in a1 for closing
         jsr     _LVOCloseLibrary(a6)
@@ -168,25 +168,26 @@ Exit_4:
 * Data
 *======================================================================
 
-LowLevelName:
-                dc.b    "lowlevel.library",0
-                even
+_LowLevelBase:
+                cnop    0,2
+                dc.l    0
 
-LowLevelBase:
-                ds.l    1
+_GfxBase:
+                dc.l    0
+
+OldView:
+                dc.l    0
 
 System:
                 dc.l    -1          ; -1 is important; see code refs
 
+
+LowLevelName:
+                dc.b    "lowlevel.library",0
+
 GfxName:
                 dc.b    "graphics.library",0
-                even
 
-GfxBase:
-                ds.l    1
-
-OldView:
-                dc.l    0
 
 TagList1:
                 dc.l    SCON_TakeOverSys,-1     ;TRUE
@@ -199,9 +200,10 @@ TagList2:
                 dc.l    TAG_DONE
 
 picture:
+                cnop    0,2
                 ds.l    1
 
-                SECTION customchips,data,chip
+                SECTION "copperlist",data,chip
 
 copperlist      CNOP    0,4
                 dc.w    $008e,$3081 ;DIWSTRT
