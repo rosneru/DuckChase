@@ -2,14 +2,11 @@
 
 #include <exec/types.h>
 #include <exec/memory.h>
-
+#include <devices/timer.h>
 #include <graphics/modeid.h>
-
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
-
 #include <libraries/lowlevel.h>
-
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
@@ -23,7 +20,6 @@
 
 #include "Picture.h"
 #include "GelsBob.h"
-#include "StopWatch.h"
 
 void drawGels(struct Screen* p_pScreen);
 
@@ -113,8 +109,11 @@ int main(int argc, char **argv)
         char pFpsBuf[] = {"FPS: __________"};
         char* pFpsNumberStart = pFpsBuf + 5;
 
-        StopWatch stopWatch;
-        stopWatch.Start();
+        struct EClockVal eClockVal;
+        eClockVal.ev_hi = 0;
+        eClockVal.ev_lo = 0;
+
+        ULONG elapsed = ElapsedTime(&eClockVal);
 
         do
         {
@@ -158,12 +157,13 @@ int main(int argc, char **argv)
           //
           // Display the FPS value
           //
-          double dblElapsed = stopWatch.Pick();
+          elapsed = ElapsedTime(&eClockVal);
+          elapsed &= 0xffff;
 
-          if(dblElapsed >= 0)
+          if(elapsed >= 0)
           {
             // Calculatin fps and writing it to the string buf
-            short fps = 1000 / dblElapsed;
+            short fps = 65536 / elapsed;
             itoa(fps, pFpsNumberStart, 10);
 
             SetBPen(&pScreen->RastPort, 0);
