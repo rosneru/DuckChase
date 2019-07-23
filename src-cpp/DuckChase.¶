@@ -97,6 +97,13 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "stdlib-custom/stdiostring.c"
+"stdlib-custom/stdiostring.c"
+Storm Shell Project (Dependencies)
+"objects_debug/stdiostring.o" "objects_debug/stdiostring.debug"
+""
+1 1
+File
 1 "amigautils/StopWatch.cpp"
 "amigautils/StopWatch.cpp"
 "amigautils/StopWatch.h"
@@ -166,6 +173,13 @@ Storm Shell Project (Dependencies)
 File
 2 "amigautils/Picture.h"
 "amigautils/Picture.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "stdlib-custom/stdiostring.h"
+"stdlib-custom/stdiostring.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

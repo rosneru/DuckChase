@@ -25,8 +25,7 @@
 #include "GelsBob.h"
 #include "StopWatch.h"
 
-void bobDrawGList(struct RastPort *rport,
-                  struct ViewPort *vport);
+void drawGels(struct Screen* p_pScreen);
 
 
 int main(int argc, char **argv)
@@ -108,7 +107,7 @@ int main(int argc, char **argv)
         AddBob(pBobDuck, &pScreen->RastPort);
         AddBob(pBobHunter, &pScreen->RastPort);
 
-        bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
+        drawGels(pScreen);
 
         bool bContinue = true;
         char pFpsBuf[] = {"FPS: __________"};
@@ -154,7 +153,7 @@ int main(int argc, char **argv)
 
           bobDuck.NextImage();
           InitMasks(pBobDuck->BobVSprite);
-          bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
+          drawGels(pScreen);
 
           //
           // Display the FPS value
@@ -179,7 +178,7 @@ int main(int argc, char **argv)
         RemBob(pBobHunter);
         RemBob(pBobDuck);
 
-        bobDrawGList(&pScreen->RastPort, &pScreen->ViewPort);
+        drawGels(pScreen);
       }
 
       cleanupGelSys(pGelsInfo, &pScreen->RastPort);
@@ -192,12 +191,13 @@ int main(int argc, char **argv)
 /**
  * Draw the Bobs into the RastPort.
  */
-void bobDrawGList(struct RastPort *rport, struct ViewPort *vport)
+void drawGels(struct Screen* p_pScreen)
 {
-  SortGList(rport);
-  DrawGList(rport, vport);
+  SortGList(&p_pScreen->RastPort);
+  DrawGList(&p_pScreen->RastPort, &p_pScreen->ViewPort);
 
   // If the GelsList includes true VSprites, MrgCop() and LoadView()
   // here
-  WaitTOF() ;
+  WaitTOF();
+
 }
