@@ -104,14 +104,6 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "amigautils/StopWatch.cpp"
-"amigautils/StopWatch.cpp"
-"amigautils/StopWatch.h"
-Storm Shell Project (Dependencies)
-"objects_debug/StopWatch.o" "objects_debug/StopWatch.debug"
-""
-1 1
-File
 1 "animtools/animtools.c"
 "animtools/animtools.c"
 "animtools/animtools.h"
@@ -159,13 +151,6 @@ Storm Shell Project (Dependencies)
 File
 2 "animtools/GelsBob.h"
 "animtools/GelsBob.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "amigautils/StopWatch.h"
-"amigautils/StopWatch.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

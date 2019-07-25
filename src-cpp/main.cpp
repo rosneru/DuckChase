@@ -23,6 +23,13 @@
 
 void drawGels(struct Screen* p_pScreen);
 
+// Double buffering
+struct BitMap *MyBitMapPtrs[2] =
+{
+  NULL, NULL
+};
+
+WORD ToggleFrame = 0;
 
 int main(int argc, char **argv)
 {
@@ -31,6 +38,29 @@ int main(int argc, char **argv)
                   TAG_END);
 
   UWORD pens[] = { ~0 };
+
+  // Double buffering
+  for(int j=0; j < 2; j++)
+  {
+    if ((MyBitMapPtrs[j] = (struct BitMap *)
+      AllocMem(sizeof(struct BitMap), MEMF_CHIP)) == NULL)
+    {
+      return 0;
+    }
+
+    InitBitMap(MyBitMapPtrs[j], 3, 640, 256);
+
+    for(int i = 0; i < 3; i++)
+    {
+      if ((MyBitMapPtrs[j]->Planes[i] = (PLANEPTR)
+        AllocRaster(640, 256)) == NULL)
+      {
+        return 0;
+      }
+
+      BltClear(MyBitMapPtrs[j]->Planes[i], (640 / 8) * 256, 1);
+    }
+  }
 
   struct Screen* pScreen = OpenScreenTags(NULL,
     SA_Pens, pens,
@@ -43,6 +73,8 @@ int main(int argc, char **argv)
     SA_Quiet, TRUE,
     SA_Exclusive, TRUE,
     SA_Interleaved, TRUE,
+    SA_Type, CUSTOMSCREEN,
+    SA_BitMap, MyBitMapPtrs[0],
     TAG_END);
 
   if (pScreen != NULL)
@@ -196,8 +228,20 @@ void drawGels(struct Screen* p_pScreen)
   SortGList(&p_pScreen->RastPort);
   DrawGList(&p_pScreen->RastPort, &p_pScreen->ViewPort);
 
+  // Double buffering
+  p_pScreen->ViewPort.RasInfo->BitMap = MyBitMapPtrs[ToggleFrame];
+
   // If the GelsList includes true VSprites, MrgCop() and LoadView()
   // here
   WaitTOF();
+
+  // Tell intuition to do it's stuff
+  MakeScreen(p_pScreen);
+
+  // Double buffering
+  ToggleFrame ^=1;
+
+  // Double buffering
+  p_pScreen->RastPort.BitMap = MyBitMapPtrs[ToggleFrame];
 
 }
