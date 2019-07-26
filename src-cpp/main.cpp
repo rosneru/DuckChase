@@ -4,6 +4,8 @@
 #include <exec/memory.h>
 #include <devices/timer.h>
 #include <graphics/modeid.h>
+#include <graphics/gfxbase.h>
+#include <graphics/view.h>
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
 #include <libraries/lowlevel.h>
@@ -20,6 +22,8 @@
 
 #include "Picture.h"
 #include "GelsBob.h"
+
+extern struct GfxBase* GfxBase;
 
 void drawGels(struct Screen* p_pScreen);
 
@@ -235,8 +239,10 @@ void drawGels(struct Screen* p_pScreen)
   // here
   WaitTOF();
 
-  // Tell intuition to do it's stuff
+  // Tell intuition to do its stuff
   MakeScreen(p_pScreen);
+
+  LoadView(GfxBase->ActiView);
 
   // Double buffering
   ToggleFrame ^=1;
