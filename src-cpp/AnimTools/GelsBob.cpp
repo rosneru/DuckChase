@@ -7,12 +7,11 @@
 #include "animtools_proto.h"
 #include "GelsBob.h"
 
-GelsBob::GelsBob(struct Screen *p_pScreen,
+GelsBob::GelsBob(short p_pViewDepth,
                  int p_ImageWidth,
                  int p_ImageHeight,
                  short p_ImageDepth)
-    : m_pScreen(p_pScreen),
-      m_pBob(NULL),
+    : m_pBob(NULL),
       m_pImageShadow(NULL),
       m_CurrentImageIndex(-1)
 {
@@ -20,14 +19,6 @@ GelsBob::GelsBob(struct Screen *p_pScreen,
   for(int i = 0; i < MAX_IMAGES; i++)
   {
     m_ppImagesArray[i] = NULL;
-  }
-
-  // Getting the depth of the screen
-  struct DrawInfo* pDrawInfo = GetScreenDrawInfo(p_pScreen);
-  if(pDrawInfo == NULL)
-  {
-    // Can't initialize without DrawInfo (needed for screen depth)
-    return;
   }
 
   // Determine wordWidth and imageBufSize
@@ -43,13 +34,11 @@ GelsBob::GelsBob(struct Screen *p_pScreen,
   m_NewBob.nb_PlaneOnOff = 0;                   // Unused planes to turn on
   m_NewBob.nb_BFlags = SAVEBACK | OVERLAY;      // Bog flags
   m_NewBob.nb_DBuf = 1;                         // DoubleBuffering.
-  m_NewBob.nb_RasDepth = pDrawInfo->dri_Depth;  // Depth of the raster
+  m_NewBob.nb_RasDepth = p_pViewDepth;          // Depth of the raster
   m_NewBob.nb_X = 0;                            // Initial x position
   m_NewBob.nb_Y = 0;                            // Initial y position
   m_NewBob.nb_HitMask = 0;                      // Hit mask
   m_NewBob.nb_MeMask = 0;                       // Me mask
-
-  FreeScreenDrawInfo(p_pScreen, pDrawInfo);
 }
 
 GelsBob::~GelsBob()

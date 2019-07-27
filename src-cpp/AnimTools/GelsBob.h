@@ -23,7 +23,7 @@
 class GelsBob
 {
 public:
-  GelsBob(struct Screen* p_pScreen,
+  GelsBob(short p_pViewDepth,
           int p_ImageWidth,
           int p_ImageHeight,
           short p_ImageDepth);
@@ -71,7 +71,6 @@ public:
   void NextImage();
 
 private:
-  struct Screen* m_pScreen;
   struct Bob* m_pBob;
   WORD* m_pImageShadow;
 
