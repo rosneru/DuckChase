@@ -1,335 +1,294 @@
-#define INTUI_V36_NAMES_ONLY
-
 #include <exec/types.h>
-#include <exec/memory.h>
-#include <devices/timer.h>
-#include <graphics/displayinfo.h>
-#include <graphics/modeid.h>
+#include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
+#include <graphics/gfxmacros.h>
+#include <graphics/copper.h>
 #include <graphics/view.h>
-#include <intuition/intuition.h>
-#include <intuition/screens.h>
-#include <libraries/lowlevel.h>
-#include <clib/exec_protos.h>
+#include <graphics/displayinfo.h>
+#include <graphics/gfxnodes.h>
+#include <graphics/videocontrol.h>
+#include <libraries/dos.h>
+#include <utility/tagitem.h>
+
 #include <clib/graphics_protos.h>
-#include <clib/intuition_protos.h>
-#include <clib/lowlevel_protos.h>
+#include <clib/exec_protos.h>
+#include <clib/dos_protos.h>
 
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "animtools.h"
-#include "animtools_proto.h"
+#define DEPTH 3     //  The number of bitplanes.
+#define WIDTH 640
+#define HEIGHT 400
 
-#include "stdiostring.h"
+void drawFilledBox(WORD, WORD);  /* Function prototypes */
+void cleanup(int);
+void fail(STRPTR);
 
-#include "Picture.h"
-#include "GelsBob.h"
+struct GfxBase *GfxBase = NULL;
 
-extern struct GfxBase* GfxBase;
+/*  Construct a simple display.  These are global to make freeing easier.   */
+struct View view;
+struct ViewPort viewPort = { 0 };
+struct BitMap bitMap = { 0 };
+struct ColorMap *cm = NULL;
 
-void drawGels();
+struct ViewExtra *vextra = NULL;      /* Extended structures used in Release 2 */
+struct MonitorSpec *monspec = NULL;
+struct ViewPortExtra *vpextra = NULL;
+struct DimensionInfo dimquery = { 0 };
 
-struct DimensionInfo dimsinfo;
+UBYTE *displaymem = NULL;     /*  Pointer for writing to BitMap memory.  */
 
-struct View view, *oldview=NULL;
-struct ViewPort viewPort;
+#define BLACK 0x000           /*  RGB values for the four colors used.   */
+#define RED   0xf00
+#define GREEN 0x0f0
+#define BLUE  0x00f
 
-struct BitMap bitMap1;
-//struct BitMap bitMap2;
-struct RastPort rastPort1;
-//struct RastPort rastPort2;
-//struct RastPort *rastPort;
-
-struct RasInfo rasInfo;
-
-//struct cprlist *LOCpr1;
-//struct cprlist *SHCpr1;
-//struct cprlist *LOCpr2;
-//struct cprlist *SHCpr2;
-
-LONG oscan_height;
-
-//WORD ToggleFrame = 0;
-
-int main(int argc, char **argv)
+/*
+ * main():  create a custom display; works under either 1.3 or Release 2
+ */
+int main(void)
 {
-  SetJoyPortAttrs(1,
-                  SJA_Type, SJA_TYPE_AUTOSENSE,
-                  TAG_END);
+  // Pointer to old View we can restore it.
+  struct View *oldview = NULL;  /*  */
+  WORD depth, box;
+  struct RasInfo rasInfo;
+  ULONG modeID;
 
-  SystemControl(SCON_TakeOverSys, TRUE,
-                TAG_END);
+  struct TagItem vcTags[] =
+  {
+    {VTAG_ATTACH_CM_SET, NULL },
+    {VTAG_VIEWPORTEXTRA_SET, NULL },
+    {VTAG_NORMAL_DISP_SET, NULL },
+    {VTAG_END_CM, NULL }
+  };
 
+  /*  Offsets in BitMap where boxes will be drawn.  */
+  static SHORT boxoffsets[] = { 802, 2010, 3218 };
 
+  static UWORD colortable[] = { BLACK, RED, GREEN, BLUE };
 
+  /* Open the graphics library */
+  GfxBase = (struct GfxBase *)OpenLibrary("graphics.library", 33L);
+  if (GfxBase == NULL)
+    fail("Could not open graphics library\n");
 
-
-  struct DimensionInfo dimsinfo;
-  GetDisplayInfoData(FindDisplayInfo(HIRES_KEY),
-                    (UBYTE *)&dimsinfo,
-                    sizeof(struct DimensionInfo),
-                    DTAG_DIMS,
-                    NULL);
-
-  oscan_height = dimsinfo.MaxOScan.MaxY
-    - dimsinfo.MaxOScan.MinY + 1;
+  /*  Example steals screen from Intuition if Intuition is around.      */
+  oldview = GfxBase->ActiView;   /* Save current View to restore later. */
 
   LoadView(NULL);
   WaitTOF();
   WaitTOF();
 
-  oldview = GfxBase->ActiView;
+  InitView(&view);           /*  Initialize the View and set View.Modes.     */
+  view.Modes |= LACE;        /*  This is the old 1.3 way (only LACE counts). */
 
-  InitView(&view);
-
-  InitBitMap(&bitMap1, 3, 640, 256);
-//  InitBitMap(&bitMap2, 3, 640, 256);
-
-  for (int depth=0; depth<3; depth++)
+  if (GfxBase->LibNode.lib_Version >= 36)
   {
-    bitMap1.Planes[depth] = (PLANEPTR)AllocRaster(640, 256);
-//    bitMap2.Planes[depth] = (PLANEPTR)AllocRaster(640, 256);
+    /* Form the ModeID from values in <displayinfo.h> */
+    modeID = DEFAULT_MONITOR_ID | HIRESLACE_KEY;
+
+    /*  Make the ViewExtra structure   */
+    if (vextra = (struct ViewExtra*)GfxNew(VIEW_EXTRA_TYPE))
+    {
+      /* Attach the ViewExtra to the View */
+      GfxAssociate(&view, vextra);
+      view.Modes |= EXTEND_VSTRUCT;
+
+      /* Create and attach a MonitorSpec to the ViewExtra */
+      if (monspec = OpenMonitor(NULL, modeID))
+        vextra->Monitor = monspec;
+      else
+        fail("Could not get MonitorSpec\n");
+    }
+    else fail("Could not get ViewExtra\n");
   }
 
-  InitRastPort(&rastPort1);
-  rastPort1.BitMap = &bitMap1;
-  SetRast(&rastPort1, 0);
 
-//  InitRastPort(&rastPort2);
-//  rastPort2.BitMap = &bitMap2;
-//  SetRast(&rastPort2, 0);
+  /*  Initialize the BitMap for RasInfo.  */
+  InitBitMap(&bitMap, DEPTH, WIDTH, HEIGHT);
 
-  rasInfo.BitMap = &bitMap1;
+  /* Set the plane pointers to NULL so the cleanup routine */
+  /* will know if they were used.                          */
+  for (depth = 0; depth < DEPTH; depth++)
+    bitMap.Planes[depth] = NULL;
+
+  /*  Allocate space for BitMap.             */
+  for (depth = 0; depth < DEPTH; depth++)
+  {
+    bitMap.Planes[depth] = (PLANEPTR)AllocRaster(WIDTH, HEIGHT);
+    if (bitMap.Planes[depth] == NULL)
+      fail("Could not get BitPlanes\n");
+  }
+
+  rasInfo.BitMap = &bitMap;       /*  Initialize the RasInfo.  */
   rasInfo.RxOffset = 0;
   rasInfo.RyOffset = 0;
   rasInfo.Next = NULL;
 
-  InitVPort(&viewPort);
-  view.ViewPort = &viewPort;
+  InitVPort(&viewPort);           /*  Initialize the ViewPort.  */
+  view.ViewPort = &viewPort;      /*  Link the ViewPort into the View.  */
   viewPort.RasInfo = &rasInfo;
-  viewPort.DWidth = 640;
-  viewPort.DHeight = 256;
-  viewPort.Modes = HIRES;
+  viewPort.DWidth = WIDTH;
+  viewPort.DHeight = HEIGHT;
 
-  MakeVPort(&view, &viewPort);
-  MrgCop(&view);
+  /* Set the display mode the old-fashioned way */
+  viewPort.Modes = HIRES | LACE;
 
-/*
-  LOCpr1 = view.LOFCprList;
-  SHCpr1 = view.SHFCprList;
-  view.LOFCprList = 0;
-  view.SHFCprList = 0;
-
-  rasInfo.BitMap = &bitMap2;
-
-  MakeVPort(&view, &viewPort);
-  MrgCop(&view);
-
-  LOCpr2 = view.LOFCprList;
-  SHCpr2 = view.SHFCprList;
-
-  LoadView(&view);
-*/
-
-  LoadView(&view);
-
-  //
-  // Setting the used color table (extracted from pic wit BtoC32)
-  //
-  UBYTE colArr[8][3] =
+  if (GfxBase->LibNode.lib_Version >= 36)
   {
-    {0xA,0xA,0xA}, {0x0,0x0,0x0}, {0xF,0xF,0xF}, {0x6,0x8,0xB},
-    {0x5,0xA,0x3}, {0xE,0xB,0x0}, {0xB,0x5,0x2}, {0xF,0x8,0x0}
-  };
-
-  for(int i = 0; i < 8; i++)
-  {
-    SetRGB4(&viewPort, i, colArr[i][0], colArr[i][1], colArr[i][2]);
-  }
-
-  //
-  // Loading background image
-  //
-  Picture picBackgr;
-  bool bOk = picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
-                                       640, 256, 3);
-
-  if(bOk)
-  {
-    BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort1,
-                      0, 0, 640, 256, 0xC0);
-/*
-    BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort2,
-                      0, 0, 640, 256, 0xC0);
-*/
-  }
-
-
-  struct GelsInfo* pGelsInfo;
-
-  if ((pGelsInfo = setupGelSys(&rastPort1, 0x03)) != NULL)
-  {
-    GelsBob bobDuck(3, 59, 21, 3);
-    bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw");
-    bobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw");
-
-    GelsBob bobHunter(3, 16, 22, 3);
-    bobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw");
-    bobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw");
-
-    struct Bob* pBobDuck = bobDuck.Get();
-    struct Bob* pBobHunter = bobHunter.Get();
-
-    if((pBobDuck != NULL) && (pBobHunter != NULL))
+    /* Make a ViewPortExtra and get ready to attach it */
+    if (vpextra = (struct ViewPortExtra*)GfxNew(VIEWPORT_EXTRA_TYPE))
     {
-      pBobDuck->BobVSprite->X = 200;
-      pBobDuck->BobVSprite->Y = 40;
+      vcTags[1].ti_Data = (ULONG)vpextra;
 
-      pBobHunter->BobVSprite->X = 20;
-      pBobHunter->BobVSprite->Y = 220;
-
-      AddBob(pBobDuck, &rastPort1);
-      AddBob(pBobHunter, &rastPort1);
-
-      drawGels();
-
-      bool bContinue = true;
-      char pFpsBuf[] = {"FPS: __________"};
-      char* pFpsNumberStart = pFpsBuf + 5;
-
-      struct EClockVal eClockVal;
-      eClockVal.ev_hi = 0;
-      eClockVal.ev_lo = 0;
-
-      ULONG elapsed = ElapsedTime(&eClockVal);
-
-      do
+      /* Initialize the DisplayClip field of the ViewPortExtra */
+      if (GetDisplayInfoData(NULL, (UBYTE *)&dimquery,
+        sizeof(dimquery), DTAG_DIMS, modeID))
       {
-        ULONG key = GetKey();
-        if((key & 0x00ff) == 0x45) // RAW code ESC key
-        {
-          bContinue = false;
-        }
+        vpextra->DisplayClip = dimquery.Nominal;
 
-        ULONG portState = ReadJoyPort(1);
-        if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
-        {
-          if((portState & JPF_JOY_RIGHT) != 0)
-          {
-            pBobHunter->BobVSprite->X += 8;
-            if(pBobHunter->BobVSprite->X > 640)
-            {
-              pBobHunter->BobVSprite->X = -16;
-            }
-          }
-          else if((portState & JPF_JOY_LEFT) != 0)
-          {
-            pBobHunter->BobVSprite->X -= 8;
-            if(pBobHunter->BobVSprite->X < 0)
-            {
-              pBobHunter->BobVSprite->X = 656;
-            }
-          }
-        }
-
-        pBobDuck->BobVSprite->X -= 4;
-        if(pBobDuck->BobVSprite->X < -40)
-        {
-          pBobDuck->BobVSprite->X = 650;
-        }
-
-        bobDuck.NextImage();
-        InitMasks(pBobDuck->BobVSprite);
-        drawGels();
-
-        //
-        // Display the FPS value
-        //
-        elapsed = ElapsedTime(&eClockVal);
-        elapsed &= 0xffff;
-
-        if(elapsed >= 0)
-        {
-          // Calculatin fps and writing it to the string buf
-          short fps = 65536 / elapsed;
-          itoa(fps, pFpsNumberStart, 10);
-
-          SetBPen(&rastPort1, 0);
-          EraseRect(&rastPort1, 52, 62, 130, 72);
-
-          Move(&rastPort1, 50, 70);
-          Text(&rastPort1, pFpsBuf, strlength(pFpsBuf));
-        }
+        /* Make a DisplayInfo and get ready to attach it */
+        if (!(vcTags[2].ti_Data = (ULONG)FindDisplayInfo(modeID)))
+          fail("Could not get DisplayInfo\n");
       }
-      while (bContinue);
-
-      RemBob(pBobHunter);
-      RemBob(pBobDuck);
-
-      drawGels();
+      else fail("Could not get DimensionInfo \n");
     }
+    else fail("Could not get ViewPortExtra\n");
 
-    cleanupGelSys(pGelsInfo, &rastPort1);
+    /* This is for backwards compatibility with, for example,   */
+    /* a 1.3 screen saver utility that looks at the Modes field */
+    viewPort.Modes = (UWORD)(modeID & 0x0000ffff);
   }
 
-  WaitTOF();
-  WaitTOF();
-  LoadView(oldview);
-  WaitTOF();
-/*
-  FreeCprList(LOCpr1);
-  FreeCprList(LOCpr2);
-  FreeCprList(SHCpr1);
-  FreeCprList(SHCpr2);
-*/
-  FreeCprList(view.LOFCprList);
-  FreeVPortCopLists(&viewPort);
+  /*  Initialize the ColorMap.  */
+  /*  2 planes deep, so 4 entries (2 raised to the #_planes power).  */
+  cm = GetColorMap(4L);
+  if (cm == NULL)
+    fail("Could not get ColorMap\n");
 
-  for(int depth=0; depth<3; depth++)
+  if (GfxBase->LibNode.lib_Version >= 36)
   {
-    if (bitMap1.Planes[depth])
-    {
-      FreeRaster(bitMap1.Planes[depth], 640, 256);
-    }
-/*
-    if (bitMap2.Planes[depth])
-    {
-      FreeRaster(bitMap2.Planes[depth], 640, 256);
-    }
-*/
-  }
-  SystemControl(SCON_TakeOverSys, FALSE,
-                TAG_END);
+    /* Get ready to attach the ColorMap, Release 2-style */
+    vcTags[0].ti_Data = (ULONG)&viewPort;
 
-}
-
-/**
- * Draw the Bobs into the RastPort.
- */
-void drawGels()
-{
-  SortGList(&rastPort1);
-  DrawGList(&rastPort1, &viewPort);
-
-
-  // If the GelsList includes true VSprites, MrgCop() and LoadView()
-  // here
-  WaitTOF();
-
-/*
-  if(ToggleFrame == 0)
-  {
-    view.LOFCprList = LOCpr2;
-    view.SHFCprList = SHCpr2;
-    rastPort = &rastPort2;
+    /* Attach the color map and Release 2 extended structures */
+    if (VideoControl(cm, vcTags))
+      fail("Could not attach extended structures\n");
   }
   else
+    /* Attach the ColorMap, old 1.3-style */
+    viewPort.ColorMap = cm;
+
+  LoadRGB4(&viewPort, colortable, 4);  /* Change colors to those in colortable. */
+
+  MakeVPort(&view, &viewPort); /* Construct preliminary Copper instruction list.    */
+
+  /* Merge preliminary lists into a real Copper list in the View structure. */
+  MrgCop(&view);
+
+  /* Clear the ViewPort */
+  for (depth = 0; depth < DEPTH; depth++)
   {
-    view.LOFCprList = LOCpr1;
-    view.SHFCprList = SHCpr1;
-    rastPort = &rastPort1;
+    displaymem = (UBYTE *)bitMap.Planes[depth];
+    BltClear(displaymem, (bitMap.BytesPerRow * bitMap.Rows), 1L);
   }
-*/
+
   LoadView(&view);
 
-//  ToggleFrame ^=1;
+  /*  Now fill some boxes so that user can see something.          */
+  /*  Always draw into both planes to assure true colors.          */
+  for (box = 1; box <= 3; box++)  /* Three boxes; red, green and blue. */
+  {
+    for (depth = 0; depth < DEPTH; depth++)        /*  Two planes.   */
+    {
+      displaymem = bitMap.Planes[depth] + boxoffsets[box - 1];
+      drawFilledBox(box, depth);
+    }
+  }
+
+  Delay(10L * TICKS_PER_SECOND);   /*  Pause for 10 seconds.                */
+
+  WaitTOF();
+  WaitTOF();
+  LoadView(oldview);               /*  Put back the old View.               */
+  WaitTOF();
+  WaitTOF();                       /*  Wait until the the View is being     */
+                                   /*    rendered to free memory.           */
+  FreeCprList(view.LOFCprList);    /*  Deallocate the hardware Copper list  */
+  if (view.SHFCprList)              /*    created by MrgCop().  Since this   */
+    FreeCprList(view.SHFCprList);/*    is interlace, also check for a     */
+                                 /*    short frame copper list to free.   */
+  FreeVPortCopLists(&viewPort);    /*  Free all intermediate Copper lists   */
+                                   /*    from created by MakeVPort().       */
+  cleanup(RETURN_OK);              /*  Success.                             */
+}
+
+
+/*
+ * fail():  print the error string and call cleanup() to exit
+ */
+void fail(STRPTR errorstring)
+{
+  printf(errorstring);
+  cleanup(RETURN_FAIL);
+}
+
+/*
+ * cleanup():  free everything that was allocated.
+ */
+void cleanup(int returncode)
+{
+  WORD depth;
+
+  /*  Free the color map created by GetColorMap().  */
+  if (cm) FreeColorMap(cm);
+
+  /* Free the ViewPortExtra created by GfxNew() */
+  if (vpextra) GfxFree(vpextra);
+
+  /*  Free the BitPlanes drawing area.  */
+  for (depth = 0; depth < DEPTH; depth++)
+  {
+    if (bitMap.Planes[depth])
+      FreeRaster(bitMap.Planes[depth], WIDTH, HEIGHT);
+  }
+
+  /* Free the MonitorSpec created with OpenMonitor() */
+  if (monspec) CloseMonitor(monspec);
+
+  /* Free the ViewExtra created with GfxNew() */
+  if (vextra) GfxFree(vextra);
+
+  /* Close the graphics library */
+  CloseLibrary((struct Library *)GfxBase);
+
+  exit(returncode);
+}
+
+
+/*
+ * drawFilledBox(): create a WIDTH/2 by HEIGHT/2 box of color
+ *                  "fillcolor" into the given plane.
+ */
+void drawFilledBox(WORD fillcolor, WORD plane)
+{
+  UBYTE value;
+  WORD boxHeight, boxWidth, width;
+
+  /*  Divide (WIDTH/2) by eight because each UBYTE that */
+  /* is written stuffs eight bits into the BitMap.      */
+  boxWidth = (WIDTH / 2) / 8;
+  boxHeight = HEIGHT / 2;
+
+  value = ((fillcolor & (1 << plane)) != 0) ? 0xff : 0x00;
+
+  for (; boxHeight; boxHeight--)
+  {
+    for (width = 0; width < boxWidth; width++)
+      *displaymem++ = value;
+
+    displaymem += (bitMap.BytesPerRow - boxWidth);
+  }
 }
