@@ -8,14 +8,25 @@
 #include <graphics/gfxnodes.h>
 #include <graphics/videocontrol.h>
 #include <libraries/dos.h>
+#include <libraries/lowlevel.h>
 #include <utility/tagitem.h>
 
 #include <clib/graphics_protos.h>
 #include <clib/exec_protos.h>
 #include <clib/dos_protos.h>
+#include <clib/lowlevel_protos.h>
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "animtools.h"
+#include "animtools_proto.h"
+
+#include "stdiostring.h"
+
+#include "Picture.h"
+#include "GelsBob.h"
+
 
 #define DEPTH 3     //  The number of bitplanes.
 #define WIDTH 640
@@ -25,12 +36,14 @@ void drawFilledBox(WORD, WORD);  /* Function prototypes */
 void cleanup(int);
 void fail(STRPTR);
 
-struct GfxBase *GfxBase = NULL;
+extern struct GfxBase* GfxBase;
 
 /*  Construct a simple display.  These are global to make freeing easier.   */
 struct View view;
 struct ViewPort viewPort = { 0 };
 struct BitMap bitMap = { 0 };
+struct RastPort rastPort;
+
 struct ColorMap *cm = NULL;
 
 struct ViewExtra *vextra = NULL;      /* Extended structures used in Release 2 */
@@ -40,18 +53,22 @@ struct DimensionInfo dimquery = { 0 };
 
 UBYTE *displaymem = NULL;     /*  Pointer for writing to BitMap memory.  */
 
-#define BLACK 0x000           /*  RGB values for the four colors used.   */
-#define RED   0xf00
-#define GREEN 0x0f0
-#define BLUE  0x00f
-
 /*
  * main():  create a custom display; works under either 1.3 or Release 2
  */
 int main(void)
 {
+  SetJoyPortAttrs(1,
+                  SJA_Type, SJA_TYPE_AUTOSENSE,
+                  TAG_END);
+
+  SystemControl(SCON_TakeOverSys, TRUE,
+                TAG_END);
+
+
   // Pointer to old View we can restore it.
-  struct View *oldview = NULL;  /*  */
+  struct View *oldview = NULL;
+
   WORD depth, box;
   struct RasInfo rasInfo;
   ULONG modeID;
@@ -67,43 +84,34 @@ int main(void)
   /*  Offsets in BitMap where boxes will be drawn.  */
   static SHORT boxoffsets[] = { 802, 2010, 3218 };
 
-  static UWORD colortable[] = { BLACK, RED, GREEN, BLUE };
-
-  /* Open the graphics library */
-  GfxBase = (struct GfxBase *)OpenLibrary("graphics.library", 33L);
-  if (GfxBase == NULL)
-    fail("Could not open graphics library\n");
-
-  /*  Example steals screen from Intuition if Intuition is around.      */
-  oldview = GfxBase->ActiView;   /* Save current View to restore later. */
+  // Example steals screen from Intuition if Intuition is around.
+  // Save current View to restore later.
+  oldview = GfxBase->ActiView;
 
   LoadView(NULL);
   WaitTOF();
   WaitTOF();
 
-  InitView(&view);           /*  Initialize the View and set View.Modes.     */
-  view.Modes |= LACE;        /*  This is the old 1.3 way (only LACE counts). */
+  // Initialize the View and set View.Modes.
+  InitView(&view);
 
-  if (GfxBase->LibNode.lib_Version >= 36)
+  /* Form the ModeID from values in <displayinfo.h> */
+  modeID = DEFAULT_MONITOR_ID | HIRESLACE_KEY;
+
+  /*  Make the ViewExtra structure   */
+  if (vextra = (struct ViewExtra*)GfxNew(VIEW_EXTRA_TYPE))
   {
-    /* Form the ModeID from values in <displayinfo.h> */
-    modeID = DEFAULT_MONITOR_ID | HIRESLACE_KEY;
+    /* Attach the ViewExtra to the View */
+    GfxAssociate(&view, vextra);
+    view.Modes |= EXTEND_VSTRUCT;
 
-    /*  Make the ViewExtra structure   */
-    if (vextra = (struct ViewExtra*)GfxNew(VIEW_EXTRA_TYPE))
-    {
-      /* Attach the ViewExtra to the View */
-      GfxAssociate(&view, vextra);
-      view.Modes |= EXTEND_VSTRUCT;
-
-      /* Create and attach a MonitorSpec to the ViewExtra */
-      if (monspec = OpenMonitor(NULL, modeID))
-        vextra->Monitor = monspec;
-      else
-        fail("Could not get MonitorSpec\n");
-    }
-    else fail("Could not get ViewExtra\n");
+    /* Create and attach a MonitorSpec to the ViewExtra */
+    if (monspec = OpenMonitor(NULL, modeID))
+      vextra->Monitor = monspec;
+    else
+      fail("Could not get MonitorSpec\n");
   }
+  else fail("Could not get ViewExtra\n");
 
 
   /*  Initialize the BitMap for RasInfo.  */
@@ -122,6 +130,10 @@ int main(void)
       fail("Could not get BitPlanes\n");
   }
 
+  InitRastPort(&rastPort);
+  rastPort.BitMap = &bitMap;
+  SetRast(&rastPort, 0);
+
   rasInfo.BitMap = &bitMap;       /*  Initialize the RasInfo.  */
   rasInfo.RxOffset = 0;
   rasInfo.RyOffset = 0;
@@ -134,33 +146,26 @@ int main(void)
   viewPort.DHeight = HEIGHT;
 
   /* Set the display mode the old-fashioned way */
-  viewPort.Modes = HIRES | LACE;
+  viewPort.Modes = HIRES;
 
-  if (GfxBase->LibNode.lib_Version >= 36)
+  /* Make a ViewPortExtra and get ready to attach it */
+  if (vpextra = (struct ViewPortExtra*)GfxNew(VIEWPORT_EXTRA_TYPE))
   {
-    /* Make a ViewPortExtra and get ready to attach it */
-    if (vpextra = (struct ViewPortExtra*)GfxNew(VIEWPORT_EXTRA_TYPE))
+    vcTags[1].ti_Data = (ULONG)vpextra;
+
+    /* Initialize the DisplayClip field of the ViewPortExtra */
+    if (GetDisplayInfoData(NULL, (UBYTE *)&dimquery,
+      sizeof(dimquery), DTAG_DIMS, modeID))
     {
-      vcTags[1].ti_Data = (ULONG)vpextra;
+      vpextra->DisplayClip = dimquery.Nominal;
 
-      /* Initialize the DisplayClip field of the ViewPortExtra */
-      if (GetDisplayInfoData(NULL, (UBYTE *)&dimquery,
-        sizeof(dimquery), DTAG_DIMS, modeID))
-      {
-        vpextra->DisplayClip = dimquery.Nominal;
-
-        /* Make a DisplayInfo and get ready to attach it */
-        if (!(vcTags[2].ti_Data = (ULONG)FindDisplayInfo(modeID)))
-          fail("Could not get DisplayInfo\n");
-      }
-      else fail("Could not get DimensionInfo \n");
+      /* Make a DisplayInfo and get ready to attach it */
+      if (!(vcTags[2].ti_Data = (ULONG)FindDisplayInfo(modeID)))
+        fail("Could not get DisplayInfo\n");
     }
-    else fail("Could not get ViewPortExtra\n");
-
-    /* This is for backwards compatibility with, for example,   */
-    /* a 1.3 screen saver utility that looks at the Modes field */
-    viewPort.Modes = (UWORD)(modeID & 0x0000ffff);
+    else fail("Could not get DimensionInfo \n");
   }
+  else fail("Could not get ViewPortExtra\n");
 
   /*  Initialize the ColorMap.  */
   /*  2 planes deep, so 4 entries (2 raised to the #_planes power).  */
@@ -181,7 +186,15 @@ int main(void)
     /* Attach the ColorMap, old 1.3-style */
     viewPort.ColorMap = cm;
 
-  LoadRGB4(&viewPort, colortable, 4);  /* Change colors to those in colortable. */
+  //
+  // Setting the used color table (extracted from pic wit BtoC32)
+  //
+  USHORT colortable[8] = {
+    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
+  };
+
+  // Change colors to those in colortable
+  LoadRGB4(&viewPort, colortable, 8);
 
   MakeVPort(&view, &viewPort); /* Construct preliminary Copper instruction list.    */
 
@@ -196,17 +209,34 @@ int main(void)
   }
 
   LoadView(&view);
-
-  /*  Now fill some boxes so that user can see something.          */
-  /*  Always draw into both planes to assure true colors.          */
-  for (box = 1; box <= 3; box++)  /* Three boxes; red, green and blue. */
+/*
+  //  Now fill some boxes so that user can see something.
+  //  Always draw into both planes to assure true colors.
+  for (box = 1; box <= 3; box++)  // Three boxes; red, green and blue.
   {
-    for (depth = 0; depth < DEPTH; depth++)        /*  Two planes.   */
+    for (depth = 0; depth < DEPTH; depth++)
     {
       displaymem = bitMap.Planes[depth] + boxoffsets[box - 1];
       drawFilledBox(box, depth);
     }
   }
+*/
+
+  //
+  // Loading background image
+  //
+  Picture picBackgr;
+  if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
+                               640, 256, 3) == FALSE)
+  {
+    fail("Could not load background image");
+  }
+
+  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
+                    0, 0, 640, 256, 0xC0);
+
+
+
 
   Delay(10L * TICKS_PER_SECOND);   /*  Pause for 10 seconds.                */
 
@@ -261,8 +291,8 @@ void cleanup(int returncode)
   /* Free the ViewExtra created with GfxNew() */
   if (vextra) GfxFree(vextra);
 
-  /* Close the graphics library */
-  CloseLibrary((struct Library *)GfxBase);
+  SystemControl(SCON_TakeOverSys, FALSE,
+                TAG_END);
 
   exit(returncode);
 }

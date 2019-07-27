@@ -78,6 +78,7 @@ bool Picture::LoadFromRawFile(const char* p_pPath,
   if(m_pPlaneMemoryRaw == NULL)
   {
     // Not enough memory
+    Close(fileHandle);
     return false;
   }
 
