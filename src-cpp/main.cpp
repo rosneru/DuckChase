@@ -3,6 +3,7 @@
 #include <exec/types.h>
 #include <exec/memory.h>
 #include <devices/timer.h>
+#include <graphics/displayinfo.h>
 #include <graphics/modeid.h>
 #include <graphics/gfxbase.h>
 #include <graphics/view.h>
@@ -27,25 +28,40 @@ extern struct GfxBase* GfxBase;
 
 void drawGels();
 
+struct DimensionInfo dimsinfo;
 
-struct View view1;
-struct View view2;
-struct View* oldview = NULL;
+struct View view, *oldview=NULL;
 struct ViewPort viewPort;
+
 struct BitMap bitMap1;
-struct BitMap bitMap2;
+//struct BitMap bitMap2;
 struct RastPort rastPort1;
-struct RastPort rastPort2;
-struct RastPort* pRastPort;
+//struct RastPort rastPort2;
+//struct RastPort *rastPort;
+
 struct RasInfo rasInfo;
 
-WORD ToggleFrame = 0;
+//struct cprlist *LOCpr1;
+//struct cprlist *SHCpr1;
+//struct cprlist *LOCpr2;
+//struct cprlist *SHCpr2;
+
+LONG oscan_height;
+
+//WORD ToggleFrame = 0;
 
 int main(int argc, char **argv)
 {
   SetJoyPortAttrs(1,
                   SJA_Type, SJA_TYPE_AUTOSENSE,
                   TAG_END);
+
+  SystemControl(SCON_TakeOverSys, TRUE,
+                TAG_END);
+
+
+
+
 
   struct DimensionInfo dimsinfo;
   GetDisplayInfoData(FindDisplayInfo(HIRES_KEY),
@@ -54,27 +70,33 @@ int main(int argc, char **argv)
                     DTAG_DIMS,
                     NULL);
 
+  oscan_height = dimsinfo.MaxOScan.MaxY
+    - dimsinfo.MaxOScan.MinY + 1;
+
+  LoadView(NULL);
+  WaitTOF();
+  WaitTOF();
+
   oldview = GfxBase->ActiView;
 
-  InitView(&view1);
-  InitView(&view2);
+  InitView(&view);
 
   InitBitMap(&bitMap1, 3, 640, 256);
-  InitBitMap(&bitMap2, 3, 640, 256);
+//  InitBitMap(&bitMap2, 3, 640, 256);
 
   for (int depth=0; depth<3; depth++)
   {
     bitMap1.Planes[depth] = (PLANEPTR)AllocRaster(640, 256);
-    bitMap2.Planes[depth] = (PLANEPTR)AllocRaster(640, 256);
+//    bitMap2.Planes[depth] = (PLANEPTR)AllocRaster(640, 256);
   }
 
   InitRastPort(&rastPort1);
   rastPort1.BitMap = &bitMap1;
   SetRast(&rastPort1, 0);
 
-  InitRastPort(&rastPort2);
-  rastPort2.BitMap = &bitMap2;
-  SetRast(&rastPort2, 0);
+//  InitRastPort(&rastPort2);
+//  rastPort2.BitMap = &bitMap2;
+//  SetRast(&rastPort2, 0);
 
   rasInfo.BitMap = &bitMap1;
   rasInfo.RxOffset = 0;
@@ -82,31 +104,33 @@ int main(int argc, char **argv)
   rasInfo.Next = NULL;
 
   InitVPort(&viewPort);
-  view1.ViewPort = &viewPort;
+  view.ViewPort = &viewPort;
   viewPort.RasInfo = &rasInfo;
   viewPort.DWidth = 640;
   viewPort.DHeight = 256;
+  viewPort.Modes = HIRES;
 
-  MakeVPort(&view1, &viewPort);
-  MrgCop(&view1);
+  MakeVPort(&view, &viewPort);
+  MrgCop(&view);
 
-//  LOCpr1 = view.LOFCprList;
-//  SHCpr1 = view.SHFCprList;
-//  view.LOFCprList = 0;
-//  view.SHFCprList = 0;
-//
+/*
+  LOCpr1 = view.LOFCprList;
+  SHCpr1 = view.SHFCprList;
+  view.LOFCprList = 0;
+  view.SHFCprList = 0;
+
   rasInfo.BitMap = &bitMap2;
-  view2.ViewPort = &viewPort;
 
-  MakeVPort(&view2, &viewPort);
-  MrgCop(&view2);
-//
-//  LOCpr2 = view.LOFCprList;
-//  SHCpr2 = view.SHFCprList;
+  MakeVPort(&view, &viewPort);
+  MrgCop(&view);
 
-  LoadView(&view1);
+  LOCpr2 = view.LOFCprList;
+  SHCpr2 = view.SHFCprList;
 
-  pRastPort = &rastPort2;
+  LoadView(&view);
+*/
+
+  LoadView(&view);
 
   //
   // Setting the used color table (extracted from pic wit BtoC32)
@@ -133,15 +157,16 @@ int main(int argc, char **argv)
   {
     BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort1,
                       0, 0, 640, 256, 0xC0);
-
+/*
     BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort2,
                       0, 0, 640, 256, 0xC0);
+*/
   }
 
 
   struct GelsInfo* pGelsInfo;
 
-  if ((pGelsInfo = setupGelSys(pRastPort, 0x03)) != NULL)
+  if ((pGelsInfo = setupGelSys(&rastPort1, 0x03)) != NULL)
   {
     GelsBob bobDuck(3, 59, 21, 3);
     bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw");
@@ -162,8 +187,8 @@ int main(int argc, char **argv)
       pBobHunter->BobVSprite->X = 20;
       pBobHunter->BobVSprite->Y = 220;
 
-      AddBob(pBobDuck, pRastPort);
-      AddBob(pBobHunter, pRastPort);
+      AddBob(pBobDuck, &rastPort1);
+      AddBob(pBobHunter, &rastPort1);
 
       drawGels();
 
@@ -228,11 +253,11 @@ int main(int argc, char **argv)
           short fps = 65536 / elapsed;
           itoa(fps, pFpsNumberStart, 10);
 
-          SetBPen(pRastPort, 0);
-          EraseRect(pRastPort, 52, 62, 130, 72);
+          SetBPen(&rastPort1, 0);
+          EraseRect(&rastPort1, 52, 62, 130, 72);
 
-          Move(pRastPort, 50, 70);
-          Text(pRastPort, pFpsBuf, strlength(pFpsBuf));
+          Move(&rastPort1, 50, 70);
+          Text(&rastPort1, pFpsBuf, strlength(pFpsBuf));
         }
       }
       while (bContinue);
@@ -243,21 +268,38 @@ int main(int argc, char **argv)
       drawGels();
     }
 
-    cleanupGelSys(pGelsInfo, pRastPort);
-
-    for(int depth=0; depth<3; depth++)
-    {
-      if (bitMap1.Planes[depth])
-      {
-        FreeRaster(bitMap1.Planes[depth], 640, 256);
-      }
-
-      if (bitMap2.Planes[depth])
-      {
-        FreeRaster(bitMap2.Planes[depth], 640, 256);
-      }
-    }
+    cleanupGelSys(pGelsInfo, &rastPort1);
   }
+
+  WaitTOF();
+  WaitTOF();
+  LoadView(oldview);
+  WaitTOF();
+/*
+  FreeCprList(LOCpr1);
+  FreeCprList(LOCpr2);
+  FreeCprList(SHCpr1);
+  FreeCprList(SHCpr2);
+*/
+  FreeCprList(view.LOFCprList);
+  FreeVPortCopLists(&viewPort);
+
+  for(int depth=0; depth<3; depth++)
+  {
+    if (bitMap1.Planes[depth])
+    {
+      FreeRaster(bitMap1.Planes[depth], 640, 256);
+    }
+/*
+    if (bitMap2.Planes[depth])
+    {
+      FreeRaster(bitMap2.Planes[depth], 640, 256);
+    }
+*/
+  }
+  SystemControl(SCON_TakeOverSys, FALSE,
+                TAG_END);
+
 }
 
 /**
@@ -265,33 +307,29 @@ int main(int argc, char **argv)
  */
 void drawGels()
 {
-  SortGList(pRastPort);
-  DrawGList(pRastPort, &viewPort);
+  SortGList(&rastPort1);
+  DrawGList(&rastPort1, &viewPort);
 
-  // Double buffering
-  //p_pScreen->ViewPort.RasInfo->BitMap = MyBitMapPtrs[ToggleFrame];
 
   // If the GelsList includes true VSprites, MrgCop() and LoadView()
   // here
   WaitTOF();
 
+/*
   if(ToggleFrame == 0)
   {
-    LoadView(&view2);
-    pRastPort = &rastPort1;
+    view.LOFCprList = LOCpr2;
+    view.SHFCprList = SHCpr2;
+    rastPort = &rastPort2;
   }
   else
   {
-    LoadView(&view1);
-    pRastPort = &rastPort2;
+    view.LOFCprList = LOCpr1;
+    view.SHFCprList = SHCpr1;
+    rastPort = &rastPort1;
   }
+*/
+  LoadView(&view);
 
-  //
-
-  // Double buffering
-  ToggleFrame ^=1;
-
-  // Double buffering
-  //p_pScreen->RastPort.BitMap = MyBitMapPtrs[ToggleFrame];
-
+//  ToggleFrame ^=1;
 }
