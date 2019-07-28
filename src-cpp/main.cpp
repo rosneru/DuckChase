@@ -16,9 +16,6 @@
 #include <clib/dos_protos.h>
 #include <clib/lowlevel_protos.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "animtools.h"
 #include "animtools_proto.h"
 
@@ -27,18 +24,18 @@
 #include "Picture.h"
 #include "GelsBob.h"
 
-
-#define DEPTH 3     // The number of view bitplanes
-#define NUMCOLORS 8 // The resulting number of colors
-#define WIDTH 640
-#define HEIGHT 256
+// Dimensions of the view
+#define DEPTH     (3)
+#define NUMCOLORS (8)
+#define WIDTH     (640)
+#define HEIGHT    (256)
 
 void cleanup(int);
 void fail(STRPTR);
 
 extern struct GfxBase* GfxBase;
 
-/*  Construct a simple display.  These are global to make freeing easier.   */
+//These are global to make freeing easier.
 struct View view;
 struct ViewPort viewPort = { 0 };
 struct BitMap bitMap = { 0 };
@@ -46,7 +43,8 @@ struct RastPort rastPort;
 
 struct ColorMap *cm = NULL;
 
-struct ViewExtra *vextra = NULL;      /* Extended structures used in Release 2 */
+// Extended structures used in Release 2
+struct ViewExtra *vextra = NULL;
 struct MonitorSpec *monspec = NULL;
 struct ViewPortExtra *vpextra = NULL;
 struct DimensionInfo dimquery = { 0 };
@@ -131,6 +129,7 @@ int main(void)
     }
   }
 
+  // Create a RstPort to draw into
   InitRastPort(&rastPort);
   rastPort.BitMap = &bitMap;
   SetRast(&rastPort, 0);
@@ -192,24 +191,14 @@ int main(void)
   }
 
 
-  //
-  // Setting the used color table (extracted from pic wit BtoC32)
-  //
+  // Construct preliminary Copper instruction list
+  MakeVPort(&view, &viewPort);
 
-  USHORT colortable[8] = {
-    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
-  };
-
-  // Change colors to those in colortable
-  LoadRGB4(&viewPort, colortable, NUMCOLORS);
-
-
-  MakeVPort(&view, &viewPort); /* Construct preliminary Copper instruction list.    */
-
-  /* Merge preliminary lists into a real Copper list in the View structure. */
+  // Merge preliminary lists into a real Copper list in the View
+  // structure
   MrgCop(&view);
 
-  /* Clear the ViewPort */
+  // Clear the ViewPort
   for (int depth = 0; depth < DEPTH; depth++)
   {
     UBYTE* displaymem = (UBYTE*) bitMap.Planes[depth];
@@ -219,12 +208,23 @@ int main(void)
   LoadView(&view);
 
   //
+  // Setting the used color table (extracted from pic wit BtoC32)
+  //
+  USHORT colortable[8] = {
+    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
+  };
+
+  // Change colors to those in colortable
+  LoadRGB4(&viewPort, colortable, NUMCOLORS);
+
+
+  //
   // Loading background image
   //
   if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
                                WIDTH, HEIGHT, DEPTH) == FALSE)
   {
-    fail("Could not load background image");
+    fail("Could not load background image\n");
   }
 
   BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
@@ -260,7 +260,7 @@ int main(void)
  */
 void fail(STRPTR errorstring)
 {
-  printf(errorstring);
+  VPrintf(errorstring, NULL);
   cleanup(RETURN_FAIL);
 }
 
