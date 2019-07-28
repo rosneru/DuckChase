@@ -332,9 +332,9 @@ void theGame()
 
   ULONG elapsed = ElapsedTime(&eClockVal);
 
-  SetAPen(&rastPort, 6);
+  SetAPen(&rastPort, 5);
   SetBPen(&rastPort, 1);
-  EraseRect(&rastPort, 0, 252, 640, 256);
+  EraseRect(&rastPort, 0, 252, 639, 255);
 
 
   //
