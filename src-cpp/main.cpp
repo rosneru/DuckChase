@@ -32,6 +32,7 @@
 #define HEIGHT    (256)
 
 void theGame();
+void drawGels();
 void cleanup(int);
 void fail(STRPTR);
 
@@ -42,6 +43,8 @@ struct View view;
 struct ViewPort viewPort = { 0 };
 struct BitMap bitMap = { 0 };
 struct RastPort rastPort;
+
+struct RastPort* pRastPort;
 
 struct ColorMap *cm = NULL;
 
@@ -218,6 +221,8 @@ int main(void)
     fail("Could not initialize the Gels system\n");
   }
 
+  pRastPort = &rastPort;
+
   //
   // Initialization is done, game can begin
   //
@@ -301,7 +306,7 @@ void theGame()
     return;
   }
 
-  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
+  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, pRastPort,
                     0, 0, WIDTH, HEIGHT, 0xC0);
 
   //
@@ -313,12 +318,10 @@ void theGame()
   pBobHunter->BobVSprite->X = 20;
   pBobHunter->BobVSprite->Y = 222;
 
-  AddBob(pBobDuck, &rastPort);
-  AddBob(pBobHunter, &rastPort);
+  AddBob(pBobDuck, pRastPort);
+  AddBob(pBobHunter, pRastPort);
 
-  SortGList(&rastPort);
-  DrawGList(&rastPort, &viewPort);
-  WaitTOF();
+  drawGels();
 
   //
   // Setting up some variables and the drawing rect for FPS display
@@ -332,10 +335,10 @@ void theGame()
 
   ULONG elapsed = ElapsedTime(&eClockVal);
 
-  SetBPen(&rastPort, 1);
-  SetAPen(&rastPort, 1);
-  RectFill(&rastPort, 0, 246, 639, 255);
-  SetAPen(&rastPort, 5);
+  SetBPen(pRastPort, 1);
+  SetAPen(pRastPort, 1);
+  RectFill(pRastPort, 0, 246, 639, 255);
+  SetAPen(pRastPort, 5);
 
 
   //
@@ -379,9 +382,8 @@ void theGame()
 
     // Changhhe the duck image and draw the Gels
     bobDuck.NextImage();
-    SortGList(&rastPort);
-    DrawGList(&rastPort, &viewPort);
-    WaitTOF();
+    InitMasks(pBobDuck->BobVSprite);
+    drawGels();
 
     //
     // Display the FPS value
@@ -395,12 +397,12 @@ void theGame()
       short fps = 65536 / elapsed;
       itoa(fps, pFpsNumberStart, 10);
 
-      SetAPen(&rastPort, 1);
-      RectFill(&rastPort, 550, 246, 639, 255);
+      SetAPen(pRastPort, 1);
+      RectFill(pRastPort, 550, 246, 639, 255);
 
-      SetAPen(&rastPort, 5);
-      Move(&rastPort, 550, 254);
-      Text(&rastPort, pFpsBuf, strlength(pFpsBuf));
+      SetAPen(pRastPort, 5);
+      Move(pRastPort, 550, 254);
+      Text(pRastPort, pFpsBuf, strlength(pFpsBuf));
     }
 
 
@@ -415,9 +417,13 @@ void theGame()
 
   RemBob(pBobHunter);
   RemBob(pBobDuck);
+}
 
-
-
+void drawGels()
+{
+  SortGList(pRastPort);
+  DrawGList(pRastPort, &viewPort);
+  WaitTOF();
 }
 
 
