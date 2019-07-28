@@ -314,7 +314,9 @@ void theGame()
   AddBob(pBobDuck, &rastPort);
   AddBob(pBobHunter, &rastPort);
 
-
+  //
+  // The main game loop
+  //
   bool bContinue = true;
   do
   {
@@ -323,6 +325,44 @@ void theGame()
     DrawGList(&rastPort, &viewPort);
     WaitTOF();
 
+    bobDuck.NextImage();
+    InitMasks(pBobDuck->BobVSprite);
+
+
+    //
+    // Move the hunter Bob depending on game pad interaction
+    //
+    ULONG portState = ReadJoyPort(1);
+    if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+    {
+      if((portState & JPF_JOY_RIGHT) != 0)
+      {
+        pBobHunter->BobVSprite->X += 8;
+        if(pBobHunter->BobVSprite->X > 640)
+        {
+          pBobHunter->BobVSprite->X = -16;
+        }
+      }
+      else if((portState & JPF_JOY_LEFT) != 0)
+      {
+        pBobHunter->BobVSprite->X -= 8;
+        if(pBobHunter->BobVSprite->X < 0)
+        {
+          pBobHunter->BobVSprite->X = 656;
+        }
+      }
+    }
+
+    //
+    // Move the duck on an easy, linear right-to-left route
+    //
+    pBobDuck->BobVSprite->X -= 4;
+    if(pBobDuck->BobVSprite->X < -40)
+    {
+      pBobDuck->BobVSprite->X = 650;
+    }
+
+    // Check if exit key ESC have been pressed
     ULONG key = GetKey();
     if((key & 0x00ff) == 0x45) // RAW code ESC key
     {
