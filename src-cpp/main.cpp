@@ -51,11 +51,10 @@ struct MonitorSpec *monspec = NULL;
 struct ViewPortExtra *vpextra = NULL;
 struct DimensionInfo dimquery = { 0 };
 
-UBYTE *displaymem = NULL;     /*  Pointer for writing to BitMap memory.  */
+Picture picBackgr;
 
-/*
- * main():  create a custom display; works under either 1.3 or Release 2
- */
+
+
 int main(void)
 {
   SetJoyPortAttrs(1,
@@ -213,7 +212,7 @@ int main(void)
   /* Clear the ViewPort */
   for (int depth = 0; depth < DEPTH; depth++)
   {
-    displaymem = (UBYTE *)bitMap.Planes[depth];
+    UBYTE* displaymem = (UBYTE*) bitMap.Planes[depth];
     BltClear(displaymem, (bitMap.BytesPerRow * bitMap.Rows), 1L);
   }
 
@@ -222,7 +221,6 @@ int main(void)
   //
   // Loading background image
   //
-  Picture picBackgr;
   if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
                                WIDTH, HEIGHT, DEPTH) == FALSE)
   {
@@ -235,25 +233,29 @@ int main(void)
 
 
 
-  Delay(10L * TICKS_PER_SECOND);   /*  Pause for 10 seconds.                */
+  Delay(10L * TICKS_PER_SECOND);
 
   WaitTOF();
   WaitTOF();
-  LoadView(oldview);               /*  Put back the old View.               */
+
+  // Put back the old view
+  LoadView(oldview);
+
+  // Befoire freeing memory wait until the old view is being  rendered
   WaitTOF();
-  WaitTOF();                       /*  Wait until the the View is being     */
-                                   /*    rendered to free memory.           */
-  FreeCprList(view.LOFCprList);    /*  Deallocate the hardware Copper list  */
-  if (view.SHFCprList)              /*    created by MrgCop().  Since this   */
-    FreeCprList(view.SHFCprList);/*    is interlace, also check for a     */
-                                 /*    short frame copper list to free.   */
-  FreeVPortCopLists(&viewPort);    /*  Free all intermediate Copper lists   */
-                                   /*    from created by MakeVPort().       */
-  cleanup(RETURN_OK);              /*  Success.                             */
+  WaitTOF();
+
+  // Deallocate the hardware Copper list created by MrgCop()
+  FreeCprList(view.LOFCprList);
+
+  // Free all intermediate Copper lists from created by MakeVPort()
+  FreeVPortCopLists(&viewPort);
+
+  cleanup(RETURN_OK);
 }
 
 
-/*
+/**
  * fail():  print the error string and call cleanup() to exit
  */
 void fail(STRPTR errorstring)
@@ -262,32 +264,47 @@ void fail(STRPTR errorstring)
   cleanup(RETURN_FAIL);
 }
 
-/*
- * cleanup():  free everything that was allocated.
+/**
+ * Fee everything that was allocated
  */
 void cleanup(int returncode)
 {
-  /*  Free the color map created by GetColorMap().  */
-  if (cm) FreeColorMap(cm);
-
-  /* Free the ViewPortExtra created by GfxNew() */
-  if (vpextra) GfxFree(vpextra);
-
-  /*  Free the BitPlanes drawing area.  */
-  for (int depth = 0; depth < DEPTH; depth++)
+  //  Free the color map created by GetColorMap()
+  if (cm != NULL)
   {
-    if (bitMap.Planes[depth])
-      FreeRaster(bitMap.Planes[depth], WIDTH, HEIGHT);
+     FreeColorMap(cm);
   }
 
-  /* Free the MonitorSpec created with OpenMonitor() */
-  if (monspec) CloseMonitor(monspec);
+  // Free the ViewPortExtra created by GfxNew()
+  if (vpextra != NULL)
+  {
+     GfxFree(vpextra);
+  }
 
-  /* Free the ViewExtra created with GfxNew() */
-  if (vextra) GfxFree(vextra);
+  //  Free the BitPlanes drawing area
+  for (int depth = 0; depth < DEPTH; depth++)
+  {
+    if (bitMap.Planes[depth] != NULL)
+    {
+      FreeRaster(bitMap.Planes[depth], WIDTH, HEIGHT);
+    }
+  }
+
+  // Free the MonitorSpec created with OpenMonitor()
+  if (monspec != NULL)
+  {
+    CloseMonitor(monspec);
+  }
+
+  // Free the ViewExtra created with GfxNew()
+  if (vextra)
+  {
+    GfxFree(vextra);
+  }
 
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
+
 
   exit(returncode);
 }
