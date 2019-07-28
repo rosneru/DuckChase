@@ -311,7 +311,7 @@ void theGame()
   pBobDuck->BobVSprite->Y = 40;
 
   pBobHunter->BobVSprite->X = 20;
-  pBobHunter->BobVSprite->Y = 225;
+  pBobHunter->BobVSprite->Y = 222;
 
   AddBob(pBobDuck, &rastPort);
   AddBob(pBobHunter, &rastPort);
@@ -332,9 +332,10 @@ void theGame()
 
   ULONG elapsed = ElapsedTime(&eClockVal);
 
-  SetAPen(&rastPort, 5);
   SetBPen(&rastPort, 1);
-  EraseRect(&rastPort, 0, 252, 639, 255);
+  SetAPen(&rastPort, 1);
+  RectFill(&rastPort, 0, 246, 639, 255);
+  SetAPen(&rastPort, 5);
 
 
   //
@@ -394,10 +395,11 @@ void theGame()
       short fps = 65536 / elapsed;
       itoa(fps, pFpsNumberStart, 10);
 
-      SetBPen(&rastPort, 0);
-      EraseRect(&rastPort, 52, 62, 130, 72);
+      SetAPen(&rastPort, 1);
+      RectFill(&rastPort, 550, 246, 639, 255);
 
-      Move(&rastPort, 50, 70);
+      SetAPen(&rastPort, 5);
+      Move(&rastPort, 550, 254);
       Text(&rastPort, pFpsBuf, strlength(pFpsBuf));
     }
 
