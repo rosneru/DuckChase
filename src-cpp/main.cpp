@@ -61,6 +61,8 @@ Picture picBackgr;
 GelsBob bobDuck(3, 59, 21, 3);
 GelsBob bobHunter(3, 16, 22, 3);
 
+// Switch to toggle the bitmaps / Double Buffering
+bool BitMapToggle = false;
 
 int main(void)
 {
@@ -120,14 +122,16 @@ int main(void)
 
   vextra->Monitor = monspec;
 
-  // Initialize the BitMap for RasInfo
+  // Initialize the BitMaps
   InitBitMap(&bitMap1, DEPTH, WIDTH, HEIGHT);
+  InitBitMap(&bitMap2, DEPTH, WIDTH, HEIGHT);
 
   // Set the plane pointers to NULL so the cleanup routine
   // will know if they were used
   for (int depth = 0; depth < DEPTH; depth++)
   {
     bitMap1.Planes[depth] = NULL;
+    bitMap2.Planes[depth] = NULL;
   }
 
   // Allocate space for BitMap
@@ -140,7 +144,7 @@ int main(void)
     }
   }
 
-  // Create a RstPort to draw into
+  // Create a RastPort to draw into
   InitRastPort(&rastPort);
   rastPort.BitMap = &bitMap1;
   SetRast(&rastPort, 0);
@@ -380,8 +384,12 @@ void theGame()
     }
 
     // Changhhe the duck image and draw the Gels
-    bobDuck.NextImage();
-    InitMasks(pBobDuck->BobVSprite);
+    if(BitMapToggle == true)
+    {
+      bobDuck.NextImage();
+      InitMasks(pBobDuck->BobVSprite);
+    }
+
     drawGels();
 
     //
@@ -423,6 +431,22 @@ void drawGels()
   SortGList(&rastPort);
   DrawGList(&rastPort, &viewPort);
   WaitTOF();
+
+  // MrgCop
+  // LoadView
+
+  if(BitMapToggle == false)
+  {
+    viewPort.RasInfo->BitMap = &bitMap2;
+    rastPort.BitMap = &bitMap2;
+    BitMapToggle = true;
+  }
+  else
+  {
+    viewPort.RasInfo->BitMap = &bitMap1;
+    rastPort.BitMap = &bitMap1;
+    BitMapToggle = false;
+  }
 }
 
 
@@ -459,6 +483,12 @@ void cleanup(int returncode)
     {
       FreeRaster(bitMap1.Planes[depth], WIDTH, HEIGHT);
     }
+
+    if (bitMap2.Planes[depth] != NULL)
+    {
+      FreeRaster(bitMap2.Planes[depth], WIDTH, HEIGHT);
+    }
+
   }
 
   // Free the MonitorSpec created with OpenMonitor()
