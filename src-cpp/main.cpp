@@ -30,6 +30,7 @@
 #define WIDTH     (640)
 #define HEIGHT    (256)
 
+void theGame();
 void cleanup(int);
 void fail(STRPTR);
 
@@ -49,8 +50,10 @@ struct MonitorSpec *monspec = NULL;
 struct ViewPortExtra *vpextra = NULL;
 struct DimensionInfo dimquery = { 0 };
 
+// Background picture and the Bobs
 Picture picBackgr;
-
+GelsBob bobDuck(3, 59, 21, 3);
+GelsBob bobHunter(3, 16, 22, 3);
 
 
 int main(void)
@@ -207,33 +210,21 @@ int main(void)
 
   LoadView(&view);
 
-  //
-  // Setting the used color table (extracted from pic wit BtoC32)
-  //
-  USHORT colortable[8] = {
-    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
-  };
-
-  // Change colors to those in colortable
-  LoadRGB4(&viewPort, colortable, NUMCOLORS);
-
-
-  //
-  // Loading background image
-  //
-  if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
-                               WIDTH, HEIGHT, DEPTH) == FALSE)
+  // Initialize the GELs system
+  struct GelsInfo* pGelsInfo = setupGelSys(&rastPort, 0x03);
+  if(pGelsInfo == NULL)
   {
-    fail("Could not load background image\n");
+    fail("Could not initialize the Gels system\n");
   }
 
-  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
-                    0, 0, WIDTH, HEIGHT, 0xC0);
+  //
+  // Initialization is done, game can begin
+  //
+  theGame();
 
+  // Free the resources allocated by the Gels system
+  cleanupGelSys(pGelsInfo, &rastPort);
 
-
-
-  Delay(10L * TICKS_PER_SECOND);
 
   WaitTOF();
   WaitTOF();
@@ -255,8 +246,101 @@ int main(void)
 }
 
 
+void theGame()
+{
+  //
+  // Setting the used color table (extracted from pic wit BtoC32)
+  //
+  USHORT colortable[8] =
+  {
+    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
+  };
+
+  // Change colors to those in colortable
+  LoadRGB4(&viewPort, colortable, NUMCOLORS);
+
+
+  //
+  // Loading all the Bobs images
+  //
+  if(bobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw") == false)
+  {
+    return;
+  }
+
+  if(bobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw") == false)
+  {
+    return;
+  }
+
+  if(bobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw") == false)
+  {
+    return;
+  }
+
+  if(bobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw") == false)
+  {
+    return;
+  }
+
+  struct Bob* pBobDuck = bobDuck.Get();
+  struct Bob* pBobHunter = bobHunter.Get();
+
+  if((pBobDuck == NULL) || (pBobHunter == NULL))
+  {
+    return;
+  }
+
+  //
+  // Load and display the background image
+  //
+  if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
+                               WIDTH, HEIGHT, DEPTH) == FALSE)
+  {
+    return;
+  }
+
+  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
+                    0, 0, WIDTH, HEIGHT, 0xC0);
+
+  // Initial postion of the Bobs
+  pBobDuck->BobVSprite->X = 200;
+  pBobDuck->BobVSprite->Y = 40;
+
+  pBobHunter->BobVSprite->X = 20;
+  pBobHunter->BobVSprite->Y = 225;
+
+  // Add the Bobs to the scene
+  AddBob(pBobDuck, &rastPort);
+  AddBob(pBobHunter, &rastPort);
+
+
+  bool bContinue = true;
+  do
+  {
+    // Draw the Gels
+    SortGList(&rastPort);
+    DrawGList(&rastPort, &viewPort);
+    WaitTOF();
+
+    ULONG key = GetKey();
+    if((key & 0x00ff) == 0x45) // RAW code ESC key
+    {
+      bContinue = false;
+    }
+  }
+  while (bContinue);
+
+  RemBob(pBobHunter);
+  RemBob(pBobDuck);
+
+
+
+}
+
+
 /**
- * fail():  print the error string and call cleanup() to exit
+ * Print the error string and call cleanup() to exit
  */
 void fail(STRPTR errorstring)
 {
