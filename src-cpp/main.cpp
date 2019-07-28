@@ -142,6 +142,12 @@ int main(void)
     {
       fail("Could not get BitPlanes\n");
     }
+    
+    bitMap2.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
+    if (bitMap2.Planes[depth] == NULL)
+    {
+      fail("Could not get BitPlanes\n");
+    }
   }
 
   // Create a RastPort to draw into
@@ -432,8 +438,8 @@ void drawGels()
   DrawGList(&rastPort, &viewPort);
   WaitTOF();
 
-  // MrgCop
-  // LoadView
+  MrgCop(&view);
+  LoadView(&view);
 
   if(BitMapToggle == false)
   {
