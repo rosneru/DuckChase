@@ -1,3 +1,4 @@
+#include <devices/timer.h>
 #include <exec/types.h>
 #include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
@@ -303,16 +304,38 @@ void theGame()
   BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
                     0, 0, WIDTH, HEIGHT, 0xC0);
 
-  // Initial postion of the Bobs
+  //
+  // Initialize postions of the Bobs and add them to the scene
+  //
   pBobDuck->BobVSprite->X = 200;
   pBobDuck->BobVSprite->Y = 40;
 
   pBobHunter->BobVSprite->X = 20;
   pBobHunter->BobVSprite->Y = 225;
 
-  // Add the Bobs to the scene
   AddBob(pBobDuck, &rastPort);
   AddBob(pBobHunter, &rastPort);
+
+  SortGList(&rastPort);
+  DrawGList(&rastPort, &viewPort);
+  WaitTOF();
+
+  //
+  // Setting up some variables and the drawing rect for FPS display
+  //
+  char pFpsBuf[] = {"FPS: __________"};
+  char* pFpsNumberStart = pFpsBuf + 5;
+
+  struct EClockVal eClockVal;
+  eClockVal.ev_hi = 0;
+  eClockVal.ev_lo = 0;
+
+  ULONG elapsed = ElapsedTime(&eClockVal);
+
+  SetAPen(&rastPort, 6);
+  SetBPen(&rastPort, 1);
+  EraseRect(&rastPort, 0, 252, 640, 256);
+
 
   //
   // The main game loop
@@ -320,15 +343,6 @@ void theGame()
   bool bContinue = true;
   do
   {
-    // Draw the Gels
-    SortGList(&rastPort);
-    DrawGList(&rastPort, &viewPort);
-    WaitTOF();
-
-    bobDuck.NextImage();
-    InitMasks(pBobDuck->BobVSprite);
-
-
     //
     // Move the hunter Bob depending on game pad interaction
     //
@@ -361,6 +375,32 @@ void theGame()
     {
       pBobDuck->BobVSprite->X = 650;
     }
+
+    // Changhhe the duck image and draw the Gels
+    bobDuck.NextImage();
+    SortGList(&rastPort);
+    DrawGList(&rastPort, &viewPort);
+    WaitTOF();
+
+    //
+    // Display the FPS value
+    //
+    elapsed = ElapsedTime(&eClockVal);
+    elapsed &= 0xffff;
+
+    if(elapsed >= 0)
+    {
+      // Calculatin fps and writing it to the string buf
+      short fps = 65536 / elapsed;
+      itoa(fps, pFpsNumberStart, 10);
+
+      SetBPen(&rastPort, 0);
+      EraseRect(&rastPort, 52, 62, 130, 72);
+
+      Move(&rastPort, 50, 70);
+      Text(&rastPort, pFpsBuf, strlength(pFpsBuf));
+    }
+
 
     // Check if exit key ESC have been pressed
     ULONG key = GetKey();
