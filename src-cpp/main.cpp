@@ -41,10 +41,12 @@ extern struct GfxBase* GfxBase;
 //These are global to make freeing easier.
 struct View view;
 struct ViewPort viewPort = { 0 };
-struct BitMap bitMap = { 0 };
+struct BitMap bitMap1 = { 0 };
+struct BitMap bitMap2 = { 0 };
+struct BitMap* pBitMap;
+
 struct RastPort rastPort;
 
-struct RastPort* pRastPort;
 
 struct ColorMap *cm = NULL;
 
@@ -119,18 +121,20 @@ int main(void)
   vextra->Monitor = monspec;
 
   // Initialize the BitMap for RasInfo
-  InitBitMap(&bitMap, DEPTH, WIDTH, HEIGHT);
+  InitBitMap(&bitMap1, DEPTH, WIDTH, HEIGHT);
 
   // Set the plane pointers to NULL so the cleanup routine
   // will know if they were used
   for (int depth = 0; depth < DEPTH; depth++)
-    bitMap.Planes[depth] = NULL;
+  {
+    bitMap1.Planes[depth] = NULL;
+  }
 
   // Allocate space for BitMap
   for (int depth = 0; depth < DEPTH; depth++)
   {
-    bitMap.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
-    if (bitMap.Planes[depth] == NULL)
+    bitMap1.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
+    if (bitMap1.Planes[depth] == NULL)
     {
       fail("Could not get BitPlanes\n");
     }
@@ -138,11 +142,11 @@ int main(void)
 
   // Create a RstPort to draw into
   InitRastPort(&rastPort);
-  rastPort.BitMap = &bitMap;
+  rastPort.BitMap = &bitMap1;
   SetRast(&rastPort, 0);
 
   // Initialize the RasInfo
-  rasInfo.BitMap = &bitMap;
+  rasInfo.BitMap = &bitMap1;
   rasInfo.RxOffset = 0;
   rasInfo.RyOffset = 0;
   rasInfo.Next = NULL;
@@ -179,8 +183,6 @@ int main(void)
     fail("Could not get DisplayInfo\n");
   }
 
-
-
   // Initialize the ColorMap, 3 planes deep, so 8 entries
   cm = GetColorMap(NUMCOLORS);
   if (cm == NULL)
@@ -197,7 +199,6 @@ int main(void)
     fail("Could not attach extended structures\n");
   }
 
-
   // Construct preliminary Copper instruction list
   MakeVPort(&view, &viewPort);
 
@@ -208,8 +209,8 @@ int main(void)
   // Clear the ViewPort
   for (int depth = 0; depth < DEPTH; depth++)
   {
-    UBYTE* displaymem = (UBYTE*) bitMap.Planes[depth];
-    BltClear(displaymem, (bitMap.BytesPerRow * bitMap.Rows), 1L);
+    UBYTE* displaymem = (UBYTE*) bitMap1.Planes[depth];
+    BltClear(displaymem, (bitMap1.BytesPerRow * bitMap1.Rows), 1L);
   }
 
   LoadView(&view);
@@ -220,8 +221,6 @@ int main(void)
   {
     fail("Could not initialize the Gels system\n");
   }
-
-  pRastPort = &rastPort;
 
   //
   // Initialization is done, game can begin
@@ -306,7 +305,7 @@ void theGame()
     return;
   }
 
-  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, pRastPort,
+  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
                     0, 0, WIDTH, HEIGHT, 0xC0);
 
   //
@@ -318,8 +317,8 @@ void theGame()
   pBobHunter->BobVSprite->X = 20;
   pBobHunter->BobVSprite->Y = 222;
 
-  AddBob(pBobDuck, pRastPort);
-  AddBob(pBobHunter, pRastPort);
+  AddBob(pBobDuck, &rastPort);
+  AddBob(pBobHunter, &rastPort);
 
   drawGels();
 
@@ -335,10 +334,10 @@ void theGame()
 
   ULONG elapsed = ElapsedTime(&eClockVal);
 
-  SetBPen(pRastPort, 1);
-  SetAPen(pRastPort, 1);
-  RectFill(pRastPort, 0, 246, 639, 255);
-  SetAPen(pRastPort, 5);
+  SetBPen(&rastPort, 1);
+  SetAPen(&rastPort, 1);
+  RectFill(&rastPort, 0, 246, 639, 255);
+  SetAPen(&rastPort, 5);
 
 
   //
@@ -397,12 +396,12 @@ void theGame()
       short fps = 65536 / elapsed;
       itoa(fps, pFpsNumberStart, 10);
 
-      SetAPen(pRastPort, 1);
-      RectFill(pRastPort, 550, 246, 639, 255);
+      SetAPen(&rastPort, 1);
+      RectFill(&rastPort, 550, 246, 639, 255);
 
-      SetAPen(pRastPort, 5);
-      Move(pRastPort, 550, 254);
-      Text(pRastPort, pFpsBuf, strlength(pFpsBuf));
+      SetAPen(&rastPort, 5);
+      Move(&rastPort, 550, 254);
+      Text(&rastPort, pFpsBuf, strlength(pFpsBuf));
     }
 
 
@@ -421,8 +420,8 @@ void theGame()
 
 void drawGels()
 {
-  SortGList(pRastPort);
-  DrawGList(pRastPort, &viewPort);
+  SortGList(&rastPort);
+  DrawGList(&rastPort, &viewPort);
   WaitTOF();
 }
 
@@ -456,9 +455,9 @@ void cleanup(int returncode)
   //  Free the BitPlanes drawing area
   for (int depth = 0; depth < DEPTH; depth++)
   {
-    if (bitMap.Planes[depth] != NULL)
+    if (bitMap1.Planes[depth] != NULL)
     {
-      FreeRaster(bitMap.Planes[depth], WIDTH, HEIGHT);
+      FreeRaster(bitMap1.Planes[depth], WIDTH, HEIGHT);
     }
   }
 
