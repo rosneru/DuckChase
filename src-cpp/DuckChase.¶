@@ -9,6 +9,8 @@ C/C++ Environment
 0
 "stdlib-custom/"
 0
+"gameengine/"
+0
 Includepath (End)
 0 "" 80
 1 "objects_debug"
@@ -113,21 +115,26 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "animtools/GelsBob.cpp"
-"animtools/GelsBob.cpp"
-"animtools/animtools_proto.h"
-"animtools/animtools.h"
-"animtools/GelsBob.h"
-Storm Shell Project (Dependencies)
-"objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
-""
-1 1
-File
 1 "amigautils/Picture.cpp"
 "amigautils/Picture.cpp"
 "amigautils/Picture.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Picture.o" "objects_debug/Picture.debug"
+""
+1 1
+File
+1 "gameengine/GameView.cpp"
+"gameengine/GameView.cpp"
+"gameengine/GameView.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameView.o" "objects_debug/GameView.debug"
+""
+1 1
+File
+1 "gameengine/GelsBob.cpp"
+"gameengine/GelsBob.cpp"
+Storm Shell Project (Dependencies)
+"objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
 ""
 1 1
 Section
@@ -149,13 +156,6 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "animtools/GelsBob.h"
-"animtools/GelsBob.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
 2 "amigautils/Picture.h"
 "amigautils/Picture.h"
 Storm Shell Project (Dependencies)
@@ -165,6 +165,20 @@ Storm Shell Project (Dependencies)
 File
 2 "stdlib-custom/stdiostring.h"
 "stdlib-custom/stdiostring.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/GameView.h"
+"gameengine/GameView.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/GelsBob.h"
+"gameengine/GelsBob.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

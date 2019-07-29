@@ -23,7 +23,7 @@ class GameView
 public:
   GameView(short viewWidth, short viewHeight, short viewDepth);
   ~GameView();
-  
+
   bool Init();
 
 private:
@@ -37,12 +37,12 @@ private:
   struct BitMap bitMap1;
   struct BitMap bitMap2;
   struct BitMap* pBitMap; // TODO remove from GameView to GameLoop ?
-  struct ColorMap *cm = NULL;
+  struct ColorMap *cm;
 
   // Extended structures used in Release 2
-  struct ViewExtra *vextra = NULL;
-  struct MonitorSpec *monspec = NULL;
-  struct ViewPortExtra *vpextra = NULL;
+  struct ViewExtra *vextra;
+  struct MonitorSpec *monspec;
+  struct ViewPortExtra *vpextra;
   struct DimensionInfo dimquery;
 };
 

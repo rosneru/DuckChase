@@ -142,7 +142,7 @@ int main(void)
     {
       fail("Could not get BitPlanes\n");
     }
-    
+
     bitMap2.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
     if (bitMap2.Planes[depth] == NULL)
     {
@@ -330,8 +330,6 @@ void theGame()
   AddBob(pBobDuck, &rastPort);
   AddBob(pBobHunter, &rastPort);
 
-  drawGels();
-
   //
   // Setting up some variables and the drawing rect for FPS display
   //
@@ -348,6 +346,8 @@ void theGame()
   SetAPen(&rastPort, 1);
   RectFill(&rastPort, 0, 246, 639, 255);
   SetAPen(&rastPort, 5);
+
+  drawGels();
 
 
   //

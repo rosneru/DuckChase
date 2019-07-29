@@ -1,5 +1,5 @@
-#ifndef GELS_GelsBob_H
-#define GELS_GelsBob_H
+#ifndef GELS_BOB_H
+#define GELS_BOB_H
 
 #include <intuition/screens.h>
 #include "animtools.h"
