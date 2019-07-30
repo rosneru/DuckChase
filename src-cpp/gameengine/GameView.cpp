@@ -267,7 +267,12 @@ struct ViewPort* GameView::GetViewPort()
   return &viewPort;
 }
 
-void GameView::SwitchBuffer()
+struct View* GameView::GetView()
+{
+  return &view;
+}
+
+void GameView::SwitchBuffers()
 {
   if(m_BufToggle == false)
   {

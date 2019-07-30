@@ -1,14 +1,4 @@
 #include <devices/timer.h>
-#include <exec/types.h>
-#include <graphics/gfx.h>
-#include <graphics/gfxbase.h>
-#include <graphics/gfxmacros.h>
-#include <graphics/copper.h>
-#include <graphics/view.h>
-#include <graphics/displayinfo.h>
-#include <graphics/gfxnodes.h>
-#include <graphics/videocontrol.h>
-#include <libraries/dos.h>
 #include <libraries/lowlevel.h>
 #include <utility/tagitem.h>
 
@@ -22,50 +12,25 @@
 
 #include "stdiostring.h"
 
-#include "Picture.h"
+#include "GameView.h"
 #include "GelsBob.h"
+#include "Picture.h"
 
-// Dimensions of the view
-#define DEPTH     (3)
-#define NUMCOLORS (8)
-#define WIDTH     (640)
-#define HEIGHT    (256)
 
-void theGame();
-void drawGels();
+void theGame(GameView& gameView);
+
+void drawGels(GameView& gameView);
 int cleanup(int);
 int fail(STRPTR);
 
-extern struct GfxBase* GfxBase;
-
-//These are global to make freeing easier.
-struct View view;
-struct ViewPort viewPort = { 0 };
-struct BitMap bitMap1 = { 0 };
-struct BitMap bitMap2 = { 0 };
-struct BitMap* pBitMap;
-
-struct RastPort rastPort;
-
-
-struct ColorMap *cm = NULL;
-
-// Extended structures used in Release 2
-struct ViewExtra *vextra = NULL;
-struct MonitorSpec *monspec = NULL;
-struct ViewPortExtra *vpextra = NULL;
-struct DimensionInfo dimquery = { 0 };
-
-// Background picture and the Bobs
+// The background picture and the bobs
 Picture picBackgr;
 GelsBob bobDuck(3, 59, 21, 3);
 GelsBob bobHunter(3, 16, 22, 3);
 
-// Switch to toggle the bitmaps / Double Buffering
-bool BitMapToggle = false;
-
 int main(void)
 {
+
   SetJoyPortAttrs(1,
                   SJA_Type, SJA_TYPE_AUTOSENSE,
                   TAG_END);
@@ -73,160 +38,16 @@ int main(void)
   SystemControl(SCON_TakeOverSys, TRUE,
                 TAG_END);
 
-
-  // Pointer to old View we can restore it.
-  struct View *oldview = NULL;
-
-  struct RasInfo rasInfo;
-  ULONG modeID;
-
-  struct TagItem vcTags[] =
+  GameView gameView(640, 256, 3);
+  if(gameView.Init() == false)
   {
-    {VTAG_ATTACH_CM_SET, NULL },
-    {VTAG_VIEWPORTEXTRA_SET, NULL },
-    {VTAG_NORMAL_DISP_SET, NULL },
-    {VTAG_END_CM, NULL }
-  };
-
-
-  // Save current View to restore later
-  oldview = GfxBase->ActiView;
-
-  LoadView(NULL);
-  WaitTOF();
-  WaitTOF();
-
-  // Initialize the View and set View.Modes
-  InitView(&view);
-
-  // Form the ModeID from values in <displayinfo.h>
-  modeID = DEFAULT_MONITOR_ID | HIRES_KEY;
-
-  //  Make the ViewExtra structure
-  vextra = (struct ViewExtra*) GfxNew(VIEW_EXTRA_TYPE);
-  if (vextra == NULL)
-  {
-    return fail("Could not get ViewExtra\n");
+    return fail((STRPTR)gameView.LastError());
   }
-
-  // Attach the ViewExtra to the View
-  GfxAssociate(&view, vextra);
-  view.Modes |= EXTEND_VSTRUCT;
-
-  // Create and attach a MonitorSpec to the ViewExtra
-  monspec = OpenMonitor(NULL, modeID);
-  if (monspec == NULL)
-  {
-    return fail("Could not get MonitorSpec\n");
-  }
-
-  vextra->Monitor = monspec;
-
-  // Initialize the BitMaps
-  InitBitMap(&bitMap1, DEPTH, WIDTH, HEIGHT);
-  InitBitMap(&bitMap2, DEPTH, WIDTH, HEIGHT);
-
-  // Set the plane pointers to NULL so the cleanup routine
-  // will know if they were used
-  for (int depth = 0; depth < DEPTH; depth++)
-  {
-    bitMap1.Planes[depth] = NULL;
-    bitMap2.Planes[depth] = NULL;
-  }
-
-  // Allocate space for BitMap
-  for (int depth = 0; depth < DEPTH; depth++)
-  {
-    bitMap1.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
-    if (bitMap1.Planes[depth] == NULL)
-    {
-      return fail("Could not get BitPlanes\n");
-    }
-
-    bitMap2.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
-    if (bitMap2.Planes[depth] == NULL)
-    {
-      return fail("Could not get BitPlanes\n");
-    }
-  }
-
-  // Create a RastPort to draw into
-  InitRastPort(&rastPort);
-  rastPort.BitMap = &bitMap1;
-  SetRast(&rastPort, 0);
-
-  // Initialize the RasInfo
-  rasInfo.BitMap = &bitMap1;
-  rasInfo.RxOffset = 0;
-  rasInfo.RyOffset = 0;
-  rasInfo.Next = NULL;
-
-  // Initialize the ViewPort
-  InitVPort(&viewPort);
-  view.ViewPort = &viewPort; // Link the ViewPort into the View
-  viewPort.RasInfo = &rasInfo;
-  viewPort.DWidth = WIDTH;
-  viewPort.DHeight = HEIGHT;
-
-  // Make a ViewPortExtra and get ready to attach it
-  vpextra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE);
-
-  if (vpextra == NULL)
-  {
-    return fail("Could not get ViewPortExtra\n");
-  }
-
-  vcTags[1].ti_Data = (ULONG)vpextra;
-
-  // Initialize the DisplayClip field of the ViewPortExtra
-  if (GetDisplayInfoData(NULL, (UBYTE *)&dimquery,
-    sizeof(dimquery), DTAG_DIMS, modeID) == 0)
-  {
-    return fail("Could not get DimensionInfo \n");
-  }
-
-  vpextra->DisplayClip = dimquery.Nominal;
-
-  // Make a DisplayInfo and get ready to attach it
-  if (!(vcTags[2].ti_Data = (ULONG) FindDisplayInfo(modeID)))
-  {
-    return fail("Could not get DisplayInfo\n");
-  }
-
-  // Initialize the ColorMap, 3 planes deep, so 8 entries
-  cm = GetColorMap(NUMCOLORS);
-  if (cm == NULL)
-  {
-    return fail("Could not get ColorMap\n");
-  }
-
-  /* Get ready to attach the ColorMap, Release 2-style */
-  vcTags[0].ti_Data = (ULONG)&viewPort;
-
-  /* Attach the color map and Release 2 extended structures */
-  if (VideoControl(cm, vcTags))
-  {
-    return fail("Could not attach extended structures\n");
-  }
-
-  // Construct preliminary Copper instruction list
-  MakeVPort(&view, &viewPort);
-
-  // Merge preliminary lists into a real Copper list in the View
-  // structure
-  MrgCop(&view);
-
-  // Clear the ViewPort
-  for (int depth = 0; depth < DEPTH; depth++)
-  {
-    UBYTE* displaymem = (UBYTE*) bitMap1.Planes[depth];
-    BltClear(displaymem, (bitMap1.BytesPerRow * bitMap1.Rows), 1L);
-  }
-
-  LoadView(&view);
 
   // Initialize the GELs system
-  struct GelsInfo* pGelsInfo = setupGelSys(&rastPort, 0x03);
+  struct GelsInfo* pGelsInfo = setupGelSys(gameView.GetRastPort(), 
+                                          0x03);
+
   if(pGelsInfo == NULL)
   {
     return fail("Could not initialize the Gels system\n");
@@ -235,33 +56,20 @@ int main(void)
   //
   // Initialization is done, game can begin
   //
-  theGame();
+  theGame(gameView);
 
   // Free the resources allocated by the Gels system
-  cleanupGelSys(pGelsInfo, &rastPort);
+  cleanupGelSys(pGelsInfo, gameView.GetRastPort());
 
 
   WaitTOF();
   WaitTOF();
-
-  // Put back the old view
-  LoadView(oldview);
-
-  // Befoire freeing memory wait until the old view is being  rendered
-  WaitTOF();
-  WaitTOF();
-
-  // Deallocate the hardware Copper list created by MrgCop()
-  FreeCprList(view.LOFCprList);
-
-  // Free all intermediate Copper lists from created by MakeVPort()
-  FreeVPortCopLists(&viewPort);
 
   return cleanup(RETURN_OK);
 }
 
 
-void theGame()
+void theGame(GameView& gameView)
 {
   //
   // Setting the used color table (extracted from pic wit BtoC32)
@@ -272,7 +80,7 @@ void theGame()
   };
 
   // Change colors to those in colortable
-  LoadRGB4(&viewPort, colortable, NUMCOLORS);
+  LoadRGB4(gameView.GetViewPort(), colortable, 8);
 
 
   //
@@ -310,13 +118,15 @@ void theGame()
   // Load and display the background image
   //
   if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
-                               WIDTH, HEIGHT, DEPTH) == FALSE)
+                               640, 256, 8) == FALSE)
   {
     return;
   }
 
-  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, &rastPort,
-                    0, 0, WIDTH, HEIGHT, 0xC0);
+  struct RastPort* pRastPort = gameView.GetRastPort();
+
+  BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, pRastPort,
+                    0, 0, 640, 256, 0xC0);
 
   //
   // Initialize postions of the Bobs and add them to the scene
@@ -327,8 +137,8 @@ void theGame()
   pBobHunter->BobVSprite->X = 20;
   pBobHunter->BobVSprite->Y = 222;
 
-  AddBob(pBobDuck, &rastPort);
-  AddBob(pBobHunter, &rastPort);
+  AddBob(pBobDuck, pRastPort);
+  AddBob(pBobHunter, pRastPort);
 
   //
   // Setting up some variables and the drawing rect for FPS display
@@ -342,17 +152,18 @@ void theGame()
 
   ULONG elapsed = ElapsedTime(&eClockVal);
 
-  SetBPen(&rastPort, 1);
-  SetAPen(&rastPort, 1);
-  RectFill(&rastPort, 0, 246, 639, 255);
-  SetAPen(&rastPort, 5);
+  SetBPen(pRastPort, 1);
+  SetAPen(pRastPort, 1);
+  RectFill(pRastPort, 0, 246, 639, 255);
+  SetAPen(pRastPort, 5);
 
-  drawGels();
+  drawGels(gameView);
 
 
   //
   // The main game loop
   //
+  short animFrameCnt = 1;
   bool bContinue = true;
   do
   {
@@ -389,14 +200,19 @@ void theGame()
       pBobDuck->BobVSprite->X = 650;
     }
 
-    // Changhhe the duck image and draw the Gels
-    if(BitMapToggle == true)
+    // Change the duck image every 2 frames
+    if(animFrameCnt % 2 == 0)
     {
       bobDuck.NextImage();
       InitMasks(pBobDuck->BobVSprite);
+
+      animFrameCnt = 0;
     }
 
-    drawGels();
+    animFrameCnt++;
+
+    // draw the objects on thir new positions
+    drawGels(gameView);
 
     //
     // Display the FPS value
@@ -410,14 +226,13 @@ void theGame()
       short fps = 65536 / elapsed;
       itoa(fps, pFpsNumberStart, 10);
 
-      SetAPen(&rastPort, 1);
-      RectFill(&rastPort, 550, 246, 639, 255);
+      SetAPen(pRastPort, 1);
+      RectFill(pRastPort, 550, 246, 639, 255);
 
-      SetAPen(&rastPort, 5);
-      Move(&rastPort, 550, 254);
-      Text(&rastPort, pFpsBuf, strlength(pFpsBuf));
+      SetAPen(pRastPort, 5);
+      Move(pRastPort, 550, 254);
+      Text(pRastPort, pFpsBuf, strlength(pFpsBuf));
     }
-
 
     // Check if exit key ESC have been pressed
     ULONG key = GetKey();
@@ -432,27 +247,20 @@ void theGame()
   RemBob(pBobDuck);
 }
 
-void drawGels()
+void drawGels(GameView& gameView)
 {
-  SortGList(&rastPort);
-  DrawGList(&rastPort, &viewPort);
+  struct RastPort* pRastPort = gameView.GetRastPort();
+  struct View* pView = gameView.GetView();
+
+  SortGList(pRastPort);
+  DrawGList(pRastPort, gameView.GetViewPort());
   WaitTOF();
 
-  MrgCop(&view);
-  LoadView(&view);
+  MrgCop(pView);
+  LoadView(pView);
 
-  if(BitMapToggle == false)
-  {
-    viewPort.RasInfo->BitMap = &bitMap2;
-    rastPort.BitMap = &bitMap2;
-    BitMapToggle = true;
-  }
-  else
-  {
-    viewPort.RasInfo->BitMap = &bitMap1;
-    rastPort.BitMap = &bitMap1;
-    BitMapToggle = false;
-  }
+  // Switch the buffers
+  gameView.SwitchBuffers();
 }
 
 
@@ -470,45 +278,6 @@ int fail(STRPTR errorstring)
  */
 int cleanup(int returncode)
 {
-  //  Free the color map created by GetColorMap()
-  if (cm != NULL)
-  {
-     FreeColorMap(cm);
-  }
-
-  // Free the ViewPortExtra created by GfxNew()
-  if (vpextra != NULL)
-  {
-     GfxFree(vpextra);
-  }
-
-  //  Free the BitPlanes drawing area
-  for (int depth = 0; depth < DEPTH; depth++)
-  {
-    if (bitMap1.Planes[depth] != NULL)
-    {
-      FreeRaster(bitMap1.Planes[depth], WIDTH, HEIGHT);
-    }
-
-    if (bitMap2.Planes[depth] != NULL)
-    {
-      FreeRaster(bitMap2.Planes[depth], WIDTH, HEIGHT);
-    }
-
-  }
-
-  // Free the MonitorSpec created with OpenMonitor()
-  if (monspec != NULL)
-  {
-    CloseMonitor(monspec);
-  }
-
-  // Free the ViewExtra created with GfxNew()
-  if (vextra)
-  {
-    GfxFree(vextra);
-  }
-
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 

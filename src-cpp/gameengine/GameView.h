@@ -29,7 +29,8 @@ public:
   
   struct RastPort* GetRastPort();
   struct ViewPort* GetViewPort();
-  
+  struct View* GetView();
+
   void SwitchBuffer();
 
   const char* LastError() const;
