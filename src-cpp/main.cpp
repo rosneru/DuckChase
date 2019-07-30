@@ -15,7 +15,7 @@
 #include "GameView.h"
 #include "GelsBob.h"
 #include "Picture.h"
-
+#include "StopWatch.h"
 
 void theGame(GameView& gameView);
 
@@ -30,7 +30,6 @@ GelsBob bobHunter(3, 16, 22, 3);
 
 int main(void)
 {
-
   SetJoyPortAttrs(1,
                   SJA_Type, SJA_TYPE_AUTOSENSE,
                   TAG_END);
@@ -45,8 +44,8 @@ int main(void)
   }
 
   // Initialize the GELs system
-  struct GelsInfo* pGelsInfo = setupGelSys(gameView.GetRastPort(), 
-                                          0x03);
+  struct GelsInfo* pGelsInfo = setupGelSys(gameView.GetRastPort(),
+                                           0x03);
 
   if(pGelsInfo == NULL)
   {
@@ -64,6 +63,7 @@ int main(void)
 
   WaitTOF();
   WaitTOF();
+  gameView.FreeAll();
 
   return cleanup(RETURN_OK);
 }
@@ -118,7 +118,7 @@ void theGame(GameView& gameView)
   // Load and display the background image
   //
   if(picBackgr.LoadFromRawFile("/gfx/background_hires.raw",
-                               640, 256, 8) == FALSE)
+                               640, 256, 3) == FALSE)
   {
     return;
   }
@@ -146,12 +146,6 @@ void theGame(GameView& gameView)
   char pFpsBuf[] = {"FPS: __________"};
   char* pFpsNumberStart = pFpsBuf + 5;
 
-  struct EClockVal eClockVal;
-  eClockVal.ev_hi = 0;
-  eClockVal.ev_lo = 0;
-
-  ULONG elapsed = ElapsedTime(&eClockVal);
-
   SetBPen(pRastPort, 1);
   SetAPen(pRastPort, 1);
   RectFill(pRastPort, 0, 246, 639, 255);
@@ -163,6 +157,10 @@ void theGame(GameView& gameView)
   //
   // The main game loop
   //
+
+  StopWatch stopWatch;
+  stopWatch.Start();
+
   short animFrameCnt = 1;
   bool bContinue = true;
   do
@@ -201,7 +199,7 @@ void theGame(GameView& gameView)
     }
 
     // Change the duck image every 2 frames
-    if(animFrameCnt % 2 == 0)
+    if(animFrameCnt % 4 == 0)
     {
       bobDuck.NextImage();
       InitMasks(pBobDuck->BobVSprite);
@@ -217,13 +215,12 @@ void theGame(GameView& gameView)
     //
     // Display the FPS value
     //
-    elapsed = ElapsedTime(&eClockVal);
-    elapsed &= 0xffff;
+    double dblElapsed = stopWatch.Pick();
 
-    if(elapsed >= 0)
+    if(dblElapsed >= 0)
     {
       // Calculatin fps and writing it to the string buf
-      short fps = 65536 / elapsed;
+      short fps = 1000 / dblElapsed;
       itoa(fps, pFpsNumberStart, 10);
 
       SetAPen(pRastPort, 1);

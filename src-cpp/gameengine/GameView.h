@@ -26,12 +26,12 @@ public:
 
   bool Init();
   void FreeAll();
-  
+
   struct RastPort* GetRastPort();
   struct ViewPort* GetViewPort();
   struct View* GetView();
 
-  void SwitchBuffer();
+  void SwitchBuffers();
 
   const char* LastError() const;
 
@@ -62,6 +62,7 @@ private:
   enum InitError
   {
     IE_None,
+    IE_AlreadyInitialized,
     IE_GettingViewExtra,
     IE_GettingMonSpec,
     IE_GettingBitPlanes,
@@ -74,6 +75,7 @@ private:
 
   InitError m_InitError;
   bool m_BufToggle;
+
 };
 
 #endif

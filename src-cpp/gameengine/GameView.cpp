@@ -36,6 +36,12 @@ GameView::~GameView()
 
 bool GameView::Init()
 {
+  if(vextra != NULL)
+  {
+    m_InitError = IE_AlreadyInitialized;
+    return false;
+  }
+
   m_InitError = IE_None;
 
   struct RasInfo rasInfo;
@@ -100,7 +106,7 @@ bool GameView::Init()
   // Allocate space for BitMap
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    bitMap1.Planes[depth] = (PLANEPTR) 
+    bitMap1.Planes[depth] = (PLANEPTR)
       AllocRaster(m_ViewWidth, m_ViewHeight);
 
     if (bitMap1.Planes[depth] == NULL)
@@ -109,7 +115,7 @@ bool GameView::Init()
       return false;
     }
 
-    bitMap2.Planes[depth] = (PLANEPTR) 
+    bitMap2.Planes[depth] = (PLANEPTR)
       AllocRaster(m_ViewWidth, m_ViewHeight);
 
     if (bitMap2.Planes[depth] == NULL)
@@ -296,6 +302,10 @@ const char* GameView::LastError() const
       return "GameView init successful.";
       break;
 
+    case IE_AlreadyInitialized:
+      return "GameView already initialized.";
+      break;
+
     case IE_GettingViewExtra:
       return "Could not get ViewExtra.\n";
       break;
@@ -326,6 +336,10 @@ const char* GameView::LastError() const
 
     case IE_AttachExtStructs:
       return "Could not attach extended structures.\n";
+      break;
+
+    default:
+      return "Unknown state";
       break;
   }
 }
