@@ -25,9 +25,15 @@ public:
   ~GameView();
 
   bool Init();
-  void Release();
+  void FreeAll();
+  
+  struct RastPort* GetRastPort();
+  struct ViewPort* GetViewPort();
+  
+  void SwitchBuffer();
 
   const char* LastError() const;
+
 
 private:
   short m_ViewWidth;
@@ -42,7 +48,6 @@ private:
   struct ViewPort viewPort;
   struct BitMap bitMap1;
   struct BitMap bitMap2;
-  struct BitMap* pBitMap; // TODO remove from GameView to GameLoop ?
   struct ColorMap* cm;
 
   struct RastPort rastPort;
@@ -67,6 +72,7 @@ private:
   };
 
   InitError m_InitError;
+  bool m_BufToggle;
 };
 
 #endif

@@ -14,11 +14,11 @@ GameView::GameView(short viewWidth, short viewHeight, short viewDepth)
     //viewPort(0),
     //bitMap1(0),
     //bitMap2(0),
-    pBitMap(NULL),
     cm(NULL),
     vextra(NULL),
     monspec(NULL),
-    vpextra(NULL)
+    vpextra(NULL),
+    m_BufToggle(false)
     //dimquery(0)
 {
   m_ViewNumColors = 1;
@@ -254,6 +254,32 @@ void GameView::FreeAll()
   if (vextra)
   {
     GfxFree(vextra);
+  }
+}
+
+struct RastPort* GameView::GetRastPort()
+{
+  return &rastPort;
+}
+
+struct ViewPort* GameView::GetViewPort()
+{
+  return &viewPort;
+}
+
+void GameView::SwitchBuffer()
+{
+  if(m_BufToggle == false)
+  {
+    viewPort.RasInfo->BitMap = &bitMap2;
+    rastPort.BitMap = &bitMap2;
+    m_BufToggle = true;
+  }
+  else
+  {
+    viewPort.RasInfo->BitMap = &bitMap1;
+    rastPort.BitMap = &bitMap1;
+    m_BufToggle = false;
   }
 }
 
