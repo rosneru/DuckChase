@@ -33,8 +33,8 @@
 
 void theGame();
 void drawGels();
-void cleanup(int);
-void fail(STRPTR);
+int cleanup(int);
+int fail(STRPTR);
 
 extern struct GfxBase* GfxBase;
 
@@ -106,7 +106,7 @@ int main(void)
   vextra = (struct ViewExtra*) GfxNew(VIEW_EXTRA_TYPE);
   if (vextra == NULL)
   {
-    fail("Could not get ViewExtra\n");
+    return fail("Could not get ViewExtra\n");
   }
 
   // Attach the ViewExtra to the View
@@ -117,7 +117,7 @@ int main(void)
   monspec = OpenMonitor(NULL, modeID);
   if (monspec == NULL)
   {
-    fail("Could not get MonitorSpec\n");
+    return fail("Could not get MonitorSpec\n");
   }
 
   vextra->Monitor = monspec;
@@ -140,13 +140,13 @@ int main(void)
     bitMap1.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
     if (bitMap1.Planes[depth] == NULL)
     {
-      fail("Could not get BitPlanes\n");
+      return fail("Could not get BitPlanes\n");
     }
 
     bitMap2.Planes[depth] = (PLANEPTR) AllocRaster(WIDTH, HEIGHT);
     if (bitMap2.Planes[depth] == NULL)
     {
-      fail("Could not get BitPlanes\n");
+      return fail("Could not get BitPlanes\n");
     }
   }
 
@@ -173,7 +173,7 @@ int main(void)
 
   if (vpextra == NULL)
   {
-    fail("Could not get ViewPortExtra\n");
+    return fail("Could not get ViewPortExtra\n");
   }
 
   vcTags[1].ti_Data = (ULONG)vpextra;
@@ -182,7 +182,7 @@ int main(void)
   if (GetDisplayInfoData(NULL, (UBYTE *)&dimquery,
     sizeof(dimquery), DTAG_DIMS, modeID) == 0)
   {
-    fail("Could not get DimensionInfo \n");
+    return fail("Could not get DimensionInfo \n");
   }
 
   vpextra->DisplayClip = dimquery.Nominal;
@@ -190,14 +190,14 @@ int main(void)
   // Make a DisplayInfo and get ready to attach it
   if (!(vcTags[2].ti_Data = (ULONG) FindDisplayInfo(modeID)))
   {
-    fail("Could not get DisplayInfo\n");
+    return fail("Could not get DisplayInfo\n");
   }
 
   // Initialize the ColorMap, 3 planes deep, so 8 entries
   cm = GetColorMap(NUMCOLORS);
   if (cm == NULL)
   {
-    fail("Could not get ColorMap\n");
+    return fail("Could not get ColorMap\n");
   }
 
   /* Get ready to attach the ColorMap, Release 2-style */
@@ -206,7 +206,7 @@ int main(void)
   /* Attach the color map and Release 2 extended structures */
   if (VideoControl(cm, vcTags))
   {
-    fail("Could not attach extended structures\n");
+    return fail("Could not attach extended structures\n");
   }
 
   // Construct preliminary Copper instruction list
@@ -229,7 +229,7 @@ int main(void)
   struct GelsInfo* pGelsInfo = setupGelSys(&rastPort, 0x03);
   if(pGelsInfo == NULL)
   {
-    fail("Could not initialize the Gels system\n");
+    return fail("Could not initialize the Gels system\n");
   }
 
   //
@@ -257,7 +257,7 @@ int main(void)
   // Free all intermediate Copper lists from created by MakeVPort()
   FreeVPortCopLists(&viewPort);
 
-  cleanup(RETURN_OK);
+  return cleanup(RETURN_OK);
 }
 
 
@@ -459,16 +459,16 @@ void drawGels()
 /**
  * Print the error string and call cleanup() to exit
  */
-void fail(STRPTR errorstring)
+int fail(STRPTR errorstring)
 {
   VPrintf(errorstring, NULL);
-  cleanup(RETURN_FAIL);
+  return cleanup(RETURN_FAIL);
 }
 
 /**
  * Fee everything that was allocated
  */
-void cleanup(int returncode)
+int cleanup(int returncode)
 {
   //  Free the color map created by GetColorMap()
   if (cm != NULL)
@@ -513,5 +513,5 @@ void cleanup(int returncode)
                 TAG_END);
 
 
-  exit(returncode);
+  return returncode;
 }
