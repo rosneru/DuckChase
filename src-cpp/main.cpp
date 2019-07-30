@@ -12,14 +12,14 @@
 
 #include "stdiostring.h"
 
-#include "GameView.h"
+#include "GameViewAdvanced.h"
 #include "GelsBob.h"
 #include "Picture.h"
 #include "StopWatch.h"
 
-void theGame(GameView& gameView);
+void theGame(GameViewAdvanced& gameView);
 
-void drawGels(GameView& gameView);
+void drawGels(GameViewAdvanced& gameView);
 int cleanup(int);
 int fail(STRPTR);
 
@@ -37,7 +37,7 @@ int main(void)
   SystemControl(SCON_TakeOverSys, TRUE,
                 TAG_END);
 
-  GameView gameView(640, 256, 3);
+  GameViewAdvanced gameView(640, 256, 3);
   if(gameView.Init() == false)
   {
     return fail((STRPTR)gameView.LastError());
@@ -69,7 +69,7 @@ int main(void)
 }
 
 
-void theGame(GameView& gameView)
+void theGame(GameViewAdvanced& gameView)
 {
   //
   // Setting the used color table (extracted from pic wit BtoC32)
@@ -244,7 +244,7 @@ void theGame(GameView& gameView)
   RemBob(pBobDuck);
 }
 
-void drawGels(GameView& gameView)
+void drawGels(GameViewAdvanced& gameView)
 {
   struct RastPort* pRastPort = gameView.GetRastPort();
   struct View* pView = gameView.GetView();

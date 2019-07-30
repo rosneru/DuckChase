@@ -1,12 +1,12 @@
 #include <clib/graphics_protos.h>
 #include <graphics/gfxbase.h>
 
-#include "GameView.h"
+#include "GameViewAdvanced.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameView::GameView(short viewWidth, short viewHeight, short viewDepth)
+GameViewAdvanced::GameViewAdvanced(short viewWidth, short viewHeight, short viewDepth)
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
@@ -29,12 +29,12 @@ GameView::GameView(short viewWidth, short viewHeight, short viewDepth)
 }
 
 
-GameView::~GameView()
+GameViewAdvanced::~GameViewAdvanced()
 {
 
 }
 
-bool GameView::Init()
+bool GameViewAdvanced::Init()
 {
   if(vextra != NULL)
   {
@@ -208,7 +208,7 @@ bool GameView::Init()
   return true;
 }
 
-void GameView::FreeAll()
+void GameViewAdvanced::FreeAll()
 {
   // Put back the old view
   LoadView(oldview);
@@ -263,22 +263,22 @@ void GameView::FreeAll()
   }
 }
 
-struct RastPort* GameView::GetRastPort()
+struct RastPort* GameViewAdvanced::GetRastPort()
 {
   return &rastPort;
 }
 
-struct ViewPort* GameView::GetViewPort()
+struct ViewPort* GameViewAdvanced::GetViewPort()
 {
   return &viewPort;
 }
 
-struct View* GameView::GetView()
+struct View* GameViewAdvanced::GetView()
 {
   return &view;
 }
 
-void GameView::SwitchBuffers()
+void GameViewAdvanced::SwitchBuffers()
 {
   if(m_BufToggle == false)
   {
@@ -294,7 +294,7 @@ void GameView::SwitchBuffers()
   }
 }
 
-const char* GameView::LastError() const
+const char* GameViewAdvanced::LastError() const
 {
   switch(m_InitError)
   {

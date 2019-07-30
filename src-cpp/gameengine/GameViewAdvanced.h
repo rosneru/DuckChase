@@ -1,5 +1,5 @@
-#ifndef GAME_VIEW_H
-#define GAME_VIEW_H
+#ifndef GAME_VIEW_ADVANCED_H
+#define GAME_VIEW_ADVANCED_H
 
 #include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
@@ -18,11 +18,11 @@
  * @author Uwe Rosner
  * @date 29/07/2019
  */
-class GameView
+class GameViewAdvanced
 {
 public:
-  GameView(short viewWidth, short viewHeight, short viewDepth);
-  ~GameView();
+  GameViewAdvanced(short viewWidth, short viewHeight, short viewDepth);
+  ~GameViewAdvanced();
 
   bool Init();
   void FreeAll();

@@ -101,6 +101,8 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "amigautils/StopWatch.cpp"
+"amigautils/StopWatch.cpp"
+"amigautils/StopWatch.h"
 Storm Shell Project (Dependencies)
 "objects_debug/StopWatch.o" "objects_debug/StopWatch.debug"
 ""
@@ -115,11 +117,9 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gameengine/GameView.cpp"
-"gameengine/GameView.cpp"
-"gameengine/GameView.h"
+1 "gameengine/GameViewAdvanced.cpp"
 Storm Shell Project (Dependencies)
-"objects_debug/GameView.o" "objects_debug/GameView.debug"
+"objects_debug/GameViewAdvanced.o" "objects_debug/GameViewAdvanced.debug"
 ""
 1 1
 File
@@ -159,6 +159,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "amigautils/StopWatch.h"
+"amigautils/StopWatch.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -178,8 +179,7 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gameengine/GameView.h"
-"gameengine/GameView.h"
+2 "gameengine/GameViewAdvanced.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
