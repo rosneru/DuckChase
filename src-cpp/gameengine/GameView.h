@@ -25,11 +25,17 @@ public:
   ~GameView();
 
   bool Init();
+  void Release();
+
+  const char* LastError() const;
 
 private:
   short m_ViewWidth;
   short m_ViewHeight;
   short m_ViewDepth;
+  short m_ViewNumColors;
+
+  struct View* oldview; /// Pointer to old View we can restore it
 
   // Basic structures as of Release 1.3
   struct View view;
@@ -37,13 +43,30 @@ private:
   struct BitMap bitMap1;
   struct BitMap bitMap2;
   struct BitMap* pBitMap; // TODO remove from GameView to GameLoop ?
-  struct ColorMap *cm;
+  struct ColorMap* cm;
+
+  struct RastPort rastPort;
 
   // Extended structures used in Release 2
-  struct ViewExtra *vextra;
-  struct MonitorSpec *monspec;
-  struct ViewPortExtra *vpextra;
+  struct ViewExtra* vextra;
+  struct MonitorSpec* monspec;
+  struct ViewPortExtra* vpextra;
   struct DimensionInfo dimquery;
+
+  enum InitError
+  {
+    IE_None,
+    IE_GettingViewExtra,
+    IE_GettingMonSpec,
+    IE_GettingBitPlanes,
+    IE_GettingVPExtra,
+    IE_GettingDimInfo,
+    IE_GettingDisplayInfo,
+    IE_GettingCM,
+    IE_AttachExtStructs,
+  };
+
+  InitError m_InitError;
 };
 
 #endif
