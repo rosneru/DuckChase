@@ -44,22 +44,22 @@ private:
   short m_ViewDepth;
   short m_ViewNumColors;
 
-  struct View* oldview; /// Pointer to old View we can restore it
+  struct View* m_pOldView; // Pointer to old View, so we can restore it
 
   // Basic structures as of Release 1.3
-  struct View view;
-  struct ViewPort viewPort;
-  struct BitMap bitMap1;
-  struct BitMap bitMap2;
-  struct ColorMap* cm;
+  struct View m_View;
+  struct ViewPort m_ViewPort;
+  struct BitMap m_BitMap1;
+  struct BitMap m_BitMap2;
+  struct ColorMap* m_pColorMap;
 
-  struct RastPort rastPort;
+  struct RastPort m_RastPort;
 
   // Extended structures used in Release 2
-  struct ViewExtra* vextra;
-  struct MonitorSpec* monspec;
-  struct ViewPortExtra* vpextra;
-  struct DimensionInfo dimquery;
+  struct ViewExtra* m_pViewExtra;
+  struct MonitorSpec* m_pMonitorSpec;
+  struct ViewPortExtra* m_pViewPortExtra;
+  struct DimensionInfo m_DimensionInfo;
 
   enum InitError
   {

@@ -6,15 +6,17 @@
 extern struct GfxBase* GfxBase;
 
 
-GameViewAdvanced::GameViewAdvanced(short viewWidth, short viewHeight, short viewDepth)
+GameViewAdvanced::GameViewAdvanced(short viewWidth, 
+                                   short viewHeight, 
+                                   short viewDepth)
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
-    oldview(NULL),
-    cm(NULL),
-    vextra(NULL),
-    monspec(NULL),
-    vpextra(NULL),
+    m_pOldView(NULL),
+    m_pColorMap(NULL),
+    m_pViewExtra(NULL),
+    m_pMonitorSpec(NULL),
+    m_pViewPortExtra(NULL),
     m_BufToggle(false)
 {
   m_ViewNumColors = 1;
@@ -32,7 +34,7 @@ GameViewAdvanced::~GameViewAdvanced()
 
 bool GameViewAdvanced::Open()
 {
-  if(vextra != NULL)
+  if(m_pViewExtra != NULL)
   {
     m_InitError = IE_AlreadyInitialized;
     return false;
@@ -43,78 +45,69 @@ bool GameViewAdvanced::Open()
   struct RasInfo rasInfo;
   ULONG modeID;
 
-  struct TagItem vcTags[] =
-  {
-    {VTAG_ATTACH_CM_SET, NULL },
-    {VTAG_VIEWPORTEXTRA_SET, NULL },
-    {VTAG_NORMAL_DISP_SET, NULL },
-    {VTAG_END_CM, NULL }
-  };
-
-
   // Save current View to restore later
-  oldview = GfxBase->ActiView;
+  m_pOldView = GfxBase->ActiView;
 
   LoadView(NULL);
   WaitTOF();
   WaitTOF();
 
   // Initialize the View and set View.Modes
-  InitView(&view);
+  InitView(&m_View);
 
   // Form the ModeID from values in <displayinfo.h>
   modeID = DEFAULT_MONITOR_ID | HIRES_KEY;
 
   //  Make the ViewExtra structure
-  vextra = (struct ViewExtra*) GfxNew(VIEW_EXTRA_TYPE);
-  if (vextra == NULL)
+  m_pViewExtra = (struct ViewExtra*) GfxNew(VIEW_EXTRA_TYPE);
+  if (m_pViewExtra == NULL)
   {
     m_InitError = IE_GettingViewExtra;
     return false;
   }
 
   // Attach the ViewExtra to the View
-  GfxAssociate(&view, vextra);
-  view.Modes |= EXTEND_VSTRUCT;
+  GfxAssociate(&m_View, m_pViewExtra);
+  m_View.Modes |= EXTEND_VSTRUCT;
 
   // Create and attach a MonitorSpec to the ViewExtra
-  monspec = OpenMonitor(NULL, modeID);
-  if (monspec == NULL)
+  m_pMonitorSpec = OpenMonitor(NULL, modeID);
+  if (m_pMonitorSpec == NULL)
   {
     m_InitError = IE_GettingMonSpec;
     return false;
   }
 
-  vextra->Monitor = monspec;
+  m_pViewExtra->Monitor = m_pMonitorSpec;
 
   // Initialize the BitMaps
-  InitBitMap(&bitMap1, m_ViewDepth, m_ViewWidth, m_ViewHeight);
-  InitBitMap(&bitMap2, m_ViewDepth, m_ViewWidth, m_ViewHeight);
+  InitBitMap(&m_BitMap1, m_ViewDepth, m_ViewWidth, m_ViewHeight);
+  InitBitMap(&m_BitMap2, m_ViewDepth, m_ViewWidth, m_ViewHeight);
 
   // Set the plane pointers to NULL so the cleanup routine
   // will know if they were used
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    bitMap1.Planes[depth] = NULL;
-    bitMap2.Planes[depth] = NULL;
+    m_BitMap1.Planes[depth] = NULL;
+    m_BitMap2.Planes[depth] = NULL;
   }
 
   // Allocate space for BitMap
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    bitMap1.Planes[depth] = (PLANEPTR)
+    m_BitMap1.Planes[depth] = (PLANEPTR)
       AllocRaster(m_ViewWidth, m_ViewHeight);
 
-    if (bitMap1.Planes[depth] == NULL)
+    if (m_BitMap1.Planes[depth] == NULL)
     {
       m_InitError = IE_GettingBitPlanes;
       return false;
     }
 
-    bitMap2.Planes[depth] = (PLANEPTR)
+    m_BitMap2.Planes[depth] = (PLANEPTR)
       AllocRaster(m_ViewWidth, m_ViewHeight);
 
-    if (bitMap2.Planes[depth] == NULL)
+    if (m_BitMap2.Planes[depth] == NULL)
     {
       m_InitError = IE_GettingBitPlanes;
       return false;
@@ -122,84 +115,93 @@ bool GameViewAdvanced::Open()
   }
 
   // Create a RastPort to draw into
-  InitRastPort(&rastPort);
-  rastPort.BitMap = &bitMap1;
-  SetRast(&rastPort, 0);
+  InitRastPort(&m_RastPort);
+  m_RastPort.BitMap = &m_BitMap1;
+  SetRast(&m_RastPort, 0);
 
   // Initialize the RasInfo
-  rasInfo.BitMap = &bitMap1;
+  rasInfo.BitMap = &m_BitMap1;
   rasInfo.RxOffset = 0;
   rasInfo.RyOffset = 0;
   rasInfo.Next = NULL;
 
   // Initialize the ViewPort
-  InitVPort(&viewPort);
-  view.ViewPort = &viewPort; // Link the ViewPort into the View
-  viewPort.RasInfo = &rasInfo;
-  viewPort.DWidth = m_ViewWidth;
-  viewPort.DHeight = m_ViewHeight;
+  InitVPort(&m_ViewPort);
+  m_View.ViewPort = &m_ViewPort; // Link the ViewPort into the View
+  m_ViewPort.RasInfo = &rasInfo;
+  m_ViewPort.DWidth = m_ViewWidth;
+  m_ViewPort.DHeight = m_ViewHeight;
 
   // Make a ViewPortExtra and get ready to attach it
-  vpextra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE);
+  m_pViewPortExtra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE);
 
-  if (vpextra == NULL)
+  if (m_pViewPortExtra == NULL)
   {
     m_InitError = IE_GettingVPExtra;
     return false;
   }
 
-  vcTags[1].ti_Data = (ULONG)vpextra;
+  // Creating a  tag item array for VideoControl and fill the values
+  struct TagItem videoCtrlTags[] =
+  {
+    {VTAG_ATTACH_CM_SET, NULL },
+    {VTAG_VIEWPORTEXTRA_SET, NULL },
+    {VTAG_NORMAL_DISP_SET, NULL },
+    {VTAG_END_CM, NULL }
+  };
+
+  videoCtrlTags[1].ti_Data = (ULONG)m_pViewPortExtra;
 
   // Initialize the DisplayClip field of the ViewPortExtra
-  if (GetDisplayInfoData(NULL, (UBYTE *)&dimquery,
-    sizeof(dimquery), DTAG_DIMS, modeID) == 0)
+  if (GetDisplayInfoData(NULL, (UBYTE *)&m_DimensionInfo,
+    sizeof(m_DimensionInfo), DTAG_DIMS, modeID) == 0)
   {
     m_InitError = IE_GettingDimInfo;
     return false;
   }
 
-  vpextra->DisplayClip = dimquery.Nominal;
+  m_pViewPortExtra->DisplayClip = m_DimensionInfo.Nominal;
 
   // Make a DisplayInfo and get ready to attach it
-  if (!(vcTags[2].ti_Data = (ULONG) FindDisplayInfo(modeID)))
+  if (!(videoCtrlTags[2].ti_Data = (ULONG) FindDisplayInfo(modeID)))
   {
     m_InitError = IE_GettingDisplayInfo;
     return false;
   }
 
   // Initialize the ColorMap, 3 planes deep, so 8 entries
-  cm = GetColorMap(m_ViewNumColors);
-  if (cm == NULL)
+  m_pColorMap = GetColorMap(m_ViewNumColors);
+  if (m_pColorMap == NULL)
   {
     m_InitError = IE_GettingCM;
     return false;
   }
 
   /* Get ready to attach the ColorMap, Release 2-style */
-  vcTags[0].ti_Data = (ULONG)&viewPort;
+  videoCtrlTags[0].ti_Data = (ULONG)&m_ViewPort;
 
   /* Attach the color map and Release 2 extended structures */
-  if (VideoControl(cm, vcTags))
+  if (VideoControl(m_pColorMap, videoCtrlTags))
   {
     m_InitError = IE_AttachExtStructs;
     return false;
   }
 
   // Construct preliminary Copper instruction list
-  MakeVPort(&view, &viewPort);
+  MakeVPort(&m_View, &m_ViewPort);
 
   // Merge preliminary lists into a real Copper list in the View
   // structure
-  MrgCop(&view);
+  MrgCop(&m_View);
 
   // Clear the ViewPort
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    UBYTE* displaymem = (UBYTE*) bitMap1.Planes[depth];
-    BltClear(displaymem, (bitMap1.BytesPerRow * bitMap1.Rows), 1L);
+    UBYTE* pPlane = (UBYTE*) m_BitMap1.Planes[depth];
+    BltClear(pPlane, (m_BitMap1.BytesPerRow * m_BitMap1.Rows), 1L);
   }
 
-  LoadView(&view);
+  LoadView(&m_View);
 
   return true;
 }
@@ -207,93 +209,93 @@ bool GameViewAdvanced::Open()
 void GameViewAdvanced::Close()
 {
   // Put back the old view
-  LoadView(oldview);
+  LoadView(m_pOldView);
 
   // Befoire freeing memory wait until the old view is being  rendered
   WaitTOF();
   WaitTOF();
 
   // Deallocate the hardware Copper list created by MrgCop()
-  FreeCprList(view.LOFCprList);
+  FreeCprList(m_View.LOFCprList);
 
   // Free all intermediate Copper lists from created by MakeVPort()
-  FreeVPortCopLists(&viewPort);
+  FreeVPortCopLists(&m_ViewPort);
 
   //  Free the color map created by GetColorMap()
-  if (cm != NULL)
+  if (m_pColorMap != NULL)
   {
-    FreeColorMap(cm);
+    FreeColorMap(m_pColorMap);
   }
 
   // Free the ViewPortExtra created by GfxNew()
-  if (vpextra != NULL)
+  if (m_pViewPortExtra != NULL)
   {
-    GfxFree(vpextra);
+    GfxFree(m_pViewPortExtra);
   }
 
   //  Free the BitPlanes drawing area
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    if (bitMap1.Planes[depth] != NULL)
+    if (m_BitMap1.Planes[depth] != NULL)
     {
-      FreeRaster(bitMap1.Planes[depth], m_ViewWidth, m_ViewHeight);
+      FreeRaster(m_BitMap1.Planes[depth], m_ViewWidth, m_ViewHeight);
     }
 
-    if (bitMap2.Planes[depth] != NULL)
+    if (m_BitMap2.Planes[depth] != NULL)
     {
-      FreeRaster(bitMap2.Planes[depth], m_ViewWidth, m_ViewHeight);
+      FreeRaster(m_BitMap2.Planes[depth], m_ViewWidth, m_ViewHeight);
     }
 
   }
 
   // Free the MonitorSpec created with OpenMonitor()
-  if (monspec != NULL)
+  if (m_pMonitorSpec != NULL)
   {
-    CloseMonitor(monspec);
+    CloseMonitor(m_pMonitorSpec);
   }
 
   // Free the ViewExtra created with GfxNew()
-  if (vextra)
+  if (m_pViewExtra)
   {
-    GfxFree(vextra);
+    GfxFree(m_pViewExtra);
   }
 }
 
 struct RastPort* GameViewAdvanced::RastPort()
 {
-  return &rastPort;
+  return &m_RastPort;
 }
 
 struct ViewPort* GameViewAdvanced::ViewPort()
 {
-  return &viewPort;
+  return &m_ViewPort;
 }
 
 struct View* GameViewAdvanced::View()
 {
-  return &view;
+  return &m_View;
 }
 
 void GameViewAdvanced::Render()
 {
-  SortGList(&rastPort);
-  DrawGList(&rastPort, &viewPort);
+  SortGList(&m_RastPort);
+  DrawGList(&m_RastPort, &m_ViewPort);
   WaitTOF();
 
-  MrgCop(&view);
-  LoadView(&view);
+  MrgCop(&m_View);
+  LoadView(&m_View);
 
   // Switch the buffers
   if(m_BufToggle == false)
   {
-    viewPort.RasInfo->BitMap = &bitMap2;
-    rastPort.BitMap = &bitMap2;
+    m_ViewPort.RasInfo->BitMap = &m_BitMap2;
+    m_RastPort.BitMap = &m_BitMap2;
     m_BufToggle = true;
   }
   else
   {
-    viewPort.RasInfo->BitMap = &bitMap1;
-    rastPort.BitMap = &bitMap1;
+    m_ViewPort.RasInfo->BitMap = &m_BitMap1;
+    m_RastPort.BitMap = &m_BitMap1;
     m_BufToggle = false;
   }
 }
