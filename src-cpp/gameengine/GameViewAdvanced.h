@@ -1,19 +1,13 @@
 #ifndef GAME_VIEW_ADVANCED_H
 #define GAME_VIEW_ADVANCED_H
 
-#include <graphics/gfx.h>
-#include <graphics/gfxbase.h>
-#include <graphics/gfxmacros.h>
-#include <graphics/copper.h>
 #include <graphics/view.h>
-#include <graphics/displayinfo.h>
-#include <graphics/gfxnodes.h>
-#include <graphics/videocontrol.h>
+
 
 #include "IGameView.h"
 
 /**
- * Represents an advanced view for games. It is constructed manually 
+ * Represents an advanced view for games. It is constructed manually
  * using graphics.library functions and may in future be enhanced by
  * dual playfield capabilities.
  *

@@ -1,13 +1,17 @@
 #include <clib/graphics_protos.h>
+#include <graphics/copper.h>
 #include <graphics/gfxbase.h>
+#include <graphics/displayinfo.h>
+#include <graphics/gfxnodes.h>
+#include <graphics/videocontrol.h>
 
 #include "GameViewAdvanced.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameViewAdvanced::GameViewAdvanced(short viewWidth, 
-                                   short viewHeight, 
+GameViewAdvanced::GameViewAdvanced(short viewWidth,
+                                   short viewHeight,
                                    short viewDepth)
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),

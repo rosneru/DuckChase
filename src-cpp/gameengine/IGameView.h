@@ -12,13 +12,13 @@
  *
  * GameViews can be opened and must be closed when finished.
  *
- * The Render() method should be called every frame to draw the changed 
+ * The Render() method should be called every frame to draw the changed
  * scene and moved objects.
  *
- * They contain a RastPort, ViewPort and View to allow graphics 
+ * They contain a RastPort, ViewPort and View to allow graphics
  * operations to be performed.
  *
- * Finally they contain a LastError method, reporting a text of what 
+ * Finally they contain a LastError method, reporting a text of what
  * has gone, which currently only is set when Open() fails.
  *
  *
@@ -28,16 +28,16 @@
 class IGameView
 {
 public:
-  bool Open() = 0;
-  void Close() = 0;
+  virtual bool Open() = 0;
+  virtual void Close() = 0;
 
-  struct RastPort* RastPort() = 0;
-  struct ViewPort* ViewPort() = 0;
-  struct View* View() = 0;
+  virtual struct RastPort* RastPort() = 0;
+  virtual struct ViewPort* ViewPort() = 0;
+  virtual struct View* View() = 0;
 
-  void Render() = 0;
+  virtual void Render() = 0;
 
-  const char* LastError() const = 0;
+  virtual const char* LastError() const = 0;
 };
 
 #endif

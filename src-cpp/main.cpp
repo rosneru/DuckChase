@@ -1,16 +1,13 @@
-#include <devices/timer.h>
 #include <libraries/lowlevel.h>
-#include <utility/tagitem.h>
-
 #include <clib/graphics_protos.h>
 #include <clib/exec_protos.h>
-#include <clib/dos_protos.h>
 #include <clib/lowlevel_protos.h>
+
+#include <stdio.h>
+#include <string.h>
 
 #include "animtools.h"
 #include "animtools_proto.h"
-
-#include "stdiostring.h"
 
 #include "IGameView.h"
 #include "GameViewAdvanced.h"
@@ -143,9 +140,6 @@ void theGame(IGameView& gameView)
   //
   // Setting up some variables and the drawing rect for FPS display
   //
-  char pFpsBuf[] = {"FPS: __________"};
-  char* pFpsNumberStart = pFpsBuf + 5;
-
   SetBPen(pRastPort, 1);
   SetAPen(pRastPort, 1);
   RectFill(pRastPort, 0, 246, 639, 255);
@@ -221,14 +215,15 @@ void theGame(IGameView& gameView)
     {
       // Calculatin fps and writing it to the string buf
       short fps = 1000 / dblElapsed;
-      itoa(fps, pFpsNumberStart, 10);
+      char fpsBuf[20];
+      sprintf(fpsBuf, "FPS: %d", fps);
 
       SetAPen(pRastPort, 1);
       RectFill(pRastPort, 550, 246, 639, 255);
 
       SetAPen(pRastPort, 5);
       Move(pRastPort, 550, 254);
-      Text(pRastPort, pFpsBuf, strlength(pFpsBuf));
+      Text(pRastPort, fpsBuf, strlen(fpsBuf));
     }
 
     // Check if exit key ESC have been pressed
@@ -249,7 +244,7 @@ void theGame(IGameView& gameView)
  */
 int fail(STRPTR errorstring)
 {
-  VPrintf(errorstring, NULL);
+  printf("%s", errorstring);
   return cleanup(RETURN_FAIL);
 }
 
