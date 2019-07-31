@@ -12,14 +12,15 @@
 
 #include "stdiostring.h"
 
+#include "IGameView.h"
 #include "GameViewAdvanced.h"
 #include "GelsBob.h"
 #include "Picture.h"
 #include "StopWatch.h"
 
-void theGame(GameViewAdvanced& gameView);
+void theGame(IGameView& gameView);
 
-void drawGels(GameViewAdvanced& gameView);
+void drawGels(IGameView& gameView);
 int cleanup(int);
 int fail(STRPTR);
 
@@ -38,13 +39,13 @@ int main(void)
                 TAG_END);
 
   GameViewAdvanced gameView(640, 256, 3);
-  if(gameView.Init() == false)
+  if(gameView.Open() == false)
   {
     return fail((STRPTR)gameView.LastError());
   }
 
   // Initialize the GELs system
-  struct GelsInfo* pGelsInfo = setupGelSys(gameView.GetRastPort(),
+  struct GelsInfo* pGelsInfo = setupGelSys(gameView.RastPort(),
                                            0x03);
 
   if(pGelsInfo == NULL)
@@ -58,18 +59,18 @@ int main(void)
   theGame(gameView);
 
   // Free the resources allocated by the Gels system
-  cleanupGelSys(pGelsInfo, gameView.GetRastPort());
+  cleanupGelSys(pGelsInfo, gameView.RastPort());
 
 
   WaitTOF();
   WaitTOF();
-  gameView.FreeAll();
+  gameView.Close();
 
   return cleanup(RETURN_OK);
 }
 
 
-void theGame(GameViewAdvanced& gameView)
+void theGame(IGameView& gameView)
 {
   //
   // Setting the used color table (extracted from pic wit BtoC32)
@@ -80,7 +81,7 @@ void theGame(GameViewAdvanced& gameView)
   };
 
   // Change colors to those in colortable
-  LoadRGB4(gameView.GetViewPort(), colortable, 8);
+  LoadRGB4(gameView.ViewPort(), colortable, 8);
 
 
   //
@@ -123,7 +124,7 @@ void theGame(GameViewAdvanced& gameView)
     return;
   }
 
-  struct RastPort* pRastPort = gameView.GetRastPort();
+  struct RastPort* pRastPort = gameView.RastPort();
 
   BltBitMapRastPort(picBackgr.GetBitMap(), 0, 0, pRastPort,
                     0, 0, 640, 256, 0xC0);
@@ -244,13 +245,13 @@ void theGame(GameViewAdvanced& gameView)
   RemBob(pBobDuck);
 }
 
-void drawGels(GameViewAdvanced& gameView)
+void drawGels(IGameView& gameView)
 {
-  struct RastPort* pRastPort = gameView.GetRastPort();
-  struct View* pView = gameView.GetView();
+  struct RastPort* pRastPort = gameView.RastPort();
+  struct View* pView = gameView.View();
 
   SortGList(pRastPort);
-  DrawGList(pRastPort, gameView.GetViewPort());
+  DrawGList(pRastPort, gameView.ViewPort());
   WaitTOF();
 
   MrgCop(pView);

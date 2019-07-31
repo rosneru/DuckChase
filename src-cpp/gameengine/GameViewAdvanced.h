@@ -10,26 +10,28 @@
 #include <graphics/gfxnodes.h>
 #include <graphics/videocontrol.h>
 
+#include "IGameView.h"
 
 /**
- * Represents a graphics.library constructed, double buffered view
- * to be used for gaming purposes etc.
+ * Represents an advanced view for games. It is constructed manually 
+ * using graphics.library functions and may in future be enhanced by
+ * dual playfield capabilities.
  *
  * @author Uwe Rosner
  * @date 29/07/2019
  */
-class GameViewAdvanced
+class GameViewAdvanced : public IGameView
 {
 public:
   GameViewAdvanced(short viewWidth, short viewHeight, short viewDepth);
   ~GameViewAdvanced();
 
-  bool Init();
-  void FreeAll();
+  bool Open();
+  void Close();
 
-  struct RastPort* GetRastPort();
-  struct ViewPort* GetViewPort();
-  struct View* GetView();
+  struct RastPort* RastPort();
+  struct ViewPort* ViewPort();
+  struct View* View();
 
   void SwitchBuffers();
 

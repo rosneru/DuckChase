@@ -34,7 +34,7 @@ GameViewAdvanced::~GameViewAdvanced()
 
 }
 
-bool GameViewAdvanced::Init()
+bool GameViewAdvanced::Open()
 {
   if(vextra != NULL)
   {
@@ -208,7 +208,7 @@ bool GameViewAdvanced::Init()
   return true;
 }
 
-void GameViewAdvanced::FreeAll()
+void GameViewAdvanced::Close()
 {
   // Put back the old view
   LoadView(oldview);
@@ -263,17 +263,17 @@ void GameViewAdvanced::FreeAll()
   }
 }
 
-struct RastPort* GameViewAdvanced::GetRastPort()
+struct RastPort* GameViewAdvanced::RastPort()
 {
   return &rastPort;
 }
 
-struct ViewPort* GameViewAdvanced::GetViewPort()
+struct ViewPort* GameViewAdvanced::ViewPort()
 {
   return &viewPort;
 }
 
-struct View* GameViewAdvanced::GetView()
+struct View* GameViewAdvanced::View()
 {
   return &view;
 }
