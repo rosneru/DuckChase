@@ -8,11 +8,12 @@
 /**
  * Represents an Interface for all supported GameViews.
  *
- * All GameViews are double buffered. They contain a method
- * SwitchBuffers() to switch between the displayed and the to be drawn
- * image.
- * 
+ * All GameViews are double buffered.
+ *
  * GameViews can be opened and must be closed when finished.
+ *
+ * The Render() method should be called every frame to draw the changed 
+ * scene and moved objects.
  *
  * They contain a RastPort, ViewPort and View to allow graphics 
  * operations to be performed.
@@ -34,7 +35,7 @@ public:
   struct ViewPort* ViewPort() = 0;
   struct View* View() = 0;
 
-  void SwitchBuffers() = 0;
+  void Render() = 0;
 
   const char* LastError() const = 0;
 };

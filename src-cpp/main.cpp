@@ -20,7 +20,6 @@
 
 void theGame(IGameView& gameView);
 
-void drawGels(IGameView& gameView);
 int cleanup(int);
 int fail(STRPTR);
 
@@ -152,7 +151,7 @@ void theGame(IGameView& gameView)
   RectFill(pRastPort, 0, 246, 639, 255);
   SetAPen(pRastPort, 5);
 
-  drawGels(gameView);
+  gameView.Render();
 
 
   //
@@ -211,7 +210,7 @@ void theGame(IGameView& gameView)
     animFrameCnt++;
 
     // draw the objects on thir new positions
-    drawGels(gameView);
+    gameView.Render();
 
     //
     // Display the FPS value
@@ -245,23 +244,6 @@ void theGame(IGameView& gameView)
   RemBob(pBobDuck);
 }
 
-void drawGels(IGameView& gameView)
-{
-  struct RastPort* pRastPort = gameView.RastPort();
-  struct View* pView = gameView.View();
-
-  SortGList(pRastPort);
-  DrawGList(pRastPort, gameView.ViewPort());
-  WaitTOF();
-
-  MrgCop(pView);
-  LoadView(pView);
-
-  // Switch the buffers
-  gameView.SwitchBuffers();
-}
-
-
 /**
  * Print the error string and call cleanup() to exit
  */
@@ -272,7 +254,7 @@ int fail(STRPTR errorstring)
 }
 
 /**
- * Fee everything that was allocated
+ * Free everything that was allocated
  */
 int cleanup(int returncode)
 {

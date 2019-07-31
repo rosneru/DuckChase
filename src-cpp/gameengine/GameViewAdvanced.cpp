@@ -278,8 +278,16 @@ struct View* GameViewAdvanced::View()
   return &view;
 }
 
-void GameViewAdvanced::SwitchBuffers()
+void GameViewAdvanced::Render()
 {
+  SortGList(&rastPort);
+  DrawGList(&rastPort, &viewPort);
+  WaitTOF();
+
+  MrgCop(&view);
+  LoadView(&view);
+
+  // Switch the buffers
   if(m_BufToggle == false)
   {
     viewPort.RasInfo->BitMap = &bitMap2;
