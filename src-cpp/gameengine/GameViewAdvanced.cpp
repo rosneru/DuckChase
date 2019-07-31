@@ -11,15 +11,11 @@ GameViewAdvanced::GameViewAdvanced(short viewWidth, short viewHeight, short view
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
     oldview(NULL),
-    //viewPort(0),
-    //bitMap1(0),
-    //bitMap2(0),
     cm(NULL),
     vextra(NULL),
     monspec(NULL),
     vpextra(NULL),
     m_BufToggle(false)
-    //dimquery(0)
 {
   m_ViewNumColors = 1;
   for(int i = 0; i < viewDepth; i++)
@@ -307,7 +303,7 @@ const char* GameViewAdvanced::LastError() const
   switch(m_InitError)
   {
     case IE_None:
-      return "GameView init successful.";
+      return "No error: init done successfully.";
       break;
 
     case IE_AlreadyInitialized:

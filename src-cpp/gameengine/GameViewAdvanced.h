@@ -33,7 +33,7 @@ public:
   struct ViewPort* ViewPort();
   struct View* View();
 
-  void SwitchBuffers();
+  void Render();
 
   const char* LastError() const;
 
