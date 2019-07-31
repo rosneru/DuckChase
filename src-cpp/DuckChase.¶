@@ -126,6 +126,12 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "gameengine/GameViewSimple.cpp"
+Storm Shell Project (Dependencies)
+"objects_debug/GameViewSimple.o" "objects_debug/GameViewSimple.debug"
+""
+1 1
+File
 1 "gameengine/GelsBob.cpp"
 "gameengine/GelsBob.cpp"
 "animtools/animtools.h"
@@ -139,14 +145,6 @@ File
 "main.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
-""
-1 1
-File
-1 "stdlib-custom/stdiostring.c"
-"stdlib-custom/stdiostring.c"
-"stdlib-custom/stdiostring.h"
-Storm Shell Project (Dependencies)
-"objects_debug/stdiostring.o" "objects_debug/stdiostring.debug"
 ""
 1 1
 Section
@@ -189,6 +187,12 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "gameengine/GameViewSimple.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "gameengine/GelsBob.h"
 "gameengine/GelsBob.h"
 Storm Shell Project (Dependencies)
@@ -202,19 +206,13 @@ Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
-File
-2 "stdlib-custom/stdiostring.h"
-"stdlib-custom/stdiostring.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
 Section
 10 1 40
 0 0 0 0
 7
 File
 10 "DuckChase"
+"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""

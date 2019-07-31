@@ -10,7 +10,7 @@
 #include "animtools_proto.h"
 
 #include "IGameView.h"
-#include "GameViewAdvanced.h"
+#include "GameViewSimple.h"
 #include "GelsBob.h"
 #include "Picture.h"
 #include "StopWatch.h"
@@ -34,7 +34,7 @@ int main(void)
   SystemControl(SCON_TakeOverSys, TRUE,
                 TAG_END);
 
-  GameViewAdvanced gameView(640, 256, 3);
+  GameViewSimple gameView(640, 256, 3);
   if(gameView.Open() == false)
   {
     return fail((STRPTR)gameView.LastError());
