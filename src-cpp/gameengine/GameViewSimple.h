@@ -41,8 +41,8 @@ private:
 
   struct Screen* m_pScreen;
 
-  struct BitMap bitMap1;
-  struct BitMap bitMap2;
+  struct BitMap m_BitMap1;
+  struct BitMap m_BitMap2;
 
   enum InitError
   {

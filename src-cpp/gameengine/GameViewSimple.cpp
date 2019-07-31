@@ -41,33 +41,33 @@ bool GameViewSimple::Open()
 
 
   // Initialize the BitMaps
-  InitBitMap(&bitMap1, m_ViewDepth, m_ViewWidth, m_ViewHeight);
-  InitBitMap(&bitMap2, m_ViewDepth, m_ViewWidth, m_ViewHeight);
+  InitBitMap(&m_BitMap1, m_ViewDepth, m_ViewWidth, m_ViewHeight);
+  InitBitMap(&m_BitMap2, m_ViewDepth, m_ViewWidth, m_ViewHeight);
 
   // Set the plane pointers to NULL so the cleanup routine
   // will know if they were used
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    bitMap1.Planes[depth] = NULL;
-    bitMap2.Planes[depth] = NULL;
+    m_BitMap1.Planes[depth] = NULL;
+    m_BitMap2.Planes[depth] = NULL;
   }
 
   // Allocate space for BitMap
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    bitMap1.Planes[depth] = (PLANEPTR)
+    m_BitMap1.Planes[depth] = (PLANEPTR)
       AllocRaster(m_ViewWidth, m_ViewHeight);
 
-    if (bitMap1.Planes[depth] == NULL)
+    if (m_BitMap1.Planes[depth] == NULL)
     {
       m_InitError = IE_GettingBitPlanes;
       return false;
     }
 
-    bitMap2.Planes[depth] = (PLANEPTR)
+    m_BitMap2.Planes[depth] = (PLANEPTR)
       AllocRaster(m_ViewWidth, m_ViewHeight);
 
-    if (bitMap2.Planes[depth] == NULL)
+    if (m_BitMap2.Planes[depth] == NULL)
     {
       m_InitError = IE_GettingBitPlanes;
       return false;
@@ -78,17 +78,17 @@ bool GameViewSimple::Open()
 
   m_pScreen = OpenScreenTags(NULL,
     SA_Pens, pens,
-    SA_Depth, 3,
+    SA_Depth, m_ViewDepth,
     SA_Top, 0,
     SA_Left, 0,
-    SA_Width, 640,
-    SA_Height, 256,
+    SA_Width, m_ViewWidth,
+    SA_Height, m_ViewHeight,
     SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
     SA_Quiet, TRUE,
     SA_Exclusive, TRUE,
-    SA_Interleaved, TRUE,
+//    SA_Interleaved, TRUE,
     SA_Type, CUSTOMSCREEN,
-    SA_BitMap, &bitMap1,
+    SA_BitMap, &m_BitMap1,
     TAG_END);
   
   if(m_pScreen == NULL)
@@ -110,14 +110,14 @@ void GameViewSimple::Close()
   //  Free the BitPlanes drawing area
   for (int depth = 0; depth < m_ViewDepth; depth++)
   {
-    if (bitMap1.Planes[depth] != NULL)
+    if (m_BitMap1.Planes[depth] != NULL)
     {
-      FreeRaster(bitMap1.Planes[depth], m_ViewWidth, m_ViewHeight);
+      FreeRaster(m_BitMap1.Planes[depth], m_ViewWidth, m_ViewHeight);
     }
 
-    if (bitMap2.Planes[depth] != NULL)
+    if (m_BitMap2.Planes[depth] != NULL)
     {
-      FreeRaster(bitMap2.Planes[depth], m_ViewWidth, m_ViewHeight);
+      FreeRaster(m_BitMap2.Planes[depth], m_ViewWidth, m_ViewHeight);
     }
 
   }
@@ -165,14 +165,14 @@ void GameViewSimple::Render()
   // Switch the buffers
   if(m_BufToggle == false)
   {
-    m_pScreen->ViewPort.RasInfo->BitMap = &bitMap2;
-    m_pScreen->RastPort.BitMap = &bitMap2;
+    m_pScreen->ViewPort.RasInfo->BitMap = &m_BitMap2;
+    m_pScreen->RastPort.BitMap = &m_BitMap2;
     m_BufToggle = true;
   }
   else
   {
-    m_pScreen->ViewPort.RasInfo->BitMap = &bitMap1;
-    m_pScreen->RastPort.BitMap = &bitMap1;
+    m_pScreen->ViewPort.RasInfo->BitMap = &m_BitMap1;
+    m_pScreen->RastPort.BitMap = &m_BitMap1;
     m_BufToggle = false;
   }
 }
