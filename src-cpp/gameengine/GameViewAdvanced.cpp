@@ -17,10 +17,17 @@ GameViewAdvanced::GameViewAdvanced(short viewWidth,
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
     m_pOldView(NULL),
+    m_View(),
+    m_ViewPort(),
+    m_BitMap1(),
+    m_BitMap2(),
+    m_RastPort(),
+    m_DimensionInfo(),
     m_pColorMap(NULL),
     m_pViewExtra(NULL),
     m_pMonitorSpec(NULL),
     m_pViewPortExtra(NULL),
+    m_InitError(IE_None),
     m_BufToggle(false)
 {
   m_ViewNumColors = 1;
@@ -48,13 +55,6 @@ bool GameViewAdvanced::Open()
 
   struct RasInfo rasInfo;
   ULONG modeID;
-
-  // Save current View to restore later
-  m_pOldView = GfxBase->ActiView;
-
-  LoadView(NULL);
-  WaitTOF();
-  WaitTOF();
 
   // Initialize the View and set View.Modes
   InitView(&m_View);
@@ -194,9 +194,6 @@ bool GameViewAdvanced::Open()
   // Construct preliminary Copper instruction list
   MakeVPort(&m_View, &m_ViewPort);
 
-  // Merge preliminary lists into a real Copper list in the View
-  // structure
-  MrgCop(&m_View);
 
   // Clear the ViewPort
   for (int depth = 0; depth < m_ViewDepth; depth++)
@@ -204,6 +201,17 @@ bool GameViewAdvanced::Open()
     UBYTE* pPlane = (UBYTE*) m_BitMap1.Planes[depth];
     BltClear(pPlane, (m_BitMap1.BytesPerRow * m_BitMap1.Rows), 1L);
   }
+
+  // Merge preliminary lists into a real Copper list in the View
+  // structure
+  MrgCop(&m_View);
+
+  // Save current View to restore later
+  m_pOldView = GfxBase->ActiView;
+
+  LoadView(NULL); // TODO try without this
+  WaitTOF();
+  WaitTOF();
 
   LoadView(&m_View);
 
