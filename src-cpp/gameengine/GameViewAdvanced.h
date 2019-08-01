@@ -23,6 +23,9 @@ public:
   bool Open();
   void Close();
 
+  short Width();
+  short Height();
+
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
   struct View* View();

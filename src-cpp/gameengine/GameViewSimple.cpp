@@ -123,6 +123,16 @@ void GameViewSimple::Close()
   }
 }
 
+short GameViewSimple::Width()
+{
+  return m_ViewWidth;
+}
+
+short GameViewSimple::Height()
+{
+  return m_ViewHeight;
+}
+
 struct RastPort* GameViewSimple::RastPort()
 {
   if(m_pScreen == NULL)

@@ -285,15 +285,29 @@ void GameViewAdvanced::Close()
   }
 }
 
+
+short GameViewAdvanced::Width()
+{
+  return m_ViewWidth;
+}
+
+short GameViewAdvanced::Height()
+{
+  return m_ViewHeight;
+}
+
+
 struct RastPort* GameViewAdvanced::RastPort()
 {
   return &m_RastPort;
 }
 
+
 struct ViewPort* GameViewAdvanced::ViewPort()
 {
   return &m_ViewPort;
 }
+
 
 struct View* GameViewAdvanced::View()
 {
@@ -302,6 +316,12 @@ struct View* GameViewAdvanced::View()
 
 void GameViewAdvanced::Render()
 {
+  if(GfxBase->ActiView != &m_View)
+  {
+    // Not initialized
+    return;
+  }
+
   SortGList(&m_RastPort);
   DrawGList(&m_RastPort, &m_ViewPort);
   WaitTOF();

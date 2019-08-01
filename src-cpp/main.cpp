@@ -13,6 +13,7 @@
 #include "GameViewSimple.h"
 #include "GelsBob.h"
 #include "Picture.h"
+#include "PointsDisplay.h"
 #include "StopWatch.h"
 
 void theGame(IGameView& gameView);
@@ -140,10 +141,7 @@ void theGame(IGameView& gameView)
   //
   // Setting up some variables and the drawing rect for FPS display
   //
-  SetBPen(pRastPort, 1);
-  SetAPen(pRastPort, 1);
-  RectFill(pRastPort, 0, 246, 639, 255);
-  SetAPen(pRastPort, 5);
+  PointsDisplay pointsDisplay(gameView, 1, 5, 5);
 
   gameView.Render();
 
@@ -215,15 +213,7 @@ void theGame(IGameView& gameView)
     {
       // Calculatin fps and writing it to the string buf
       short fps = 1000 / dblElapsed;
-      char fpsBuf[20];
-      sprintf(fpsBuf, "FPS: %d", fps);
-
-      SetAPen(pRastPort, 1);
-      RectFill(pRastPort, 550, 246, 639, 255);
-
-      SetAPen(pRastPort, 5);
-      Move(pRastPort, 550, 254);
-      Text(pRastPort, fpsBuf, strlen(fpsBuf));
+      pointsDisplay.UpdateFps(fps);
     }
 
     // Check if exit key ESC have been pressed

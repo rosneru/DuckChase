@@ -19,7 +19,7 @@
  * operations to be performed.
  *
  * Finally they contain a LastError method, reporting a text of what
- * has gone, which currently only is set when Open() fails.
+ * has gone wrong, which currently only is set when Open() fails.
  *
  *
  * @author Uwe Rosner
@@ -30,6 +30,9 @@ class IGameView
 public:
   virtual bool Open() = 0;
   virtual void Close() = 0;
+
+  virtual short Width() = 0;
+  virtual short Height() = 0;
 
   virtual struct RastPort* RastPort() = 0;
   virtual struct ViewPort* ViewPort() = 0;
