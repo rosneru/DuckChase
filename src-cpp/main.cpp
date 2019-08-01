@@ -205,21 +205,22 @@ void theGame(IGameView& gameView)
     gameView.Render();
 
     //
-    // Display the FPS value
+    // Calculate and update the FPS value
     //
     double dblElapsed = stopWatch.Pick();
-
     if(dblElapsed >= 0)
     {
-      // Calculatin fps and writing it to the string buf
       short fps = 1000 / dblElapsed;
       pointsDisplay.UpdateFps(fps);
     }
 
+    //
     // Check if exit key ESC have been pressed
+    //
     ULONG key = GetKey();
-    if((key & 0x00ff) == 0x45) // RAW code ESC key
+    if((key & 0xff) == 0x45) 
     {
+      // ESC pressed
       bContinue = false;
     }
   }
