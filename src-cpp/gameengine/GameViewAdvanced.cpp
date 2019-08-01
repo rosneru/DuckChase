@@ -220,23 +220,35 @@ bool GameViewAdvanced::Open()
 
 void GameViewAdvanced::Close()
 {
-  // Put back the old view
-  LoadView(m_pOldView);
+  if(GfxBase->ActiView == &m_View)
+  {
+    // Put back the old view
+    LoadView(m_pOldView);
 
-  // Befoire freeing memory wait until the old view is being  rendered
-  WaitTOF();
-  WaitTOF();
-
-  // Deallocate the hardware Copper list created by MrgCop()
-  FreeCprList(m_View.LOFCprList);
-
-  // Free all intermediate Copper lists from created by MakeVPort()
-  FreeVPortCopLists(&m_ViewPort);
+    // Before freeing memory wait until the old view is being rendered
+    WaitTOF();
+    WaitTOF();
+  }
 
   //  Free the color map created by GetColorMap()
   if (m_pColorMap != NULL)
   {
     FreeColorMap(m_pColorMap);
+  }
+
+  // Free all intermediate Copper lists from created by MakeVPort()
+  FreeVPortCopLists(&m_ViewPort);
+
+  if(m_View.LOFCprList != NULL)
+  {
+    // Deallocate the hardware Copper list created by MrgCop()
+    FreeCprList(m_View.LOFCprList);
+  }
+
+  if(m_View.SHFCprList != NULL)
+  {
+    // Deallocate also the interlace-only hardware Copper list
+    FreeCprList(m_View.SHFCprList);
   }
 
   // Free the ViewPortExtra created by GfxNew()
@@ -267,7 +279,7 @@ void GameViewAdvanced::Close()
   }
 
   // Free the ViewExtra created with GfxNew()
-  if (m_pViewExtra)
+  if (m_pViewExtra != NULL)
   {
     GfxFree(m_pViewExtra);
   }
