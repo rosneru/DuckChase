@@ -14,8 +14,8 @@ Game::Game(bool bAdvancedView)
     m_pGameView(&m_GameViewSimple),
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
-    m_BobDuck(m_pGameView->Depth, 59, 21, 3),
-    m_BobHunter(m_pGameView->Depth, 16, 22, 3),
+    m_BobDuck(m_pGameView->Depth(), 59, 21, 3),
+    m_BobHunter(m_pGameView->Depth(), 16, 22, 3),
     m_pBobDuck(NULL),
     m_pBobHunter(NULL)
 {
@@ -134,7 +134,8 @@ bool Game::Run()
   if(m_PicBackground.LoadFromRawFile("/gfx/background_hires.raw",
                                      640, 256, 3) == FALSE)
   {
-    return;
+    m_pLastError = "Couldn't load background image\n";
+    return false;
   }
 
   struct RastPort* pRastPort = m_pGameView->RastPort();
@@ -157,9 +158,10 @@ bool Game::Run()
   //
   // Setting up some variables and the drawing rect for FPS display
   //                                   // TODO Fix design to avoid this *
-  m_pPointsDisplay = new PointsDisplay(*m_pGameView, 1, 5, 5);
-
+  m_pPointsDisplay = new PointsDisplay(*m_pGameView, 1, 5, 5, 3);
+//  m_pPointsDisplay->UpdateInfo(m_pGameView->ViewName());
   m_pGameView->Render();
+
 
   return gameLoop();
 }
@@ -173,6 +175,7 @@ const char* Game::LastError() const
 
 bool Game::gameLoop()
 {
+
   StopWatch stopWatch;
   stopWatch.Start();
 
@@ -241,11 +244,13 @@ bool Game::gameLoop()
     // Check if exit key ESC has been pressed
     //
     ULONG key = GetKey();
-    if((key & 0xff) == 0x45) 
+    if((key & 0xff) == 0x45)
     {
       // ESC pressed
       bContinue = false;
     }
   }
   while (bContinue);
+
+  return true;
 }

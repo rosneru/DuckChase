@@ -14,15 +14,17 @@ class PointsDisplay
 {
 public:
   PointsDisplay(IGameView& gameView,
-                short backPen, 
+                short backPen,
                 short strikesPen,
-                short fpsPen);
+                short fpsPen,
+                short infoPen);
 
   ~PointsDisplay();
 
 
   void UpdateStrikes(short strikes);
   void UpdateFps(short fps);
+  void UpdateInfo(const char* pInfo);
 
 private:
   IGameView& m_GameView;
@@ -32,6 +34,7 @@ private:
   short m_BackPen;
   short m_StrikesPen;
   short m_FpsPen;
+  short m_InfoPen;
 };
 
 #endif

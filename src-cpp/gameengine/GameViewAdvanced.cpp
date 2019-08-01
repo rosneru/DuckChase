@@ -400,3 +400,8 @@ const char* GameViewAdvanced::LastError() const
       break;
   }
 }
+
+const char* GameViewAdvanced::ViewName() const
+{
+  return "Advanced (Gfx) view";
+}

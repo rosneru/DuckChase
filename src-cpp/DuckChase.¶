@@ -117,6 +117,17 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "Game.cpp"
+"Game.cpp"
+"animtools/animtools.h"
+"Game.h"
+"gameengine/IGameView.h"
+"PointsDisplay.h"
+Storm Shell Project (Dependencies)
+"objects_debug/Game.o" "objects_debug/Game.debug"
+""
+1 1
+File
 1 "gameengine/GameViewAdvanced.cpp"
 "gameengine/GameViewAdvanced.cpp"
 "gameengine/GameViewAdvanced.h"
@@ -127,6 +138,9 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "gameengine/GameViewSimple.cpp"
+"gameengine/GameViewSimple.cpp"
+"gameengine/GameViewSimple.h"
+"gameengine/IGameView.h"
 Storm Shell Project (Dependencies)
 "objects_debug/GameViewSimple.o" "objects_debug/GameViewSimple.debug"
 ""
@@ -141,8 +155,15 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "PointsDisplay.cpp"
+"PointsDisplay.cpp"
+"PointsDisplay.h"
+Storm Shell Project (Dependencies)
+"objects_debug/PointsDisplay.o" "objects_debug/PointsDisplay.debug"
+""
+1 1
+File
 1 "main.cpp"
-"main.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -180,6 +201,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "Game.h"
+"Game.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "gameengine/GameViewAdvanced.h"
 "gameengine/GameViewAdvanced.h"
 Storm Shell Project (Dependencies)
@@ -188,6 +216,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "gameengine/GameViewSimple.h"
+"gameengine/GameViewSimple.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -202,6 +231,13 @@ Storm Shell Project (Dependencies)
 File
 2 "gameengine/IGameView.h"
 "gameengine/IGameView.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "PointsDisplay.h"
+"PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

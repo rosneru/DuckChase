@@ -42,6 +42,7 @@ public:
   virtual void Render() = 0;
 
   virtual const char* LastError() const = 0;
+  virtual const char* ViewName() const = 0;
 };
 
 #endif

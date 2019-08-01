@@ -9,7 +9,7 @@
 #include "IGameView.h"
 
 /**
- * Represents a simple view for games. It uses a intuition screen with 
+ * Represents a simple view for games. It uses a intuition screen with
  * two (double buffering) custom bitmaps which are set up manually.
  *
  * @author Uwe Rosner
@@ -35,6 +35,7 @@ public:
   void Render();
 
   const char* LastError() const;
+  const char* ViewName() const;
 
 
 private:

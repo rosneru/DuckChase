@@ -20,7 +20,7 @@ int main(void)
   SystemControl(SCON_TakeOverSys, TRUE,
                 TAG_END);
 
-  Game game;
+  Game game(true);
   if(game.Run() == false)
   {
     printf("%s", game.LastError());

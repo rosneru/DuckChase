@@ -7,8 +7,8 @@
 extern struct GfxBase* GfxBase;
 
 
-GameViewSimple::GameViewSimple(short viewWidth, 
-                               short viewHeight, 
+GameViewSimple::GameViewSimple(short viewWidth,
+                               short viewHeight,
                                short viewDepth)
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
@@ -90,12 +90,12 @@ bool GameViewSimple::Open()
     SA_Type, CUSTOMSCREEN,
     SA_BitMap, &m_BitMap1,
     TAG_END);
-  
+
   if(m_pScreen == NULL)
   {
     return false;
   }
-  
+
 
   return true;
 }
@@ -171,7 +171,7 @@ void GameViewSimple::Render()
 {
   if(m_pScreen == NULL)
   {
-    return; 
+    return;
   }
 
   SortGList(&m_pScreen->RastPort);
@@ -220,4 +220,9 @@ const char* GameViewSimple::LastError() const
       return "Unknown state";
       break;
   }
+}
+
+const char* GameViewSimple::ViewName() const
+{
+  return "Simple (Intuition) view";
 }

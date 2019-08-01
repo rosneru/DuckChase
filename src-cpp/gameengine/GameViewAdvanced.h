@@ -34,6 +34,7 @@ public:
   void Render();
 
   const char* LastError() const;
+  const char* ViewName() const;
 
 
 private:
