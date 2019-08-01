@@ -25,6 +25,7 @@ public:
 
   short Width();
   short Height();
+  short Depth();
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();

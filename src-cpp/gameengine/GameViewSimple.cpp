@@ -128,10 +128,18 @@ short GameViewSimple::Width()
   return m_ViewWidth;
 }
 
+
 short GameViewSimple::Height()
 {
   return m_ViewHeight;
 }
+
+
+short GameViewSimple::Depth()
+{
+  return m_ViewDepth;
+}
+
 
 struct RastPort* GameViewSimple::RastPort()
 {
@@ -142,6 +150,7 @@ struct RastPort* GameViewSimple::RastPort()
 
   return &m_pScreen->RastPort;
 }
+
 
 struct ViewPort* GameViewSimple::ViewPort()
 {

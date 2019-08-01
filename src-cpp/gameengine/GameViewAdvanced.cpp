@@ -291,9 +291,16 @@ short GameViewAdvanced::Width()
   return m_ViewWidth;
 }
 
+
 short GameViewAdvanced::Height()
 {
   return m_ViewHeight;
+}
+
+
+short GameViewAdvanced::Depth()
+{
+  return m_ViewDepth;
 }
 
 
