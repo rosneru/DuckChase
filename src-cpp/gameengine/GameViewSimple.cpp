@@ -3,6 +3,7 @@
 #include <clib/intuition_protos.h>
 #include <exec/memory.h>
 #include <graphics/gfxbase.h>
+#include <graphics/modeid.h>
 
 #include "GameViewSimple.h"
 
@@ -84,10 +85,7 @@ bool GameViewSimple::Open()
     }
   }
 
-  UWORD pens[] = { ~0 };
-
   m_pScreen = OpenScreenTags(NULL,
-    SA_Pens, pens,
     SA_Depth, m_ViewDepth,
     SA_Top, 0,
     SA_Left, 0,
@@ -96,8 +94,6 @@ bool GameViewSimple::Open()
     SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
     SA_Quiet, TRUE,
     SA_Exclusive, TRUE,
-//    SA_Interleaved, TRUE,
-    SA_Type, CUSTOMSCREEN,
     SA_BitMap, m_pBitMapArray[0],
     TAG_END);
 
@@ -115,6 +111,7 @@ void GameViewSimple::Close()
   if(m_pScreen != NULL)
   {
     CloseScreen(m_pScreen);
+    m_pScreen = NULL;
   }
 
   //  Free the double buffers
