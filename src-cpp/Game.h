@@ -17,7 +17,7 @@
 class Game
 {
 public:
-  Game(bool bAdvancedView = false);
+  Game(IGameView& gameView);
   ~Game();
 
   bool Run();
@@ -25,9 +25,8 @@ public:
   const char* LastError() const;
 
 private:
-  GameViewSimple m_GameViewSimple;
-  GameViewAdvanced m_GameViewAdvanced;
-  IGameView* m_pGameView;
+
+  IGameView& m_GameView;
   PointsDisplay* m_pPointsDisplay;
 
   struct GelsInfo* m_pGelsInfo;

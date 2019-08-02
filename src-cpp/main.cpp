@@ -6,6 +6,9 @@
 #include <stdio.h>
 
 #include "Game.h"
+#include "GameViewAdvanced.h"
+#include "GameViewSimple.h"
+
 
 int cleanup(int);
 int fail(STRPTR);
@@ -20,7 +23,10 @@ int main(void)
   SystemControl(SCON_TakeOverSys, TRUE,
                 TAG_END);
 
-  Game game(true);
+  
+  GameViewSimple gameView(640, 256, 3);
+  Game game(gameView);
+
   if(game.Run() == false)
   {
     printf("%s", game.LastError());

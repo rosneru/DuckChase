@@ -8,21 +8,16 @@
 #include "Game.h"
 
 
-Game::Game(bool bAdvancedView)
-  : m_GameViewSimple(640, 256, 3),    // Don't panic, light-weight init
-    m_GameViewAdvanced(640, 256, 3),  // Don't panic, light-weight init
-    m_pGameView(&m_GameViewSimple),
+Game::Game(IGameView& gameView)
+  : m_GameView(gameView),
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
-    m_BobDuck(m_pGameView->Depth(), 59, 21, 3),
-    m_BobHunter(m_pGameView->Depth(), 16, 22, 3),
+    m_BobDuck(m_GameView.Depth(), 59, 21, 3),
+    m_BobHunter(m_GameView.Depth(), 16, 22, 3),
     m_pBobDuck(NULL),
     m_pBobHunter(NULL)
 {
-  if(bAdvancedView)
-  {
-    m_pGameView = &m_GameViewAdvanced;
-  }
+
 }
 
 
@@ -49,26 +44,26 @@ Game::~Game()
   // Free the resources allocated by the Gels system
   if(m_pGelsInfo != NULL)
   {
-    cleanupGelSys(m_pGelsInfo, m_pGameView->RastPort());
+    cleanupGelSys(m_pGelsInfo, m_GameView.RastPort());
   }
 
   WaitTOF();
   WaitTOF();
 
-  m_pGameView->Close();
+  m_GameView.Close();
 }
 
 
 bool Game::Run()
 {
-  if(m_pGameView->Open() == false)
+  if(m_GameView.Open() == false)
   {
-    m_pLastError = m_pGameView->LastError();
+    m_pLastError = m_GameView.LastError();
     return false;
   }
 
   // Initialize the Gels system
-  m_pGelsInfo = setupGelSys(m_pGameView->RastPort(), 0x03);
+  m_pGelsInfo = setupGelSys(m_GameView.RastPort(), 0x03);
   if(m_pGelsInfo == NULL)
   {
     m_pLastError = "Could not initialize the Gels system\n";
@@ -84,7 +79,7 @@ bool Game::Run()
   };
 
   // Change colors to those in colortable
-  LoadRGB4(m_pGameView->ViewPort(), colortable, 8);
+  LoadRGB4(m_GameView.ViewPort(), colortable, 8);
 
   //
   // Loading all the Bobs images
@@ -138,7 +133,7 @@ bool Game::Run()
     return false;
   }
 
-  struct RastPort* pRastPort = m_pGameView->RastPort();
+  struct RastPort* pRastPort = m_GameView.RastPort();
 
   BltBitMapRastPort(m_PicBackground.GetBitMap(), 0, 0, pRastPort,
                     0, 0, 640, 256, 0xC0);
@@ -157,10 +152,9 @@ bool Game::Run()
 
   //
   // Setting up some variables and the drawing rect for FPS display
-  //                                   // TODO Fix design to avoid this *
-  m_pPointsDisplay = new PointsDisplay(*m_pGameView, 1, 5, 5, 3);
+  m_pPointsDisplay = new PointsDisplay(m_GameView, 1, 5, 5, 3);
 //  m_pPointsDisplay->UpdateInfo(m_pGameView->ViewName());
-  m_pGameView->Render();
+  m_GameView.Render();
 
 
   return gameLoop();
@@ -228,7 +222,7 @@ bool Game::gameLoop()
     animFrameCnt++;
 
     // Render the changed scenery
-    m_pGameView->Render();
+    m_GameView.Render();
 
     //
     // Calculate and update the FPS value
