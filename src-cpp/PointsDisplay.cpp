@@ -113,13 +113,13 @@ void PointsDisplay::UpdateInfo(const char* pInfo)
   SetAPen(m_pRastPort, m_BackPen);
   SetBPen(m_pRastPort, m_BackPen);
   RectFill(m_pRastPort,
-           1,
+           2,
            m_ViewHeight - 10,
            90,
            m_ViewHeight - 1);
 
-  Move(m_pRastPort, 1, m_ViewHeight - 1 - 1);
-  SetAPen(m_pRastPort, m_FpsPen);
+  Move(m_pRastPort, 2, m_ViewHeight - 1 - 1);
+  SetAPen(m_pRastPort, m_InfoPen);
   size_t lelel = strlen(pInfo);
   Text(m_pRastPort, pInfo, lelel);
 }

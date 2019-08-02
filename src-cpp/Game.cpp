@@ -147,7 +147,8 @@ bool Game::Run()
 
   //
   // Setting up some variables and the drawing rect for FPS display
-//  m_pPointsDisplay->UpdateInfo(m_pGameView->ViewName());
+  m_PointsDisplay.Clear();
+//  m_PointsDisplay.UpdateInfo(m_pGameView->ViewName());
   m_GameView.Render();
 
 
