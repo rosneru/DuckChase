@@ -6,6 +6,9 @@
 #include "IGameView.h"
 /**
  * A bottom 'state bar' for displaying game strikes and fps information
+ * 
+ * To initialize this display the Clear() method should be called after
+ * the view is opened.
  *
  * @author Uwe Rosner
  * @date 01/08/2019
@@ -20,6 +23,11 @@ public:
                 short infoPen);
 
   ~PointsDisplay();
+
+  /**
+   * Clears the whole display
+   */
+  void Clear();
 
 
   void UpdateStrikes(short strikes);
