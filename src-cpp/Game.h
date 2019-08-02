@@ -27,7 +27,7 @@ public:
 private:
 
   IGameView& m_GameView;
-  PointsDisplay* m_pPointsDisplay;
+  PointsDisplay m_PointsDisplay;
 
   struct GelsInfo* m_pGelsInfo;
 

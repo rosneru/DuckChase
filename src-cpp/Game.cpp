@@ -10,6 +10,7 @@
 
 Game::Game(IGameView& gameView)
   : m_GameView(gameView),
+    m_PointsDisplay(m_GameView, 1, 5, 5, 3),
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
     m_BobDuck(m_GameView.Depth(), 59, 21, 3),
@@ -23,12 +24,6 @@ Game::Game(IGameView& gameView)
 
 Game::~Game()
 {
-  if(m_pPointsDisplay != NULL)
-  {
-    delete m_pPointsDisplay;
-    m_pPointsDisplay = NULL;
-  }
-
   if(m_pBobDuck != NULL)
   {
     RemBob(m_pBobDuck);
@@ -152,7 +147,6 @@ bool Game::Run()
 
   //
   // Setting up some variables and the drawing rect for FPS display
-  m_pPointsDisplay = new PointsDisplay(m_GameView, 1, 5, 5, 3);
 //  m_pPointsDisplay->UpdateInfo(m_pGameView->ViewName());
   m_GameView.Render();
 
@@ -231,7 +225,7 @@ bool Game::gameLoop()
     if(dblElapsed >= 0)
     {
       short fps = 1000 / dblElapsed;
-      m_pPointsDisplay->UpdateFps(fps);
+      m_PointsDisplay.UpdateFps(fps);
     }
 
     //
