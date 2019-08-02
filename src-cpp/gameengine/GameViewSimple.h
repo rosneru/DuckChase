@@ -45,19 +45,19 @@ private:
 
   struct Screen* m_pScreen;
 
-  struct BitMap m_BitMap1;
-  struct BitMap m_BitMap2;
+  struct BitMap* m_pBitMapArray[2];
+  WORD m_FrameToggle;
 
   enum InitError
   {
     IE_None,
     IE_AlreadyInitialized,
+    IE_GettingBitMapMem,
     IE_GettingBitPlanes,
     IE_OpeningScreen,
   };
 
   InitError m_InitError;
-  bool m_BufToggle;
 
 };
 
