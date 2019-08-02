@@ -16,7 +16,6 @@ PointsDisplay::PointsDisplay(IGameView& gameView,
                              short fpsPen,
                              short infoPen)
   : m_GameView(gameView),
-    m_pRastPort(NULL),
     m_ViewWidth(gameView.Width()),
     m_ViewHeight(gameView.Height()),
     m_BackPen(backPen),
@@ -35,22 +34,18 @@ PointsDisplay::~PointsDisplay()
 
 void PointsDisplay::Clear()
 {
-  if(m_pRastPort == NULL)
+  if(m_GameView.RastPort() == NULL)
   {
-    if(m_GameView.RastPort() == NULL)
-    {
-      return;
-    }
-
-    m_pRastPort = m_GameView.RastPort();
+    return;
   }
 
+
   // Drawing a filled black rect at the bottom of the view
-  SetAPen(m_pRastPort, m_BackPen);
-  SetBPen(m_pRastPort, m_BackPen);
-  RectFill(m_pRastPort,
+  SetAPen(m_GameView.RastPort(), m_BackPen);
+  SetBPen(m_GameView.RastPort(), m_BackPen);
+  RectFill(m_GameView.RastPort(),
            0,
-           m_ViewHeight - 10,
+           m_ViewHeight - 12,
            m_ViewWidth - 1,
            m_ViewHeight - 1);
 }
@@ -58,68 +53,54 @@ void PointsDisplay::Clear()
 
 void PointsDisplay::UpdateStrikes(short strikes)
 {
-  if(m_pRastPort == NULL)
+  if(m_GameView.RastPort() == NULL)
   {
-    if(m_GameView.RastPort() == NULL)
-    {
-      return;
-    }
-
-    m_pRastPort = m_GameView.RastPort();
+    return;
   }
 }
 
 
 void PointsDisplay::UpdateFps(short fps)
 {
-  if(m_pRastPort == NULL)
+  if(m_GameView.RastPort() == NULL)
   {
-    if(m_GameView.RastPort() == NULL)
-    {
-      return;
-    }
-
-    m_pRastPort = m_GameView.RastPort();
+    return;
   }
 
   char fpsBuf[16];
   sprintf(fpsBuf, "FPS: %d", fps);
 
-  SetAPen(m_pRastPort, m_BackPen);
-  SetBPen(m_pRastPort, m_BackPen);
-  RectFill(m_pRastPort,
+  SetAPen(m_GameView.RastPort(), m_BackPen);
+  SetBPen(m_GameView.RastPort(), m_BackPen);
+  RectFill(m_GameView.RastPort(),
            m_ViewWidth - 90,
-           m_ViewHeight - 10,
-           m_ViewWidth - 1,
-           m_ViewHeight - 1);
+           m_ViewHeight - 12,
+           m_ViewWidth - 4,
+           m_ViewHeight - 2);
 
-  Move(m_pRastPort, m_ViewWidth - 90, m_ViewHeight - 1 - 1);
-  SetAPen(m_pRastPort, m_FpsPen);
-  Text(m_pRastPort, fpsBuf, strlen(fpsBuf));
+  Move(m_GameView.RastPort(), m_ViewWidth - 90, m_ViewHeight - 2 - 1);
+  SetAPen(m_GameView.RastPort(), m_FpsPen);
+  Text(m_GameView.RastPort(), fpsBuf, strlen(fpsBuf));
 }
+
 
 void PointsDisplay::UpdateInfo(const char* pInfo)
 {
-  if(m_pRastPort == NULL)
+  if(m_GameView.RastPort() == NULL)
   {
-    if(m_GameView.RastPort() == NULL)
-    {
-      return;
-    }
-
-    m_pRastPort = m_GameView.RastPort();
+    return;
   }
 
-  SetAPen(m_pRastPort, m_BackPen);
-  SetBPen(m_pRastPort, m_BackPen);
-  RectFill(m_pRastPort,
-           2,
-           m_ViewHeight - 10,
+  SetAPen(m_GameView.RastPort(), m_BackPen);
+  SetBPen(m_GameView.RastPort(), m_BackPen);
+  RectFill(m_GameView.RastPort(),
+           5,
+           m_ViewHeight - 12,
            90,
-           m_ViewHeight - 1);
+           m_ViewHeight - 2);
 
-  Move(m_pRastPort, 2, m_ViewHeight - 1 - 1);
-  SetAPen(m_pRastPort, m_InfoPen);
-  size_t lelel = strlen(pInfo);
-  Text(m_pRastPort, pInfo, lelel);
+  Move(m_GameView.RastPort(), 5, m_ViewHeight - 2 - 1);
+  SetAPen(m_GameView.RastPort(), m_InfoPen);
+  Text(m_GameView.RastPort(), pInfo, strlen(pInfo));
 }
+

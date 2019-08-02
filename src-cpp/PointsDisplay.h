@@ -6,7 +6,7 @@
 #include "IGameView.h"
 /**
  * A bottom 'state bar' for displaying game strikes and fps information
- * 
+ *
  * To initialize this display the Clear() method should be called after
  * the view is opened.
  *
@@ -36,7 +36,6 @@ public:
 
 private:
   IGameView& m_GameView;
-  struct RastPort* m_pRastPort;
   short m_ViewWidth;
   short m_ViewHeight;
   short m_BackPen;

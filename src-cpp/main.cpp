@@ -23,7 +23,7 @@ int main(void)
   SystemControl(SCON_TakeOverSys, TRUE,
                 TAG_END);
 
-  
+
   GameViewSimple gameView(640, 256, 3);
   Game game(gameView);
 
