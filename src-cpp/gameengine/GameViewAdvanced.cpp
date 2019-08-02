@@ -316,11 +316,6 @@ struct ViewPort* GameViewAdvanced::ViewPort()
 }
 
 
-struct View* GameViewAdvanced::View()
-{
-  return &m_View;
-}
-
 void GameViewAdvanced::Render()
 {
   if(GfxBase->ActiView != &m_View)

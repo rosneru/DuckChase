@@ -10,13 +10,13 @@
  *
  * All GameViews are double buffered.
  *
- *  A GameView can be opened and must be closed when finished.
+ * A GameView can be opened and must be closed when finished.
  *
  * The Render() method should be called every frame to draw the changed
  * scenery and moved objects.
  *
- * They contain a RastPort, ViewPort and View to allow graphics
- * operations to be performed.
+ * They contain a ViewPort and a RastPort to allow graphics operations 
+ * to be performed.
  *
  * Finally they contain a LastError method, reporting a text of what
  * has gone wrong, which currently only is set when Open() fails.
@@ -37,7 +37,6 @@ public:
 
   virtual struct RastPort* RastPort() = 0;
   virtual struct ViewPort* ViewPort() = 0;
-  virtual struct View* View() = 0;
 
   virtual void Render() = 0;
 

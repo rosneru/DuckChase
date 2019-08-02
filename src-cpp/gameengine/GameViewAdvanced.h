@@ -29,7 +29,6 @@ public:
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
-  struct View* View();
 
   void Render();
 

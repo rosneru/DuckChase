@@ -162,10 +162,6 @@ struct ViewPort* GameViewSimple::ViewPort()
   return &m_pScreen->ViewPort;
 }
 
-struct View* GameViewSimple::View()
-{
-  return ViewAddress();
-}
 
 void GameViewSimple::Render()
 {
