@@ -193,7 +193,7 @@ bool GameViewAdvanced::Open()
   videoCtrlTags[0].ti_Data = (ULONG)&m_ViewPort;
 
   /* Attach the color map and Release 2 extended structures */
-  if (VideoControl(m_pColorMap, videoCtrlTags))
+  if (VideoControl(m_pColorMap, videoCtrlTags) != NULL)
   {
     m_InitError = IE_AttachExtStructs;
     return false;
@@ -201,16 +201,6 @@ bool GameViewAdvanced::Open()
 
   // Construct preliminary Copper instruction list
   MakeVPort(&m_View, &m_ViewPort);
-
-/* TODO Maybe use this intead the erlier BltClear
-
-  // Clear the ViewPort
-  for (int depth = 0; depth < m_ViewDepth; depth++)
-  {
-    UBYTE* pPlane = (UBYTE*) m_BitMap1.Planes[depth];
-    BltClear(pPlane, (m_BitMap1.BytesPerRow * m_BitMap1.Rows), 1L);
-  }
-*/
 
   // Merge preliminary lists into a real Copper list in the View
   // structure
