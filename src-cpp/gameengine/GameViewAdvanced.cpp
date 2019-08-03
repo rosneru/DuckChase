@@ -90,7 +90,7 @@ bool GameViewAdvanced::Open()
   // Initialize the BitMaps
   for(int i = 0; i < 2; i++)
   {
-    // Allocate memory for ButMap i
+    // Allocate memory for BitMap i
     m_pBitMapArray[i] = (struct BitMap *)
      AllocVec(sizeof(struct BitMap), MEMF_CHIP);
 
