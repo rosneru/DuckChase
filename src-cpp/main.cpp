@@ -24,7 +24,7 @@ int main(void)
                 TAG_END);
 
 
-  GameViewSimplej gameView(640, 256, 3);
+  GameViewAdvanced gameView(640, 256, 3);
   Game game(gameView);
 
   if(game.Run() == false)

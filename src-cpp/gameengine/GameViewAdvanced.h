@@ -45,7 +45,7 @@ private:
   struct View* m_pOldView;
 
   struct View m_View;
-  struct ViewPort m_ViewPort;
+  struct ViewPort* m_pViewPort;
   struct RastPort m_RastPort;
   struct DimensionInfo m_DimensionInfo;
 
@@ -65,6 +65,7 @@ private:
     IE_GettingMonSpec,
     IE_GettingBitMapMem,
     IE_GettingBitPlanes,
+    IE_GettingViewPort,
     IE_GettingVPExtra,
     IE_GettingDimInfo,
     IE_GettingDisplayInfo,

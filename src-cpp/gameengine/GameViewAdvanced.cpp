@@ -19,7 +19,7 @@ GameViewAdvanced::GameViewAdvanced(short viewWidth,
     m_ViewDepth(viewDepth),
     m_pOldView(NULL),
     m_View(),
-    m_ViewPort(),
+    m_pViewPort(NULL),
     m_RastPort(),
     m_DimensionInfo(),
     m_pColorMap(NULL),
@@ -143,11 +143,20 @@ bool GameViewAdvanced::Open()
   rasInfo.Next = NULL;
 
   // Initialize the ViewPort
-  InitVPort(&m_ViewPort);
-  m_View.ViewPort = &m_ViewPort; // Link the ViewPort into the View
-  m_ViewPort.RasInfo = &rasInfo;
-  m_ViewPort.DWidth = m_ViewWidth;
-  m_ViewPort.DHeight = m_ViewHeight;
+  m_pViewPort = (struct ViewPort*) AllocVec(sizeof(struct ViewPort),
+                                            MEMF_CLEAR);
+  if (m_pViewPort == NULL)
+  {
+    m_InitError = IE_GettingViewPort;
+    Close();
+    return false;
+  }
+
+  InitVPort(m_pViewPort);
+  m_View.ViewPort = m_pViewPort; // Link the ViewPort into the View
+  m_pViewPort->RasInfo = &rasInfo;
+  m_pViewPort->DWidth = m_ViewWidth;
+  m_pViewPort->DHeight = m_ViewHeight;
 
   // Make a ViewPortExtra and get ready to attach it
   m_pViewPortExtra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE);
@@ -199,7 +208,7 @@ bool GameViewAdvanced::Open()
   }
 
   // Get ready to attach the ColorMap, Release 2-style
-  videoCtrlTags[0].ti_Data = (ULONG)&m_ViewPort;
+  videoCtrlTags[0].ti_Data = (ULONG)m_pViewPort;
 
   // Attach the color map and Release 2 extended structures
   if (VideoControl(m_pColorMap, videoCtrlTags) != NULL)
@@ -210,7 +219,7 @@ bool GameViewAdvanced::Open()
   }
 
   // Construct preliminary Copper instruction list
-  MakeVPort(&m_View, &m_ViewPort);
+  MakeVPort(&m_View, m_pViewPort);
 
   // Merge preliminary lists into a real Copper list in the View
   // structure
@@ -246,9 +255,6 @@ void GameViewAdvanced::Close()
     m_pColorMap = NULL;
   }
 
-  // Free all intermediate Copper lists from created by MakeVPort()
-  FreeVPortCopLists(&m_ViewPort);
-
   if(m_View.LOFCprList != NULL)
   {
     // Deallocate the hardware Copper list created by MrgCop()
@@ -268,6 +274,17 @@ void GameViewAdvanced::Close()
   {
     GfxFree(m_pViewPortExtra);
     m_pViewPortExtra = NULL;
+  }
+
+  // Free the ViewPort and it copper lists
+  if (m_pViewPort != NULL)
+  {
+    // Free all intermediate Copper lists created by MakeVPort()
+    FreeVPortCopLists(m_pViewPort);
+
+    // And now the ViewPort itself
+    FreeVec(m_pViewPort);
+    m_pViewPort = NULL;
   }
 
   //  Free the double buffers
@@ -335,7 +352,7 @@ struct RastPort* GameViewAdvanced::RastPort()
 
 struct ViewPort* GameViewAdvanced::ViewPort()
 {
-  return &m_ViewPort;
+  return m_pViewPort;
 }
 
 
@@ -348,10 +365,10 @@ void GameViewAdvanced::Render()
   }
 
   SortGList(&m_RastPort);
-  DrawGList(&m_RastPort, &m_ViewPort);
+  DrawGList(&m_RastPort, m_pViewPort);
 
   // Double buffering: One BitMap is for the view
-  m_ViewPort.RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  m_pViewPort->RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
 
   WaitTOF();
 
@@ -391,6 +408,10 @@ const char* GameViewAdvanced::LastError() const
 
     case IE_GettingBitPlanes:
       return "Could not get BitPlanes.\n";
+      break;
+
+    case IE_GettingViewPort:
+      return "Could not get ViewPort memory.\n";
       break;
 
     case IE_GettingVPExtra:
