@@ -98,7 +98,8 @@
         ;
         ; Load address of allocated memory for the picture
         ;
-        move.l  #picture,d0
+        lea     picture(pc),a0
+        move.l  (a0),d0
         move.w  d0,pl1+6
         swap    d0
         move.w  d0,pl1+2
@@ -206,6 +207,7 @@ picture:
                 SECTION "copperlist",data,chip
 
 copperlist      CNOP    0,4
+                dc.w    $0207,$fffe ;Required for AGA machines
                 dc.w    $008e,$3081 ;DIWSTRT
                 dc.w    $0090,$35c1 ;DIWSTOP
                 dc.w    $0104,$0064 ;BPLCON2
@@ -223,6 +225,8 @@ pl1:            dc.w    $00e0,$0005 ;BPL1PTH
                 dc.w    $0180,$0fff ;COLOR00 -> white
                 dc.w    $e007,$fffe ;WAIT
                 dc.w    $0180,$0f00 ;COLOR00 -> red
+
+                dc.w    $ff07,$fffe ;Wait for last ntsc line
                 dc.w    $ffff,$fffe ;Waiting for impossible position
 
 
