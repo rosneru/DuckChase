@@ -228,10 +228,9 @@ bool GameViewAdvanced::Open()
   // Save current View to restore later
   m_pOldView = GfxBase->ActiView;
 
-  WaitTOF();
-  WaitTOF();
-
   LoadView(&m_View);
+  WaitTOF();
+  WaitTOF();
 
   return true;
 }
