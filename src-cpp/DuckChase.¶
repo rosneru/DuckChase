@@ -164,6 +164,10 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "main.cpp"
+"main.cpp"
+"Game.h"
+"gameengine/IGameView.h"
+"PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""

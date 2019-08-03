@@ -54,6 +54,7 @@ bool GameViewSimple::Open()
     if(m_pBitMapArray[i] == NULL)
     {
       m_InitError = IE_GettingBitMapMem;
+      Close();
       return false;
     }
 
@@ -77,6 +78,7 @@ bool GameViewSimple::Open()
       if (m_pBitMapArray[i]->Planes[depth] == NULL)
       {
         m_InitError = IE_GettingBitPlanes;
+        Close();
         return false;
       }
 
@@ -100,6 +102,8 @@ bool GameViewSimple::Open()
 
   if(m_pScreen == NULL)
   {
+    m_InitError = IE_OpeningScreen;
+    Close();
     return false;
   }
 
@@ -127,11 +131,14 @@ void GameViewSimple::Close()
         {
           FreeRaster(m_pBitMapArray[i]->Planes[depth],
                      m_ViewWidth, m_ViewHeight);
+
+          m_pBitMapArray[i]->Planes[depth] = NULL;
         }
       }
 
       // Then free the buffer itself
       FreeVec(m_pBitMapArray[i]);
+      m_pBitMapArray[i] = NULL;
     }
   }
 }

@@ -48,6 +48,7 @@ bool GameViewAdvanced::Open()
   if(m_pViewExtra != NULL)
   {
     m_InitError = IE_AlreadyInitialized;
+    Close();
     return false;
   }
 
@@ -67,6 +68,7 @@ bool GameViewAdvanced::Open()
   if (m_pViewExtra == NULL)
   {
     m_InitError = IE_GettingViewExtra;
+    Close();
     return false;
   }
 
@@ -79,6 +81,7 @@ bool GameViewAdvanced::Open()
   if (m_pMonitorSpec == NULL)
   {
     m_InitError = IE_GettingMonSpec;
+    Close();
     return false;
   }
 
@@ -94,6 +97,7 @@ bool GameViewAdvanced::Open()
     if(m_pBitMapArray[i] == NULL)
     {
       m_InitError = IE_GettingBitMapMem;
+      Close();
       return false;
     }
 
@@ -118,6 +122,7 @@ bool GameViewAdvanced::Open()
       {
         m_InitError = IE_GettingBitPlanes;
         return false;
+        Close();
       }
 
       // Set all bits of this newly created BitPlane to 0
@@ -150,6 +155,7 @@ bool GameViewAdvanced::Open()
   if (m_pViewPortExtra == NULL)
   {
     m_InitError = IE_GettingVPExtra;
+    Close();
     return false;
   }
 
@@ -169,6 +175,7 @@ bool GameViewAdvanced::Open()
     sizeof(m_DimensionInfo), DTAG_DIMS, modeID) == 0)
   {
     m_InitError = IE_GettingDimInfo;
+    Close();
     return false;
   }
 
@@ -178,6 +185,7 @@ bool GameViewAdvanced::Open()
   if (!(videoCtrlTags[2].ti_Data = (ULONG) FindDisplayInfo(modeID)))
   {
     m_InitError = IE_GettingDisplayInfo;
+    Close();
     return false;
   }
 
@@ -186,16 +194,18 @@ bool GameViewAdvanced::Open()
   if (m_pColorMap == NULL)
   {
     m_InitError = IE_GettingCM;
+    Close();
     return false;
   }
 
-  /* Get ready to attach the ColorMap, Release 2-style */
+  // Get ready to attach the ColorMap, Release 2-style
   videoCtrlTags[0].ti_Data = (ULONG)&m_ViewPort;
 
-  /* Attach the color map and Release 2 extended structures */
+  // Attach the color map and Release 2 extended structures
   if (VideoControl(m_pColorMap, videoCtrlTags) != NULL)
   {
     m_InitError = IE_AttachExtStructs;
+    Close();
     return false;
   }
 
@@ -209,7 +219,6 @@ bool GameViewAdvanced::Open()
   // Save current View to restore later
   m_pOldView = GfxBase->ActiView;
 
-  LoadView(NULL); // TODO try without this
   WaitTOF();
   WaitTOF();
 
@@ -230,10 +239,11 @@ void GameViewAdvanced::Close()
     WaitTOF();
   }
 
-  //  Free the color map created by GetColorMap()
+  // Free the color map created by GetColorMap()
   if (m_pColorMap != NULL)
   {
     FreeColorMap(m_pColorMap);
+    m_pColorMap = NULL;
   }
 
   // Free all intermediate Copper lists from created by MakeVPort()
@@ -243,18 +253,21 @@ void GameViewAdvanced::Close()
   {
     // Deallocate the hardware Copper list created by MrgCop()
     FreeCprList(m_View.LOFCprList);
+    m_View.LOFCprList = NULL;
   }
 
   if(m_View.SHFCprList != NULL)
   {
     // Deallocate also the interlace-only hardware Copper list
     FreeCprList(m_View.SHFCprList);
+    m_View.SHFCprList = NULL;
   }
 
   // Free the ViewPortExtra created by GfxNew()
   if (m_pViewPortExtra != NULL)
   {
     GfxFree(m_pViewPortExtra);
+    m_pViewPortExtra = NULL;
   }
 
   //  Free the double buffers
@@ -269,11 +282,14 @@ void GameViewAdvanced::Close()
         {
           FreeRaster(m_pBitMapArray[i]->Planes[depth],
                      m_ViewWidth, m_ViewHeight);
+
+          m_pBitMapArray[i]->Planes[depth] = NULL;
         }
       }
 
       // Then free the buffer itself
       FreeVec(m_pBitMapArray[i]);
+      m_pBitMapArray[i] = NULL;
     }
   }
 
@@ -281,12 +297,14 @@ void GameViewAdvanced::Close()
   if (m_pMonitorSpec != NULL)
   {
     CloseMonitor(m_pMonitorSpec);
+    m_pMonitorSpec = NULL;
   }
 
   // Free the ViewExtra created with GfxNew()
   if (m_pViewExtra != NULL)
   {
     GfxFree(m_pViewExtra);
+    m_pViewExtra = NULL;
   }
 }
 
