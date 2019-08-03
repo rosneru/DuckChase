@@ -46,8 +46,6 @@ private:
 
   struct View m_View;
   struct ViewPort m_ViewPort;
-  struct BitMap m_BitMap1;
-  struct BitMap m_BitMap2;
   struct RastPort m_RastPort;
   struct DimensionInfo m_DimensionInfo;
 
@@ -56,12 +54,16 @@ private:
   struct MonitorSpec* m_pMonitorSpec;
   struct ViewPortExtra* m_pViewPortExtra;
 
+  struct BitMap* m_pBitMapArray[2];
+  WORD m_FrameToggle;
+
   enum InitError
   {
     IE_None,
     IE_AlreadyInitialized,
     IE_GettingViewExtra,
     IE_GettingMonSpec,
+    IE_GettingBitMapMem,
     IE_GettingBitPlanes,
     IE_GettingVPExtra,
     IE_GettingDimInfo,
@@ -71,7 +73,6 @@ private:
   };
 
   InitError m_InitError;
-  bool m_BufToggle;
 
 };
 

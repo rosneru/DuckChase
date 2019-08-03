@@ -1,3 +1,4 @@
+#include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <graphics/copper.h>
 #include <graphics/gfxbase.h>
@@ -19,16 +20,15 @@ GameViewAdvanced::GameViewAdvanced(short viewWidth,
     m_pOldView(NULL),
     m_View(),
     m_ViewPort(),
-    m_BitMap1(),
-    m_BitMap2(),
     m_RastPort(),
     m_DimensionInfo(),
     m_pColorMap(NULL),
     m_pViewExtra(NULL),
     m_pMonitorSpec(NULL),
     m_pViewPortExtra(NULL),
-    m_InitError(IE_None),
-    m_BufToggle(false)
+    m_FrameToggle(0),
+    m_pBitMapArray(),
+    m_InitError(IE_None)
 {
   m_ViewNumColors = 1;
   for(int i = 0; i < viewDepth; i++)
@@ -85,46 +85,54 @@ bool GameViewAdvanced::Open()
   m_pViewExtra->Monitor = m_pMonitorSpec;
 
   // Initialize the BitMaps
-  InitBitMap(&m_BitMap1, m_ViewDepth, m_ViewWidth, m_ViewHeight);
-  InitBitMap(&m_BitMap2, m_ViewDepth, m_ViewWidth, m_ViewHeight);
-
-  // Set the plane pointers to NULL so the cleanup routine
-  // will know if they were used
-  for (int depth = 0; depth < m_ViewDepth; depth++)
+  for(int i = 0; i < 2; i++)
   {
-    m_BitMap1.Planes[depth] = NULL;
-    m_BitMap2.Planes[depth] = NULL;
-  }
+    // Allocate memory for ButMap i
+    m_pBitMapArray[i] = (struct BitMap *)
+     AllocVec(sizeof(struct BitMap), MEMF_CHIP);
 
-  // Allocate space for BitMap
-  for (int depth = 0; depth < m_ViewDepth; depth++)
-  {
-    m_BitMap1.Planes[depth] = (PLANEPTR)
-      AllocRaster(m_ViewWidth, m_ViewHeight);
-
-    if (m_BitMap1.Planes[depth] == NULL)
+    if(m_pBitMapArray[i] == NULL)
     {
-      m_InitError = IE_GettingBitPlanes;
+      m_InitError = IE_GettingBitMapMem;
       return false;
     }
 
-    m_BitMap2.Planes[depth] = (PLANEPTR)
-      AllocRaster(m_ViewWidth, m_ViewHeight);
+    // Init BitMap i
+    InitBitMap(m_pBitMapArray[i], m_ViewDepth, m_ViewWidth,
+               m_ViewHeight);
 
-    if (m_BitMap2.Planes[depth] == NULL)
+    // Set the plane pointers to NULL so the cleanup routine will know
+    // if they were used
+    for (int depth = 0; depth < m_ViewDepth; depth++)
     {
-      m_InitError = IE_GettingBitPlanes;
-      return false;
+      m_pBitMapArray[i]->Planes[depth] = NULL;
+    }
+
+    // Allocate memory for the BitPlanes
+    for (int depth = 0; depth < m_ViewDepth; depth++)
+    {
+      m_pBitMapArray[i]->Planes[depth] = (PLANEPTR)
+        AllocRaster(m_ViewWidth, m_ViewHeight);
+
+      if (m_pBitMapArray[i]->Planes[depth] == NULL)
+      {
+        m_InitError = IE_GettingBitPlanes;
+        return false;
+      }
+
+      // Set all bits of this newly created BitPlane to 0
+      BltClear(m_pBitMapArray[i]->Planes[depth],
+               (m_ViewWidth / 8) * m_ViewHeight, 1);
     }
   }
 
   // Create a RastPort to draw into
   InitRastPort(&m_RastPort);
-  m_RastPort.BitMap = &m_BitMap1;
+  m_RastPort.BitMap = m_pBitMapArray[0];
   SetRast(&m_RastPort, 0);
 
   // Initialize the RasInfo
-  rasInfo.BitMap = &m_BitMap1;
+  rasInfo.BitMap = m_pBitMapArray[0];
   rasInfo.RxOffset = 0;
   rasInfo.RyOffset = 0;
   rasInfo.Next = NULL;
@@ -194,6 +202,7 @@ bool GameViewAdvanced::Open()
   // Construct preliminary Copper instruction list
   MakeVPort(&m_View, &m_ViewPort);
 
+/* TODO Maybe use this intead the erlier BltClear
 
   // Clear the ViewPort
   for (int depth = 0; depth < m_ViewDepth; depth++)
@@ -201,6 +210,7 @@ bool GameViewAdvanced::Open()
     UBYTE* pPlane = (UBYTE*) m_BitMap1.Planes[depth];
     BltClear(pPlane, (m_BitMap1.BytesPerRow * m_BitMap1.Rows), 1L);
   }
+*/
 
   // Merge preliminary lists into a real Copper list in the View
   // structure
@@ -257,19 +267,24 @@ void GameViewAdvanced::Close()
     GfxFree(m_pViewPortExtra);
   }
 
-  //  Free the BitPlanes drawing area
-  for (int depth = 0; depth < m_ViewDepth; depth++)
+  //  Free the double buffers
+  for(int i = 0; i < 2; i++)
   {
-    if (m_BitMap1.Planes[depth] != NULL)
+    if(m_pBitMapArray[i] != NULL)
     {
-      FreeRaster(m_BitMap1.Planes[depth], m_ViewWidth, m_ViewHeight);
-    }
+      // Free all BitPlanes of this buffer
+      for (int depth = 0; depth < m_ViewDepth; depth++)
+      {
+        if (m_pBitMapArray[i]->Planes[depth] != NULL)
+        {
+          FreeRaster(m_pBitMapArray[i]->Planes[depth],
+                     m_ViewWidth, m_ViewHeight);
+        }
+      }
 
-    if (m_BitMap2.Planes[depth] != NULL)
-    {
-      FreeRaster(m_BitMap2.Planes[depth], m_ViewWidth, m_ViewHeight);
+      // Then free the buffer itself
+      FreeVec(m_pBitMapArray[i]);
     }
-
   }
 
   // Free the MonitorSpec created with OpenMonitor()
@@ -326,24 +341,20 @@ void GameViewAdvanced::Render()
 
   SortGList(&m_RastPort);
   DrawGList(&m_RastPort, &m_ViewPort);
+
+  // Double buffering: One BitMap is for the view
+  m_ViewPort.RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+
   WaitTOF();
 
   MrgCop(&m_View);
   LoadView(&m_View);
 
-  // Switch the buffers
-  if(m_BufToggle == false)
-  {
-    m_ViewPort.RasInfo->BitMap = &m_BitMap2;
-    m_RastPort.BitMap = &m_BitMap2;
-    m_BufToggle = true;
-  }
-  else
-  {
-    m_ViewPort.RasInfo->BitMap = &m_BitMap1;
-    m_RastPort.BitMap = &m_BitMap1;
-    m_BufToggle = false;
-  }
+  // Double buffering: Toggle the BitMap pointer
+  m_FrameToggle ^= 1;
+
+  // Double buffering: Now the other BitMap is for drawing
+  m_RastPort.BitMap = m_pBitMapArray[m_FrameToggle];
 }
 
 const char* GameViewAdvanced::LastError() const
@@ -364,6 +375,10 @@ const char* GameViewAdvanced::LastError() const
 
     case IE_GettingMonSpec:
       return "Could not get MonitorSpec.\n";
+      break;
+
+    case IE_GettingBitMapMem:
+      return "Could not get BitMap memory.\n";
       break;
 
     case IE_GettingBitPlanes:

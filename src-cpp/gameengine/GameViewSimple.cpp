@@ -18,7 +18,8 @@ GameViewSimple::GameViewSimple(short viewWidth,
     m_ViewDepth(viewDepth),
     m_pScreen(NULL),
     m_pBitMapArray(),
-    m_FrameToggle(0)
+    m_FrameToggle(0),
+    m_InitError(IE_None)
 {
   m_ViewNumColors = 1;
   for(int i = 0; i < viewDepth; i++)
