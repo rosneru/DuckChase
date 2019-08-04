@@ -150,6 +150,7 @@ bool Game::Run()
   m_PointsDisplay.Clear();
   m_PointsDisplay.UpdateInfo(m_GameView.ViewName());
   m_GameView.Render();
+  m_GameView.Render();
 
 
   return gameLoop();
@@ -164,11 +165,13 @@ const char* Game::LastError() const
 
 bool Game::gameLoop()
 {
+  short animFrameCnt = 1;
+  short fpsCnt = 0;
+  long fps = 0;
 
   StopWatch stopWatch;
   stopWatch.Start();
 
-  short animFrameCnt = 1;
   bool bContinue = true;
   do
   {
@@ -225,8 +228,19 @@ bool Game::gameLoop()
     double dblElapsed = stopWatch.Pick();
     if(dblElapsed >= 0)
     {
-      short fps = 1000 / dblElapsed;
+      // Sum the fps of each frame
+      fps += 1000 / dblElapsed;
+      fpsCnt++;
+    }
+
+    // Every 8 frames display the avg fps
+    if(fpsCnt % 8 == 0)
+    {
+      fps = fps >> 3; // Division by 8
       m_PointsDisplay.UpdateFps(fps);
+
+      fps = 0;
+      fpsCnt = 0;
     }
 
     //
