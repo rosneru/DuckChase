@@ -5,6 +5,7 @@
 #include "GameViewAdvanced.h"
 #include "GameViewSimple.h"
 #include "GelsBob.h"
+#include "GelsSprite.h"
 #include "Picture.h"
 #include "PointsDisplay.h"
 
@@ -37,9 +38,11 @@ private:
   Picture m_PicBackground;
   GelsBob m_BobDuck;
   GelsBob m_BobHunter;
+  GelsSprite m_SpriteBullet;
 
   struct Bob* m_pBobDuck;
   struct Bob* m_pBobHunter;
+  struct ExtSprite* m_pSpriteBullet;
 
   bool gameLoop();
 };

@@ -155,11 +155,12 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "PointsDisplay.cpp"
-"PointsDisplay.cpp"
-"PointsDisplay.h"
+1 "gameengine/GelsSprite.cpp"
+"gameengine/GelsSprite.cpp"
+"animtools/animtools.h"
+"gameengine/GelsSprite.h"
 Storm Shell Project (Dependencies)
-"objects_debug/PointsDisplay.o" "objects_debug/PointsDisplay.debug"
+"objects_debug/GelsSprite.o" "objects_debug/GelsSprite.debug"
 ""
 1 1
 File
@@ -170,6 +171,14 @@ File
 "PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
+""
+1 1
+File
+1 "PointsDisplay.cpp"
+"PointsDisplay.cpp"
+"PointsDisplay.h"
+Storm Shell Project (Dependencies)
+"objects_debug/PointsDisplay.o" "objects_debug/PointsDisplay.debug"
 ""
 1 1
 Section
@@ -228,6 +237,13 @@ Storm Shell Project (Dependencies)
 File
 2 "gameengine/GelsBob.h"
 "gameengine/GelsBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/GelsSprite.h"
+"gameengine/GelsSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

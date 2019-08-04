@@ -15,8 +15,10 @@ Game::Game(IGameView& gameView)
     m_pLastError(NULL),
     m_BobDuck(m_GameView.Depth(), 59, 21, 3),
     m_BobHunter(m_GameView.Depth(), 16, 22, 3),
+    m_SpriteBullet(16, 9),
     m_pBobDuck(NULL),
-    m_pBobHunter(NULL)
+    m_pBobHunter(NULL),
+    m_pSpriteBullet(NULL)
 {
 
 }
@@ -107,8 +109,16 @@ bool Game::Run()
     return false;
   }
 
+  if(m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet1_hires.raw") == false)
+  {
+    m_pLastError = "Couldn't load sprite bullet image #1 /gfx/bullet1_hires.raw";
+    return false;
+  }
+
+
   m_pBobDuck = m_BobDuck.Get();
   m_pBobHunter = m_BobHunter.Get();
+  m_pSpriteBullet = m_SpriteBullet.Get();
 
   if(m_pBobDuck == NULL)
   {
@@ -119,6 +129,12 @@ bool Game::Run()
   if(m_pBobHunter == NULL)
   {
     m_pLastError = "Couldn't acquire bob hunter\n";
+    return false;
+  }
+
+  if(m_pSpriteBullet == NULL)
+  {
+    m_pLastError = "Couldn't acquire bullet sprite\n";
     return false;
   }
 
@@ -148,6 +164,7 @@ bool Game::Run()
 
   AddBob(m_pBobDuck, pRastPort);
   AddBob(m_pBobHunter, pRastPort);
+  AddVSprite((struct VSprite*)m_pSpriteBullet, pRastPort);
 
   //
   // Setting up some variables and the drawing rect for FPS display
