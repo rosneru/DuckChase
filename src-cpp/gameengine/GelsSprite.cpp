@@ -105,7 +105,7 @@ bool GelsSprite::LoadImgFromRawFile(const char *p_pPath)
     return false;
   }
 
-  if(m_NumberOfHwSprite < 1)
+  if(m_NumberOfHwSprite >= 0)
   {
     // Hardware sprite already allocated
     return true;
