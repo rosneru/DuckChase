@@ -1,6 +1,6 @@
-#include <proto/exec.h>
-#include <proto/dos.h>
-#include <proto/intuition.h>
+#include <clib/exec_protos.h>
+#include <clib/dos_protos.h>
+#include <clib/intuition_protos.h>
 
 #include <graphics/gels.h>
 
@@ -20,11 +20,6 @@ GelsSprite::GelsSprite(int p_ImageWidth,
   {
     m_pSpriteDataArray[i] = NULL;
   }
-/*
-  // Determine wordWidth and imageBufSize
-  SHORT wordWidth = ((p_ImageWidth + 15) & -16) >> 4;
-  m_ImageBufSize = wordWidth * 2 * p_ImageHeight;
-*/
 }
 
 GelsSprite::~GelsSprite()

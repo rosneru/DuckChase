@@ -1,8 +1,9 @@
-#include <graphics/gfx.h>
+#include <clib/exec_protos.h>
+#include <clib/datatypes_protos.h>
+#include <clib/dos_protos.h>
+#include <clib/graphics_protos.h>
 
-#include <proto/exec.h>
-#include <proto/dos.h>
-#include <proto/graphics.h>
+#include <graphics/gfx.h>
 
 #include "Picture.h"
 
