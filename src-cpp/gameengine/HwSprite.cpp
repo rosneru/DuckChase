@@ -108,7 +108,11 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
 
   // Successful loading of the first sprite requires that it also can
   // be allocated from hardware
-  m_NumberOfHwSprite = GetExtSprite(m_pSpriteDataArray[idx], TAG_END);
+  m_NumberOfHwSprite = GetExtSprite(m_pSpriteDataArray[idx],
+                                    //GSTAG_SPRITE_NUM, 1, // Because the colors
+                                    TAG_END);            // of spr 0 and 1 fit
+                                                         // my bitmap
+                                                         // TODO change!!
   if(m_NumberOfHwSprite < 0)
   {
     // Hardware didn't give us one
@@ -118,6 +122,10 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
   // Now this is the current sprite until the image is changed e.g. by
   // calling NextImage()
   m_pCurrentSprite = m_pSpriteDataArray[idx];
+
+  // Relatively safe way to use sprite 0 as demonstrated by demo AABoing
+  //m_pCurrentSprite->es_SimpleSprite.num = 0;
+
 
   return true;
 }

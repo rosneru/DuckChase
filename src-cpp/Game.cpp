@@ -166,7 +166,9 @@ bool Game::Run()
   AddBob(m_pBobHunter, pRastPort);
 
   // TODO Do not cast, use field!!
-  MoveSprite(m_GameView.ViewPort(), (struct SimpleSprite*)m_pSpriteBullet, 100, 100);
+  MoveSprite(m_GameView.ViewPort(),
+             (struct SimpleSprite*)m_pSpriteBullet,
+             300, 244);
 
   //
   // Setting up some variables and the drawing rect for FPS display
