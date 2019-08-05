@@ -1,13 +1,13 @@
-#ifndef GELS_SPRITE_H
-#define GELS_SPRITE_H
+#ifndef HW_SPRITE_H
+#define HW_SPRITE_H
 
 #include <intuition/screens.h>
 #include "animtools.h"
 
 #define MAX_IMAGES (8)
 /**
- * Encapsulates a VSprite of the AmigaOS GELs system. This class is
- * using the functions of graphics.libary v39+
+ * Encapsulates an Hardware/ExtSprite provided by functions of AmigaOS
+ * graphics.libary v39+
  *
  * A sprite can contain up to MAX_IMAGES images which all must have the
  * same width, height and depth.
@@ -17,13 +17,13 @@
  * @author Uwe Rosner
  * @date 04/08/2019
  */
-class GelsSprite
+class HwSprite
 {
 public:
-  GelsSprite(int p_ImageWidth,
+  HwSprite(int p_ImageWidth,
           int p_ImageHeight);
 
-  ~GelsSprite();
+  ~HwSprite();
 
   /**
    * Loads an image from a RAW file with given path and stores it as

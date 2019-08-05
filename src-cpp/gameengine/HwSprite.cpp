@@ -5,9 +5,9 @@
 #include <graphics/gels.h>
 
 #include "animtools_proto.h"
-#include "GelsSprite.h"
+#include "HwSprite.h"
 
-GelsSprite::GelsSprite(int p_ImageWidth,
+HwSprite::HwSprite(int p_ImageWidth,
                        int p_ImageHeight)
     : m_ImageWidth(p_ImageWidth),
       m_ImageHeight(p_ImageHeight),
@@ -22,12 +22,12 @@ GelsSprite::GelsSprite(int p_ImageWidth,
   }
 }
 
-GelsSprite::~GelsSprite()
+HwSprite::~HwSprite()
 {
   clear();
 }
 
-bool GelsSprite::LoadImgFromRawFile(const char *p_pPath)
+bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
 {
   // This currently is only using sprite / image 0
   // TODO Change this!!
@@ -123,13 +123,13 @@ bool GelsSprite::LoadImgFromRawFile(const char *p_pPath)
 }
 
 
-struct ExtSprite *GelsSprite::Get()
+struct ExtSprite *HwSprite::Get()
 {
   return m_pCurrentSprite;
 }
 
 
-void GelsSprite::NextImage()
+void HwSprite::NextImage()
 {
   if(m_CurrentImageIndex < 0)
   {
@@ -167,7 +167,7 @@ void GelsSprite::NextImage()
 }
 
 
-int GelsSprite::getNextFreeSpriteImageIdx()
+int HwSprite::getNextFreeSpriteImageIdx()
 {
   // Find the next free index in image data array
   int idx = -1;
@@ -183,7 +183,7 @@ int GelsSprite::getNextFreeSpriteImageIdx()
   return idx;
 }
 
-void GelsSprite::clear()
+void HwSprite::clear()
 {
 
   if (m_NumberOfHwSprite < 0)

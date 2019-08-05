@@ -17,6 +17,7 @@ Picture::Picture()
     m_pPlaneMemoryRaw(NULL),
     m_NumberOfColors(0)
 {
+
 }
 
 

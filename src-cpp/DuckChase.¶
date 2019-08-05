@@ -155,12 +155,9 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gameengine/GelsSprite.cpp"
-"gameengine/GelsSprite.cpp"
-"animtools/animtools.h"
-"gameengine/GelsSprite.h"
+1 "gameengine/HwSprite.cpp"
 Storm Shell Project (Dependencies)
-"objects_debug/GelsSprite.o" "objects_debug/GelsSprite.debug"
+"objects_debug/HwSprite.o" "objects_debug/HwSprite.debug"
 ""
 1 1
 File
@@ -242,8 +239,7 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gameengine/GelsSprite.h"
-"gameengine/GelsSprite.h"
+2 "gameengine/HwSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

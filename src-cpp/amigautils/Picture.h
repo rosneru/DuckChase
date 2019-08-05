@@ -1,8 +1,8 @@
 #ifndef PICTURE_H
 #define PICTURE_H
 
+#include <clib/datatypes_protos.h>
 #include <datatypes/pictureclass.h>
-
 
 /**
  * Represents a picture which after successful loading at least
