@@ -1,10 +1,7 @@
 #ifndef PICTURE_H
 #define PICTURE_H
 
-#include <proto/exec.h>
-#include <proto/datatypes.h>
 #include <datatypes/pictureclass.h>
-#include <string.h>
 
 
 /**

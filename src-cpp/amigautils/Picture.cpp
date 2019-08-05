@@ -170,5 +170,4 @@ void Picture::clear()
     FreeVec(m_pPlaneMemoryRaw);
     m_pPlaneMemoryRaw = NULL;
   }
-
 }
