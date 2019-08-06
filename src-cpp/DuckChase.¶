@@ -156,6 +156,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "gameengine/HwSprite.cpp"
+"gameengine/HwSprite.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/HwSprite.o" "objects_debug/HwSprite.debug"
 ""
@@ -240,6 +241,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "gameengine/HwSprite.h"
+"gameengine/HwSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

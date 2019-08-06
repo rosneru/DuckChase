@@ -15,7 +15,7 @@ Game::Game(IGameView& gameView)
     m_pLastError(NULL),
     m_BobDuck(m_GameView.Depth(), 59, 21, 3),
     m_BobHunter(m_GameView.Depth(), 16, 22, 3),
-    m_SpriteBullet(16, 9),
+    m_SpriteBullet(16, 13),
     m_pBobDuck(NULL),
     m_pBobHunter(NULL),
     m_pSpriteBullet(NULL)
@@ -70,17 +70,14 @@ bool Game::Run()
   //
   // Setting the used color table (extracted from pic wit BtoC32)
   //
-  USHORT colortable[32] =
+  USHORT colorsBackgr[8] =
   {
-    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80,
-    0x888, 0x443, 0xE66, 0xF12, 0xF, 0x70F, 0xC0E, 0xC08,
-    0x620, 0xE52, 0xA52, 0xFCA, 0x333, 0x444, 0x555, 0x666,
-    0x777, 0x888, 0x999, 0xAAA, 0xCCC, 0xDDD, 0xEEE, 0xFFF
+    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
   };
 
 
-  // Change colors to those in colortable
-  LoadRGB4(m_GameView.ViewPort(), colortable, 32);
+  // Change colors to those in colorsBackgr
+  LoadRGB4(m_GameView.ViewPort(), colorsBackgr, 8);
 
   //
   // Loading all the Bobs images
@@ -137,6 +134,13 @@ bool Game::Run()
     m_pLastError = "Couldn't acquire bullet sprite\n";
     return false;
   }
+
+  // Set the colors for the sprite
+  UBYTE colorsBulletSprite[4][3] =
+  {
+    {0xA,0xA,0xA}, {0xD,0x9,0x2}, {0xF,0x8,0x4}, {0xD,0x8,0x3}
+  };
+
 
   //
   // Load and display the background image

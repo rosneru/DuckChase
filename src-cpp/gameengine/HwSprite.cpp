@@ -8,7 +8,7 @@
 #include "HwSprite.h"
 
 HwSprite::HwSprite(int p_ImageWidth,
-                       int p_ImageHeight)
+                   int p_ImageHeight)
     : m_ImageWidth(p_ImageWidth),
       m_ImageHeight(p_ImageHeight),
       m_CurrentImageIndex(-1),
@@ -89,8 +89,8 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
 
   // Now convert BitMap to 'proper' sprite data
   m_pSpriteDataArray[idx] = AllocSpriteData(&bitMap,
-                                         SPRITEA_Width, m_ImageWidth,
-                                         TAG_END);
+                                            SPRITEA_Width, m_ImageWidth,
+                                            TAG_END);
 
   FreeVec(pPlaneMemoryRaw);
 
@@ -109,7 +109,7 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
   // Successful loading of the first sprite requires that it also can
   // be allocated from hardware
   m_NumberOfHwSprite = GetExtSprite(m_pSpriteDataArray[idx],
-                                    //GSTAG_SPRITE_NUM, 1, // Because the colors
+                                    GSTAG_SPRITE_NUM, 7, // Because the colors
                                     TAG_END);            // of spr 0 and 1 fit
                                                          // my bitmap
                                                          // TODO change!!
@@ -124,7 +124,7 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
   m_pCurrentSprite = m_pSpriteDataArray[idx];
 
   // Relatively safe way to use sprite 0 as demonstrated by demo AABoing
-  //m_pCurrentSprite->es_SimpleSprite.num = 0;
+  m_pCurrentSprite->es_SimpleSprite.num = 0;
 
 
   return true;
