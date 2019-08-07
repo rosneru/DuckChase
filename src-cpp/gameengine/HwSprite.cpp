@@ -38,9 +38,6 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
     return false;
   }
 
-  // Clear formerly used data
-  clear();
-
   // Calculate the size in bytes needed for one bitplane of given
   // dimension
   int planeSize = RASSIZE(m_ImageWidth, m_ImageHeight);
@@ -125,6 +122,7 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
   // Relatively safe way to use sprite 0 as demonstrated by demo AABoing
   //m_pCurrentSprite->es_SimpleSprite.num = 0;
 
+  m_CurrentImageIndex = 0;
 
   return true;
 }
@@ -148,7 +146,7 @@ void HwSprite::NextImage()
     // No image loaded
     return;
   }
-/*
+
   // Get the image data for the next image
   int nextIndex = m_CurrentImageIndex + 1;
 
@@ -169,13 +167,8 @@ void HwSprite::NextImage()
     return;
   }
 
-  WORD* pImageData = m_pSpriteDataArray[nextIndex];
-
-  // TODO
-  //m_pSprite->BobVSprite->ImageData = pImageData;
-
+  m_pCurrentSprite = m_pSpriteDataArray[nextIndex];
   m_CurrentImageIndex = nextIndex;
-*/
 }
 
 

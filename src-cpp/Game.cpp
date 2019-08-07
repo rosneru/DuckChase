@@ -112,6 +112,15 @@ bool Game::Run()
     return false;
   }
 
+  // Load more pictures for bullet sprite to allow animating them
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet2_hires.raw");
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet3_hires.raw");
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet4_hires.raw");
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet5_hires.raw");
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet6_hires.raw");
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet7_hires.raw");
+  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet8_hires.raw");
+
 
   m_pBobDuck = m_BobDuck.Get();
   m_pBobHunter = m_BobHunter.Get();
@@ -138,10 +147,10 @@ bool Game::Run()
   // Set the colors for the gsprite
   ULONG colorsBulletSprite[4][3] =
   {
-    {0xAAAAAAAA,0xAAAAAAAA,0xAAAAAAAA},
-    {0xE5E5E5E5,0x14141414,0x1D1D1D1D},
-    {0xC2C2C2C2,0x5A5A5A5A,0x20202020},
-    {0x2E2E2E2E,0x14141414,0x9090909},
+    {0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA},
+    {0xE5E5E5E5, 0x14141414, 0x1D1D1D1D},
+    {0xC2C2C2C2, 0x5A5A5A5A, 0x20202020},
+    {0x2E2E2E2E, 0x14141414, 0x9090909},
   };
 
   int spriteNum = m_SpriteBullet.SpriteNumber();
@@ -256,6 +265,18 @@ bool Game::gameLoop()
       InitMasks(m_pBobDuck->BobVSprite);
 
       animFrameCnt = 0;
+    }
+
+    if(animFrameCnt % 4 == 0)
+    {
+      // Change the bullet sprite image every frame
+      struct ExtSprite* pCurrSpriteImg = m_pSpriteBullet;
+      m_SpriteBullet.NextImage();
+      m_pSpriteBullet = m_SpriteBullet.Get();
+      ChangeExtSprite(m_GameView.ViewPort(),
+                      pCurrSpriteImg,
+                      m_pSpriteBullet,
+                      TAG_END);
     }
 
     animFrameCnt++;
