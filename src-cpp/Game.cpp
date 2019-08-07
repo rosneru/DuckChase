@@ -2,8 +2,6 @@
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
-#include <stdio.h>
-
 #include "animtools_proto.h"
 #include "StopWatch.h"
 
@@ -137,21 +135,23 @@ bool Game::Run()
     return false;
   }
 
-  // Set the colors for the sprite
-  UBYTE colorsBulletSprite[4][3] =
+  // Set the colors for the gsprite
+  ULONG colorsBulletSprite[4][3] =
   {
-    {0xA,0xA,0xA}, {0xD,0x9,0x2}, {0xF,0x8,0x4}, {0xD,0x8,0x3}
+    {0xAAAAAAAA,0xAAAAAAAA,0xAAAAAAAA},
+    {0xE5E5E5E5,0x14141414,0x1D1D1D1D},
+    {0xC2C2C2C2,0x5A5A5A5A,0x20202020},
+    {0x2E2E2E2E,0x14141414,0x9090909},
   };
 
   int spriteNum = m_SpriteBullet.SpriteNumber();
   int spriteColRegStart = 16 + ((spriteNum & 0x06) << 1);
   for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
   {
-    //printf("SpriteNum = %d, i = %d\n", spriteNum, i);
-    SetRGB4(m_GameView.ViewPort(), i,
-            colorsBulletSprite[i][0],
-            colorsBulletSprite[i][1],
-            colorsBulletSprite[i][2]);
+    int r = colorsBulletSprite[i - spriteColRegStart][0];
+    int g = colorsBulletSprite[i - spriteColRegStart][1];
+    int b = colorsBulletSprite[i - spriteColRegStart][2];
+    SetRGB32(m_GameView.ViewPort(), i, r, g, b);
   }
 
 
