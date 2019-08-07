@@ -2,6 +2,8 @@
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
+#include <stdio.h>
+
 #include "animtools_proto.h"
 #include "StopWatch.h"
 
@@ -141,6 +143,17 @@ bool Game::Run()
     {0xA,0xA,0xA}, {0xD,0x9,0x2}, {0xF,0x8,0x4}, {0xD,0x8,0x3}
   };
 
+  int spriteNum = m_SpriteBullet.SpriteNumber();
+  int spriteColRegStart = 16 + ((spriteNum & 0x06) << 1);
+  for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
+  {
+    //printf("SpriteNum = %d, i = %d\n", spriteNum, i);
+    SetRGB4(m_GameView.ViewPort(), i,
+            colorsBulletSprite[i][0],
+            colorsBulletSprite[i][1],
+            colorsBulletSprite[i][2]);
+  }
+
 
   //
   // Load and display the background image
@@ -173,7 +186,6 @@ bool Game::Run()
   MoveSprite(m_GameView.ViewPort(),
              (struct SimpleSprite*)m_pSpriteBullet,
              300, 244);
-
   //
   // Setting up some variables and the drawing rect for FPS display
   m_PointsDisplay.Clear();

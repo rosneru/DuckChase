@@ -47,6 +47,8 @@ public:
    */
   struct ExtSprite* Get();
 
+  int SpriteNumber();
+
   /**
    * Sets the next image in the sprite. If the last loaded image is
    * exceeded, the first image is set again.
@@ -61,7 +63,7 @@ private:
   long m_ImageBufSize;               // Buffer for each image in bytes
   struct ExtSprite* m_pSpriteDataArray[MAX_IMAGES]; // Array of pointers to the images
   struct ExtSprite* m_pCurrentSprite;
-  int m_NumberOfHwSprite;
+  int m_HwSpriteNumber;
 
   int getNextFreeSpriteImageIdx();
   void clear();

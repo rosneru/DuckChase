@@ -13,7 +13,7 @@ HwSprite::HwSprite(int p_ImageWidth,
       m_ImageHeight(p_ImageHeight),
       m_CurrentImageIndex(-1),
       m_pCurrentSprite(NULL),
-      m_NumberOfHwSprite(-1)
+      m_HwSpriteNumber(-1)
 {
   // Zeroing all image ptrs of this sprite
   for(int i = 0; i < MAX_IMAGES; i++)
@@ -44,7 +44,7 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
   // Calculate the size in bytes needed for one bitplane of given
   // dimension
   int planeSize = RASSIZE(m_ImageWidth, m_ImageHeight);
-  int bufSize = planeSize * 5; // TODO Change constant 5!!
+  int bufSize = planeSize * 2; // TODO Change constant 2!!
 
   UBYTE* pPlaneMemoryRaw = (UBYTE*) AllocVec(bufSize,
                                              MEMF_CHIP|MEMF_CLEAR);
@@ -68,12 +68,12 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
 
   struct BitMap bitMap;
 
-  // TODO Change constant 5!!
-  InitBitMap(&bitMap, 5, m_ImageWidth, m_ImageHeight);
+  // TODO Change constant 2!!
+  InitBitMap(&bitMap, 2, m_ImageWidth, m_ImageHeight);
 
   // Set each plane pointer to its dedicated portion of the data
   UBYTE* pPlanePtr = pPlaneMemoryRaw;
-  for(int i = 0; i < 5; i++)  // TODO Change constant 5!!
+  for(int i = 0; i < 2; i++)  // TODO Change constant 2!!
   {
     bitMap.Planes[i] = pPlanePtr;
     pPlanePtr += planeSize;
@@ -100,7 +100,7 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
     return false;
   }
 
-  if(m_NumberOfHwSprite >= 0)
+  if(m_HwSpriteNumber >= 0)
   {
     // Hardware sprite already allocated
     return true;
@@ -108,12 +108,11 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
 
   // Successful loading of the first sprite requires that it also can
   // be allocated from hardware
-  m_NumberOfHwSprite = GetExtSprite(m_pSpriteDataArray[idx],
-                                    GSTAG_SPRITE_NUM, 7, // Because the colors
+  m_HwSpriteNumber = GetExtSprite(m_pSpriteDataArray[idx],
                                     TAG_END);            // of spr 0 and 1 fit
                                                          // my bitmap
                                                          // TODO change!!
-  if(m_NumberOfHwSprite < 0)
+  if(m_HwSpriteNumber < 0)
   {
     // Hardware didn't give us one
     return false;
@@ -124,7 +123,7 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
   m_pCurrentSprite = m_pSpriteDataArray[idx];
 
   // Relatively safe way to use sprite 0 as demonstrated by demo AABoing
-  m_pCurrentSprite->es_SimpleSprite.num = 0;
+  //m_pCurrentSprite->es_SimpleSprite.num = 0;
 
 
   return true;
@@ -134,6 +133,11 @@ bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
 struct ExtSprite *HwSprite::Get()
 {
   return m_pCurrentSprite;
+}
+
+int HwSprite::SpriteNumber()
+{
+  return m_HwSpriteNumber;
 }
 
 
@@ -194,9 +198,9 @@ int HwSprite::getNextFreeSpriteImageIdx()
 void HwSprite::clear()
 {
 
-  if (m_NumberOfHwSprite < 0)
+  if (m_HwSpriteNumber >= 0)
   {
-    FreeSprite(m_NumberOfHwSprite);
+    FreeSprite(m_HwSpriteNumber);
   }
 
   for(int i = 0; i < MAX_IMAGES; i++)
