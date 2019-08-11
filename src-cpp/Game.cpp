@@ -267,7 +267,7 @@ bool Game::gameLoop()
       animFrameCnt = 0;
     }
 
-    if(animFrameCnt % 4 == 0)
+    if(animFrameCnt % 10 == 0)
     {
       // Change the bullet sprite image every frame
       struct ExtSprite* pCurrSpriteImg = m_pSpriteBullet;
