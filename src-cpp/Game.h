@@ -2,11 +2,15 @@
 #define GAME_H
 
 #include "animtools.h"
+
 #include "GameViewAdvanced.h"
 #include "GameViewSimple.h"
-#include "GelsBob.h"
-#include "HwSprite.h"
+
+#include "Bullet.h"
+#include "Duck.h"
+#include "Hunter.h"
 #include "Picture.h"
+
 #include "PointsDisplay.h"
 
 /**
@@ -36,12 +40,9 @@ private:
 
 
   Picture m_PicBackground;
-  GelsBob m_BobDuck;
-  GelsBob m_BobHunter;
-  HwSprite m_SpriteBullet;
-
-  struct Bob* m_pBobDuck;
-  struct Bob* m_pBobHunter;
+  Duck m_Duck;
+  Hunter m_Hunter;
+  Bullet m_Bullet;
   struct ExtSprite* m_pSpriteBullet;
 
   bool gameLoop();

@@ -3,6 +3,7 @@
 
 #include <intuition/screens.h>
 #include "animtools.h"
+#include "IEntity.h"
 
 #define MAX_IMAGES (8)
 /**
@@ -20,7 +21,7 @@
  * @author Uwe Rosner
  * @date 11/07/2019
  */
-class GelsBob
+class GelsBob : public IEntity
 {
 public:
   GelsBob(short p_pViewDepth,
@@ -41,7 +42,7 @@ public:
    * not enough chip memory or MAX_IMAGES exceeded for this bob, it
    * returns false.
    */
-  bool LoadImgFromRawFile(const char* p_pPath);
+  bool AddRawImage(const char* p_pPath);
 
   /**
    * Loads an image from a given array and stores it as next (or first

@@ -3,6 +3,7 @@
 
 #include <intuition/screens.h>
 #include "animtools.h"
+#include "IEntity.h"
 
 #define MAX_IMAGES (8)
 /**
@@ -17,13 +18,14 @@
  * @author Uwe Rosner
  * @date 04/08/2019
  */
-class HwSprite
+class HwSprite : public IEntity
 {
 public:
   HwSprite(int p_ImageWidth,
           int p_ImageHeight);
 
   ~HwSprite();
+
 
   /**
    * Loads an image from a RAW file with given path and stores it as
@@ -36,7 +38,7 @@ public:
    * not enough chip memory or MAX_IMAGES exceeded for this sprite, it
    * returns false.
    */
-  bool LoadImgFromRawFile(const char* p_pPath);
+  bool AddRawImage(const char* p_pPath);
 
   /**
    * Getting the struct Sprite* of this sprite. The sprite will be newly created

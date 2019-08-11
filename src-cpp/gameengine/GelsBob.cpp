@@ -46,7 +46,7 @@ GelsBob::~GelsBob()
   clear();
 }
 
-bool GelsBob::LoadImgFromRawFile(const char *p_pPath)
+bool GelsBob::AddRawImage(const char *p_pPath)
 {
   // Opening the file
   BPTR fileHandle = Open(p_pPath, MODE_OLDFILE);

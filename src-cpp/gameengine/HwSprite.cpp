@@ -27,7 +27,7 @@ HwSprite::~HwSprite()
   clear();
 }
 
-bool HwSprite::LoadImgFromRawFile(const char *p_pPath)
+bool HwSprite::AddRawImage(const char *p_pPath)
 {
   // This currently is only using sprite / image 0
   // TODO Change this!!

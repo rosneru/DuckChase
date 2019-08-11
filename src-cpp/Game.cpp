@@ -10,15 +10,12 @@
 
 Game::Game(IGameView& gameView)
   : m_GameView(gameView),
-    m_PointsDisplay(m_GameView, 1, 5, 5, 3),
+    m_PointsDisplay(m_GameView, 1, 5, 5, 3),  // TODO Change constants
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
-    m_BobDuck(m_GameView.Depth(), 59, 21, 3),
-    m_BobHunter(m_GameView.Depth(), 16, 22, 3),
-    m_SpriteBullet(16, 13),
-    m_pBobDuck(NULL),
-    m_pBobHunter(NULL),
-    m_pSpriteBullet(NULL)
+    m_Duck(m_GameView),
+    m_Hunter(m_GameView),
+    m_Bullet(m_GameView)
 {
 
 }
@@ -26,18 +23,6 @@ Game::Game(IGameView& gameView)
 
 Game::~Game()
 {
-  if(m_pBobDuck != NULL)
-  {
-    RemBob(m_pBobDuck);
-    m_pBobDuck = NULL;
-  }
-
-    if(m_pBobHunter != NULL)
-  {
-    RemBob(m_pBobHunter);
-    m_pBobHunter = NULL;
-  }
-
   // Free the resources allocated by the Gels system
   if(m_pGelsInfo != NULL)
   {
@@ -80,89 +65,28 @@ bool Game::Run()
   LoadRGB4(m_GameView.ViewPort(), colorsBackgr, 8);
 
   //
-  // Loading all the Bobs images
+  // Initializing all the entities which populate the game world
   //
-  if(m_BobDuck.LoadImgFromRawFile("/gfx/ente1_hires.raw") == false)
+  if(m_Duck.Init() == false)
   {
-    m_pLastError = "Couldn't load bob duck image #1 /gfx/ente1_hires.raw";
+    // TODO CHECK: Does m_Duck.LastError still exist outside here?
+    m_pLastError = m_Duck.LastError();
     return false;
   }
 
-  if(m_BobDuck.LoadImgFromRawFile("/gfx/ente2_hires.raw") == false)
+  if(m_Hunter.Init() == false)
   {
-    m_pLastError = "Couldn't load bob duck image #2 /gfx/ente2_hires.raw";
+    // TODO CHECK: Does m_Hunter.LastError still exist outside here?
+    m_pLastError = m_Hunter.LastError();
     return false;
   }
 
-  if(m_BobHunter.LoadImgFromRawFile("/gfx/jaeger1_hires.raw") == false)
+  if(m_Bullet.Init() == false)
   {
-    m_pLastError = "Couldn't load bob hunter image #1 /gfx/jaeger1_hires.raw";
+    // TODO CHECK: Does m_Bullet.LastError still exist outside here?
+    m_pLastError = m_Bullet.LastError();
     return false;
   }
-
-  if(m_BobHunter.LoadImgFromRawFile("/gfx/jaeger2_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bob hunter image #2 /gfx/jaeger2_hires.raw";
-    return false;
-  }
-
-  if(m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet1_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load sprite bullet image #1 /gfx/bullet1_hires.raw";
-    return false;
-  }
-
-  // Load more pictures for bullet sprite to allow animating them
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet2_hires.raw");
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet3_hires.raw");
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet4_hires.raw");
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet5_hires.raw");
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet6_hires.raw");
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet7_hires.raw");
-  m_SpriteBullet.LoadImgFromRawFile("/gfx/bullet8_hires.raw");
-
-
-  m_pBobDuck = m_BobDuck.Get();
-  m_pBobHunter = m_BobHunter.Get();
-  m_pSpriteBullet = m_SpriteBullet.Get();
-
-  if(m_pBobDuck == NULL)
-  {
-    m_pLastError = "Couldn't acquire bob duck\n";
-    return false;
-  }
-
-  if(m_pBobHunter == NULL)
-  {
-    m_pLastError = "Couldn't acquire bob hunter\n";
-    return false;
-  }
-
-  if(m_pSpriteBullet == NULL)
-  {
-    m_pLastError = "Couldn't acquire bullet sprite\n";
-    return false;
-  }
-
-  // Set the colors for the gsprite
-  ULONG colorsBulletSprite[4][3] =
-  {
-    {0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA},
-    {0xE5E5E5E5, 0x14141414, 0x1D1D1D1D},
-    {0xC2C2C2C2, 0x5A5A5A5A, 0x20202020},
-    {0x2E2E2E2E, 0x14141414, 0x9090909},
-  };
-
-  int spriteNum = m_SpriteBullet.SpriteNumber();
-  int spriteColRegStart = 16 + ((spriteNum & 0x06) << 1);
-  for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
-  {
-    int r = colorsBulletSprite[i - spriteColRegStart][0];
-    int g = colorsBulletSprite[i - spriteColRegStart][1];
-    int b = colorsBulletSprite[i - spriteColRegStart][2];
-    SetRGB32(m_GameView.ViewPort(), i, r, g, b);
-  }
-
 
   //
   // Load and display the background image
@@ -180,23 +104,8 @@ bool Game::Run()
                     0, 0, 640, 256, 0xC0);
 
   //
-  // Initialize postions of the Bobs and add them to the scene
+  // Initially render the display
   //
-  m_pBobDuck->BobVSprite->X = 200;
-  m_pBobDuck->BobVSprite->Y = 40;
-
-  m_pBobHunter->BobVSprite->X = 20;
-  m_pBobHunter->BobVSprite->Y = 222;
-
-  AddBob(m_pBobDuck, pRastPort);
-  AddBob(m_pBobHunter, pRastPort);
-
-  // TODO Do not cast, use field!!
-  MoveSprite(m_GameView.ViewPort(),
-             (struct SimpleSprite*)m_pSpriteBullet,
-             300, 244);
-  //
-  // Setting up some variables and the drawing rect for FPS display
   m_PointsDisplay.Clear();
   m_PointsDisplay.UpdateInfo(m_GameView.ViewName());
   m_GameView.Render();
@@ -215,7 +124,6 @@ const char* Game::LastError() const
 
 bool Game::gameLoop()
 {
-  short animFrameCnt = 1;
   short fpsCnt = 0;
   long fps = 0;
 
@@ -225,65 +133,6 @@ bool Game::gameLoop()
   bool bContinue = true;
   do
   {
-    //
-    // Move the hunter Bob depending on game pad interaction
-    //
-    ULONG portState = ReadJoyPort(1);
-    if((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
-    {
-      if((portState & JPF_JOY_RIGHT) != 0)
-      {
-        m_pBobHunter->BobVSprite->X += 8;
-        if(m_pBobHunter->BobVSprite->X > 640)
-        {
-          m_pBobHunter->BobVSprite->X = -16;
-        }
-      }
-      else if((portState & JPF_JOY_LEFT) != 0)
-      {
-        m_pBobHunter->BobVSprite->X -= 8;
-        if(m_pBobHunter->BobVSprite->X < 0)
-        {
-          m_pBobHunter->BobVSprite->X = 656;
-        }
-      }
-    }
-
-    //
-    // Move the duck on an easy, linear right-to-left route
-    //
-    m_pBobDuck->BobVSprite->X -= 4;
-    if(m_pBobDuck->BobVSprite->X < -40)
-    {
-      m_pBobDuck->BobVSprite->X = 650;
-    }
-
-    // Change the duck image every 2 frames
-    if(animFrameCnt % 4 == 0)
-    {
-      m_BobDuck.NextImage();
-      InitMasks(m_pBobDuck->BobVSprite);
-
-      animFrameCnt = 0;
-    }
-
-    if(animFrameCnt % 10 == 0)
-    {
-      // Change the bullet sprite image every frame
-      struct ExtSprite* pCurrSpriteImg = m_pSpriteBullet;
-      m_SpriteBullet.NextImage();
-      m_pSpriteBullet = m_SpriteBullet.Get();
-      ChangeExtSprite(m_GameView.ViewPort(),
-                      pCurrSpriteImg,
-                      m_pSpriteBullet,
-                      TAG_END);
-    }
-
-    animFrameCnt++;
-
-    // Render the changed scenery
-    m_GameView.Render();
-
     //
     // Calculate and update the FPS value
     //
@@ -304,6 +153,19 @@ bool Game::gameLoop()
       fps = 0;
       fpsCnt = 0;
     }
+
+    //
+    // Read the Joyport and update the entities
+    //
+    ULONG portState = ReadJoyPort(1);
+    m_Duck.Update(dblElapsed, portState);
+    m_Hunter.Update(dblElapsed, portState);
+    m_Bullet.Update(dblElapsed, portState);
+
+    //
+    // Render the changed scenery
+    //
+    m_GameView.Render();
 
     //
     // Check if exit key ESC has been pressed
