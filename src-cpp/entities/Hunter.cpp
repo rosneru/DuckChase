@@ -58,6 +58,8 @@ bool Hunter::Init()
   m_pBob->BobVSprite->Y = 222;
 
   AddBob(m_pBob, m_GameView.RastPort());
+
+  return true;
 }
 
 void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)

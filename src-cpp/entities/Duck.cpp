@@ -57,6 +57,8 @@ bool Duck::Init()
   m_pBob->BobVSprite->Y = 40;
 
   AddBob(m_pBob, m_GameView.RastPort());
+
+  return true;
 }
 
 void Duck::Update(unsigned long elapsed, unsigned long joyPortState)

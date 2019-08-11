@@ -7,7 +7,7 @@ C/C++ Environment
 0
 "amigautils/"
 0
-"stdlib-custom/"
+"entities/"
 0
 "gameengine/"
 0
@@ -117,6 +117,33 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "entities/Bullet.cpp"
+"entities/Bullet.cpp"
+"entities/Bullet.h"
+"gameengine/IEntity.h"
+Storm Shell Project (Dependencies)
+"objects_debug/Bullet.o" "objects_debug/Bullet.debug"
+""
+1 1
+File
+1 "entities/Duck.cpp"
+"entities/Duck.cpp"
+"entities/Duck.h"
+"gameengine/IEntity.h"
+Storm Shell Project (Dependencies)
+"objects_debug/Duck.o" "objects_debug/Duck.debug"
+""
+1 1
+File
+1 "entities/Hunter.cpp"
+"entities/Hunter.cpp"
+"entities/Hunter.h"
+"gameengine/IEntity.h"
+Storm Shell Project (Dependencies)
+"objects_debug/Hunter.o" "objects_debug/Hunter.debug"
+""
+1 1
+File
 1 "Game.cpp"
 "Game.cpp"
 "animtools/animtools.h"
@@ -150,6 +177,7 @@ File
 "gameengine/GelsBob.cpp"
 "animtools/animtools.h"
 "gameengine/GelsBob.h"
+"gameengine/IEntity.h"
 Storm Shell Project (Dependencies)
 "objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
 ""
@@ -157,6 +185,9 @@ Storm Shell Project (Dependencies)
 File
 1 "gameengine/HwSprite.cpp"
 "gameengine/HwSprite.cpp"
+"animtools/animtools.h"
+"gameengine/HwSprite.h"
+"gameengine/IEntity.h"
 Storm Shell Project (Dependencies)
 "objects_debug/HwSprite.o" "objects_debug/HwSprite.debug"
 ""
@@ -212,6 +243,27 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "entities/Bullet.h"
+"entities/Bullet.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "entities/Duck.h"
+"entities/Duck.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "entities/Hunter.h"
+"entities/Hunter.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "Game.h"
 "Game.h"
 Storm Shell Project (Dependencies)
@@ -242,6 +294,13 @@ Storm Shell Project (Dependencies)
 File
 2 "gameengine/HwSprite.h"
 "gameengine/HwSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/IEntity.h"
+"gameengine/IEntity.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

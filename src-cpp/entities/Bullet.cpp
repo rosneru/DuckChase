@@ -103,9 +103,11 @@ bool Bullet::Init()
   }
 
   // Move sprite at desiresd start position
-  MoveSprite(m_GameView.ViewPort(), 
+  MoveSprite(m_GameView.ViewPort(),
              (struct SimpleSprite*)m_pSprite,
              300, 244);
+
+  return true;
 }
 
 void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
@@ -114,15 +116,15 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   {
     // Change the bullet sprite image every frame
     struct ExtSprite* pCurrSpriteImg = m_pSprite;
-    
+
     NextImage();
     m_pSprite = Get();
-    
+
     ChangeExtSprite(m_GameView.ViewPort(),
                     pCurrSpriteImg,
                     m_pSprite,
                     TAG_END);
-    
+
     m_AnimFrameCnt = 0;
   }
 
