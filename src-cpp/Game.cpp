@@ -137,6 +137,23 @@ bool Game::gameLoop()
     // Calculate and update the FPS value
     //
     double dblElapsed = stopWatch.Pick();
+
+    //
+    // Read the Joyport and update the entities
+    //
+    ULONG portState = ReadJoyPort(1);
+    m_Duck.Update(dblElapsed, portState);
+    m_Hunter.Update(dblElapsed, portState);
+    m_Bullet.Update(dblElapsed, portState);
+
+    //
+    // Render the changed scenery
+    //
+    m_GameView.Render();
+
+    //
+    // Calculate and display the fps
+    //
     if(dblElapsed >= 0)
     {
       // Sum the fps of each frame
@@ -154,18 +171,6 @@ bool Game::gameLoop()
       fpsCnt = 0;
     }
 
-    //
-    // Read the Joyport and update the entities
-    //
-    ULONG portState = ReadJoyPort(1);
-    m_Duck.Update(dblElapsed, portState);
-    m_Hunter.Update(dblElapsed, portState);
-    m_Bullet.Update(dblElapsed, portState);
-
-    //
-    // Render the changed scenery
-    //
-    m_GameView.Render();
 
     //
     // Check if exit key ESC has been pressed
