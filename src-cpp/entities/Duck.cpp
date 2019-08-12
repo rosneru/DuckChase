@@ -83,3 +83,8 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
 
   m_AnimFrameCnt++;
 }
+
+const char* Duck::LastError() const
+{
+  return m_pLastError;
+}

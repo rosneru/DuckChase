@@ -150,6 +150,7 @@ File
 "Game.h"
 "gameengine/IGameView.h"
 "PointsDisplay.h"
+"gameengine/IEntity.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -198,6 +199,7 @@ File
 "Game.h"
 "gameengine/IGameView.h"
 "PointsDisplay.h"
+"gameengine/IEntity.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""

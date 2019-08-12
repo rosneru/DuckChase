@@ -84,3 +84,8 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
     }
   }
 }
+
+const char* Hunter::LastError() const
+{
+  return m_pLastError;
+}

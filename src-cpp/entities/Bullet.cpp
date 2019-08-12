@@ -65,13 +65,13 @@ bool Bullet::Init()
     m_pLastError = "Couldn't load bullet image #7 (/gfx/bullet7_hires.raw).\n";
     return false;
   }
-
+/*
   if(AddRawImage("/gfx/bullet8_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #8 (/gfx/bullet8_hires.raw).\n";
     return false;
   }
-
+*/
   //
   // Trying to ackquire the bob
   //
@@ -129,4 +129,9 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   }
 
   m_AnimFrameCnt++;
+}
+
+const char* Bullet::LastError() const
+{
+  return m_pLastError;
 }
