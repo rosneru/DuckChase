@@ -6,8 +6,7 @@
 #include <stdio.h>
 
 #include "Game.h"
-#include "GameViewAdvanced.h"
-#include "GameViewSimple.h"
+#include "GameViewIntui20.h"
 
 
 int cleanup(int);
@@ -24,7 +23,7 @@ int main(void)
                 TAG_END);
 
 
-  GameViewSimple gameView(640, 256, 3);
+  GameViewIntui20 gameView(640, 256, 3);
   Game game(gameView);
 
   if(game.Run() == false)

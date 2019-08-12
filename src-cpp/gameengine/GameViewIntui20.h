@@ -1,5 +1,5 @@
-#ifndef GAME_VIEW_SIMPLE_H
-#define GAME_VIEW_SIMPLE_H
+#ifndef GAME_VIEW_INTUI_20__H
+#define GAME_VIEW_INTUI_20__H
 
 #include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
@@ -9,17 +9,18 @@
 #include "IGameView.h"
 
 /**
- * Represents a simple view for games. It uses a intuition screen with
- * two (double buffering) custom bitmaps which are set up manually.
+ * Represents an view for games using the Intuition interface of 
+ * Amiga OS2.0. It uses a intuition screen with two (double buffering) 
+ * custom bitmaps which are set up manually.
  *
  * @author Uwe Rosner
  * @date 31/07/2019
  */
-class GameViewSimple : public IGameView
+class GameViewIntui20 : public IGameView
 {
 public:
-  GameViewSimple(short viewWidth, short viewHeight, short viewDepth);
-  ~GameViewSimple();
+  GameViewIntui20(short viewWidth, short viewHeight, short viewDepth);
+  ~GameViewIntui20();
 
   bool Open();
   void Close();

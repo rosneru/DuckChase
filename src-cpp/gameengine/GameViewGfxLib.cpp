@@ -6,14 +6,14 @@
 #include <graphics/gfxnodes.h>
 #include <graphics/videocontrol.h>
 
-#include "GameViewAdvanced.h"
+#include "GameViewGfxLib.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameViewAdvanced::GameViewAdvanced(short viewWidth,
-                                   short viewHeight,
-                                   short viewDepth)
+GameViewGfxLib::GameViewGfxLib(short viewWidth,
+                               short viewHeight,
+                               short viewDepth)
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
@@ -38,12 +38,12 @@ GameViewAdvanced::GameViewAdvanced(short viewWidth,
 }
 
 
-GameViewAdvanced::~GameViewAdvanced()
+GameViewGfxLib::~GameViewGfxLib()
 {
 
 }
 
-bool GameViewAdvanced::Open()
+bool GameViewGfxLib::Open()
 {
   if(m_pViewExtra != NULL)
   {
@@ -235,7 +235,7 @@ bool GameViewAdvanced::Open()
   return true;
 }
 
-void GameViewAdvanced::Close()
+void GameViewGfxLib::Close()
 {
   if(GfxBase->ActiView == &m_View)
   {
@@ -325,37 +325,37 @@ void GameViewAdvanced::Close()
 }
 
 
-short GameViewAdvanced::Width()
+short GameViewGfxLib::Width()
 {
   return m_ViewWidth;
 }
 
 
-short GameViewAdvanced::Height()
+short GameViewGfxLib::Height()
 {
   return m_ViewHeight;
 }
 
 
-short GameViewAdvanced::Depth()
+short GameViewGfxLib::Depth()
 {
   return m_ViewDepth;
 }
 
 
-struct RastPort* GameViewAdvanced::RastPort()
+struct RastPort* GameViewGfxLib::RastPort()
 {
   return &m_RastPort;
 }
 
 
-struct ViewPort* GameViewAdvanced::ViewPort()
+struct ViewPort* GameViewGfxLib::ViewPort()
 {
   return m_pViewPort;
 }
 
 
-void GameViewAdvanced::Render()
+void GameViewGfxLib::Render()
 {
   if(GfxBase->ActiView != &m_View)
   {
@@ -381,7 +381,7 @@ void GameViewAdvanced::Render()
   m_RastPort.BitMap = m_pBitMapArray[m_FrameToggle];
 }
 
-const char* GameViewAdvanced::LastError() const
+const char* GameViewGfxLib::LastError() const
 {
   switch(m_InitError)
   {
@@ -439,7 +439,7 @@ const char* GameViewAdvanced::LastError() const
   }
 }
 
-const char* GameViewAdvanced::ViewName() const
+const char* GameViewGfxLib::ViewName() const
 {
   return "Advanced (Gfx) view";
 }

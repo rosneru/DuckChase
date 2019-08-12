@@ -3,8 +3,7 @@
 
 #include "animtools.h"
 
-#include "GameViewAdvanced.h"
-#include "GameViewSimple.h"
+#include "IGameView.h"
 
 #include "Bullet.h"
 #include "Duck.h"

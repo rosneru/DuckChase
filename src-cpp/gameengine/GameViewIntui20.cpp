@@ -5,12 +5,12 @@
 #include <graphics/gfxbase.h>
 #include <graphics/modeid.h>
 
-#include "GameViewSimple.h"
+#include "GameViewIntui20.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameViewSimple::GameViewSimple(short viewWidth,
+GameViewIntui20::GameViewIntui20(short viewWidth,
                                short viewHeight,
                                short viewDepth)
   : m_ViewWidth(viewWidth),
@@ -29,12 +29,12 @@ GameViewSimple::GameViewSimple(short viewWidth,
 }
 
 
-GameViewSimple::~GameViewSimple()
+GameViewIntui20::~GameViewIntui20()
 {
 
 }
 
-bool GameViewSimple::Open()
+bool GameViewIntui20::Open()
 {
   if(m_pScreen != NULL)
   {
@@ -111,7 +111,7 @@ bool GameViewSimple::Open()
   return true;
 }
 
-void GameViewSimple::Close()
+void GameViewIntui20::Close()
 {
   if(m_pScreen != NULL)
   {
@@ -143,25 +143,25 @@ void GameViewSimple::Close()
   }
 }
 
-short GameViewSimple::Width()
+short GameViewIntui20::Width()
 {
   return m_ViewWidth;
 }
 
 
-short GameViewSimple::Height()
+short GameViewIntui20::Height()
 {
   return m_ViewHeight;
 }
 
 
-short GameViewSimple::Depth()
+short GameViewIntui20::Depth()
 {
   return m_ViewDepth;
 }
 
 
-struct RastPort* GameViewSimple::RastPort()
+struct RastPort* GameViewIntui20::RastPort()
 {
   if(m_pScreen == NULL)
   {
@@ -172,7 +172,7 @@ struct RastPort* GameViewSimple::RastPort()
 }
 
 
-struct ViewPort* GameViewSimple::ViewPort()
+struct ViewPort* GameViewIntui20::ViewPort()
 {
   if(m_pScreen == NULL)
   {
@@ -183,7 +183,7 @@ struct ViewPort* GameViewSimple::ViewPort()
 }
 
 
-void GameViewSimple::Render()
+void GameViewIntui20::Render()
 {
   if(m_pScreen == NULL)
   {
@@ -209,7 +209,7 @@ void GameViewSimple::Render()
 
 }
 
-const char* GameViewSimple::LastError() const
+const char* GameViewIntui20::LastError() const
 {
   switch(m_InitError)
   {
@@ -239,7 +239,7 @@ const char* GameViewSimple::LastError() const
   }
 }
 
-const char* GameViewSimple::ViewName() const
+const char* GameViewIntui20::ViewName() const
 {
   return "Simple (Intuition) view";
 }

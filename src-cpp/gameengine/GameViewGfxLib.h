@@ -1,5 +1,5 @@
-#ifndef GAME_VIEW_ADVANCED_H
-#define GAME_VIEW_ADVANCED_H
+#ifndef GAME_VIEW_GFX_LIB_H
+#define GAME_VIEW_GFX_LIB_H
 
 #include <graphics/view.h>
 
@@ -8,17 +8,17 @@
 
 /**
  * Represents an advanced view for games. It is constructed manually
- * using graphics.library functions and may in future be enhanced by
- * dual playfield capabilities.
+ * using graphics.library functions of Amiga OS 2.0 and may in future 
+ * be enhanced by dual playfield capabilities.
  *
  * @author Uwe Rosner
  * @date 29/07/2019
  */
-class GameViewAdvanced : public IGameView
+class GameViewGfxLib : public IGameView
 {
 public:
-  GameViewAdvanced(short viewWidth, short viewHeight, short viewDepth);
-  ~GameViewAdvanced();
+  GameViewGfxLib(short viewWidth, short viewHeight, short viewDepth);
+  ~GameViewGfxLib();
 
   bool Open();
   void Close();
