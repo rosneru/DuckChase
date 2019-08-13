@@ -162,7 +162,26 @@ struct RastPort* GameViewIntui30::RastPort()
   }
 
   return &(m_pScreen->RastPort);
-  //return &rport[buf_nextdraw];
+}
+
+struct RastPort* GameViewIntui30::RastPort1()
+{
+  if(m_pScreen == NULL)
+  {
+    return NULL;
+  }
+
+  return &rport[0];
+}
+
+struct RastPort* GameViewIntui30::RastPort2()
+{
+  if(m_pScreen == NULL)
+  {
+    return NULL;
+  }
+
+  return &rport[1];
 }
 
 

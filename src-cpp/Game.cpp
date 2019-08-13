@@ -5,6 +5,7 @@
 #include "animtools_proto.h"
 #include "StopWatch.h"
 
+#include "GameViewIntui30.h"
 #include "Game.h"
 
 
@@ -98,7 +99,15 @@ bool Game::Run()
     return false;
   }
 
-  struct RastPort* pRastPort = m_GameView.RastPort();
+  GameViewIntui30* pGameView = (GameViewIntui30*)&m_GameView;
+
+  struct RastPort* pRastPort = pGameView->RastPort1();
+
+
+  BltBitMapRastPort(m_PicBackground.GetBitMap(), 0, 0, pRastPort,
+                    0, 0, 640, 256, 0xC0);
+
+  pRastPort = pGameView->RastPort2();
 
   BltBitMapRastPort(m_PicBackground.GetBitMap(), 0, 0, pRastPort,
                     0, 0, 640, 256, 0xC0);

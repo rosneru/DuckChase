@@ -32,6 +32,8 @@ public:
   short Depth();
 
   struct RastPort* RastPort();
+  struct RastPort* RastPort1();
+  struct RastPort* RastPort2();
   struct ViewPort* ViewPort();
 
   void Render();
