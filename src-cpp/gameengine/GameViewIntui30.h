@@ -12,7 +12,7 @@
 #define OK_SWAPIN	2	/* Buffer redrawn, ready for swap-in */
 
 /**
- * Represents an view for games using the Intuition interface of 
+ * Represents an view for games using the Intuition interface of
  * Amiga OS3.0.
  *
  * @author Uwe Rosner
@@ -58,8 +58,6 @@ private:
   ULONG buf_nextdraw;
   ULONG buf_nextswap;
 
-  ULONG count;
-
   struct Screen* m_pScreen;
 
   ULONG status[2];
@@ -82,7 +80,7 @@ private:
   ULONG handleBufferSwap();
 
   /**
-   * 
+   *
    */
   void handleDBufMessage(struct Message *dbmsg);
 

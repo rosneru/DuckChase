@@ -19,7 +19,6 @@ GameViewIntui30::GameViewIntui30(short viewWidth,
     m_ViewDepth(viewDepth),
     scbuf(),
     dbufport(NULL),
-    count(0),
     sigs(0),
     buf_current(0),
     buf_nextdraw(1),
@@ -163,6 +162,7 @@ struct RastPort* GameViewIntui30::RastPort()
   }
 
   return &(m_pScreen->RastPort);
+  //return &rport[buf_nextdraw];
 }
 
 
@@ -192,12 +192,12 @@ void GameViewIntui30::Render()
 
   // //
   // // END OF Current rendering
-  // // 
+  // //
 
 
   // Check for and handle any double-buffering messages.
   //
-  // Note that double-buffering messages are "replied" to us, so we 
+  // Note that double-buffering messages are "replied" to us, so we
   // don't want to reply them to anyone.
   if (sigs & (1 << dbufport->mp_SigBit))
   {
@@ -210,25 +210,21 @@ void GameViewIntui30::Render()
 
 
   ULONG held_off = 0;
-  if (count)
-  {
-    // Only handle swapping buffers if count is non-zero
-    held_off = handleBufferSwap();
-  }
+  held_off = handleBufferSwap();
 
   if (held_off)
   {
-    // If were held-off at ChangeScreenBuffer() time, then we need to 
+    // If were held-off at ChangeScreenBuffer() time, then we need to
     // try ChangeScreenBuffer() again, without awaiting a signal.
     // We WaitTOF() to avoid busy-looping.
     WaitTOF();
   }
   else
   {
-    // If we were not held-off, then we're all done with what we have 
-    // to do. We'll have no work to do until some kind of signal 
-    // arrives. This will normally be the arrival of the 
-    // dbi_SafeMessage from the ROM double-buffering routines, but in 
+    // If we were not held-off, then we're all done with what we have
+    // to do. We'll have no work to do until some kind of signal
+    // arrives. This will normally be the arrival of the
+    // dbi_SafeMessage from the ROM double-buffering routines, but in
     // another example it might also be an IntuiMessage.
     sigs = Wait(1 << dbufport->mp_SigBit);
   }
@@ -257,8 +253,8 @@ const char* GameViewIntui30::LastError() const
 
     case IE_AllocScreenBuf1:
       return "Could not allocate the screen buffer 1.\n";
-      break;    
-      
+      break;
+
     case IE_AllocScreenBuf2:
       return "Could not allocate the screen buffer 2.\n";
       break;
@@ -294,12 +290,12 @@ ULONG GameViewIntui30::handleBufferSwap()
     SortGList(&(m_pScreen->RastPort));
     DrawGList(&(m_pScreen->RastPort), &(m_pScreen->ViewPort));
 
-    // WaitTOF();
+    WaitTOF();
 
-    // MrgCop(ViewAddress());    // TODO Avoid multiple calls
-    // LoadView(ViewAddress());
+    MrgCop(ViewAddress());    // TODO Avoid multiple calls
+    LoadView(ViewAddress());
 
-    WaitBlit(); // Gots to let the BBMRP finish
+    //WaitBlit(); // Gots to let the BBMRP finish
 
     status[buf_nextdraw] = OK_SWAPIN;
 
@@ -333,7 +329,6 @@ ULONG GameViewIntui30::handleBufferSwap()
       //
       buf_nextswap ^= 1;
 
-      count--;
     }
     else
     {
