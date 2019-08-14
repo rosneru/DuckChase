@@ -18,7 +18,7 @@ GameViewIntui30::GameViewIntui30(short viewWidth,
     m_ViewDepth(viewDepth),
     m_pScreen(NULL),
     m_pBitMapArray(),
-    m_CurrBuffer(1),
+    m_CurrBuffer(0),
     m_bSafeToWrite(true),
     m_bSafeToChange(true),
     m_pDBufInfo(NULL),
@@ -140,20 +140,22 @@ void GameViewIntui30::Close()
   // Cleanup pending messages
   if (!m_bSafeToChange)
   {
-    while (!GetMsg(m_pMsgPortArray[1])) 
+    while (!GetMsg(m_pMsgPortArray[1]))
     {
       Wait(1l << (m_pMsgPortArray[1]->mp_SigBit));
     }
   }
-  
+
+/*
   // Cleanup
   if (!m_bSafeToWrite)
   {
-    while (!GetMsg(m_pMsgPortArray[0])) 
+    while (!GetMsg(m_pMsgPortArray[0]))
     {
       Wait(1l << (m_pMsgPortArray[0]->mp_SigBit));
     }
   }
+*/
 
   if(m_pMsgPortArray[1] != NULL)
   {
@@ -249,19 +251,20 @@ void GameViewIntui30::Render()
   {
     return;
   }
-
+/*
   //
   // Initially wait if it ins't already safe to write
   //
   if (!m_bSafeToWrite)
   {
-    while (!GetMsg(m_pMsgPortArray[0])) 
+    while (!GetMsg(m_pMsgPortArray[0]))
     {
       Wait(1l << (m_pMsgPortArray[0]->mp_SigBit));
     }
   }
 
   m_bSafeToWrite == true;
+*/
 
   //
   // Render the gels
@@ -271,15 +274,15 @@ void GameViewIntui30::Render()
 
   WaitTOF();
 
-  MrgCop(ViewAddress());    // TODO Avoid multiple calls
-  LoadView(ViewAddress());
+//  MrgCop(ViewAddress());    // TODO Avoid multiple calls
+//  LoadView(ViewAddress());
 
   //
   // Wait until it is safe to change the buffers
   //
   if (!m_bSafeToChange)
   {
-    while (!GetMsg(m_pMsgPortArray[1])) 
+    while (!GetMsg(m_pMsgPortArray[1]))
     {
       Wait(1l << (m_pMsgPortArray[1]->mp_SigBit));
     }
@@ -289,10 +292,10 @@ void GameViewIntui30::Render()
 
   // Be sure rendering has finished
   WaitBlit();
-  
-  ChangeVPBitMap(&(m_pScreen->ViewPort), m_pBitMapArray[m_CurrBuffer], 
+
+  ChangeVPBitMap(&(m_pScreen->ViewPort), m_pBitMapArray[m_CurrBuffer],
                  m_pDBufInfo);
-  
+
   m_bSafeToChange = false;
   m_bSafeToWrite = false;
 
@@ -307,7 +310,7 @@ void GameViewIntui30::Render()
   //
   if (!m_bSafeToWrite)
   {
-    while (!GetMsg(m_pMsgPortArray[0])) 
+    while (!GetMsg(m_pMsgPortArray[0]))
     {
       Wait(1l << (m_pMsgPortArray[0]->mp_SigBit));
     }
@@ -315,6 +318,17 @@ void GameViewIntui30::Render()
 
   m_bSafeToWrite == true;
 }
+
+struct BitMap* GameViewIntui30::BitMap1()
+{
+  return m_pBitMapArray[0];
+}
+
+struct BitMap* GameViewIntui30::BitMap2()
+{
+  return m_pBitMapArray[1];
+}
+
 
 const char* GameViewIntui30::LastError() const
 {

@@ -37,6 +37,9 @@ public:
   const char* LastError() const;
   const char* ViewName() const;
 
+  struct BitMap* BitMap1();
+  struct BitMap* BitMap2();
+
 
 private:
   short m_ViewWidth;
@@ -51,7 +54,7 @@ private:
 
   bool m_bSafeToWrite;
   bool m_bSafeToChange;
-  
+
   struct DBufInfo* m_pDBufInfo;
   struct MsgPort* m_pMsgPortArray[2];
 

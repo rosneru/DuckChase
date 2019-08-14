@@ -99,26 +99,23 @@ bool Game::Run()
     return false;
   }
 
-  GameViewIntui30* pGameView = (GameViewIntui30*)&m_GameView;
+  GameViewIntui30* pGV = (GameViewIntui30*)(&m_GameView);
 
-  struct RastPort* pRastPort = pGameView->RastPort1();
+  struct RastPort* pRastPort = m_GameView.RastPort();
 
+  BltBitMap(m_PicBackground.GetBitMap(), 0, 0, pGV->BitMap1(),
+            0, 0, 640, 256, 0xC0, 0xff, NULL);
 
-  BltBitMapRastPort(m_PicBackground.GetBitMap(), 0, 0, pRastPort,
-                    0, 0, 640, 256, 0xC0);
-
-  pRastPort = pGameView->RastPort2();
-
-  BltBitMapRastPort(m_PicBackground.GetBitMap(), 0, 0, pRastPort,
-                    0, 0, 640, 256, 0xC0);
+  BltBitMap(m_PicBackground.GetBitMap(), 0, 0, pGV->BitMap2(),
+            0, 0, 640, 256, 0xC0, 0xff, NULL);
 
   //
   // Initially render the display
   //
   m_PointsDisplay.Clear();
   m_PointsDisplay.UpdateInfo(m_GameView.ViewName());
-  m_GameView.Render();
-  m_GameView.Render();
+//  m_GameView.Render();
+//  m_GameView.Render();
 
 
   return gameLoop();
