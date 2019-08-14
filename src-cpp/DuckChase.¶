@@ -173,15 +173,6 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gameengine/GameViewIntui30.cpp"
-"gameengine/GameViewIntui30.cpp"
-"gameengine/GameViewIntui30.h"
-"gameengine/IGameView.h"
-Storm Shell Project (Dependencies)
-"objects_debug/GameViewIntui30.o" "objects_debug/GameViewIntui30.debug"
-""
-1 1
-File
 1 "gameengine/GelsBob.cpp"
 "gameengine/GelsBob.cpp"
 "animtools/animtools.h"
@@ -294,13 +285,6 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gameengine/GameViewIntui30.h"
-"gameengine/GameViewIntui30.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
 2 "gameengine/GelsBob.h"
 "gameengine/GelsBob.h"
 Storm Shell Project (Dependencies)
@@ -341,7 +325,6 @@ Section
 7
 File
 10 "DuckChase"
-"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""

@@ -6,12 +6,12 @@
 #include <graphics/modeid.h>
 #include <graphics/videocontrol.h>
 
-#include "GameViewIntui30.h"
+#include "GameViewIntui30ScrBuf.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameViewIntui30::GameViewIntui30(short viewWidth,
+GameViewIntui30ScrBuf::GameViewIntui30ScrBuf(short viewWidth,
                                  short viewHeight,
                                  short viewDepth)
   : m_ViewWidth(viewWidth),
@@ -34,12 +34,12 @@ GameViewIntui30::GameViewIntui30(short viewWidth,
 }
 
 
-GameViewIntui30::~GameViewIntui30()
+GameViewIntui30ScrBuf::~GameViewIntui30ScrBuf()
 {
 
 }
 
-bool GameViewIntui30::Open()
+bool GameViewIntui30ScrBuf::Open()
 {
   if(m_pScreen != NULL)
   {
@@ -109,7 +109,7 @@ bool GameViewIntui30::Open()
   return true;
 }
 
-void GameViewIntui30::Close()
+void GameViewIntui30ScrBuf::Close()
 {
   if(m_pScreen != NULL)
   {
@@ -136,25 +136,25 @@ void GameViewIntui30::Close()
   }
 }
 
-short GameViewIntui30::Width()
+short GameViewIntui30ScrBuf::Width()
 {
   return m_ViewWidth;
 }
 
 
-short GameViewIntui30::Height()
+short GameViewIntui30ScrBuf::Height()
 {
   return m_ViewHeight;
 }
 
 
-short GameViewIntui30::Depth()
+short GameViewIntui30ScrBuf::Depth()
 {
   return m_ViewDepth;
 }
 
 
-struct RastPort* GameViewIntui30::RastPort()
+struct RastPort* GameViewIntui30ScrBuf::RastPort()
 {
   if(m_pScreen == NULL)
   {
@@ -164,7 +164,7 @@ struct RastPort* GameViewIntui30::RastPort()
   return &(m_pScreen->RastPort);
 }
 
-struct RastPort* GameViewIntui30::RastPort1()
+struct RastPort* GameViewIntui30ScrBuf::RastPort1()
 {
   if(m_pScreen == NULL)
   {
@@ -174,7 +174,7 @@ struct RastPort* GameViewIntui30::RastPort1()
   return &rport[0];
 }
 
-struct RastPort* GameViewIntui30::RastPort2()
+struct RastPort* GameViewIntui30ScrBuf::RastPort2()
 {
   if(m_pScreen == NULL)
   {
@@ -185,7 +185,7 @@ struct RastPort* GameViewIntui30::RastPort2()
 }
 
 
-struct ViewPort* GameViewIntui30::ViewPort()
+struct ViewPort* GameViewIntui30ScrBuf::ViewPort()
 {
   if(m_pScreen == NULL)
   {
@@ -196,7 +196,7 @@ struct ViewPort* GameViewIntui30::ViewPort()
 }
 
 
-void GameViewIntui30::Render()
+void GameViewIntui30ScrBuf::Render()
 {
   // //
   // // START OF Current rendering
@@ -250,7 +250,7 @@ void GameViewIntui30::Render()
 
 }
 
-const char* GameViewIntui30::LastError() const
+const char* GameViewIntui30ScrBuf::LastError() const
 {
   switch(m_InitError)
   {
@@ -284,13 +284,13 @@ const char* GameViewIntui30::LastError() const
   }
 }
 
-const char* GameViewIntui30::ViewName() const
+const char* GameViewIntui30ScrBuf::ViewName() const
 {
   return "Intuition view (OS3.0+)";
 }
 
 
-ULONG GameViewIntui30::handleBufferSwap()
+ULONG GameViewIntui30ScrBuf::handleBufferSwap()
 {
   ULONG held_off = 0;
 
@@ -358,7 +358,7 @@ ULONG GameViewIntui30::handleBufferSwap()
   return(held_off);
 }
 
-  void GameViewIntui30::handleDBufMessage(struct Message *dbmsg)
+  void GameViewIntui30ScrBuf::handleDBufMessage(struct Message *dbmsg)
   {
     ULONG buffer;
 

@@ -5,12 +5,12 @@
 #include <graphics/gfxbase.h>
 #include <graphics/modeid.h>
 
-#include "GameViewIntui30.h"
+#include "GameViewIntui30BitMap.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameViewIntui30::GameViewIntui30(short viewWidth,
+GameViewIntui30BitMap::GameViewIntui30BitMap(short viewWidth,
                                  short viewHeight,
                                  short viewDepth)
   : m_ViewWidth(viewWidth),
@@ -33,12 +33,12 @@ GameViewIntui30::GameViewIntui30(short viewWidth,
 }
 
 
-GameViewIntui30::~GameViewIntui30()
+GameViewIntui30BitMap::~GameViewIntui30BitMap()
 {
 
 }
 
-bool GameViewIntui30::Open()
+bool GameViewIntui30BitMap::Open()
 {
   if(m_pScreen != NULL)
   {
@@ -135,7 +135,7 @@ bool GameViewIntui30::Open()
   return true;
 }
 
-void GameViewIntui30::Close()
+void GameViewIntui30BitMap::Close()
 {
   // Cleanup pending messages
   if (!m_bSafeToChange)
@@ -205,25 +205,25 @@ void GameViewIntui30::Close()
   }
 }
 
-short GameViewIntui30::Width()
+short GameViewIntui30BitMap::Width()
 {
   return m_ViewWidth;
 }
 
 
-short GameViewIntui30::Height()
+short GameViewIntui30BitMap::Height()
 {
   return m_ViewHeight;
 }
 
 
-short GameViewIntui30::Depth()
+short GameViewIntui30BitMap::Depth()
 {
   return m_ViewDepth;
 }
 
 
-struct RastPort* GameViewIntui30::RastPort()
+struct RastPort* GameViewIntui30BitMap::RastPort()
 {
   if(m_pScreen == NULL)
   {
@@ -234,7 +234,7 @@ struct RastPort* GameViewIntui30::RastPort()
 }
 
 
-struct ViewPort* GameViewIntui30::ViewPort()
+struct ViewPort* GameViewIntui30BitMap::ViewPort()
 {
   if(m_pScreen == NULL)
   {
@@ -245,7 +245,7 @@ struct ViewPort* GameViewIntui30::ViewPort()
 }
 
 
-void GameViewIntui30::Render()
+void GameViewIntui30BitMap::Render()
 {
   if(m_pScreen == NULL)
   {
@@ -319,18 +319,18 @@ void GameViewIntui30::Render()
   m_bSafeToWrite == true;
 }
 
-struct BitMap* GameViewIntui30::BitMap1()
+struct BitMap* GameViewIntui30BitMap::BitMap1()
 {
   return m_pBitMapArray[0];
 }
 
-struct BitMap* GameViewIntui30::BitMap2()
+struct BitMap* GameViewIntui30BitMap::BitMap2()
 {
   return m_pBitMapArray[1];
 }
 
 
-const char* GameViewIntui30::LastError() const
+const char* GameViewIntui30BitMap::LastError() const
 {
   switch(m_InitError)
   {
@@ -372,7 +372,7 @@ const char* GameViewIntui30::LastError() const
   }
 }
 
-const char* GameViewIntui30::ViewName() const
+const char* GameViewIntui30BitMap::ViewName() const
 {
   return "Simple (Intuition) view";
 }

@@ -1,5 +1,5 @@
-#ifndef GAME_VIEW_INTUI_30_H
-#define GAME_VIEW_INTUI_30_H
+#ifndef GAME_VIEW_INTUI_30_BITMAP_H
+#define GAME_VIEW_INTUI_30_BITMAP_H
 
 #include <exec/ports.h>
 #include <graphics/gfx.h>
@@ -13,14 +13,22 @@
  * Represents an view for games using the Intuition interface of
  * Amiga OS3.0.
  *
+ * NOTE: This seems not to meet my current needs. It provides double 
+ *       buffering for screen by using two BitMaps. It switches the 
+ *       BitMaps as it should and would I draw into the active one,
+ *       all would be fine. But I'm using GELS which have been 
+ *       initilized with a RastPort and I'm also writing text etc into
+ *       it. And this seems not to work with this BitMap-switching 
+ *       double buffering.
+ *
  * @author Uwe Rosner
  * @date 14/08/2019
  */
-class GameViewIntui30 : public IGameView
+class GameViewIntui30BitMap : public IGameView
 {
 public:
-  GameViewIntui30(short viewWidth, short viewHeight, short viewDepth);
-  ~GameViewIntui30();
+  GameViewIntui30BitMap(short viewWidth, short viewHeight, short viewDepth);
+  ~GameViewIntui30BitMap();
 
   bool Open();
   void Close();

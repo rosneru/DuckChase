@@ -1,5 +1,5 @@
-#ifndef GAME_VIEW_INTUI_30__H
-#define GAME_VIEW_INTUI_30__H
+#ifndef GAME_VIEW_INTUI_30_SCRBUF_H
+#define GAME_VIEW_INTUI_30_SCRBUF_H
 
 #include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
@@ -15,14 +15,21 @@
  * Represents an view for games using the Intuition interface of
  * Amiga OS3.0.
  *
+ * NOTE: This seems not to meet my current needs. It provides double 
+ *       buffering for a screen buf. It switches the screen buf and the 
+ *       active RastPort. The problem when using GELS is that these are 
+ *       drawn automatically into the RastPort for which they have been
+ *       created in. And this is mostly *not* the current / switched
+ *       RastPort.
+ *
  * @author Uwe Rosner
  * @date 13/08/2019
  */
-class GameViewIntui30 : public IGameView
+class GameViewIntui30ScrBuf : public IGameView
 {
 public:
-  GameViewIntui30(short viewWidth, short viewHeight, short viewDepth);
-  ~GameViewIntui30();
+  GameViewIntui30ScrBuf(short viewWidth, short viewHeight, short viewDepth);
+  ~GameViewIntui30ScrBuf();
 
   bool Open();
   void Close();
