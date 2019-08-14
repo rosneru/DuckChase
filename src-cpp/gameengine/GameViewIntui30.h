@@ -47,7 +47,10 @@ private:
   struct Screen* m_pScreen;
 
   struct BitMap* m_pBitMapArray[2];
-  WORD m_FrameToggle;
+  int m_CurrBuffer;
+
+  bool m_bSafeToWrite;
+  bool m_bSafeToChange;
   
   struct DBufInfo* m_pDBufInfo;
   struct MsgPort* m_pMsgPortArray[2];

@@ -18,7 +18,9 @@ GameViewIntui30::GameViewIntui30(short viewWidth,
     m_ViewDepth(viewDepth),
     m_pScreen(NULL),
     m_pBitMapArray(),
-    m_FrameToggle(0),
+    m_CurrBuffer(1),
+    m_bSafeToWrite(true),
+    m_bSafeToChange(true),
     m_pDBufInfo(NULL),
     m_pMsgPortArray(),
     m_InitError(IE_None)
@@ -127,11 +129,32 @@ bool GameViewIntui30::Open()
     m_InitError = IE_CreatingMsgPort2;
   }
 
+  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pMsgPortArray[0];
+  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pMsgPortArray[1];
+
   return true;
 }
 
 void GameViewIntui30::Close()
 {
+  // Cleanup pending messages
+  if (!m_bSafeToChange)
+  {
+    while (!GetMsg(m_pMsgPortArray[1])) 
+    {
+      Wait(1l << (m_pMsgPortArray[1]->mp_SigBit));
+    }
+  }
+  
+  // Cleanup
+  if (!m_bSafeToWrite)
+  {
+    while (!GetMsg(m_pMsgPortArray[0])) 
+    {
+      Wait(1l << (m_pMsgPortArray[0]->mp_SigBit));
+    }
+  }
+
   if(m_pMsgPortArray[1] != NULL)
   {
     DeleteMsgPort(m_pMsgPortArray[1]);
@@ -227,23 +250,70 @@ void GameViewIntui30::Render()
     return;
   }
 
+  //
+  // Initially wait if it ins't already safe to write
+  //
+  if (!m_bSafeToWrite)
+  {
+    while (!GetMsg(m_pMsgPortArray[0])) 
+    {
+      Wait(1l << (m_pMsgPortArray[0]->mp_SigBit));
+    }
+  }
+
+  m_bSafeToWrite == true;
+
+  //
+  // Render the gels
+  //
   SortGList(&(m_pScreen->RastPort));
   DrawGList(&(m_pScreen->RastPort), &(m_pScreen->ViewPort));
-
-  // Double buffering: One BitMap is for the view
-  m_pScreen->ViewPort.RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
 
   WaitTOF();
 
   MrgCop(ViewAddress());    // TODO Avoid multiple calls
   LoadView(ViewAddress());
 
-  // Double buffering: Toggle the BitMap pointer
-  m_FrameToggle ^= 1;
+  //
+  // Wait until it is safe to change the buffers
+  //
+  if (!m_bSafeToChange)
+  {
+    while (!GetMsg(m_pMsgPortArray[1])) 
+    {
+      Wait(1l << (m_pMsgPortArray[1]->mp_SigBit));
+    }
+  }
 
-  // Double buffering: Now the other BitMap is for drawing
-  m_pScreen->RastPort.BitMap = m_pBitMapArray[m_FrameToggle];
+  m_bSafeToChange = true;
 
+  // Be sure rendering has finished
+  WaitBlit();
+  
+  ChangeVPBitMap(&(m_pScreen->ViewPort), m_pBitMapArray[m_CurrBuffer], 
+                 m_pDBufInfo);
+  
+  m_bSafeToChange = false;
+  m_bSafeToWrite = false;
+
+  //
+  // Toggle current buffer
+  //
+	m_CurrBuffer ^= 1;
+
+  //
+  // Again wait until it is safe to write because outside this Render()
+  // method it will also be written and then Render() called again.
+  //
+  if (!m_bSafeToWrite)
+  {
+    while (!GetMsg(m_pMsgPortArray[0])) 
+    {
+      Wait(1l << (m_pMsgPortArray[0]->mp_SigBit));
+    }
+  }
+
+  m_bSafeToWrite == true;
 }
 
 const char* GameViewIntui30::LastError() const
