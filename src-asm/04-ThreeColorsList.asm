@@ -11,6 +11,7 @@
 *       CubicIDE for coding
 *
 * History
+*   17.08.2019 - Dropped lowlevel support; added dos.library
 *   22.07.2019 - Modified copper list, displaying three colored blocks
 *   21.07.2019 - Dynamic allocation of chip memory for the view
 *   21.07.2019 - Using lowlevel.library
@@ -20,43 +21,61 @@
 *    https://github.com/rosneru
 **
 
-        include exec/memory.i
-        include libraries/lowlevel.i
+        include "dos/dos.i"
+        include "exec/memory.i"
+        include "graphics/GfxBase.i"
+        include "hardware/custom.i"
+        include "hardware/cia.i"
+
+        XDEF    _SysBase
+        XDEF    _GfxBase
+        XDEF    _DOSBase
+        XDEF    _main
 
         ;
         ; Stating the used LVOs
+        ; (coming from amiga.lib / small.lib)
         ;
-        XREF	_LVOOpenLibrary
+        XREF    _AbsExecBase
+        XREF    _LVOOpenLibrary
         XREF    _LVOCloseLibrary
         XREF    _LVOAllocVec
         XREF    _LVOFreeVec
-        XREF    _LVOSystemControlA
         XREF    _LVOLoadView
         XREF    _LVOWaitTOF
+        XREF    _LVOForbid
+        XREF    _LVOPermit
+        XREF    _LVOOwnBlitter
+        XREF    _LVODisownBlitter
+        XREF    _custom
+        XREF    _ciaa
+
 
 *======================================================================
 * Initializations
 *======================================================================
+        ;Entry point
+_main:
 
-        move.l  4,a6                ;Use exec.library
+        movea.l _AbsExecBase,a6                ;Use exec.library
+        move.l  a6,_SysBase
 
         ;
         ; Open graphics.library
         ;
-        move.l  4,a6
-        lea     GfxName,a1
-        moveq   #0,d0
+        lea     gfxname(pc),a1
+        moveq.l #39,d0
         jsr     _LVOOpenLibrary(a6)
         move.l  d0,_GfxBase
         beq     Exit
 
         ;
-        ; Open lowlevel.library
+        ; Open dos.library
         ;
-        lea     LowLevelName,a1
-        moveq   #40,d0
+        lea     dosname(pc),a1
+        moveq   #39,d0
         jsr     _LVOOpenLibrary(a6)
-        move.l  d0,_LowLevelBase     ;Save lowlevel base
+        move.l  d0,_DOSBase
         beq     Exit
 
         ;
@@ -66,78 +85,79 @@
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
-        move.l  d0,picture          ;Save ptr of allocated memory
-        tst.l   d0
+        cmp.l   #0,d0
         beq     Exit                ;No memory has been reserved
+        move.l  d0,picture          ;Save ptr of allocated memory
 
         ;
-        ; Takeover the system in a compatible way
+        ; Switch off current copper list without smashing the current
+        ; screen. The order of LoadView(0) and 2xWaitTOF() is set by
+        ; Commodore
         ;
-        move.l  _LowLevelBase,a6
-        lea     TagList1,a1
-        jsr     _LVOSystemControlA(a6)
-        move.l  d0,System           ;Result is 0 on success
-        bne     Exit
+        movea.l _GfxBase,a6             ;Use graphics.library
+        move.l  gb_ActiView(a6),oldview ;Save current view
+
+        sub.l   a1,a1                   ;Clear a1 to display no view
+        jsr     _LVOLoadView(a6)
+        jsr     _LVOWaitTOF(a6)
+        jsr     _LVOWaitTOF(a6)
+
+        jsr     _LVOOwnBlitter(a6)
+
+        movea.l _SysBase,a6
+        jsr     _LVOForbid(a6)
+
+;        move.l  #$0020,$dff096      ;Disable sprites
 
 *======================================================================
 * Main
 *======================================================================
 
         ;
-        ; Switch off current copper instruction list without smashing
-        ; the current screen. The order of LoadView(0) and 2xWaitTOF()
-        ; is set by Commodore
-        ;
-        move.l  _GfxBase,a6          ;Use graphics.library
-        move.l  34(a6),OldView      ;Save current view
-        sub.l   a1,a1               ;Clear a1 to display no view
-        jsr     _LVOLoadView(a6)
-        jsr     _LVOWaitTOF(a6)
-        jsr     _LVOWaitTOF(a6)
-
-        ;
         ; Load address of allocated memory for the picture
         ;
-        lea     picture(pc),a0
-        move.l  (a0),d0
+        move.l  picture,d0
         move.w  d0,pl1+6
         swap    d0
         move.w  d0,pl1+2
-        move.l  #copperlist,$dff080 ;Activate copper list
+
+        lea     _custom,a1
+        move.l  #copperlist,cop1lc(a1)
+
 loop:
-        move.l  $dff004,d0          ;WaitTOF (beam)
-        and.l   #$fff00,d0
-        cmp.l   #$0003000,d0
-        bne.s   loop
+        btst    #CIAB_GAMEPORT0,_ciaa
+        bne     loop
 
-        btst    #6,$bfe001          ;Left mouse button pressed?
-        bne.s   loop
-
-RestoreView:
-        move.l  OldView,d0          ;Restore former view
-        beq     Exit_1              ;But only if ther was one
-        move.l  _GfxBase,a6          ;Use graphics.library
-        jsr     _LVOWaitTOF(a6)
-        jsr     _LVOWaitTOF(a6)
-        move.l  OldView,a1
-        jsr     _LVOLoadView(a6)
-        move.l  38(a6),$dff080      ;Start former copper instr. list
 
 *======================================================================
 * Clean up
 *======================================================================
 
+
+;        move.l  #$8020,$dff096      ;Enable sprites
+
+        movea.l _SysBase,a6
+        jsr     _LVOPermit(a6)
+
+        movea.l _GfxBase,a6
+        jsr     _LVODisownBlitter(a6)
+
+
 Exit:
-        ; Restore system control if it was acquired sucessfully
-        tst.l   System
-        bne     Exit_1
-        move.l  _LowLevelBase,a6
-        lea     TagList2,a1
-        jsr     _LVOSystemControlA(a6)
+        move.l  oldview,d0          ;Restore former view
+        beq     Exit_1              ;But only if there was one
+        move.l  _GfxBase,a6         ;Use graphics.library
+        jsr     _LVOWaitTOF(a6)
+        jsr     _LVOWaitTOF(a6)
+        move.l  oldview,a1
+        jsr     _LVOLoadView(a6)
+        lea.l   _custom,a1
+        move.l  gb_copinit(a6),cop1lc(a1) ;Start former copper list
+
 
 Exit_1:
         ; Free memory if it was allocated successfully
-        move.l  4,a6
+        move.l  _SysBase,a6
         move.l  picture,d0
         tst.l   d0
         beq     Exit_2
@@ -145,19 +165,19 @@ Exit_1:
         jsr     _LVOFreeVec(a6)
 
 Exit_2:
-        ; Close lowlevel.library
-        move.l  4,a6
-        move.l  _LowLevelBase,d0     ;LibBase needed in d-reg for verify
+        ; Close dos.library
+        move.l  _SysBase,a6
+        move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
         beq     Exit_3
-        move.l  d0,a1               ;LibBase needed in a1 for closing
+        move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
 Exit_3:
         ; Close graphics.library
-        move.l  4,a6                ;Use exec.library
-        move.l  _GfxBase,d0          ;LibBase needed in d-reg for verify
+        move.l  _SysBase,a6
+        move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
         beq     Exit_4
-        move.l  d0,a1               ;LibBase needed in a1 for closing
+        move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
 
@@ -169,42 +189,21 @@ Exit_4:
 * Data
 *======================================================================
 
-_LowLevelBase:
-                cnop    0,2
-                dc.l    0
+dosname         DOSNAME             ;dos.i
+gfxname         GRAPHICSNAME        ;gfxbase.i
+                even
 
-_GfxBase:
-                dc.l    0
+_DOSBase        ds.l    1
+_GfxBase        ds.l    1
+_SysBase        ds.l    1
 
-OldView:
-                dc.l    0
+oldview         ds.l    1
 
-System:
-                dc.l    -1          ; -1 is important; see code refs
-
-
-LowLevelName:
-                dc.b    "lowlevel.library",0
-
-GfxName:
-                dc.b    "graphics.library",0
-
-
-TagList1:
-                dc.l    SCON_TakeOverSys,-1     ;TRUE
-                dc.l    SCON_AddCreateKeys,1    ;JoyPort1 to RAW keys
-                dc.l    TAG_DONE
-
-TagList2:
-                dc.l    SCON_TakeOverSys,0      ;FALSE
-                dc.l    SCON_RemCreateKeys,1    ;Reset JoyPort1
-                dc.l    TAG_DONE
-
-picture:
-                cnop    0,2
+picture         cnop    0,2
                 ds.l    1
 
-                SECTION "copperlist",data,chip
+
+                SECTION "dma",data,chip
 
 copperlist      CNOP    0,4
                 dc.w    $0207,$fffe ;Required for AGA machines
@@ -217,7 +216,7 @@ copperlist      CNOP    0,4
                 dc.w    $0108,$0000 ;BPL1MOD
                 dc.w    $010a,$0000 ;BPL2MOD
                 dc.w    $0100,$1200 ;BPLCON0
-pl1:            dc.w    $00e0,$0005 ;BPL1PTH
+pl1:            dc.w    $00e0,$0000 ;BPL1PTH
                 dc.w    $00e2,$0000 ;BPL1PTL
 
                 dc.w    $0180,$0f00 ;COLOR00 -> red
@@ -229,5 +228,5 @@ pl1:            dc.w    $00e0,$0005 ;BPL1PTH
                 dc.w    $ff07,$fffe ;Wait for last ntsc line
                 dc.w    $ffff,$fffe ;Waiting for impossible position
 
-
                 END
+
