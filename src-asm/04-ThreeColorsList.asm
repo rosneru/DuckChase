@@ -47,6 +47,9 @@
         XREF    _LVOPermit
         XREF    _LVOOwnBlitter
         XREF    _LVODisownBlitter
+        XREF    _LVOOpen
+        XREF    _LVOVPrintf
+        XREF    _LVORead
         XREF    _custom
         XREF    _ciaa
 
@@ -57,14 +60,16 @@
         ;Entry point
 _main:
 
-        movea.l _AbsExecBase,a6                ;Use exec.library
+        movea.l _AbsExecBase,a6
         move.l  a6,_SysBase
 
         ;
         ; Open dos.library
         ;
         lea     dosname(pc),a1
-        moveq   #39,d0
+        moveq   #36,d0              ;36 needed for VPrintf; gfx.lib will
+                                    ;then make the proper v39 check
+
         jsr     _LVOOpenLibrary(a6)
         move.l  d0,_DOSBase
         beq     Exit
@@ -75,8 +80,9 @@ _main:
         lea     gfxname(pc),a1
         moveq.l #39,d0
         jsr     _LVOOpenLibrary(a6)
+        move.l  #strErrOpenGfx,d1   ;The error message if it failed
         move.l  d0,_GfxBase
-        beq     Exit
+        beq     Exit_err
 
         ;
         ; Allocate memory for picture
@@ -85,8 +91,9 @@ _main:
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
+        move.l  #strErrAllocImgMem,d1 ;The error message if it failed
         move.l  d0,picture          ;Save ptr of allocated memory
-        beq     Exit                ;No memory has been reserved
+        beq     Exit_err            ;No memory has been reserved
 
         ;
         ; Switch off current copper list without smashing the current
@@ -148,7 +155,7 @@ Exit:
         move.l  _GfxBase,a6         ;Use graphics.library
         jsr     _LVOWaitTOF(a6)
         jsr     _LVOWaitTOF(a6)
-        move.l  oldview,a1
+        movea.l oldview,a1
         jsr     _LVOLoadView(a6)
         lea.l   _custom,a1
         move.l  gb_copinit(a6),cop1lc(a1) ;Start former copper list
@@ -156,7 +163,7 @@ Exit:
 
 Exit_1:
         ; Free memory if it was allocated successfully
-        move.l  _SysBase,a6
+        movea.l _SysBase,a6
         move.l  picture,d0
         tst.l   d0
         beq     Exit_2
@@ -165,7 +172,7 @@ Exit_1:
 
 Exit_2:
         ; Close graphics.library
-        move.l  _SysBase,a6
+        movea.l _SysBase,a6
         move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
         beq     Exit_4
         move.l  d0,a1               ;Closing: LibBase needed in a1
@@ -173,7 +180,7 @@ Exit_2:
 
 Exit_3:
         ; Close dos.library
-        move.l  _SysBase,a6
+        movea.l _SysBase,a6
         move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
         beq     Exit_3
         move.l  d0,a1               ;Closing: LibBase needed in a1
@@ -183,6 +190,13 @@ Exit_3:
 Exit_4:
         rts;
 
+
+; NOTE: This awaits the address of a error text loaded to d1!!
+Exit_err:
+        movea.l _DOSBase,a6
+        move.l  0,d2
+        jsr     _LVOVPrintf(a6)
+        bra     Exit
 
 *======================================================================
 * Data
@@ -200,6 +214,11 @@ oldview         ds.l    1
 
 picture         cnop    0,2
                 ds.l    1
+
+strErrOpenGfx   dc.b          'Can''t open graphics.library v39.',10,0
+
+strErrAllocImgMem
+                dc.b          'Can''t allocate memory for background image.',10,0
 
 
                 SECTION "dma",data,chip
