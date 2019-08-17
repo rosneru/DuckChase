@@ -61,15 +61,6 @@ _main:
         move.l  a6,_SysBase
 
         ;
-        ; Open graphics.library
-        ;
-        lea     gfxname(pc),a1
-        moveq.l #39,d0
-        jsr     _LVOOpenLibrary(a6)
-        move.l  d0,_GfxBase
-        beq     Exit
-
-        ;
         ; Open dos.library
         ;
         lea     dosname(pc),a1
@@ -79,15 +70,23 @@ _main:
         beq     Exit
 
         ;
+        ; Open graphics.library
+        ;
+        lea     gfxname(pc),a1
+        moveq.l #39,d0
+        jsr     _LVOOpenLibrary(a6)
+        move.l  d0,_GfxBase
+        beq     Exit
+
+        ;
         ; Allocate memory for picture
         ;
         move.l  #10800,d0           ;Size of needed memory
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
-        cmp.l   #0,d0
-        beq     Exit                ;No memory has been reserved
         move.l  d0,picture          ;Save ptr of allocated memory
+        beq     Exit                ;No memory has been reserved
 
         ;
         ; Switch off current copper list without smashing the current
@@ -165,18 +164,18 @@ Exit_1:
         jsr     _LVOFreeVec(a6)
 
 Exit_2:
-        ; Close dos.library
-        move.l  _SysBase,a6
-        move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
-        beq     Exit_3
-        move.l  d0,a1               ;Closing: LibBase needed in a1
-        jsr     _LVOCloseLibrary(a6)
-
-Exit_3:
         ; Close graphics.library
         move.l  _SysBase,a6
         move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
         beq     Exit_4
+        move.l  d0,a1               ;Closing: LibBase needed in a1
+        jsr     _LVOCloseLibrary(a6)
+
+Exit_3:
+        ; Close dos.library
+        move.l  _SysBase,a6
+        move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
+        beq     Exit_3
         move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
