@@ -21,7 +21,7 @@
 *    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
 *
 * History
-*   17.08.2019 - Started adding the color cycling routine
+*   18.08.2019 - Adding a copper gray gradient
 *   17.08.2019 - Added error message output if init fails
 *   17.08.2019 - Dropped lowlevel.library suppurt; added dos.library
 *   22.07.2019 - Modified copper list, displaying three colored blocks
@@ -146,7 +146,12 @@ _main:
         move.l  #copperlist,cop1lc(a1)
 
 loop:
-        btst    #CIAB_GAMEPORT0,_ciaa
+        move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
+        and.l   #$fff00,d0
+        cmp.l   #$00003000,d0
+        bne.s   loop
+
+        btst    #CIAB_GAMEPORT0,_ciaa   ;Mouse button pressed
         bne     loop
 
 

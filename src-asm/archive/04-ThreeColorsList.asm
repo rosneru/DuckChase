@@ -131,7 +131,12 @@ _main:
         move.l  #copperlist,cop1lc(a1)
 
 loop:
-        btst    #CIAB_GAMEPORT0,_ciaa
+        move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
+        and.l   #$fff00,d0
+        cmp.l   #$00003000,d0
+        bne.s   loop
+
+        btst    #CIAB_GAMEPORT0,_ciaa   ;Mouse button pressed
         bne     loop
 
 
