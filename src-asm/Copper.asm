@@ -130,8 +130,6 @@ clearview
         movea.l _SysBase,a6
         jsr     _LVOForbid(a6)
 
-        move.l  #$0020,$dff096      ;Disable sprites
-
 *======================================================================
 * Main
 *======================================================================
@@ -166,8 +164,6 @@ loop:
 * Clean up
 *======================================================================
 
-
-        move.l  #$8020,$dff096      ;Enable sprites
 
         movea.l _SysBase,a6
         jsr     _LVOPermit(a6)
@@ -215,6 +211,7 @@ Exit_3:
 
 
 Exit_4:
+        move.l  #$8020,$dff096      ;Enable sprites
         rts;
 
 
@@ -302,6 +299,7 @@ copcol
 
 copperlist
 ;                dc.w    $0207,$fffe ;Required for AGA machines
+                dc.w    $0096,$0020 ;Disable sprites
                 dc.w    $008e,$3081 ;DIWSTRT
                 dc.w    $0090,$35c1 ;DIWSTOP
                 dc.w    $0104,$0064 ;BPLCON2
@@ -317,6 +315,7 @@ pl1             dc.w    $00e0,$0000 ;BPL1PTH
 cins            blk.w   400,0
                 dc.w    $0180,$0000 ;COLOR00 -> red
 ;                dc.w    $ff07,$fffe ;Wait for last ntsc line
+                dc.w    $0096,$8020 ;Enable sprites
                 dc.w    $ffff,$fffe ;Waiting for impossible position 
 
                 END
