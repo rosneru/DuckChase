@@ -9,7 +9,8 @@ Hunter::Hunter(IGameView& gameView)
     m_GameView(gameView),
     m_pBob(NULL),
     m_pLastError(NULL),
-    m_AnimFrameCnt(1) // TODO CHECK Why not 0?
+    m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
+    m_XSpeed_pps(0)
 {
 
 }
@@ -68,7 +69,8 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
   {
     if((joyPortState & JPF_JOY_RIGHT) != 0)
     {
-      m_pBob->BobVSprite->X += 8;
+      m_XSpeed_pps = 8;
+      m_pBob->BobVSprite->X += m_XSpeed_pps;
       if(m_pBob->BobVSprite->X > 640)
       {
         m_pBob->BobVSprite->X = -16;
@@ -76,16 +78,38 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
     }
     else if((joyPortState & JPF_JOY_LEFT) != 0)
     {
-      m_pBob->BobVSprite->X -= 8;
+      m_XSpeed_pps = -8;
+      m_pBob->BobVSprite->X += m_XSpeed_pps;
       if(m_pBob->BobVSprite->X < 0)
       {
         m_pBob->BobVSprite->X = 656;
       }
     }
+    else
+    {
+      m_XSpeed_pps = 0;
+    }
+    
   }
 }
 
 const char* Hunter::LastError() const
 {
   return m_pLastError;
+}
+
+int Hunter::XSpeed_pps()
+{
+  return m_XSpeed_pps;
+}
+
+int Hunter::XPos()
+{
+  return m_pBob->BobVSprite->X;
+}
+
+
+int Hunter::YPos()
+{
+  return m_pBob->BobVSprite->Y;
 }

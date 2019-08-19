@@ -4,12 +4,13 @@
 
 #include "Bullet.h"
 
-Bullet::Bullet(IGameView& gameView)
+Bullet::Bullet(IGameView& gameView, Hunter& hunter)
   : HwSprite(16, 13), // TODO find better solution
     m_GameView(gameView),
+    m_Hunter(hunter),
     m_pSprite(NULL),
     m_pLastError(NULL),
-    m_AnimFrameCnt(1) // TODO CHECK Why not 0?
+    m_AnimFrameCnt(1)
 {
 
 }
@@ -106,15 +107,88 @@ bool Bullet::Init()
   MoveSprite(m_GameView.ViewPort(),
              (struct SimpleSprite*)m_pSprite,
              300, 244);
+  
+  // Though for the beginning set it invisible
+  SetInvisible();
+
+  ChangeExtSprite(m_GameView.ViewPort(),
+                  m_pSprite,
+                  NULL,
+                  TAG_END);
+
+  m_bInvisible = true;
 
   return true;
 }
 
 void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
 {
+  struct SimpleSprite* pSimpleSpr = NULL;
+
+  //
+  // When invisible only check if fire button is pressed
+  //
+  if(m_bInvisible)
+  {
+    if((joyPortState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+    {
+      if((joyPortState & JPF_BUTTON_RED) != 0)
+      {
+        //
+        // Arming the bullet
+        //
+        SetVisible();
+
+        m_pSprite = Get();
+
+        ChangeExtSprite(m_GameView.ViewPort(),
+                        NULL,
+                        m_pSprite,
+                        TAG_END);
+      
+        m_bInvisible = false;
+
+        m_InitialSpeed = m_Hunter.XSpeed_pps();
+
+        pSimpleSpr = (struct SimpleSprite*) m_pSprite;
+
+        MoveSprite(m_GameView.ViewPort(), 
+                   pSimpleSpr, 
+                   m_Hunter.XPos(), 
+                   m_Hunter.YPos());
+      }
+    }
+
+    return;
+  }
+
+  //
+  // Move bullet sprite to new position
+  //
+  pSimpleSpr = (struct SimpleSprite*) m_pSprite;
+
+  MoveSprite(m_GameView.ViewPort(), 
+             pSimpleSpr, 
+             pSimpleSpr->x + m_InitialSpeed, 
+             pSimpleSpr->y - 1);
+  
+  if(pSimpleSpr->y < 1)
+  {
+    SetInvisible();
+
+    ChangeExtSprite(m_GameView.ViewPort(),
+                    m_pSprite,
+                    NULL,
+                    TAG_END);
+
+    m_bInvisible = true;
+  }
+
+  //
+  // Change the bullet sprite image every 10 frames
+  //
   if(m_AnimFrameCnt % 10 == 0)
   {
-    // Change the bullet sprite image every frame
     struct ExtSprite* pCurrSpriteImg = m_pSprite;
 
     NextImage();

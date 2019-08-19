@@ -22,11 +22,22 @@ public:
 
   const char* LastError() const;
 
+  /**
+   * Returns the hunter's speed in xdirection in pixel per second.
+   * Negative for left movement, zero if no movement.
+   */
+  int XSpeed_pps();
+
+  int XPos();
+  int YPos();
+
 private:
   IGameView& m_GameView;
   struct Bob* m_pBob;
   const char* m_pLastError;
   int m_AnimFrameCnt;
+
+  int m_XSpeed_pps;
 
 };
 

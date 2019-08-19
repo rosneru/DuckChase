@@ -2,6 +2,7 @@
 #define BULLET_H
 
 #include "HwSprite.h"
+#include "Hunter.h"
 #include "IGameView.h"
 
 /**
@@ -14,7 +15,7 @@
 class Bullet : public HwSprite
 {
 public:
-  Bullet(IGameView& gameView);
+  Bullet(IGameView& gameView, Hunter& hunter);
   ~Bullet();
 
   bool Init();
@@ -24,9 +25,13 @@ public:
 
 private:
   IGameView& m_GameView;
+  Hunter& m_Hunter;
   struct ExtSprite* m_pSprite;
   const char* m_pLastError;
+  
   int m_AnimFrameCnt;
+  bool m_bInvisible;
+  int m_InitialSpeed;
 
 };
 
