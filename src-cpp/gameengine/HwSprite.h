@@ -22,7 +22,7 @@ class HwSprite : public IEntity
 {
 public:
   HwSprite(int p_ImageWidth,
-          int p_ImageHeight);
+           int p_ImageHeight);
 
   ~HwSprite();
 
@@ -56,6 +56,18 @@ public:
    * exceeded, the first image is set again.
    */
   void NextImage();
+
+  /**
+   * Displays a cleared image for the sprite.
+   * 
+   * Then also the picture slide of NextImage is stopped.
+   */
+  void SetInvisible();
+
+  /**
+   * Setting the sprite visible again.
+   */
+  void SetVisible();
 
 private:
   int m_ImageWidth;

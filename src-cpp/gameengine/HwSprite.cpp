@@ -106,12 +106,13 @@ bool HwSprite::AddRawImage(const char *p_pPath)
   // Successful loading of the first sprite requires that it also can
   // be allocated from hardware
   m_HwSpriteNumber = GetExtSprite(m_pSpriteDataArray[idx],
-                                    TAG_END);            // of spr 0 and 1 fit
-                                                         // my bitmap
-                                                         // TODO change!!
+                                  TAG_END);   // of spr 0 and 1 fit
+                                              // my bitmap colors
+                                              // TODO change!!
+
   if(m_HwSpriteNumber < 0)
   {
-    // Hardware didn't give us one
+    // No hardware sprite available
     return false;
   }
 
@@ -141,6 +142,12 @@ int HwSprite::SpriteNumber()
 
 void HwSprite::NextImage()
 {
+  if(m_pCurrentSprite == NULL)
+  {
+    // e.g. invisible mode
+    return;
+  }
+
   if(m_CurrentImageIndex < 0)
   {
     // No image loaded
@@ -171,6 +178,16 @@ void HwSprite::NextImage()
   m_CurrentImageIndex = nextIndex;
 }
 
+
+void HwSprite::SetInvisible()
+{
+  m_pCurrentSprite = NULL;
+}
+
+void HwSprite::SetVisible()
+{
+  m_pCurrentSprite = m_pSpriteDataArray[m_CurrentImageIndex];
+}
 
 int HwSprite::getNextFreeSpriteImageIdx()
 {
