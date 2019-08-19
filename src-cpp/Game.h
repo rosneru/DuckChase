@@ -42,7 +42,6 @@ private:
   Duck m_Duck;
   Hunter m_Hunter;
   Bullet m_Bullet;
-  struct ExtSprite* m_pSpriteBullet;
 
   bool gameLoop();
 };

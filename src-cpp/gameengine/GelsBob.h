@@ -29,7 +29,7 @@ public:
           int p_ImageHeight,
           short p_ImageDepth);
 
-  ~GelsBob();
+  virtual ~GelsBob();
 
   /**
    * Loads an image from a RAW file with given path and stores it as

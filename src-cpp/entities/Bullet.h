@@ -19,7 +19,8 @@ public:
   ~Bullet();
 
   bool Init();
-   void Update(unsigned long elapsed, unsigned long joyPortState);
+
+  void Update(unsigned long elapsed, unsigned long joyPortState);
 
   const char* LastError() const;
 
@@ -28,7 +29,7 @@ private:
   Hunter& m_Hunter;
   struct ExtSprite* m_pSprite;
   const char* m_pLastError;
-  
+
   int m_AnimFrameCnt;
   bool m_bInvisible;
   int m_InitialSpeed;

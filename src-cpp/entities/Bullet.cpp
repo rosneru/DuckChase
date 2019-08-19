@@ -107,16 +107,19 @@ bool Bullet::Init()
   MoveSprite(m_GameView.ViewPort(),
              (struct SimpleSprite*)m_pSprite,
              300, 244);
-  
+
+
   // Though for the beginning set it invisible
+  struct ExtSprite* pCurrSpriteImg = m_pSprite;
   SetInvisible();
+  m_bInvisible = true;
+
+  m_pSprite = Get();
 
   ChangeExtSprite(m_GameView.ViewPort(),
+                  pCurrSpriteImg,
                   m_pSprite,
-                  NULL,
                   TAG_END);
-
-  m_bInvisible = true;
 
   return true;
 }
@@ -137,24 +140,24 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
         //
         // Arming the bullet
         //
+        struct ExtSprite* pCurrSpriteImg = m_pSprite;
         SetVisible();
-
         m_pSprite = Get();
 
         ChangeExtSprite(m_GameView.ViewPort(),
-                        NULL,
+                        pCurrSpriteImg,
                         m_pSprite,
                         TAG_END);
-      
+
         m_bInvisible = false;
 
         m_InitialSpeed = m_Hunter.XSpeed_pps();
 
         pSimpleSpr = (struct SimpleSprite*) m_pSprite;
 
-        MoveSprite(m_GameView.ViewPort(), 
-                   pSimpleSpr, 
-                   m_Hunter.XPos(), 
+        MoveSprite(m_GameView.ViewPort(),
+                   pSimpleSpr,
+                   m_Hunter.XPos(),
                    m_Hunter.YPos());
       }
     }
@@ -167,21 +170,24 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   pSimpleSpr = (struct SimpleSprite*) m_pSprite;
 
-  MoveSprite(m_GameView.ViewPort(), 
-             pSimpleSpr, 
-             pSimpleSpr->x + m_InitialSpeed, 
+  MoveSprite(m_GameView.ViewPort(),
+             pSimpleSpr,
+             pSimpleSpr->x + m_InitialSpeed,
              pSimpleSpr->y - 1);
-  
+
   if(pSimpleSpr->y < 1)
   {
+    struct ExtSprite* pCurrSpriteImg = m_pSprite;
     SetInvisible();
+    m_bInvisible = true;
+
+    m_pSprite = Get();
 
     ChangeExtSprite(m_GameView.ViewPort(),
+                    pCurrSpriteImg,
                     m_pSprite,
-                    NULL,
                     TAG_END);
 
-    m_bInvisible = true;
   }
 
   //

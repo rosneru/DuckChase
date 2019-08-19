@@ -24,7 +24,7 @@ public:
   HwSprite(int p_ImageWidth,
            int p_ImageHeight);
 
-  ~HwSprite();
+  virtual ~HwSprite();
 
 
   /**
@@ -59,7 +59,7 @@ public:
 
   /**
    * Displays a cleared image for the sprite.
-   * 
+   *
    * Then also the picture slide of NextImage is stopped.
    */
   void SetInvisible();
@@ -77,6 +77,7 @@ private:
   long m_ImageBufSize;               // Buffer for each image in bytes
   struct ExtSprite* m_pSpriteDataArray[MAX_IMAGES]; // Array of pointers to the images
   struct ExtSprite* m_pCurrentSprite;
+  struct ExtSprite* m_pEmptySprite;
   int m_HwSpriteNumber;
 
   int getNextFreeSpriteImageIdx();

@@ -13,6 +13,7 @@ HwSprite::HwSprite(int p_ImageWidth,
       m_ImageHeight(p_ImageHeight),
       m_CurrentImageIndex(-1),
       m_pCurrentSprite(NULL),
+      m_pEmptySprite(NULL),
       m_HwSpriteNumber(-1)
 {
   // Zeroing all image ptrs of this sprite
@@ -99,8 +100,14 @@ bool HwSprite::AddRawImage(const char *p_pPath)
 
   if(m_HwSpriteNumber >= 0)
   {
-    // Hardware sprite already allocated
+    // Hardware sprite and empty sprite already allocated
     return true;
+  }
+
+  // Allocate the empty sprite data (for setting sprite invisible)
+  if(m_pEmptySprite == NULL)
+  {
+    m_pEmptySprite = AllocSpriteData(NULL, TAG_END);
   }
 
   // Successful loading of the first sprite requires that it also can
@@ -142,7 +149,7 @@ int HwSprite::SpriteNumber()
 
 void HwSprite::NextImage()
 {
-  if(m_pCurrentSprite == NULL)
+  if(m_pCurrentSprite == m_pEmptySprite)
   {
     // e.g. invisible mode
     return;
@@ -181,7 +188,7 @@ void HwSprite::NextImage()
 
 void HwSprite::SetInvisible()
 {
-  m_pCurrentSprite = NULL;
+  m_pCurrentSprite = m_pEmptySprite;
 }
 
 void HwSprite::SetVisible()

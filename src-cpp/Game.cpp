@@ -5,7 +5,6 @@
 #include "animtools_proto.h"
 #include "StopWatch.h"
 
-#include "GameViewIntui30.h"
 #include "Game.h"
 
 
@@ -16,7 +15,7 @@ Game::Game(IGameView& gameView)
     m_pLastError(NULL),
     m_Duck(m_GameView),
     m_Hunter(m_GameView),
-    m_Bullet(m_GameView)
+    m_Bullet(m_GameView, m_Hunter)
 {
 
 }
