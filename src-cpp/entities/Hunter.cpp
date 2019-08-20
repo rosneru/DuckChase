@@ -7,21 +7,17 @@
 Hunter::Hunter(IGameView& gameView)
   : GelsBob(gameView.Depth(), 16, 22, 3), // TODO find better solution
     m_GameView(gameView),
-    m_pBob(NULL),
     m_pLastError(NULL),
     m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
-    m_XSpeed_pps(0)
+    m_XSpeed_pps(0),
+    m_YSpeed_pps(0)
 {
 
 }
 
 Hunter::~Hunter()
 {
-  if(m_pBob != NULL)
-  {
-    RemBob(m_pBob);
-    m_pBob = NULL;
-  }
+
 }
 
 bool Hunter::Init()
@@ -42,23 +38,10 @@ bool Hunter::Init()
   }
 
   //
-  // Trying to ackquire the bob
-  //
-  m_pBob = Get();
-
-  if(m_pBob == NULL)
-  {
-    m_pLastError = "Couldn't acquire the hunter bob.\n";
-    return false;
-  }
-
-  //
   // Initialize postion of the duck bob and add it to the scene
   //
-  m_pBob->BobVSprite->X = 20;
-  m_pBob->BobVSprite->Y = 222;
-
-  AddBob(m_pBob, m_GameView.RastPort());
+  Move(20, 222);
+  AddToRastPort(m_GameView.RastPort());
 
   return true;
 }
@@ -70,19 +53,28 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
     if((joyPortState & JPF_JOY_RIGHT) != 0)
     {
       m_XSpeed_pps = 8;
-      m_pBob->BobVSprite->X += m_XSpeed_pps;
-      if(m_pBob->BobVSprite->X > 640)
+
+      if(XPos() + m_XSpeed_pps > 640)
       {
-        m_pBob->BobVSprite->X = -16;
+        Move(-16, YPos());
       }
+      else
+      {
+        Move(XPos() + m_XSpeed_pps, YPos());
+      }
+      
     }
     else if((joyPortState & JPF_JOY_LEFT) != 0)
     {
       m_XSpeed_pps = -8;
-      m_pBob->BobVSprite->X += m_XSpeed_pps;
-      if(m_pBob->BobVSprite->X < 0)
+
+      if(XPos() + m_XSpeed_pps < 0)
       {
-        m_pBob->BobVSprite->X = 656;
+        Move(656, YPos());
+      }
+      else
+      {
+        Move(XPos() + m_XSpeed_pps, YPos());
       }
     }
     else
@@ -92,6 +84,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
     
   }
 }
+
 
 const char* Hunter::LastError() const
 {
@@ -103,13 +96,7 @@ int Hunter::XSpeed_pps()
   return m_XSpeed_pps;
 }
 
-int Hunter::XPos()
+int Hunter::YSpeed_pps()
 {
-  return m_pBob->BobVSprite->X;
-}
-
-
-int Hunter::YPos()
-{
-  return m_pBob->BobVSprite->Y;
+  return m_YSpeed_pps;
 }

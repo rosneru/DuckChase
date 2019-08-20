@@ -24,15 +24,19 @@ public:
 
   const char* LastError() const;
 
+  int XSpeed_pps();
+  int YSpeed_pps();
+
 private:
   IGameView& m_GameView;
   Hunter& m_Hunter;
-  struct ExtSprite* m_pSprite;
   const char* m_pLastError;
 
   int m_AnimFrameCnt;
-  bool m_bInvisible;
-  int m_InitialSpeed;
+
+  int m_XSpeed_pps;
+  int m_YSpeed_pps;
+
 
 };
 

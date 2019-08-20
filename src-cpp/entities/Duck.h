@@ -22,11 +22,16 @@ public:
 
   const char* LastError() const;
 
+  int XSpeed_pps();
+  int YSpeed_pps();
+
 private:
   IGameView& m_GameView;
-  struct Bob* m_pBob;
   const char* m_pLastError;
   int m_AnimFrameCnt;
+
+  int m_XSpeed_pps;
+  int m_YSpeed_pps;
 
 };
 

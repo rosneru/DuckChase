@@ -4,21 +4,25 @@
 
 #include "Bullet.h"
 
+
 Bullet::Bullet(IGameView& gameView, Hunter& hunter)
   : HwSprite(16, 13), // TODO find better solution
     m_GameView(gameView),
     m_Hunter(hunter),
-    m_pSprite(NULL),
     m_pLastError(NULL),
-    m_AnimFrameCnt(1)
+    m_AnimFrameCnt(1),
+    m_XSpeed_pps(0),
+    m_YSpeed_pps(0)
 {
 
 }
+
 
 Bullet::~Bullet()
 {
 
 }
+
 
 bool Bullet::Init()
 {
@@ -73,18 +77,12 @@ bool Bullet::Init()
     return false;
   }
 */
-  //
-  // Trying to ackquire the bob
-  //
-  m_pSprite = Get();
 
-  if(m_pSprite == NULL)
-  {
-    m_pLastError = "Couldn't acquire the bullet sprite.\n";
-    return false;
-  }
 
+  //
   // Set the colors for the sprite
+  //
+
   ULONG colorsBulletSprite[4][3] =
   {
     {0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA},
@@ -93,7 +91,9 @@ bool Bullet::Init()
     {0x2E2E2E2E, 0x14141414, 0x9090909},
   };
 
+  // Which 4 pens  to set depends on the sprite number we got
   int spriteNum = SpriteNumber();
+
   int spriteColRegStart = 16 + ((spriteNum & 0x06) << 1);
   for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
   {
@@ -103,35 +103,25 @@ bool Bullet::Init()
     SetRGB32(m_GameView.ViewPort(), i, r, g, b);
   }
 
-  // Move sprite at desiresd start position
-  MoveSprite(m_GameView.ViewPort(),
-             (struct SimpleSprite*)m_pSprite,
-             300, 244);
+  // Sprite must have a ViewPort to be displayed
+  SetViewPort(m_GameView.ViewPort());
 
+  // Move sprite at desiresd start position
+  Move(300, 244);
 
   // Though for the beginning set it invisible
-  struct ExtSprite* pCurrSpriteImg = m_pSprite;
   SetInvisible();
-  m_bInvisible = true;
-
-  m_pSprite = Get();
-
-  ChangeExtSprite(m_GameView.ViewPort(),
-                  pCurrSpriteImg,
-                  m_pSprite,
-                  TAG_END);
 
   return true;
 }
 
+
 void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
 {
-  struct SimpleSprite* pSimpleSpr = NULL;
-
   //
   // When invisible only check if fire button is pressed
   //
-  if(m_bInvisible)
+  if(IsVisible() == false)
   {
     if((joyPortState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
     {
@@ -140,25 +130,10 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
         //
         // Arming the bullet
         //
-        struct ExtSprite* pCurrSpriteImg = m_pSprite;
+        Move(m_Hunter.XPos(), m_Hunter.YPos());
         SetVisible();
-        m_pSprite = Get();
 
-        ChangeExtSprite(m_GameView.ViewPort(),
-                        pCurrSpriteImg,
-                        m_pSprite,
-                        TAG_END);
-
-        m_bInvisible = false;
-
-        m_InitialSpeed = m_Hunter.XSpeed_pps();
-
-        pSimpleSpr = (struct SimpleSprite*) m_pSprite;
-
-        MoveSprite(m_GameView.ViewPort(),
-                   pSimpleSpr,
-                   m_Hunter.XPos(),
-                   m_Hunter.YPos());
+        m_XSpeed_pps = m_Hunter.XSpeed_pps();
       }
     }
 
@@ -168,26 +143,22 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   // Move bullet sprite to new position
   //
-  pSimpleSpr = (struct SimpleSprite*) m_pSprite;
+  m_YSpeed_pps = -1;
 
-  MoveSprite(m_GameView.ViewPort(),
-             pSimpleSpr,
-             pSimpleSpr->x + m_InitialSpeed,
-             pSimpleSpr->y - 1);
-
-  if(pSimpleSpr->y < 1)
+  if(XPos() + m_XSpeed_pps < 0)
   {
-    struct ExtSprite* pCurrSpriteImg = m_pSprite;
+    Move(656, YPos() + m_YSpeed_pps);
+  }
+  else
+  {
+    Move(XPos() + m_XSpeed_pps, YPos() + m_YSpeed_pps);
+  }
+
+  if(YPos() < 0)
+  {
     SetInvisible();
-    m_bInvisible = true;
-
-    m_pSprite = Get();
-
-    ChangeExtSprite(m_GameView.ViewPort(),
-                    pCurrSpriteImg,
-                    m_pSprite,
-                    TAG_END);
-
+    m_XSpeed_pps = 0;
+    m_YSpeed_pps = 0;
   }
 
   //
@@ -195,23 +166,25 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   if(m_AnimFrameCnt % 10 == 0)
   {
-    struct ExtSprite* pCurrSpriteImg = m_pSprite;
-
     NextImage();
-    m_pSprite = Get();
-
-    ChangeExtSprite(m_GameView.ViewPort(),
-                    pCurrSpriteImg,
-                    m_pSprite,
-                    TAG_END);
-
     m_AnimFrameCnt = 0;
   }
 
   m_AnimFrameCnt++;
 }
 
+
 const char* Bullet::LastError() const
 {
   return m_pLastError;
+}
+
+int Bullet::XSpeed_pps()
+{
+  return m_XSpeed_pps;
+}
+
+int Bullet::YSpeed_pps()
+{
+  return m_YSpeed_pps;
 }

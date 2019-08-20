@@ -12,6 +12,7 @@ HwSprite::HwSprite(int p_ImageWidth,
     : m_ImageWidth(p_ImageWidth),
       m_ImageHeight(p_ImageHeight),
       m_CurrentImageIndex(-1),
+      m_pViewPort(NULL),
       m_pCurrentSprite(NULL),
       m_pEmptySprite(NULL),
       m_HwSpriteNumber(-1)
@@ -146,12 +147,111 @@ int HwSprite::SpriteNumber()
   return m_HwSpriteNumber;
 }
 
+void HwSprite::SetViewPort(struct ViewPort* pViewPort)
+{
+  if(m_pViewPort != NULL)
+  {
+    // RastPort already set
+    return;
+  }
+
+  m_pViewPort = pViewPort;
+}
+
+
+int HwSprite::XPos() const
+{
+  if(m_pCurrentSprite == NULL)
+  {
+    return;
+  }
+
+  struct SimpleSprite* pSpr = (struct SimpleSprite*) m_pCurrentSprite;
+  return pSpr->x;
+}
+
+
+int HwSprite::YPos() const
+{
+  if(m_pCurrentSprite == NULL)
+  {
+    return;
+  }
+
+  struct SimpleSprite* pSpr = (struct SimpleSprite*) m_pCurrentSprite;
+  return pSpr->y;
+}
+
+
+void HwSprite::Move(int x, int y)
+{
+  if(m_pCurrentSprite == NULL)
+  {
+    return;
+  }
+
+  if(m_pViewPort == NULL)
+  {
+    return;
+  }
+
+  struct SimpleSprite* pSpr = (struct SimpleSprite*) m_pCurrentSprite;
+  MoveSprite(m_pViewPort, pSpr, x, y);
+}
+
+
+void HwSprite::SetInvisible()
+{
+  if(m_pCurrentSprite == NULL)
+  {
+    return;
+  }
+
+  if(m_pViewPort == NULL)
+  {
+    return;
+  }
+
+  struct ExtSprite* pOldSprite = m_pCurrentSprite;
+  m_pCurrentSprite = m_pEmptySprite;
+  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_END);
+}
+
+
+void HwSprite::SetVisible()
+{
+  if(m_pCurrentSprite == NULL)
+  {
+    return;
+  }
+
+  if(m_pViewPort == NULL)
+  {
+    return;
+  }
+
+  struct ExtSprite* pOldSprite = m_pCurrentSprite;
+  m_pCurrentSprite = m_pSpriteDataArray[m_CurrentImageIndex];
+  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_END);
+}
+
+
+bool HwSprite::IsVisible() const
+{
+  return m_pCurrentSprite != m_pEmptySprite; 
+}
+
 
 void HwSprite::NextImage()
 {
   if(m_pCurrentSprite == m_pEmptySprite)
   {
-    // e.g. invisible mode
+    // Only animate when sprite is visible
+    return;
+  }
+
+  if(m_pViewPort == NULL)
+  {
     return;
   }
 
@@ -181,20 +281,13 @@ void HwSprite::NextImage()
     return;
   }
 
+  struct ExtSprite* pOldSprite = m_pCurrentSprite;
   m_pCurrentSprite = m_pSpriteDataArray[nextIndex];
   m_CurrentImageIndex = nextIndex;
+
+  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_END);
 }
 
-
-void HwSprite::SetInvisible()
-{
-  m_pCurrentSprite = m_pEmptySprite;
-}
-
-void HwSprite::SetVisible()
-{
-  m_pCurrentSprite = m_pSpriteDataArray[m_CurrentImageIndex];
-}
 
 int HwSprite::getNextFreeSpriteImageIdx()
 {
@@ -211,6 +304,7 @@ int HwSprite::getNextFreeSpriteImageIdx()
 
   return idx;
 }
+
 
 void HwSprite::clear()
 {

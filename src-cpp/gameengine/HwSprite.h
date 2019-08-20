@@ -52,27 +52,33 @@ public:
   int SpriteNumber();
 
   /**
-   * Sets the next image in the sprite. If the last loaded image is
-   * exceeded, the first image is set again.
+   * Sprites need a ViewPort to be displayed
    */
-  void NextImage();
+  void SetViewPort(struct ViewPort* pViewPort);
 
-  /**
-   * Displays a cleared image for the sprite.
-   *
-   * Then also the picture slide of NextImage is stopped.
-   */
+
+  //
+  // Implementing part of the interface IEntity. Init(), Update(), 
+  // XSpeed_pps() and YSpeed_pps() must be implemented in derived 
+  // classes.
+  //
+
+  int XPos() const;
+  int YPos() const;
+  void Move(int x, int y);
+
   void SetInvisible();
-
-  /**
-   * Setting the sprite visible again.
-   */
   void SetVisible();
+  bool IsVisible() const;
+
+  void NextImage();
 
 private:
   int m_ImageWidth;
   int m_ImageHeight;
   int m_CurrentImageIndex;
+
+  struct ViewPort* m_pViewPort;
 
   long m_ImageBufSize;               // Buffer for each image in bytes
   struct ExtSprite* m_pSpriteDataArray[MAX_IMAGES]; // Array of pointers to the images

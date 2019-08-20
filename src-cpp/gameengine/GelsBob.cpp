@@ -12,8 +12,10 @@ GelsBob::GelsBob(short p_pViewDepth,
                  int p_ImageHeight,
                  short p_ImageDepth)
     : m_pBob(NULL),
+      m_pRastPort(NULL),
       m_pImageShadow(NULL),
-      m_CurrentImageIndex(-1)
+      m_CurrentImageIndex(-1),
+      m_bIsVisible(false)
 {
   // Zeroing all image ptrs of this bob
   for(int i = 0; i < MAX_IMAGES; i++)
@@ -43,8 +45,10 @@ GelsBob::GelsBob(short p_pViewDepth,
 
 GelsBob::~GelsBob()
 {
+  SetInvisible();
   clear();
 }
+
 
 bool GelsBob::AddRawImage(const char *p_pPath)
 {
@@ -75,6 +79,7 @@ bool GelsBob::AddRawImage(const char *p_pPath)
   return true;
 }
 
+
 bool GelsBob::LoadImgFromArray(const WORD *p_pAddress)
 {
   WORD* pImageData = createNextImageData();
@@ -92,6 +97,7 @@ bool GelsBob::LoadImgFromArray(const WORD *p_pAddress)
 
   return true;
 }
+
 
 struct Bob *GelsBob::Get()
 {
@@ -147,8 +153,115 @@ struct Bob *GelsBob::Get()
 }
 
 
+void GelsBob::AddToRastPort(struct RastPort* pRastPort)
+{
+  if(m_pRastPort != NULL)
+  {
+    // RastPort already set
+    return;
+  }
+
+  if(m_pBob == NULL)
+  {
+    // No bob to set into RastPort
+    return;
+  }
+
+  m_pRastPort = pRastPort;
+  AddBob(m_pBob, pRastPort);
+  m_bIsVisible = true;
+}
+
+
+int GelsBob::XPos() const
+{
+  if(m_pBob == NULL)
+  {
+    return;
+  }
+
+  return m_pBob->BobVSprite->X;
+}
+
+
+int GelsBob::YPos() const
+{
+  if(m_pBob == NULL)
+  {
+    return;
+  }
+
+  return m_pBob->BobVSprite->Y;
+}
+
+
+void GelsBob::Move(int x, int y)
+{
+  if(m_pBob == NULL)
+  {
+    return;
+  }
+
+  m_pBob->BobVSprite->X = x;
+  m_pBob->BobVSprite->Y = y;
+}
+
+
+void GelsBob::SetInvisible()
+{
+  if(m_bIsVisible == false)
+  {
+    // Already invisible
+    return;
+  }
+
+  if(m_pBob == NULL)
+  {
+    return;
+  }
+
+  RemBob(m_pBob);
+  m_bIsVisible = false;
+}
+
+
+void GelsBob::SetVisible()
+{
+  if(m_bIsVisible == true)
+  {
+    // Already visible
+    return;
+  }
+
+  if(m_pBob == NULL)
+  {
+    return;
+  }
+
+  if(m_pRastPort == NULL)
+  {
+    return;
+  }
+  
+  AddBob(m_pBob, m_pRastPort);
+  m_bIsVisible = true;
+}
+
+
+bool GelsBob::IsVisible() const
+{
+  return m_bIsVisible;
+}
+
+
 void GelsBob::NextImage()
 {
+  if(m_bIsVisible == false)
+  {
+    // Only animate when bob is visible
+    return;
+  }
+
   if(m_CurrentImageIndex < 0)
   {
     // No image loaded
@@ -176,10 +289,10 @@ void GelsBob::NextImage()
   }
 
   WORD* pImageData = m_ppImagesArray[nextIndex];
-
   m_pBob->BobVSprite->ImageData = pImageData;
-
   m_CurrentImageIndex = nextIndex;
+
+  InitMasks(m_pBob->BobVSprite);
 }
 
 
@@ -209,6 +322,7 @@ WORD* GelsBob::createNextImageData()
   return m_ppImagesArray[idx];
 }
 
+
 void GelsBob::clear()
 {
   if (m_pBob != NULL)
@@ -221,7 +335,6 @@ void GelsBob::clear()
   {
     FreeVec(m_pImageShadow);
   }
-
 
   for(int i = 0; i < MAX_IMAGES; i++)
   {

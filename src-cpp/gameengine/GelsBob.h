@@ -66,13 +66,33 @@ public:
   struct Bob* Get();
 
   /**
-   * Sets the next image in the bob. If the last loaded image is
-   * exceeded, the first image is set again.
+   * Bobs are onyl visible in one deicated RastPort..
    */
+  void AddToRastPort(struct RastPort* pRastPort);
+
+
+  //
+  // Implementing part of the interface IEntity. Init(), Update(), 
+  // XSpeed_pps() and YSpeed_pps() must be implemented in derived 
+  // classes.
+  //
+
+  int XPos() const;
+  int YPos() const;
+  void Move(int x, int y);
+
+  void SetInvisible();
+  void SetVisible();
+  bool IsVisible() const;
+
   void NextImage();
 
 private:
   struct Bob* m_pBob;
+  struct RastPort* m_pRastPort;
+
+  bool m_bIsVisible;
+
   WORD* m_pImageShadow;
 
   int m_CurrentImageIndex;
