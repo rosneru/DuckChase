@@ -40,8 +40,8 @@ bool Hunter::Init()
   //
   // Initialize postion of the duck bob and add it to the scene
   //
-  Move(20, 222);
   AddToRastPort(m_GameView.RastPort());
+  Move(20, 222);
 
   return true;
 }
@@ -62,7 +62,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
       {
         Move(XPos() + m_XSpeed_pps, YPos());
       }
-      
+
     }
     else if((joyPortState & JPF_JOY_LEFT) != 0)
     {
@@ -81,7 +81,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
     {
       m_XSpeed_pps = 0;
     }
-    
+
   }
 }
 

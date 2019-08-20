@@ -154,7 +154,7 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
     Move(XPos() + m_XSpeed_pps, YPos() + m_YSpeed_pps);
   }
 
-  if(YPos() < 0)
+  if(YPos() < 1)
   {
     SetInvisible();
     m_XSpeed_pps = 0;

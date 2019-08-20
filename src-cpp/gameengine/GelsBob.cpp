@@ -161,6 +161,8 @@ void GelsBob::AddToRastPort(struct RastPort* pRastPort)
     return;
   }
 
+  Get();
+
   if(m_pBob == NULL)
   {
     // No bob to set into RastPort
@@ -177,7 +179,7 @@ int GelsBob::XPos() const
 {
   if(m_pBob == NULL)
   {
-    return;
+    return 0;
   }
 
   return m_pBob->BobVSprite->X;
@@ -188,7 +190,7 @@ int GelsBob::YPos() const
 {
   if(m_pBob == NULL)
   {
-    return;
+    return 0;
   }
 
   return m_pBob->BobVSprite->Y;
@@ -242,7 +244,7 @@ void GelsBob::SetVisible()
   {
     return;
   }
-  
+
   AddBob(m_pBob, m_pRastPort);
   m_bIsVisible = true;
 }

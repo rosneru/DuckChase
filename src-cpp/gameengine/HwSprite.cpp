@@ -163,7 +163,7 @@ int HwSprite::XPos() const
 {
   if(m_pCurrentSprite == NULL)
   {
-    return;
+    return 0;
   }
 
   struct SimpleSprite* pSpr = (struct SimpleSprite*) m_pCurrentSprite;
@@ -175,7 +175,7 @@ int HwSprite::YPos() const
 {
   if(m_pCurrentSprite == NULL)
   {
-    return;
+    return 0;
   }
 
   struct SimpleSprite* pSpr = (struct SimpleSprite*) m_pCurrentSprite;
@@ -238,7 +238,7 @@ void HwSprite::SetVisible()
 
 bool HwSprite::IsVisible() const
 {
-  return m_pCurrentSprite != m_pEmptySprite; 
+  return m_pCurrentSprite != m_pEmptySprite;
 }
 
 
