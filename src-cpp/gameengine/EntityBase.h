@@ -1,5 +1,5 @@
-#ifndef I_ENTITY_H
-#define I_ENTITY_H
+#ifndef ENTITY_BASE_H
+#define ENTITY_BASE_H
 
 
 /**
@@ -9,7 +9,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class IEntity
+class EntityBase
 {
 public:
   /**
@@ -70,6 +70,7 @@ public:
    * the first image is displayed again.
    */
   virtual void NextImage() = 0;
+
 };
 
 #endif

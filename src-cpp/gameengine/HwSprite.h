@@ -3,7 +3,7 @@
 
 #include <intuition/screens.h>
 #include "animtools.h"
-#include "IEntity.h"
+#include "EntityBase.h"
 
 #define MAX_IMAGES (8)
 /**
@@ -18,7 +18,7 @@
  * @author Uwe Rosner
  * @date 04/08/2019
  */
-class HwSprite : public IEntity
+class HwSprite : public EntityBase
 {
 public:
   HwSprite(int p_ImageWidth,
@@ -58,8 +58,8 @@ public:
 
 
   //
-  // Implementing part of the interface IEntity. Init(), Update(), 
-  // XSpeed_pps() and YSpeed_pps() must be implemented in derived 
+  // Implementing part of the interface IEntity. Init(), Update(),
+  // XSpeed_pps() and YSpeed_pps() must be implemented in derived
   // classes.
   //
 

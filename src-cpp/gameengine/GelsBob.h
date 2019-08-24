@@ -3,7 +3,7 @@
 
 #include <intuition/screens.h>
 #include "animtools.h"
-#include "IEntity.h"
+#include "EntityBase.h"
 
 #define MAX_IMAGES (8)
 /**
@@ -21,7 +21,7 @@
  * @author Uwe Rosner
  * @date 11/07/2019
  */
-class GelsBob : public IEntity
+class GelsBob : public EntityBase
 {
 public:
   GelsBob(short p_pViewDepth,
@@ -72,8 +72,8 @@ public:
 
 
   //
-  // Implementing part of the interface IEntity. Init(), Update(), 
-  // XSpeed_pps() and YSpeed_pps() must be implemented in derived 
+  // Implementing part of the interface IEntity. Init(), Update(),
+  // XSpeed_pps() and YSpeed_pps() must be implemented in derived
   // classes.
   //
 
