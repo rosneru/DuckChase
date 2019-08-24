@@ -182,6 +182,16 @@ int HwSprite::YPos() const
   return pSpr->y;
 }
 
+int HwSprite::Width() const
+{
+  return m_ImageWidth;
+}
+
+int HwSprite::Height() const
+{
+  return m_ImageHeight;
+}
+
 
 void HwSprite::Move(int x, int y)
 {

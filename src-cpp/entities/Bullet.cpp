@@ -134,6 +134,7 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
         SetVisible();
 
         m_XSpeed_pps = m_Hunter.XSpeed_pps();
+        m_YSpeed_pps = -150;
       }
     }
 
@@ -143,23 +144,31 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   // Move bullet sprite to new position
   //
-  m_YSpeed_pps = -1;
+  m_XSpeed_pps *= 1.01;
+  m_YSpeed_pps *= 1.01;
 
-  if(XPos() + m_XSpeed_pps < 0)
-  {
-    Move(656, YPos() + m_YSpeed_pps);
-  }
-  else
-  {
-    Move(XPos() + m_XSpeed_pps, YPos() + m_YSpeed_pps);
-  }
+  int dX = pps2Dist(m_XSpeed_pps, elapsed);
+  int dY = pps2Dist(m_YSpeed_pps, elapsed);
 
-  if(YPos() < 1)
+  if(YPos() + dY < 0)
   {
     SetInvisible();
     m_XSpeed_pps = 0;
     m_YSpeed_pps = 0;
   }
+  else if(XPos() + dX < 1)
+  {
+    Move(640, YPos() + dY);
+  }
+  else if(XPos() + dX > 640)
+  {
+    Move(0, YPos() + dY);
+  }
+  else
+  {
+    Move(XPos() + dX, YPos() + dY);
+  }
+
 
   //
   // Change the bullet sprite image every 10 frames

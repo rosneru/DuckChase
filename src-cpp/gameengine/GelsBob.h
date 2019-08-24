@@ -79,6 +79,8 @@ public:
 
   int XPos() const;
   int YPos() const;
+  int Width() const;
+  int Height() const;
   void Move(int x, int y);
 
   void SetInvisible();
@@ -88,6 +90,9 @@ public:
   void NextImage();
 
 private:
+  int m_ImageWidth;
+  int m_ImageHeight;
+
   struct Bob* m_pBob;
   struct RastPort* m_pRastPort;
 

@@ -52,29 +52,31 @@ void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
   {
     if((joyPortState & JPF_JOY_RIGHT) != 0)
     {
-      m_XSpeed_pps = 8;
+      m_XSpeed_pps = 500;
+      int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
-      if(XPos() + m_XSpeed_pps > 640)
+      if(XPos() + dX > 640 + Width())
       {
-        Move(-16, YPos());
+        Move(-Width(), YPos());
       }
       else
       {
-        Move(XPos() + m_XSpeed_pps, YPos());
+        Move(XPos() + dX, YPos());
       }
 
     }
     else if((joyPortState & JPF_JOY_LEFT) != 0)
     {
-      m_XSpeed_pps = -8;
+      m_XSpeed_pps = -500;
+      int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
-      if(XPos() + m_XSpeed_pps < 0)
+      if(XPos() + dX < -Width())
       {
-        Move(656, YPos());
+        Move(640 + Width(), YPos());
       }
       else
       {
-        Move(XPos() + m_XSpeed_pps, YPos());
+        Move(XPos() + dX, YPos());
       }
     }
     else

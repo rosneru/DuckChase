@@ -65,6 +65,8 @@ public:
 
   int XPos() const;
   int YPos() const;
+  int Width() const;
+  int Height() const;
   void Move(int x, int y);
 
   void SetInvisible();

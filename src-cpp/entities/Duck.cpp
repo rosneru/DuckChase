@@ -50,15 +50,16 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   // Move the duck on an easy, linear right-to-left route
   //
-  m_XSpeed_pps = -4;
+  m_XSpeed_pps = -240;
+  int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
-  if(XPos() + m_XSpeed_pps < 0)
+  if(XPos() + dX < -Width())
   {
     Move(656, YPos());
   }
   else
   {
-    Move(XPos() + m_XSpeed_pps, YPos());
+    Move(XPos() + dX, YPos());
   }
 
   // Change the duck image every 2 frames

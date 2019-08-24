@@ -157,6 +157,14 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "gameengine/EntityBase.cpp"
+"gameengine/EntityBase.cpp"
+"gameengine/EntityBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/EntityBase.o" "objects_debug/EntityBase.debug"
+""
+1 1
+File
 1 "gameengine/GameViewGfxLib.cpp"
 "gameengine/GameViewGfxLib.cpp"
 "gameengine/GameViewGfxLib.h"
@@ -274,6 +282,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "gameengine/EntityBase.h"
+"gameengine/EntityBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "gameengine/GameViewGfxLib.h"
 "gameengine/GameViewGfxLib.h"
 Storm Shell Project (Dependencies)
@@ -311,13 +326,6 @@ Storm Shell Project (Dependencies)
 File
 2 "PointsDisplay.h"
 "PointsDisplay.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gameengine/EntityBase.h"
-"gameengine/EntityBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

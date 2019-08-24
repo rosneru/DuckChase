@@ -11,7 +11,9 @@ GelsBob::GelsBob(short p_pViewDepth,
                  int p_ImageWidth,
                  int p_ImageHeight,
                  short p_ImageDepth)
-    : m_pBob(NULL),
+    : m_ImageWidth(p_ImageWidth),
+      m_ImageHeight(p_ImageHeight),
+      m_pBob(NULL),
       m_pRastPort(NULL),
       m_pImageShadow(NULL),
       m_CurrentImageIndex(-1),
@@ -196,6 +198,15 @@ int GelsBob::YPos() const
   return m_pBob->BobVSprite->Y;
 }
 
+int GelsBob::Width() const
+{
+  return m_ImageWidth;
+}
+
+int GelsBob::Height() const
+{
+  return m_ImageHeight;
+}
 
 void GelsBob::Move(int x, int y)
 {

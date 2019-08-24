@@ -46,6 +46,18 @@ public:
   virtual int YPos() const = 0;
 
   /**
+   * Gets the width of the object
+   */
+  virtual int Width() const = 0;
+
+  /**
+   * Gets the height of the object
+   */
+  virtual int Height() const = 0;
+
+
+
+  /**
    * Moves the object to the desired position
    */
   virtual void Move(int x, int y) = 0;
@@ -71,6 +83,12 @@ public:
    */
   virtual void NextImage() = 0;
 
+protected:
+  /**
+   * Returns the distance in pixels which is calculated from the pixel-
+   * per-second value und the elapsed time.
+   */
+  int pps2Dist(int pps, long elapsed_ms);
 };
 
 #endif
