@@ -4,14 +4,14 @@
 #include <graphics/rastport.h>
 #include <graphics/view.h>
 
-#include "../lowlevelview/lowlevelview.h"
-#include "../lowlevelview/lowlevelviewport.h"
+#include "lowlevelview.h"
+#include "lowlevelviewport.h"
 
 #include "IGameView.h"
 
 /**
  * Represents an advanced view for games. It is constructed manually
- * using graphics.library functions and two sub classes as described 
+ * using graphics.library functions and two sub classes as described
  * in the Amiga CD32 developers manual.
  *
  * @author Uwe Rosner
@@ -44,6 +44,7 @@ private:
   short m_ViewHeight;
   short m_ViewDepth;
   short m_ViewNumColors;
+  char* m_pLastError;
 
   LowlevelView m_LowLevelView;
   LowlevelViewPort m_LowLevelViewPort;
@@ -57,23 +58,7 @@ private:
   struct BitMap* m_pBitMapArray[2];
   WORD m_FrameToggle;
 
-  enum InitError
-  {
-    IE_None,
-    IE_AlreadyInitialized,
-    IE_GettingViewExtra,
-    IE_GettingMonSpec,
-    IE_GettingBitMapMem,
-    IE_GettingBitPlanes,
-    IE_GettingViewPort,
-    IE_GettingVPExtra,
-    IE_GettingDimInfo,
-    IE_GettingDisplayInfo,
-    IE_GettingCM,
-    IE_AttachExtStructs,
-  };
 
-  InitError m_InitError;
 
 };
 

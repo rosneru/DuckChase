@@ -4,7 +4,7 @@
 #include <graphics/view.h>
 
 /**
- * Represents a low level view object. Adapted from the example 
+ * Represents a low level view object. Adapted from the example
  * LowLevelView.c as described in the Amiga CD32 Developer Manual.
  *
  * @author Uwe Rosner
@@ -15,15 +15,29 @@ class LowlevelView
 public:
   LowlevelView();
   ~LowlevelView();
-  
+
   bool Create(ULONG modeId);
   void Delete();
 
   struct View* View();
 
+  const char* LastError() const;
+
+
 private:
   struct View* m_pView;
   struct ViewExtra* m_pViewExtra;
+
+  enum InitError
+  {
+    IE_None,
+    IE_GettingViewMem,
+    IE_GettingViewExtra,
+    IE_OpeningMonitor,
+  };
+
+  InitError m_InitError;
+
 };
 
 #endif

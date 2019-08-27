@@ -11,6 +11,8 @@ C/C++ Environment
 0
 "gameengine/"
 0
+"lowlevelview/"
+0
 Includepath (End)
 0 "" 80
 1 "objects_debug"
@@ -183,6 +185,15 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "gameengine/GameViewLowlevel.cpp"
+"gameengine/GameViewLowlevel.cpp"
+"gameengine/GameViewLowlevel.h"
+"gameengine/IGameView.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameViewLowlevel.o" "objects_debug/GameViewLowlevel.debug"
+""
+1 1
+File
 1 "gameengine/GelsBob.cpp"
 "gameengine/GelsBob.cpp"
 "animtools/animtools.h"
@@ -200,6 +211,22 @@ File
 "gameengine/EntityBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/HwSprite.o" "objects_debug/HwSprite.debug"
+""
+1 1
+File
+1 "lowlevelview/lowlevelview.cpp"
+"lowlevelview/lowlevelview.cpp"
+"lowlevelview/lowlevelview.h"
+Storm Shell Project (Dependencies)
+"objects_debug/lowlevelview.o" "objects_debug/lowlevelview.debug"
+""
+1 1
+File
+1 "lowlevelview/lowlevelviewport.cpp"
+"lowlevelview/lowlevelviewport.cpp"
+"lowlevelview/lowlevelviewport.h"
+Storm Shell Project (Dependencies)
+"objects_debug/lowlevelviewport.o" "objects_debug/lowlevelviewport.debug"
 ""
 1 1
 File
@@ -303,6 +330,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "gameengine/GameViewLowlevel.h"
+"gameengine/GameViewLowlevel.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "gameengine/GelsBob.h"
 "gameengine/GelsBob.h"
 Storm Shell Project (Dependencies)
@@ -319,6 +353,20 @@ Storm Shell Project (Dependencies)
 File
 2 "gameengine/IGameView.h"
 "gameengine/IGameView.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "lowlevelview/lowlevelview.h"
+"lowlevelview/lowlevelview.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "lowlevelview/lowlevelviewport.h"
+"lowlevelview/lowlevelviewport.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

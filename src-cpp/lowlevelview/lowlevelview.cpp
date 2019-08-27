@@ -26,6 +26,7 @@ bool LowlevelView::Create(ULONG modeId)
   if(m_pView == NULL)
   {
     // Can't alocate memory for View
+    m_InitError = IE_GettingViewMem;
     Delete();
     return false;
   }
@@ -36,6 +37,7 @@ bool LowlevelView::Create(ULONG modeId)
   if(m_pViewExtra == NULL)
   {
     // Can't get view extra struct
+    m_InitError = IE_GettingViewExtra;
     Delete();
     return false;
   }
@@ -44,6 +46,7 @@ bool LowlevelView::Create(ULONG modeId)
   if(m_pViewExtra->Monitor == NULL)
   {
     // Can't open monitor
+    m_InitError = IE_OpeningMonitor;
     Delete();
     return false;
   }
@@ -78,4 +81,31 @@ void LowlevelView::Delete()
 struct View* LowlevelView::View()
 {
   return m_pView;
+}
+
+
+const char* LowlevelView::LastError() const
+{
+  switch(m_InitError)
+  {
+    case IE_None:
+      return "No error: init done successfully.\n";
+      break;
+
+    case IE_GettingViewMem:
+      return "Can't allocate View memory.";
+      break;
+
+    case IE_GettingViewExtra:
+      return "Can't get ViewExtra.\n";
+      break;
+
+    case IE_OpeningMonitor:
+      return "Can't open the monitor.\n";
+      break;
+
+    default:
+      return "Unknown error in LowlevelView.\n";
+      break;
+  }
 }

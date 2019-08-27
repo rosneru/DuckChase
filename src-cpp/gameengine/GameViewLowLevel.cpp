@@ -6,7 +6,7 @@
 #include <graphics/gfxnodes.h>
 #include <graphics/videocontrol.h>
 
-#include "GameViewLowLevel.h"
+#include "GameViewLowlevel.h"
 
 extern struct GfxBase* GfxBase;
 
@@ -17,13 +17,13 @@ GameViewLowlevel::GameViewLowlevel(short viewWidth,
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
+    m_pLastError("Initialized sucessfully."),
     m_pOldView(NULL),
     m_pView(NULL),
     m_pViewPort(NULL),
     m_RastPort(),
     m_FrameToggle(0),
-    m_pBitMapArray(),
-    m_InitError(IE_None)
+    m_pBitMapArray()
 {
   m_ViewNumColors = 1;
   for(int i = 0; i < viewDepth; i++)
@@ -42,12 +42,9 @@ bool GameViewLowlevel::Open()
 {
   if(m_pViewPort != NULL)
   {
-    m_InitError = IE_AlreadyInitialized;
     Close();
     return false;
   }
-
-  m_InitError = IE_None;
 
   // Initialize the BitMaps
   for(int i = 0; i < 2; i++)
@@ -58,7 +55,7 @@ bool GameViewLowlevel::Open()
 
     if(m_pBitMapArray[i] == NULL)
     {
-      m_InitError = IE_GettingBitMapMem;
+      m_pLastError = "Can't allocate BitMap memory.\n";
       Close();
       return false;
     }
@@ -82,7 +79,7 @@ bool GameViewLowlevel::Open()
 
       if (m_pBitMapArray[i]->Planes[depth] == NULL)
       {
-        m_InitError = IE_GettingBitPlanes;
+        m_pLastError = "Can't get BitPlanes.\n";
         return false;
         Close();
       }
@@ -97,19 +94,21 @@ bool GameViewLowlevel::Open()
 
   if(m_LowLevelView.Create(modeId) == false)
   {
+    m_pLastError = (char*)m_LowLevelView.LastError();
     Close();
     return false;
   }
 
   m_pView = m_LowLevelView.View();
 
-  if(m_LowLevelViewPort.Create(m_ViewWidth, 
-                               m_ViewHeight, 
-                               m_ViewDepth,  
-                               modeId, 
-                               m_ViewNumColors, 
+  if(m_LowLevelViewPort.Create(m_ViewWidth,
+                               m_ViewHeight,
+                               m_ViewDepth,
+                               modeId,
+                               m_ViewNumColors,
                                m_pBitMapArray[0]) == false)
   {
+    m_pLastError = (char*)m_LowLevelViewPort.LastError();
     Close();
     return false;
   }
@@ -230,60 +229,7 @@ void GameViewLowlevel::Render()
 
 const char* GameViewLowlevel::LastError() const
 {
-  switch(m_InitError)
-  {
-    case IE_None:
-      return "No error: init done successfully.";
-      break;
-
-    case IE_AlreadyInitialized:
-      return "GameView already initialized.";
-      break;
-
-    case IE_GettingViewExtra:
-      return "Could not get ViewExtra.\n";
-      break;
-
-    case IE_GettingMonSpec:
-      return "Could not get MonitorSpec.\n";
-      break;
-
-    case IE_GettingBitMapMem:
-      return "Could not get BitMap memory.\n";
-      break;
-
-    case IE_GettingBitPlanes:
-      return "Could not get BitPlanes.\n";
-      break;
-
-    case IE_GettingViewPort:
-      return "Could not get ViewPort memory.\n";
-      break;
-
-    case IE_GettingVPExtra:
-      return "Could not get ViewPortExtra.\n";
-      break;
-
-    case IE_GettingDimInfo:
-      return "Could not get DimensionInfo.\n";
-      break;
-
-    case IE_GettingDisplayInfo:
-      return "Could not get DisplayInfo.\n";
-      break;
-
-    case IE_GettingCM:
-      return "Could not get ColorMap.\n";
-      break;
-
-    case IE_AttachExtStructs:
-      return "Could not attach extended structures.\n";
-      break;
-
-    default:
-      return "Unknown state";
-      break;
-  }
+  return m_pLastError;
 }
 
 const char* GameViewLowlevel::ViewName() const
