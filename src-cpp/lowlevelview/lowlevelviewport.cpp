@@ -98,8 +98,7 @@ bool LowlevelViewPort::Create(ULONG sizex, ULONG sizey, ULONG depth,
     {TAG_END}
   };
 
-  bool vcOk = VideoControl(m_pViewPort->ColorMap, vcTags);
-  if(!vcOk)
+  if(VideoControl(m_pViewPort->ColorMap, vcTags) != NULL)
   {
     // Can't set VideoControl
     m_InitError = IE_SettingVideoControl;
