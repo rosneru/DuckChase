@@ -72,10 +72,6 @@ bool GameViewGfxLib::Open()
     return false;
   }
 
-  // Attach the ViewExtra to the View
-  GfxAssociate(&m_View, m_pViewExtra);
-  m_View.Modes |= EXTEND_VSTRUCT;
-
   // Create and attach a MonitorSpec to the ViewExtra
   m_pMonitorSpec = OpenMonitor(NULL, modeID);
   if (m_pMonitorSpec == NULL)
@@ -86,6 +82,10 @@ bool GameViewGfxLib::Open()
   }
 
   m_pViewExtra->Monitor = m_pMonitorSpec;
+
+  // Attach the ViewExtra to the View
+  GfxAssociate(&m_View, m_pViewExtra);
+  m_View.Modes |= EXTEND_VSTRUCT;
 
   // Initialize the BitMaps
   for(int i = 0; i < 2; i++)
