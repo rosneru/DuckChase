@@ -116,6 +116,12 @@ bool GameViewLowlevel::Open()
   m_pViewPort = m_LowLevelViewPort.ViewPort();
 
 
+  // Create a RastPort to draw into
+  InitRastPort(&m_RastPort);
+  m_RastPort.BitMap = m_pBitMapArray[0];
+  SetRast(&m_RastPort, 0);
+
+
   // Merge preliminary lists into a real Copper list in the View
   // structure
   MrgCop(m_pView);
