@@ -72,6 +72,20 @@ void LowlevelView::Delete()
 
   if(m_pView != NULL)
   {
+    if(m_pView->LOFCprList != NULL)
+    {
+      // Deallocate the hardware Copper list created by MrgCop()
+      FreeCprList(m_pView->LOFCprList);
+      m_pView->LOFCprList = NULL;
+    }
+
+    if(m_pView->SHFCprList != NULL)
+    {
+      // Deallocate also the interlace-only hardware Copper list
+      FreeCprList(m_pView->SHFCprList);
+      m_pView->SHFCprList = NULL;
+    }
+
     FreeVec(m_pView);
     m_pView = NULL;
   }

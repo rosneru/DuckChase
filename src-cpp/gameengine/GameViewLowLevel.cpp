@@ -121,6 +121,10 @@ bool GameViewLowlevel::Open()
   m_RastPort.BitMap = m_pBitMapArray[0];
   SetRast(&m_RastPort, 0);
 
+  m_pView->ViewPort = m_pViewPort;
+
+  // Construct preliminary Copper instruction list
+  MakeVPort(m_pView, m_pViewPort);
 
   // Merge preliminary lists into a real Copper list in the View
   // structure
