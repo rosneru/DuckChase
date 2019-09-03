@@ -15,7 +15,7 @@
  * The Render() method should be called every frame to draw the changed
  * scenery and moved objects.
  *
- * They contain a ViewPort and a RastPort to allow graphics operations 
+ * They contain a ViewPort and a RastPort to allow graphics operations
  * to be performed.
  *
  * Finally they contain a LastError method, reporting a text of what
@@ -37,6 +37,8 @@ public:
 
   virtual struct RastPort* RastPort() = 0;
   virtual struct ViewPort* ViewPort() = 0;
+
+  virtual void SetColor32(int i, int r, int g, int b) = 0;
 
   virtual void Render() = 0;
 

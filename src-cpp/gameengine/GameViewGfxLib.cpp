@@ -198,8 +198,8 @@ bool GameViewGfxLib::Open()
     return false;
   }
 
-  // Initialize the ColorMap, 3 planes deep, so 8 entries
-  m_pColorMap = GetColorMap(m_ViewNumColors);
+  // Initialize it to 5 planes deep, so 32 entries
+  m_pColorMap = GetColorMap(32);
   if (m_pColorMap == NULL)
   {
     m_InitError = IE_GettingCM;
@@ -352,6 +352,14 @@ struct RastPort* GameViewGfxLib::RastPort()
 struct ViewPort* GameViewGfxLib::ViewPort()
 {
   return m_pViewPort;
+}
+
+void GameViewGfxLib::SetColor32(int i, int r, int g, int b)
+{
+  if((m_pViewPort != NULL) && (m_pViewPort->ColorMap != NULL))
+  {
+    SetRGB32CM(m_pViewPort->ColorMap, i, r, g, b);
+  }
 }
 
 

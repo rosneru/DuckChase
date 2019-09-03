@@ -100,7 +100,7 @@ bool Bullet::Init()
     int r = colorsBulletSprite[i - spriteColRegStart][0];
     int g = colorsBulletSprite[i - spriteColRegStart][1];
     int b = colorsBulletSprite[i - spriteColRegStart][2];
-    SetRGB32(m_GameView.ViewPort(), i, r, g, b);
+    m_GameView.SetColor32(i, r, g, b);
   }
 
   // Sprite must have a ViewPort to be displayed

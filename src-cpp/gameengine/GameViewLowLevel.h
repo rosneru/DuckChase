@@ -33,6 +33,8 @@ public:
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
 
+  void SetColor32(int i, int r, int g, int b);
+
   void Render();
 
   const char* LastError() const;

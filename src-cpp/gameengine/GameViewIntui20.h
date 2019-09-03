@@ -9,8 +9,8 @@
 #include "IGameView.h"
 
 /**
- * Represents an view for games using the Intuition interface of 
- * Amiga OS2.0. It uses a intuition screen with two (double buffering) 
+ * Represents an view for games using the Intuition interface of
+ * Amiga OS2.0. It uses a intuition screen with two (double buffering)
  * custom bitmaps which are set up manually.
  *
  * @author Uwe Rosner
@@ -31,6 +31,8 @@ public:
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
+
+  void SetColor32(int i, int r, int g, int b);
 
   void Render();
 

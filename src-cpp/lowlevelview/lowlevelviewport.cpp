@@ -44,7 +44,7 @@ bool LowlevelViewPort::Create(ULONG sizex, ULONG sizey, ULONG depth,
 
   InitVPort(m_pViewPort);
 
-  m_pViewPort->ColorMap = GetColorMap(colors);
+  m_pViewPort->ColorMap = GetColorMap(32);
   if(m_pViewPort->ColorMap == NULL)
   {
     // Can't get ColorMap

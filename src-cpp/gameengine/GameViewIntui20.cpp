@@ -182,6 +182,13 @@ struct ViewPort* GameViewIntui20::ViewPort()
   return &(m_pScreen->ViewPort);
 }
 
+void GameViewIntui20::SetColor32(int i, int r, int g, int b)
+{
+  if(m_pScreen != NULL)
+  {
+    SetRGB32(&m_pScreen->ViewPort, i, r, g, b);
+  }
+}
 
 void GameViewIntui20::Render()
 {

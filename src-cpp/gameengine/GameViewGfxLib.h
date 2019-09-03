@@ -8,7 +8,7 @@
 
 /**
  * Represents an advanced view for games. It is constructed manually
- * using graphics.library functions of Amiga OS 2.0 and may in future 
+ * using graphics.library functions of Amiga OS 2.0 and may in future
  * be enhanced by dual playfield capabilities.
  *
  * @author Uwe Rosner
@@ -29,6 +29,8 @@ public:
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
+
+  void SetColor32(int i, int r, int g, int b);
 
   void Render();
 
