@@ -130,8 +130,6 @@ clearview
         movea.l _SysBase,a6
         jsr     _LVOForbid(a6)
 
-        move.l  #$0020,$dff096      ;Disable sprites
-
 *======================================================================
 * Main
 *======================================================================
@@ -166,8 +164,6 @@ loop:
 * Clean up
 *======================================================================
 
-
-        move.l  #$8020,$dff096      ;Enable sprites
 
         movea.l _SysBase,a6
         jsr     _LVOPermit(a6)
@@ -215,6 +211,7 @@ Exit_3:
 
 
 Exit_4:
+        move.l  #$8020,$dff096      ;Enable sprites
         rts;
 
 
@@ -302,21 +299,23 @@ copcol
 
 copperlist
 ;                dc.w    $0207,$fffe ;Required for AGA machines
-                dc.w    $008e,$3081 ;DIWSTRT
-                dc.w    $0090,$35c1 ;DIWSTOP
-                dc.w    $0104,$0064 ;BPLCON2
-                dc.w    $0092,$0038 ;DDFSTRT
-                dc.w    $0094,$00d0 ;DDFSTOP
-                dc.w    $0102,$0000 ;BPLCON1
-                dc.w    $0108,$0000 ;BPL1MOD
-                dc.w    $010a,$0000 ;BPL2MOD
-                dc.w    $0100,$1200 ;BPLCON0
-pl1             dc.w    $00e0,$0000 ;BPL1PTH
-                dc.w    $00e2,$0000 ;BPL1PTL
-                dc.w    $0180,$0000 ;COLOR00
+                dc.w    dmacon,$0020 ;Disable sprites
+                dc.w    diwstrt,$3081 ;DIWSTRT
+                dc.w    diwstop,$35c1 ;DIWSTOP
+                dc.w    bplcon2,$0064 ;BPLCON2
+                dc.w    ddfstrt,$0038 ;DDFSTRT
+                dc.w    ddfstop,$00d0 ;DDFSTOP
+                dc.w    bplcon1,$0000 ;BPLCON1
+                dc.w    bplcon2,$0000 ;BPL1MOD
+                dc.w    bpl2mod,$0000 ;BPL2MOD
+                dc.w    bplcon0,$1200 ;BPLCON0
+pl1             dc.w    bplpt,$0000   ;BPL1PTH
+                dc.w    bplpt+2,$0000 ;BPL1PTL
+                dc.w    color,$0000 ;COLOR00
 cins            blk.w   400,0
-                dc.w    $0180,$0000 ;COLOR00 -> red
-;                dc.w    $ff07,$fffe ;Wait for last ntsc line
+                dc.w    color,$0000 ;COLOR00 -> black
+;                dc.w    $ff07,$fffe  ;Wait for last ntsc line
+                dc.w    dmacon,$8020  ;Enable sprites
                 dc.w    $ffff,$fffe ;Waiting for impossible position 
 
                 END
