@@ -100,13 +100,16 @@ _main:
         ;
         ; Allocate memory for picture
         ;
-        move.l  #10800,d0           ;Size of needed memory
+        move.l  #61440,d0           ;Size of needed memory
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
         move.l  #strErrAllocImgMem,d1 ;The error message if it failed
         move.l  d0,picture          ;Save ptr of allocated memory
         beq     Exit_err            ;No memory has been reserved
+
+        ; Load the Background image
+        bsr Load_raw_image
 
         ;
         ; Switch off current copper list without smashing the current
@@ -141,9 +144,6 @@ clearview
         swap    d0
         move.w  d0,pl1+2
 
-        ; Create the copperlist dynamicaly
-        bsr     initcopper
-
         ; Activate the copperlist
         lea     _custom,a1
         move.l  #copperlist,cop1lc(a1)
@@ -153,8 +153,6 @@ loop:
         and.l   #$fff00,d0
         cmp.l   #$00003000,d0
         bne.s   loop
-
-        bsr     scrollcopper
 
         btst    #CIAB_GAMEPORT0,_ciaa   ;Mouse button pressed
         bne     loop
@@ -227,38 +225,8 @@ Exit_err:
 * Sub
 *======================================================================
 
-initcopper:
-        lea     cins,a0
-        move.l  #99,d0
-        move.l  #$6007,d1
-
-coppercopy:
-        move.w  d1,(a0)+
-        move.w  #$fffe,(a0)+
-        move.w  #$0180,(a0)+
-        move.w  #$0000,(a0)+
-        add     #$0100,d1
-        dbf     d0,coppercopy
-        rts
-
-scrollcopper:
-        lea     cins+6,a0
-        move.l  colorptr,a1
-        cmp     #$ffff,(a1)
-        bne.s   nocol
-        move.l  #copcol,colorptr
-        move.l  colorptr,a1
-nocol:
-        moveq.l #99,d0
-scroll:
-        move.w  (a1)+,(a0)
-        addq.l  #8,a0
-        cmp     #$ffff,(a1)
-        bne.s   continue
-        lea     copcol,a1
-continue:
-        dbf     d0,scroll
-        addq.l  #2,colorptr
+Load_raw_image:
+;        lea     cins,a0
         rts
 
 
@@ -288,35 +256,28 @@ strErrAllocImgMem
 
                 SECTION "dma",data,chip
 
-colorptr        dc.l    copcol
-
-copcol
-                dc.w    $000,$111,$222,$333,$444,$555,$666,$777,$888,$999
-                dc.w    $aaa,$bbb,$ccc,$ddd,$eee,$fff,$eee,$ddd,$ccc,$bbb
-                dc.w    $aaa,$999,$888,$777,$666,$555,$444,$333,$222,$111
-                dc.w    $ffff
-
-
-copperlist
+copperlist      even
 ;                dc.w    $0207,$fffe ;Required for AGA machines
                 dc.w    dmacon,$0020 ;Disable sprites
-                dc.w    diwstrt,$3081 ;DIWSTRT
-                dc.w    diwstop,$35c1 ;DIWSTOP
-                dc.w    bplcon2,$0064 ;BPLCON2
-                dc.w    ddfstrt,$0038 ;DDFSTRT
-                dc.w    ddfstop,$00d0 ;DDFSTOP
-                dc.w    bplcon1,$0000 ;BPLCON1
-                dc.w    bplcon2,$0000 ;BPL1MOD
-                dc.w    bpl2mod,$0000 ;BPL2MOD
-                dc.w    bplcon0,$1200 ;BPLCON0
-pl1             dc.w    bplpt,$0000   ;BPL1PTH
-                dc.w    bplpt+2,$0000 ;BPL1PTL
-                dc.w    color,$0000 ;COLOR00
-cins            blk.w   400,0
-                dc.w    color,$0000 ;COLOR00 -> black
+                dc.w    diwstrt,$2C81   ;DIWSTRT
+                dc.w    diwstop,$2CC1   ;DIWSTOP
+                dc.w    bplcon2,$0064   ;BPLCON2
+                dc.w    ddfstrt,$003C   ;DDFSTRT
+                dc.w    ddfstop,$00d4   ;DDFSTOP
+                dc.w    bplcon1,$0000   ;BPLCON1
+                dc.w    bplcon2,$0000   ;BPL1MOD
+                dc.w    bpl2mod,$0000   ;BPL2MOD
+                dc.w    bplcon0,$B200   ;BPLCON0
+pl1             dc.w    bplpt,$0000     ;BPL1PTH
+                dc.w    bplpt+2,$0000   ;BPL1PTL
+                dc.w    color,$0f00     ;COLOR00
+                dc.w    $7007,$fffe     ;WAIT
+                dc.w    color,$0fff     ;COLOR00 -> white
+                dc.w    $e007,$fffe     ;WAIT
+                dc.w    color,$0f00     ;COLOR00 -> red
 ;                dc.w    $ff07,$fffe  ;Wait for last ntsc line
-                dc.w    dmacon,$8020  ;Enable sprites
-                dc.w    $ffff,$fffe ;Waiting for impossible position 
+                dc.w    dmacon,$8020    ;Enable sprites
+                dc.w    $ffff,$fffe     ;Waiting for impossible position
 
                 END
 
