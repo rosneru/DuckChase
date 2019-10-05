@@ -144,12 +144,29 @@ clearview
 * Main
 *======================================================================
         ;
-        ; Load address of allocated memory for the picture
+        ; Load address of allocated memory for the background picture
+        ; and set the bitplane pointers for all (here: three) planes
+        ; in the copper list
         ;
         move.l  picture,d0
-        move.w  d0,pl1+6
+
+        move.w  d0,plane1+6
         swap    d0
-        move.w  d0,pl1+2
+        move.w  d0,plane1+2
+
+        swap    d0
+        add.l   #plsize,d0
+
+        move.w  d0,plane2+6
+        swap    d0
+        move.w  d0,plane2+2
+
+        swap    d0
+        add.l   #plsize,d0
+
+        move.w  d0,plane3+6
+        swap    d0
+        move.w  d0,plane3+2
 
         ; Activate the copperlist
         lea     _custom,a1
@@ -322,18 +339,22 @@ bgImgName           even
 copperlist          even
 ;                    dc.w    $0207,$fffe ;Required for AGA machines
                     dc.w    dmacon,$0020 ;Disable sprites
-                    dc.w    diwstrt,$2C81   ;DIWSTRT
-                    dc.w    diwstop,$2CC1   ;DIWSTOP
-                    dc.w    bplcon2,$0064   ;BPLCON2
-                    dc.w    ddfstrt,$003C   ;DDFSTRT
-                    dc.w    ddfstop,$00d4   ;DDFSTOP
-                    dc.w    bplcon1,$0000   ;BPLCON1
-                    dc.w    bplcon2,$0000   ;BPL1MOD
-                    dc.w    bpl2mod,$0000   ;BPL2MOD
-                    dc.w    bplcon0,$B200   ;BPLCON0
-pl1                 dc.w    bplpt,$0000     ;BPL1PTH
-                    dc.w    bplpt+2,$0000   ;BPL1PTL
-                    dc.w    color,$0000     ;COLOR00
+                    dc.w    diwstrt,$2C81
+                    dc.w    diwstop,$2CC1
+                    dc.w    ddfstrt,$003C
+                    dc.w    ddfstop,$00d4
+                    dc.w    bplcon1,$0000
+                    dc.w    bplcon2,$0000
+                    dc.w    bpl1mod,$0000
+                    dc.w    bpl2mod,$0000
+                    dc.w    bplcon0,$B200
+plane1              dc.w    bplpt,$0000
+                    dc.w    bplpt+2,$0000
+plane2              dc.w    bplpt+4,$0000
+                    dc.w    bplpt+6,$0000
+plane3              dc.w    bplpt+8,$0000
+                    dc.w    bplpt+10,$0000
+                    dc.w    color,$0789     ;COLOR00
 ;                    dc.w    $7007,$fffe     ;WAIT
 ;                    dc.w    color,$0fff     ;COLOR00 -> white
 ;                    dc.w    $e007,$fffe     ;WAIT
@@ -341,6 +362,9 @@ pl1                 dc.w    bplpt,$0000     ;BPL1PTH
 ;                    dc.w    $ff07,$fffe  ;Wait for last ntsc line
                     dc.w    dmacon,$8020    ;Enable sprites
                     dc.w    $ffff,$fffe     ;Waiting for impossible position
+
+plsize = 640 / 8 * 256
+
 
                 END
 
