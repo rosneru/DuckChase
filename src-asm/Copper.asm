@@ -1,6 +1,6 @@
 **
-* Learning Amiga development in regeards of bobs, sprites and all the
-* graphics stuff.
+* Learning Amiga hardware-direct development in regeards of bobs,
+* sprites and all the gfx stuff.
 *
 *
 * Development environment
@@ -21,6 +21,7 @@
 *    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
 *
 * History
+*   04.10.2019 - Changed example from 22.07. to load a picture instead
 *   18.08.2019 - Moving the gray gradient
 *   18.08.2019 - Added a copper gray gradient
 *   17.08.2019 - Added error message output if init fails
@@ -61,6 +62,7 @@
         XREF    _LVOOwnBlitter
         XREF    _LVODisownBlitter
         XREF    _LVOOpen
+        XREF    _LVOClose
         XREF    _LVOVPrintf
         XREF    _LVORead
         XREF    _custom
@@ -104,13 +106,18 @@ _main:
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
-        move.l  #strErrAllocImgMem,d1 ;The error message if it failed
+        move.l  #strErrAllocBgImg,d1 ;The error message if it failed
         move.l  d0,picture          ;Save ptr of allocated memory
         beq     Exit_err            ;No memory has been reserved
 
-        ; Load the Background image
-        bsr Load_raw_image
-
+        ; Load the Background image at reserved memory address
+        move.l  #bgImgName,d1       ;Sub routine expects name in d1..
+        move.l  d0,d2               ;..and buf addr in d2
+        move.l  #61440,d3           ;..and buf len in d3
+        bsr     Load_file_to_buf
+        move.l  #strErrLoadBgImg,d1 ;The error message if it failed
+        tst.l   d0                  ;If d0 is zero
+        bne     Exit_err            ;the file couldn't be loaded
         ;
         ; Switch off current copper list without smashing the current
         ; screen. The order of LoadView(0) and 2xWaitTOF() is set by
@@ -225,8 +232,53 @@ Exit_err:
 * Sub
 *======================================================================
 
-Load_raw_image:
-;        lea     cins,a0
+; Function Load_file_to_buf
+;   Loads a file into a memory buffer which must have been reserved
+;   before. Opens the file before and closes it after loading.
+;
+; Parameters
+;   d1: file name
+;   d2: buf address
+;   d3: buf size
+;
+; Returns
+;   d0: zero on success or error code
+Load_file_to_buf:
+        movem.l d2-d6/a2-a6,-(sp)
+
+        move.l  _DOSBase,a6
+
+        move.l  #MODE_OLDFILE,d2
+        jsr     _LVOOpen(a6)
+        tst.l   d0
+        beq     Load_file_to_buf_err_open   ;d0 = 0, File not opened
+
+        move.l  d0,d2                       ;Save file handle for Close
+        move.l  d0,d1                       ;But Read needs it in d1
+
+        jsr     _LVORead(a6)
+        tst.l   d0
+        blt     Load_file_to_buf_err_read   ;d0 < 0; Read error
+
+        move.l  d2,d1                       ;File handle parked in d2
+        jsr     _LVOClose(a6)
+
+        movem.l (sp)+,d2-d6/a2-a6
+        sub.l   d0,d0                       ;Succes: d0 = 0
+        rts
+
+Load_file_to_buf_err_read
+        move.l  d2,d1                       ;File handle parked in d2
+        jsr     _LVOClose(a6)
+
+        movem.l (sp)+,d2-d6/a2-a6
+        move.l  #-1,d0                      ;Error: d0 = error code
+        rts
+
+
+Load_file_to_buf_err_open
+        movem.l (sp)+,d2-d6/a2-a6
+        move.l  #-2,d0                      ;Error: d0 = error code
         rts
 
 
@@ -234,50 +286,59 @@ Load_raw_image:
 * Data
 *======================================================================
 
-dosname         DOSNAME             ;dos.i
-gfxname         GRAPHICSNAME        ;gfxbase.i
-                even
+dosname             DOSNAME             ;dos.i
+gfxname             GRAPHICSNAME        ;gfxbase.i
+                    even
 
-_DOSBase        ds.l    1
-_GfxBase        ds.l    1
-_SysBase        ds.l    1
+_DOSBase            ds.l    1
+_GfxBase            ds.l    1
+_SysBase            ds.l    1
 
-oldview         ds.l    1
+oldview             ds.l    1
 
-picture         cnop    0,2
-                ds.l    1
+picture             even
+                    ds.l    1
 
-strErrOpenGfx   dc.b          'Can''t open graphics.library v39.',10,0
+tmpvar              even
+                    ds.l    1
 
-strErrAllocImgMem
-                dc.b          'Can''t allocate memory for background image.',10,0
+strErrOpenGfx       even
+                    dc.b          'Can''t open graphics.library v39.',10,0
+
+strErrAllocBgImg    even
+                    dc.b          'Can''t allocate memory for background image.',10,0
+
+strErrLoadBgImg     even
+                    dc.b          'Can''t load background image.',10,0
 
 
+bgImgName           even
+                    dc.b          '/gfx/background_hires.raw',0
 
-                SECTION "dma",data,chip
+                    SECTION "dma",data,chip
 
-copperlist      even
-;                dc.w    $0207,$fffe ;Required for AGA machines
-                dc.w    dmacon,$0020 ;Disable sprites
-                dc.w    diwstrt,$2C81   ;DIWSTRT
-                dc.w    diwstop,$2CC1   ;DIWSTOP
-                dc.w    bplcon2,$0064   ;BPLCON2
-                dc.w    ddfstrt,$003C   ;DDFSTRT
-                dc.w    ddfstop,$00d4   ;DDFSTOP
-                dc.w    bplcon1,$0000   ;BPLCON1
-                dc.w    bplcon2,$0000   ;BPL1MOD
-                dc.w    bpl2mod,$0000   ;BPL2MOD
-                dc.w    bplcon0,$B200   ;BPLCON0
-pl1             dc.w    bplpt,$0000     ;BPL1PTH
-                dc.w    bplpt+2,$0000   ;BPL1PTL
-                dc.w    color,$0f00     ;COLOR00
-                dc.w    $7007,$fffe     ;WAIT
-                dc.w    color,$0fff     ;COLOR00 -> white
-                dc.w    $e007,$fffe     ;WAIT
-                dc.w    color,$0f00     ;COLOR00 -> red
-;                dc.w    $ff07,$fffe  ;Wait for last ntsc line
-                dc.w    dmacon,$8020    ;Enable sprites
-                dc.w    $ffff,$fffe     ;Waiting for impossible position
+copperlist          even
+;                    dc.w    $0207,$fffe ;Required for AGA machines
+                    dc.w    dmacon,$0020 ;Disable sprites
+                    dc.w    diwstrt,$2C81   ;DIWSTRT
+                    dc.w    diwstop,$2CC1   ;DIWSTOP
+                    dc.w    bplcon2,$0064   ;BPLCON2
+                    dc.w    ddfstrt,$003C   ;DDFSTRT
+                    dc.w    ddfstop,$00d4   ;DDFSTOP
+                    dc.w    bplcon1,$0000   ;BPLCON1
+                    dc.w    bplcon2,$0000   ;BPL1MOD
+                    dc.w    bpl2mod,$0000   ;BPL2MOD
+                    dc.w    bplcon0,$B200   ;BPLCON0
+pl1                 dc.w    bplpt,$0000     ;BPL1PTH
+                    dc.w    bplpt+2,$0000   ;BPL1PTL
+                    dc.w    color,$0f00     ;COLOR00
+                    dc.w    $7007,$fffe     ;WAIT
+                    dc.w    color,$0fff     ;COLOR00 -> white
+                    dc.w    $e007,$fffe     ;WAIT
+                    dc.w    color,$0f00     ;COLOR00 -> red
+;                    dc.w    $ff07,$fffe  ;Wait for last ntsc line
+                    dc.w    dmacon,$8020    ;Enable sprites
+                    dc.w    $ffff,$fffe     ;Waiting for impossible position
 
                 END
 
