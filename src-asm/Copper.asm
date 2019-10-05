@@ -93,7 +93,7 @@ _main:
         ; Open graphics.library
         ;
         lea     gfxname(pc),a1
-        moveq.l #39,d0
+        moveq.l #36,d0
         jsr     _LVOOpenLibrary(a6)
         move.l  #strErrOpenGfx,d1   ;The error message if it failed
         move.l  d0,_GfxBase
@@ -149,20 +149,23 @@ clearview
         ; in the copper list
         ;
         move.l  picture,d0
+        move.l  #20480,d1           ;The size of one bitplane in bytes
+                                    ;640/8*256 = 20480
+
 
         move.w  d0,plane1+6
         swap    d0
         move.w  d0,plane1+2
 
         swap    d0
-        add.l   #plsize,d0
+        add.l   d1,d0
 
         move.w  d0,plane2+6
         swap    d0
         move.w  d0,plane2+2
 
         swap    d0
-        add.l   #plsize,d0
+        add.l   d1,d0
 
         move.w  d0,plane3+6
         swap    d0
@@ -185,7 +188,8 @@ loop:
 *======================================================================
 * Clean up
 *======================================================================
-
+        lea     _custom,a1
+        move.l  $8020,dmacon(a1)
 
         movea.l _SysBase,a6
         jsr     _LVOPermit(a6)
@@ -335,19 +339,19 @@ bgImgName           even
                     dc.b          '/gfx/background_hires.raw',0
 
                     SECTION "dma",data,chip
-
-copperlist          even
+                    even
+copperlist
 ;                    dc.w    $0207,$fffe ;Required for AGA machines
                     dc.w    dmacon,$0020 ;Disable sprites
                     dc.w    diwstrt,$2C81
                     dc.w    diwstop,$2CC1
                     dc.w    ddfstrt,$003C
                     dc.w    ddfstop,$00d4
+                    dc.w    bplcon0,$B200   ; Hires, 3 bitplanes
                     dc.w    bplcon1,$0000
                     dc.w    bplcon2,$0000
                     dc.w    bpl1mod,$0000
                     dc.w    bpl2mod,$0000
-                    dc.w    bplcon0,$B200
 plane1              dc.w    bplpt,$0000
                     dc.w    bplpt+2,$0000
 plane2              dc.w    bplpt+4,$0000
@@ -367,11 +371,8 @@ plane3              dc.w    bplpt+8,$0000
 ;                    dc.w    $e007,$fffe     ;WAIT
 ;                    dc.w    color,$0f00     ;COLOR00 -> red
 ;                    dc.w    $ff07,$fffe  ;Wait for last ntsc line
-                    dc.w    dmacon,$8020    ;Enable sprites
+;                    dc.w    dmacon,$8020    ;Enable sprites
                     dc.w    $ffff,$fffe     ;Waiting for impossible position
-
-plsize = 640 / 8 * 256
-
 
                 END
 
