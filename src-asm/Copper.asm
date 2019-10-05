@@ -111,7 +111,7 @@ _main:
         beq     Exit_err            ;No memory has been reserved
 
         ; Load the Background image at reserved memory address
-        move.l  #bgImgName,d1       ;Sub routine expects name in d1..
+        move.l  #bgImgName,d1       ;Function expects file name in d1..
         move.l  d0,d2               ;..and buf addr in d2
         move.l  #61440,d3           ;..and buf len in d3
         bsr     Load_file_to_buf
@@ -245,6 +245,7 @@ Exit_err:
 ;   d0: zero on success or error code
 Load_file_to_buf:
         movem.l d2-d6/a2-a6,-(sp)
+        move.l  d2,d4                       ;Save buf addr for Read
 
         move.l  _DOSBase,a6
 
@@ -253,22 +254,23 @@ Load_file_to_buf:
         tst.l   d0
         beq     Load_file_to_buf_err_open   ;d0 = 0, File not opened
 
-        move.l  d0,d2                       ;Save file handle for Close
-        move.l  d0,d1                       ;But Read needs it in d1
+        move.l  d0,d5                       ;Save file handle for Close
 
+        move.l  d0,d1                       ;But Read needs it in d1
+        move.l  d4,d2                       ;Restore buf addr from d4
         jsr     _LVORead(a6)
         tst.l   d0
         blt     Load_file_to_buf_err_read   ;d0 < 0; Read error
 
-        move.l  d2,d1                       ;File handle parked in d2
+        move.l  d5,d1                       ;Restore file handle from d5
         jsr     _LVOClose(a6)
 
         movem.l (sp)+,d2-d6/a2-a6
-        sub.l   d0,d0                       ;Succes: d0 = 0
+        sub.l   d0,d0                       ;Success: d0 = 0
         rts
 
 Load_file_to_buf_err_read
-        move.l  d2,d1                       ;File handle parked in d2
+        move.l  d5,d1                       ;Restore file handle from d5
         jsr     _LVOClose(a6)
 
         movem.l (sp)+,d2-d6/a2-a6
@@ -331,11 +333,11 @@ copperlist          even
                     dc.w    bplcon0,$B200   ;BPLCON0
 pl1                 dc.w    bplpt,$0000     ;BPL1PTH
                     dc.w    bplpt+2,$0000   ;BPL1PTL
-                    dc.w    color,$0f00     ;COLOR00
-                    dc.w    $7007,$fffe     ;WAIT
-                    dc.w    color,$0fff     ;COLOR00 -> white
-                    dc.w    $e007,$fffe     ;WAIT
-                    dc.w    color,$0f00     ;COLOR00 -> red
+                    dc.w    color,$0000     ;COLOR00
+;                    dc.w    $7007,$fffe     ;WAIT
+;                    dc.w    color,$0fff     ;COLOR00 -> white
+;                    dc.w    $e007,$fffe     ;WAIT
+;                    dc.w    color,$0f00     ;COLOR00 -> red
 ;                    dc.w    $ff07,$fffe  ;Wait for last ntsc line
                     dc.w    dmacon,$8020    ;Enable sprites
                     dc.w    $ffff,$fffe     ;Waiting for impossible position
