@@ -354,7 +354,14 @@ plane2              dc.w    bplpt+4,$0000
                     dc.w    bplpt+6,$0000
 plane3              dc.w    bplpt+8,$0000
                     dc.w    bplpt+10,$0000
-                    dc.w    color,$0789     ;COLOR00
+                    dc.w    color,$0AAA     ;COLOR00
+                    dc.w    color+2,$0000   ;COLOR01
+                    dc.w    color+4,$0FFF   ;COLOR02
+                    dc.w    color+6,$068B   ;COLOR03
+                    dc.w    color+8,$05A3   ;COLOR04
+                    dc.w    color+10,$0EB0  ;COLOR05
+                    dc.w    color+12,$0B52  ;COLOR06
+                    dc.w    color+14,$0F80  ;COLOR07
 ;                    dc.w    $7007,$fffe     ;WAIT
 ;                    dc.w    color,$0fff     ;COLOR00 -> white
 ;                    dc.w    $e007,$fffe     ;WAIT
