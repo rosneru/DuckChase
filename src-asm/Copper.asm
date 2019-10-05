@@ -188,9 +188,6 @@ loop:
 *======================================================================
 * Clean up
 *======================================================================
-        lea     _custom,a1
-        move.l  $8020,dmacon(a1)
-
         movea.l _SysBase,a6
         jsr     _LVOPermit(a6)
 
@@ -223,7 +220,7 @@ Exit_2:
         ; Close graphics.library
         movea.l _SysBase,a6
         move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
-        beq     Exit_4
+        beq     Exit_3
         move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
@@ -231,13 +228,15 @@ Exit_3:
         ; Close dos.library
         movea.l _SysBase,a6
         move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
-        beq     Exit_3
+        beq     Exit_4
         move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
 
 Exit_4:
-        move.l  #$8020,$dff096      ;Enable sprites
+;        move.l  #$8020,$dff096      ;Enable sprites
+        lea     _custom,a1
+        move.w  #$8020,dmacon(a1)
         rts;
 
 
