@@ -21,7 +21,7 @@
 *    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
 *
 * History
-*   04.10.2019 - Changed example from 22.07. to load a picture instead
+*   05.10.2019 - Changed example from 22.07. to load a picture instead
 *   18.08.2019 - Moving the gray gradient
 *   18.08.2019 - Added a copper gray gradient
 *   17.08.2019 - Added error message output if init fails
