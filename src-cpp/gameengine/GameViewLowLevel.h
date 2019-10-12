@@ -42,9 +42,9 @@ public:
 
 
 private:
-  short m_ViewWidth;
-  short m_ViewHeight;
-  short m_ViewDepth;
+  short m_Width;
+  short m_Heigth;
+  short m_Depth;
   short m_NumColors;
   char* m_pLastError;
 

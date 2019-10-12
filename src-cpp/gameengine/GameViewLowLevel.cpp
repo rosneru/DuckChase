@@ -14,9 +14,9 @@ extern struct GfxBase* GfxBase;
 GameViewLowlevel::GameViewLowlevel(short width, 
                                    short height, 
                                    short depth)
-  : m_ViewWidth(width),
-    m_ViewHeight(height),
-    m_ViewDepth(depth),
+  : m_Width(width),
+    m_Heigth(height),
+    m_Depth(depth),
     m_pLastError("Initialized sucessfully."),
     m_pOldView(NULL),
     m_pView(NULL),
@@ -57,21 +57,21 @@ bool GameViewLowlevel::Open()
     }
 
     // Init BitMap i
-    InitBitMap(m_pBitMapArray[i], m_ViewDepth, m_ViewWidth,
-               m_ViewHeight);
+    InitBitMap(m_pBitMapArray[i], m_Depth, m_Width,
+               m_Heigth);
 
     // Set the plane pointers to NULL so the cleanup routine will know
     // if they were used
-    for (int depth = 0; depth < m_ViewDepth; depth++)
+    for (int depth = 0; depth < m_Depth; depth++)
     {
       m_pBitMapArray[i]->Planes[depth] = NULL;
     }
 
     // Allocate memory for the BitPlanes
-    for (int depth = 0; depth < m_ViewDepth; depth++)
+    for (int depth = 0; depth < m_Depth; depth++)
     {
       m_pBitMapArray[i]->Planes[depth] = (PLANEPTR)
-        AllocRaster(m_ViewWidth, m_ViewHeight);
+        AllocRaster(m_Width, m_Heigth);
 
       if (m_pBitMapArray[i]->Planes[depth] == NULL)
       {
@@ -82,7 +82,7 @@ bool GameViewLowlevel::Open()
 
       // Set all bits of this newly created BitPlane to 0
       BltClear(m_pBitMapArray[i]->Planes[depth],
-               (m_ViewWidth / 8) * m_ViewHeight, 1);
+               (m_Width / 8) * m_Heigth, 1);
     }
   }
 
@@ -97,9 +97,9 @@ bool GameViewLowlevel::Open()
 
   m_pView = m_LowLevelView.View();
 
-  if(m_LowLevelViewPort.Create(m_ViewWidth,
-                               m_ViewHeight,
-                               m_ViewDepth,
+  if(m_LowLevelViewPort.Create(m_Width,
+                               m_Heigth,
+                               m_Depth,
                                modeId,
                                m_NumColors,
                                m_pBitMapArray[0]) == false)
@@ -158,12 +158,12 @@ void GameViewLowlevel::Close()
     if(m_pBitMapArray[i] != NULL)
     {
       // Free all BitPlanes of this buffer
-      for (int depth = 0; depth < m_ViewDepth; depth++)
+      for (int depth = 0; depth < m_Depth; depth++)
       {
         if (m_pBitMapArray[i]->Planes[depth] != NULL)
         {
           FreeRaster(m_pBitMapArray[i]->Planes[depth],
-                     m_ViewWidth, m_ViewHeight);
+                     m_Width, m_Heigth);
 
           m_pBitMapArray[i]->Planes[depth] = NULL;
         }
@@ -179,19 +179,19 @@ void GameViewLowlevel::Close()
 
 short GameViewLowlevel::Width()
 {
-  return m_ViewWidth;
+  return m_Width;
 }
 
 
 short GameViewLowlevel::Height()
 {
-  return m_ViewHeight;
+  return m_Heigth;
 }
 
 
 short GameViewLowlevel::Depth()
 {
-  return m_ViewDepth;
+  return m_Depth;
 }
 
 
