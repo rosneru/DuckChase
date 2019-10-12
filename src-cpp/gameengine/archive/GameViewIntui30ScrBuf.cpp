@@ -26,11 +26,7 @@ GameViewIntui30ScrBuf::GameViewIntui30ScrBuf(short viewWidth,
     m_pScreen(NULL),
     m_InitError(IE_None)
 {
-  m_ViewNumColors = 1;
-  for(int i = 0; i < viewDepth; i++)
-  {
-    m_ViewNumColors *= 2;
-  }
+  m_ViewNumColors = 1L << viewDepth;
 }
 
 

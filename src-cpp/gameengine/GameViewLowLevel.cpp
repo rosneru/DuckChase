@@ -11,12 +11,12 @@
 extern struct GfxBase* GfxBase;
 
 
-GameViewLowlevel::GameViewLowlevel(short viewWidth,
-                               short viewHeight,
-                               short viewDepth)
-  : m_ViewWidth(viewWidth),
-    m_ViewHeight(viewHeight),
-    m_ViewDepth(viewDepth),
+GameViewLowlevel::GameViewLowlevel(short width, 
+                                   short height, 
+                                   short depth)
+  : m_ViewWidth(width),
+    m_ViewHeight(height),
+    m_ViewDepth(depth),
     m_pLastError("Initialized sucessfully."),
     m_pOldView(NULL),
     m_pView(NULL),
@@ -25,11 +25,7 @@ GameViewLowlevel::GameViewLowlevel(short viewWidth,
     m_FrameToggle(0),
     m_pBitMapArray()
 {
-  m_ViewNumColors = 1;
-  for(int i = 0; i < viewDepth; i++)
-  {
-    m_ViewNumColors *= 2;
-  }
+  m_NumColors = 1L << depth;
 }
 
 
@@ -105,7 +101,7 @@ bool GameViewLowlevel::Open()
                                m_ViewHeight,
                                m_ViewDepth,
                                modeId,
-                               m_ViewNumColors,
+                               m_NumColors,
                                m_pBitMapArray[0]) == false)
   {
     m_pLastError = (char*)m_LowLevelViewPort.LastError();

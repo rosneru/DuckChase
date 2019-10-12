@@ -30,11 +30,7 @@ GameViewGfxLib::GameViewGfxLib(short viewWidth,
     m_pBitMapArray(),
     m_InitError(IE_None)
 {
-  m_ViewNumColors = 1;
-  for(int i = 0; i < viewDepth; i++)
-  {
-    m_ViewNumColors *= 2;
-  }
+  m_ViewNumColors = 1L << viewDepth;
 }
 
 
