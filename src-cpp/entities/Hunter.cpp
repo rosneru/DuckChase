@@ -25,15 +25,15 @@ bool Hunter::Init()
   //
   // Loading all the hunter images
   //
-  if(AddRawImage("/gfx/jaeger1_hires.raw") == false)
+  if(AddRawImage("/gfx/hunter1_hires.raw") == false)
   {
-    m_pLastError = "Couldn't load duck image #1 (/gfx/jaeger1_hires.raw).\n";
+    m_pLastError = "Couldn't load duck image #1 (/gfx/hunter1_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("/gfx/jaeger2_hires.raw") == false)
+  if(AddRawImage("/gfx/hunter2_hires.raw") == false)
   {
-    m_pLastError = "Couldn't load duck image #2 (/gfx/jaeger2_hires.raw).\n";
+    m_pLastError = "Couldn't load duck image #2 (/gfx/hunter2_hires.raw).\n";
     return false;
   }
 

@@ -24,15 +24,15 @@ bool Duck::Init()
   //
   // Loading all the duck images
   //
-  if(AddRawImage("/gfx/ente1_hires.raw") == false)
+  if(AddRawImage("/gfx/duck1_hires.raw") == false)
   {
-    m_pLastError = "Couldn't load duck image #1 (/gfx/ente1_hires.raw).\n";
+    m_pLastError = "Couldn't load duck image #1 (/gfx/duck1_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("/gfx/ente2_hires.raw") == false)
+  if(AddRawImage("/gfx/duck2_hires.raw") == false)
   {
-    m_pLastError = "Couldn't load duck image #2 (/gfx/ente2_hires.raw).\n";
+    m_pLastError = "Couldn't load duck image #2 (/gfx/duck2_hires.raw).\n";
     return false;
   }
 
