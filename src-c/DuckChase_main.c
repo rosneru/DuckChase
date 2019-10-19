@@ -43,17 +43,19 @@ struct Bob *m_pDuckBob = NULL;
 WORD *m_pHunter1ImageData = NULL;
 struct Bob *m_pHunterBob = NULL;
 
-USHORT m_PaletteBackgroundImg[8] =
+#define VP_PALETTE_SIZE 32
+USHORT m_PaletteBackgroundImg[] =
 {
-  0x0, 0xAAA, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
+  0x0, 0xAAA, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80, 0x000
 };
 
-#define VP_WIDTH 320
+#define VP_WIDTH 640
 #define VP_HEIGHT 256
-#define VP_DEPTH 5
+#define VP_DEPTH 3
+#define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
 
-#define DUCK_WIDTH 55
-#define DUCK_HEIGTH 34
+#define DUCK_WIDTH 59
+#define DUCK_HEIGTH 21
 #define DUCK_DEPTH 3
 #define DUCK_WORDWIDTH 4
 
@@ -120,7 +122,7 @@ int main(void)
 
   // Blit the background image
   BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_RastPort,
-                    0, 0, 320, 256, 0xC0);
+                    0, 0, VP_WIDTH, 256, 0xC0);
 
   // Initialize the points display
   updatePointsDisplay(0, 0);
@@ -179,7 +181,7 @@ int main(void)
     m_pDuckBob->BobVSprite->X -= 5;
     if (m_pDuckBob->BobVSprite->X < -DUCK_WIDTH)
     {
-      m_pDuckBob->BobVSprite->X = 336;
+      m_pDuckBob->BobVSprite->X = VP_WIDTH + 16;
     }
 
     // The hunter is moved left or right with the joystick
@@ -188,7 +190,7 @@ int main(void)
     {
       if ((portState & JPF_JOY_RIGHT) != 0)
       {
-        if (m_pHunterBob->BobVSprite->X + 10 > 320 + HUNTER_WIDTH)
+        if (m_pHunterBob->BobVSprite->X + 10 > VP_WIDTH + HUNTER_WIDTH)
         {
           m_pHunterBob->BobVSprite->X = HUNTER_WIDTH;
         }
@@ -201,7 +203,7 @@ int main(void)
       {
         if (m_pHunterBob->BobVSprite->X - 10 < -HUNTER_WIDTH)
         {
-          m_pHunterBob->BobVSprite->X = 320 + HUNTER_WIDTH;
+          m_pHunterBob->BobVSprite->X = VP_WIDTH + HUNTER_WIDTH;
         }
         else
         {
@@ -298,15 +300,16 @@ char *initAll()
   }
 
   // Load the background image
-  m_pBackgrBM = LoadRawBitMap("background_lores.raw", 320, 256, 3);
+  m_pBackgrBM = LoadRawBitMap("gfx/background_hires.raw",
+                              VP_WIDTH, VP_HEIGHT, VP_DEPTH);
   if (m_pBackgrBM == NULL)
   {
-    return ("Failed to load background_lores.raw.\n");
+    return ("Failed to load background_hires.raw.\n");
   }
 
   // Load the duck
   m_pDuck1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "duck1_lores.raw",
+                                       "gfx/duck1_hires.raw",
                                        DUCK_WIDTH,
                                        DUCK_HEIGTH,
                                        DUCK_DEPTH);
@@ -316,7 +319,7 @@ char *initAll()
   }
 
   m_pDuck2ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "duck2_lores.raw",
+                                       "gfx/duck2_hires.raw",
                                        DUCK_WIDTH,
                                        DUCK_HEIGTH,
                                        DUCK_DEPTH);
@@ -327,7 +330,7 @@ char *initAll()
 
   // Load the hunter
   m_pHunter1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                         "hunter1_hires.raw",
+                                         "gfx/hunter1_hires.raw",
                                          HUNTER_WIDTH,
                                          HUNTER_HEIGTH,
                                          HUNTER_DEPTH);
@@ -338,7 +341,7 @@ char *initAll()
   }
 
   // Init viewm, viewport and rasinfo
-  m_pView = CreateAView(m_pMemoryPoolChip, PAL_MONITOR_ID | LORES_KEY);
+  m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
   if (m_pView == NULL)
   {
     return ("Failed to create the view.\n");
@@ -346,7 +349,7 @@ char *initAll()
 
   m_pViewPort = CreateAViewPort(m_pMemoryPoolChip, VP_WIDTH,
                                 VP_HEIGHT, VP_DEPTH,
-                                PAL_MONITOR_ID | LORES_KEY);
+                                VP_MODE, VP_PALETTE_SIZE);
 
   if (m_pViewPort == NULL)
   {

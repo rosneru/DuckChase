@@ -83,95 +83,98 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
                                  ULONG sizex,
                                  ULONG sizey,
                                  ULONG depth,
-                                 ULONG modeid)
+                                 ULONG modeid,
+                                 ULONG colors)
 {
-  ULONG colors = 1L << depth;
   struct ViewPort *pViewPort = NULL;
   struct ViewPortExtra *vpextra = NULL;
   struct DisplayInfo *disinfo = NULL;
   struct DimensionInfo dimquery = {0};
 
-  if (pViewPort = (struct ViewPort*) AllocPooled(pMemoryPool, sizeof(struct ViewPort)))
-  {
-    InitVPort(pViewPort); /* This function clears some of the   */
-                          /* ViewPort field so call it before   */
-                          /* initializing any ViewPort fields.  */
-    if (pViewPort->ColorMap = GetColorMap(colors))
+  if ((1L<<depth) <= colors)  /* There must be enough colors in the */
+  {                           /* colormap for the ViewPort’s bitmap. */
+    if (pViewPort = (struct ViewPort*) AllocPooled(pMemoryPool, sizeof(struct ViewPort)))
     {
-      /* I need a ColorMap if I want to use certain */
-      /* VideoControl() features.                   */
-      if (pViewPort->RasInfo = (struct RasInfo *)
-              AllocPooled(pMemoryPool, sizeof(struct RasInfo)))
+      InitVPort(pViewPort); /* This function clears some of the   */
+                            /* ViewPort field so call it before   */
+                            /* initializing any ViewPort fields.  */
+      if (pViewPort->ColorMap = GetColorMap(colors))
       {
-        if (pViewPort->RasInfo->BitMap =
-                AllocBitMap(sizex, sizey, depth,
-                            BMF_DISPLAYABLE | BMF_CLEAR,
-                            NULL))
+        /* I need a ColorMap if I want to use certain */
+        /* VideoControl() features.                   */
+        if (pViewPort->RasInfo = (struct RasInfo *)
+                AllocPooled(pMemoryPool, sizeof(struct RasInfo)))
         {
-          if (vpextra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE))
+          if (pViewPort->RasInfo->BitMap =
+                  AllocBitMap(sizex, sizey, depth,
+                              BMF_DISPLAYABLE | BMF_CLEAR,
+                              NULL))
           {
-            if (disinfo = (struct DisplayInfo*)FindDisplayInfo(modeid))
+            if (vpextra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE))
             {
-
-              if(GetDisplayInfoData(disinfo, (UBYTE*) &dimquery,
-                                    sizeof(dimquery), DTAG_DIMS, modeid))
+              if (disinfo = (struct DisplayInfo*)FindDisplayInfo(modeid))
               {
-                vpextra->DisplayClip = dimquery.Nominal;
+
+                if(GetDisplayInfoData(disinfo, (UBYTE*) &dimquery,
+                                      sizeof(dimquery), DTAG_DIMS, modeid))
+                {
+                  vpextra->DisplayClip = dimquery.Nominal;
+                }
+
+                pViewPort->DWidth = sizex;
+                pViewPort->DHeight = sizey;
+
+                struct TagItem vcTags[] =
+                {
+                  /* This tag associates a ColorMap with a ViewPort. */
+                  {VTAG_ATTACH_CM_SET, (ULONG)pViewPort },
+                  /* This tag associates a ViewPortExtra with a      */
+                  /* ViewPort. Notice that VideoControl() (*not*     */
+                  /* GfxAssociate()) associates the VP and VPE.      */
+                  {VTAG_VIEWPORTEXTRA_SET, (ULONG)vpextra},
+                  {VTAG_NORMAL_DISP_SET, (ULONG)disinfo},
+                  {VTAG_USERCLIP_SET, NULL},
+                  {TAG_END}
+                };
+
+                if (!VideoControl(pViewPort->ColorMap, vcTags))
+                {
+                  if (AttachPalExtra(pViewPort->ColorMap, pViewPort))
+                    disinfo = NULL;
+                }
               }
 
-              pViewPort->DWidth = sizex;
-              pViewPort->DHeight = sizey;
-
-              struct TagItem vcTags[] =
+              if (!disinfo)
               {
-                /* This tag associates a ColorMap with a ViewPort. */
-                {VTAG_ATTACH_CM_SET, (ULONG)pViewPort },
-                /* This tag associates a ViewPortExtra with a      */
-                /* ViewPort. Notice that VideoControl() (*not*     */
-                /* GfxAssociate()) associates the VP and VPE.      */
-                {VTAG_VIEWPORTEXTRA_SET, (ULONG)vpextra},
-                {VTAG_NORMAL_DISP_SET, (ULONG)disinfo},
-                {VTAG_USERCLIP_SET, NULL},
-                {TAG_END}
-              };
-
-              if (!VideoControl(pViewPort->ColorMap, vcTags))
-              {
-                if (AttachPalExtra(pViewPort->ColorMap, pViewPort))
-                  disinfo = NULL;
+                GfxFree(vpextra);
+                vpextra = NULL;
               }
             }
 
-            if (!disinfo)
+            if (!vpextra)
             {
-              GfxFree(vpextra);
-              vpextra = NULL;
+              FreeBitMap(pViewPort->RasInfo->BitMap);
+              pViewPort->RasInfo->BitMap = NULL;
             }
           }
 
-          if (!vpextra)
+          if (!(pViewPort->RasInfo->BitMap))
           {
-            FreeBitMap(pViewPort->RasInfo->BitMap);
-            pViewPort->RasInfo->BitMap = NULL;
+            pViewPort->RasInfo = NULL;
           }
         }
 
-        if (!(pViewPort->RasInfo->BitMap))
+        if (!(pViewPort->RasInfo))
         {
-          pViewPort->RasInfo = NULL;
+          FreeColorMap(pViewPort->ColorMap);
+          pViewPort->ColorMap = NULL;
         }
       }
 
-      if (!(pViewPort->RasInfo))
+      if (!(pViewPort->ColorMap))
       {
-        FreeColorMap(pViewPort->ColorMap);
-        pViewPort->ColorMap = NULL;
+        pViewPort = NULL;
       }
-    }
-
-    if (!(pViewPort->ColorMap))
-    {
-      pViewPort = NULL;
     }
   }
 

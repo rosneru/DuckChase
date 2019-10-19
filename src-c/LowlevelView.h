@@ -16,7 +16,8 @@ struct ViewPort* CreateAViewPort(APTR pMemoryPool,
                                  ULONG sizex,
                                  ULONG sizey,
                                  ULONG depth,
-                                 ULONG modeid);
+                                 ULONG modeid,
+                                 ULONG colors);
 
 void DeleteAViewPort(struct ViewPort *pViewPort);
 
