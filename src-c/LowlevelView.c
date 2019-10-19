@@ -89,6 +89,7 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
   struct ViewPort *pViewPort = NULL;
   struct ViewPortExtra *vpextra = NULL;
   struct DisplayInfo *disinfo = NULL;
+  struct DimensionInfo dimquery = {0};
 
   if (pViewPort = (struct ViewPort*) AllocPooled(pMemoryPool, sizeof(struct ViewPort)))
   {
@@ -111,6 +112,12 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
           {
             if (disinfo = (struct DisplayInfo*)FindDisplayInfo(modeid))
             {
+              if(GetDisplayInfoData(disinfo, (UBYTE*) &dimquery,
+                                    sizeof(dimquery), DTAG_DIMS, modeid))
+              {
+                vpextra->DisplayClip = dimquery.Nominal;
+              }
+
               pViewPort->DWidth = sizex;
               pViewPort->DHeight = sizey;
 
