@@ -12,6 +12,8 @@
  * (c) 2019 Uwe Rosner
  */
 
+/// Includes
+
 #include <dos/dos.h>
 #include <exec/types.h>
 #include <graphics/gfx.h>
@@ -31,6 +33,8 @@
 #include "BitMapFunctions.h"
 #include "LowlevelView.h"
 #include "TimerFunctions.h"
+
+///
 
 /// User variables and settings
 
@@ -72,6 +76,7 @@ extern struct GfxBase *GfxBase;
 
 APTR m_pMemoryPoolChip = NULL;
 
+struct Screen* m_pDummyScreen;
 struct View *m_pOldView;
 struct View *m_pView;
 struct ViewPort *m_pViewPort;
@@ -284,7 +289,7 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
 
 ///
 
-/// Init and cleanup
+
 
 char *initAll()
 {
@@ -339,6 +344,25 @@ char *initAll()
   {
     return ("Failed to load hunter1_hires.raw.\n");
   }
+
+  // This screen is only a trick: It just exists to ensure that after
+  // closing the main view *Intuition* handles important things like
+  // giving back the mouse pointer etc. which were lost by creating
+  // our own view. So it is only opened with a depth of 1 losing about
+  // 20k in HiRes or 10 in LoRes.
+  m_pDummyScreen = OpenScreenTags(NULL,
+      SA_DisplayID, VP_MODE,
+      SA_Depth, 1,
+      SA_Width, VP_WIDTH,
+      SA_Height, VP_HEIGHT,
+      SA_ShowTitle, FALSE,
+      TAG_DONE);
+
+  if (m_pDummyScreen == NULL)
+  {
+    return ("Faild to open the dummy screen!\n");
+  }
+
 
   // Init viewm, viewport and rasinfo
   m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
@@ -468,6 +492,13 @@ int cleanExit(char *pErrorMsg)
   {
     DeleteAView(m_pView);
   }
+
+  if (m_pDummyScreen != NULL)
+  {
+    CloseScreen(m_pDummyScreen);
+    m_pDummyScreen = NULL;
+  }
+
 
   if (m_pBackgrBM != NULL)
   {
