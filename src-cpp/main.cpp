@@ -25,7 +25,7 @@ int main(void)
                 TAG_END);
 
 
-  GameViewLowlevel gameView(640, 256, 3);
+  GameViewLowlevel gameView(640, 256, 3, 32);
 //  GameViewIntui20 gameView(640, 256, 3);
 //  GameViewGfxLib gameView(640, 256, 3);
   Game game(gameView);

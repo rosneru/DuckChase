@@ -91,7 +91,7 @@ bool Game::Run()
   //
   // Load and display the background image
   //
-  if(m_PicBackground.LoadFromRawFile("/gfx/background_hires.raw",
+  if(m_PicBackground.LoadFromRawFile("gfx/background_hires.raw",
                                      640, 256, 3) == FALSE)
   {
     m_pLastError = "Couldn't load background image\n";

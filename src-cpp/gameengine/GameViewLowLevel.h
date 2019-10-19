@@ -20,7 +20,7 @@
 class GameViewLowlevel : public IGameView
 {
 public:
-  GameViewLowlevel(short width, short height, short depth);
+  GameViewLowlevel(short width, short height, short depth, short colors);
   ~GameViewLowlevel();
 
   bool Open();

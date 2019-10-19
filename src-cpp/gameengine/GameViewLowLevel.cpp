@@ -11,9 +11,10 @@
 extern struct GfxBase* GfxBase;
 
 
-GameViewLowlevel::GameViewLowlevel(short width, 
-                                   short height, 
-                                   short depth)
+GameViewLowlevel::GameViewLowlevel(short width,
+                                   short height,
+                                   short depth,
+                                   short colors)
   : m_Width(width),
     m_Heigth(height),
     m_Depth(depth),
@@ -25,7 +26,7 @@ GameViewLowlevel::GameViewLowlevel(short width,
     m_FrameToggle(0),
     m_pBitMapArray()
 {
-  m_NumColors = 1L << depth;
+  m_NumColors = colors;
 }
 
 
