@@ -1,0 +1,31 @@
+; project configuration (do not delete)
+
+(compiler
+
+    (alias "vbcc/classic")
+
+    (makefile "makefiles/vbcc-classic/makefile")
+
+    (make "make -f %makefile %target")
+
+    (executable "bin/vbcc-classic/DuckChase_c")
+
+    (stack "262144")
+
+    (target "")
+
+    (options
+
+        "-c99"
+
+        "-lauto"
+
+        "-lamiga"
+
+        "-lmsoft"
+    )
+
+    (arguments "")
+)
+
+; project configuration (do not delete)
