@@ -52,8 +52,8 @@ USHORT m_PaletteBackgroundImg[8] =
 #define VP_HEIGHT 256
 #define VP_DEPTH 5
 
-#define DUCK_WIDTH 59
-#define DUCK_HEIGTH 21
+#define DUCK_WIDTH 55
+#define DUCK_HEIGTH 34
 #define DUCK_DEPTH 3
 #define DUCK_WORDWIDTH 4
 
@@ -179,7 +179,7 @@ int main(void)
     m_pDuckBob->BobVSprite->X -= 5;
     if (m_pDuckBob->BobVSprite->X < -DUCK_WIDTH)
     {
-      m_pDuckBob->BobVSprite->X = 656;
+      m_pDuckBob->BobVSprite->X = 336;
     }
 
     // The hunter is moved left or right with the joystick
@@ -188,7 +188,7 @@ int main(void)
     {
       if ((portState & JPF_JOY_RIGHT) != 0)
       {
-        if (m_pHunterBob->BobVSprite->X + 10 > 640 + HUNTER_WIDTH)
+        if (m_pHunterBob->BobVSprite->X + 10 > 320 + HUNTER_WIDTH)
         {
           m_pHunterBob->BobVSprite->X = HUNTER_WIDTH;
         }
@@ -201,7 +201,7 @@ int main(void)
       {
         if (m_pHunterBob->BobVSprite->X - 10 < -HUNTER_WIDTH)
         {
-          m_pHunterBob->BobVSprite->X = 640 + HUNTER_WIDTH;
+          m_pHunterBob->BobVSprite->X = 320 + HUNTER_WIDTH;
         }
         else
         {
@@ -306,7 +306,7 @@ char *initAll()
 
   // Load the duck
   m_pDuck1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "duck1_hires.raw",
+                                       "duck1_lores.raw",
                                        DUCK_WIDTH,
                                        DUCK_HEIGTH,
                                        DUCK_DEPTH);
@@ -316,7 +316,7 @@ char *initAll()
   }
 
   m_pDuck2ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "duck2_hires.raw",
+                                       "duck2_lores.raw",
                                        DUCK_WIDTH,
                                        DUCK_HEIGTH,
                                        DUCK_DEPTH);
