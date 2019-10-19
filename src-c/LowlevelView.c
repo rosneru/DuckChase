@@ -112,6 +112,7 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
           {
             if (disinfo = (struct DisplayInfo*)FindDisplayInfo(modeid))
             {
+
               if(GetDisplayInfoData(disinfo, (UBYTE*) &dimquery,
                                     sizeof(dimquery), DTAG_DIMS, modeid))
               {

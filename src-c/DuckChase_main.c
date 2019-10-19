@@ -48,7 +48,7 @@ USHORT m_PaletteBackgroundImg[8] =
   0x0, 0xAAA, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
 };
 
-#define VP_WIDTH 640
+#define VP_WIDTH 320
 #define VP_HEIGHT 256
 #define VP_DEPTH 5
 
