@@ -456,8 +456,15 @@ int cleanExit(char *pErrorMsg)
   }
 
   // Delete the custom view and viewport
-  DeleteAViewPort(m_pViewPort);
-  DeleteAView(m_pView);
+  if(m_pViewPort != NULL)
+  {
+    DeleteAViewPort(m_pViewPort);
+  }
+
+  if(m_pView != NULL)
+  {
+    DeleteAView(m_pView);
+  }
 
   if (m_pBackgrBM != NULL)
   {
