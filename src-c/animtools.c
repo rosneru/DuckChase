@@ -146,6 +146,9 @@ struct Bob *makeBob(NEWBOB *nBob)
   NEWVSPRITE          nVSprite ;
   LONG                rassize;
 
+  int rasWidth = nBob->nb_WordWidth * 16;
+  int rasHeight = nBob->nb_LineHeight * nBob->nb_ImageDepth;
+
   rassize = (LONG)sizeof(UWORD) * nBob->nb_WordWidth * nBob->nb_LineHeight * nBob->nb_RasDepth;
 
   if (NULL != (bob = (struct Bob *)AllocMem((LONG)sizeof(struct Bob), MEMF_CLEAR)))
@@ -180,7 +183,7 @@ struct Bob *makeBob(NEWBOB *nBob)
         {
           if (NULL != (bob->DBuffer = (struct DBufPacket *) AllocMem((LONG)sizeof(struct DBufPacket), MEMF_CLEAR)))
           {
-            if (NULL != (bob->DBuffer->BufBuffer = (WORD *) AllocMem(rassize, MEMF_CHIP)))
+            if (NULL != (bob->DBuffer->BufBuffer = (WORD *) AllocRaster(rasWidth, rasHeight)))
             {
               return(bob);
             }
@@ -335,11 +338,14 @@ VOID freeVSprite(struct VSprite *vsprite)
 /* passed to makeBob() when this gel was made. Assumes images deallocated elsewhere.     */
 VOID freeBob(struct Bob *bob, LONG rasdepth)
 {
-  LONG    rassize =  sizeof(UWORD) * bob->BobVSprite->Width * bob->BobVSprite->Height * rasdepth;
+  LONG rassize = sizeof(UWORD) * bob->BobVSprite->Width * bob->BobVSprite->Height * rasdepth;
+
+  int rasWidth = bob->BobVSprite->Width * 16;
+  int rasHeight = bob->BobVSprite->Width * bob->BobVSprite->Depth;
 
   if (bob->DBuffer != NULL)
   {
-    FreeMem(bob->DBuffer->BufBuffer, rassize);
+    FreeRaster((PLANEPTR)bob->DBuffer->BufBuffer, rasWidth, rasHeight);
     FreeMem(bob->DBuffer, (LONG)sizeof(struct DBufPacket));
   }
 
