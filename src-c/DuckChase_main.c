@@ -464,8 +464,6 @@ char *initAll()
 
 int cleanExit(char *pErrorMsg)
 {
-
-
   if (m_pHunterBob != NULL)
   {
     freeBob(m_pHunterBob, HUNTER_DEPTH);
