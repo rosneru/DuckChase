@@ -241,6 +241,10 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
+  RemBob(m_pHunterBob);
+  RemBob(m_pDuckBob);
+  drawBobGelsList(&m_RastPort, m_pViewPort);
+
   return cleanExit(NULL);
 }
 
@@ -460,18 +464,16 @@ char *initAll()
 
 int cleanExit(char *pErrorMsg)
 {
+
+
   if (m_pHunterBob != NULL)
   {
-    RemBob(m_pHunterBob);
-    drawBobGelsList(&m_RastPort, m_pViewPort);
     freeBob(m_pHunterBob, HUNTER_DEPTH);
     m_pHunterBob = NULL;
   }
 
   if (m_pDuckBob != NULL)
   {
-    RemBob(m_pDuckBob);
-    drawBobGelsList(&m_RastPort, m_pViewPort);
     freeBob(m_pDuckBob, DUCK_DEPTH);
     m_pDuckBob = NULL;
   }
