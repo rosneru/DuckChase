@@ -45,7 +45,12 @@ WORD *m_pDuck2ImageData = NULL;
 struct Bob *m_pDuckBob = NULL;
 
 WORD *m_pHunter1ImageData = NULL;
-struct Bob *m_pHunterBob = NULL;
+WORD *m_pHunter2ImageData = NULL;
+//struct Bob *m_pHunterBob = NULL;
+
+struct AnimComp* m_pHunter1AnimComp = NULL;
+struct AnimComp* m_pHunter2AnimComp = NULL;
+struct AnimComp* m_pHunterAnimOb = NULL;
 
 #define VP_PALETTE_SIZE 32
 
@@ -146,7 +151,7 @@ int main(void)
 
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_RastPort);
-  AddBob(m_pHunterBob, &m_RastPort);
+//  AddBob(m_pHunterBob, &m_RastPort);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   // Init LovLevel stuff
@@ -201,6 +206,7 @@ int main(void)
       m_pDuckBob->BobVSprite->X = VP_WIDTH + 16;
     }
 
+/*
     // The hunter is moved left or right with the joystick
     ULONG portState = ReadJoyPort(1);
     if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
@@ -228,6 +234,7 @@ int main(void)
         }
       }
     }
+*/
 
     InitMasks(m_pDuckBob->BobVSprite);
     drawBobGelsList(&m_RastPort, m_pViewPort);
@@ -242,7 +249,7 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
-  RemBob(m_pHunterBob);
+//  RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
@@ -349,7 +356,7 @@ char *initAll()
     return ("Failed to load duck2.raw.\n");
   }
 
-  // Load the hunter
+  // Load the hunter img data #1
   m_pHunter1ImageData = LoadRawImageData(m_pMemoryPoolChip,
                                          "raw/hunter_right1.raw",
                                          HUNTER_WIDTH,
@@ -360,6 +367,20 @@ char *initAll()
   {
     return ("Failed to load hunter_right1.RawDoFmt(.\n");
   }
+
+  // Load the hunter img data #2
+  m_pHunter2ImageData = LoadRawImageData(m_pMemoryPoolChip,
+                                         "raw/hunter_right2.raw",
+                                         HUNTER_WIDTH,
+                                         HUNTER_HEIGTH,
+                                         HUNTER_DEPTH);
+
+  if (m_pHunter2ImageData == NULL)
+  {
+    return ("Failed to load hunter_right2.raw.\n");
+  }
+
+
 
   // This screen is only a trick: It just exists to ensure that after
   // closing the main view *Intuition* handles important things like
@@ -380,7 +401,7 @@ char *initAll()
   }
 
 
-  // Init viewm, viewport and rasinfo
+  // Init view, viewport and rasinfo
   m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
   if (m_pView == NULL)
   {
@@ -454,22 +475,72 @@ char *initAll()
   newBob.nb_X = 20;
   newBob.nb_Y = 222;
 
-  m_pHunterBob = makeBob(&newBob);
-  if (m_pHunterBob == NULL)
+//  m_pHunterBob = makeBob(&newBob);
+//  if (m_pHunterBob == NULL)
+//  {
+//    return ("Failed to create GELs bob for hunter.\n");
+//  }
+
+  NEWANIMCOMP newAnimComp =
   {
-    return ("Failed to create GELs bob for hunter.\n");
+    NULL,         // Routine called when Comp is displayed (optional)
+    10,           // Initial delta offset position
+    10,           // Initial delta offset position
+    10,           // Initial Timer value
+    RINGTRIGGER   // Flags for the Component
+  };
+
+  m_pHunter1AnimComp = makeComp(&newBob, &newAnimComp);
+  if(m_pHunter1AnimComp == NULL)
+  {
+    return("Failed to create hunter1 AnimComp.\n");
   }
+
+  // Change new bob to image data for hunter2 and create anim comp
+  newBob.nb_Image = m_pHunter2ImageData;
+  m_pHunter2AnimComp = makeComp(&newBob, &newAnimComp);
+  if(m_pHunter2AnimComp == NULL)
+  {
+    return("Failed to create hunter2 AnimComp.\n");
+  }
+/*
+  NEWANIMSEQ newAnimSeq =
+  {
+    struct AnimOb  *nas_HeadOb; // common Head of Object.
+    WORD   *nas_Images;         // array of Comp image data
+    SHORT  *nas_Xt;             // arrays of initial offsets.
+    SHORT  *nas_Yt;             // arrays of initial offsets.
+    SHORT  *nas_Times;          // array of Initial Timer value.
+    WORD (**nas_Routines)();    // Array of fns called when comp drawn
+    SHORT   nas_CFlags;         // Flags for the Component.
+    SHORT   nas_Count;          // Num Comps in seq (= arrays size)
+    SHORT   nas_SingleImage;    // one (or count) images.
+  }
+*/
+
 
   return NULL;
 }
 
 int cleanExit(char *pErrorMsg)
 {
+  if(m_pHunter2AnimComp != NULL)
+  {
+    freeComp(m_pHunter2AnimComp, VP_DEPTH);
+  }
+
+  if(m_pHunter1AnimComp != NULL)
+  {
+    freeComp(m_pHunter1AnimComp, VP_DEPTH);
+  }
+
+/*
   if (m_pHunterBob != NULL)
   {
     freeBob(m_pHunterBob, HUNTER_DEPTH);
     m_pHunterBob = NULL;
   }
+*/
 
   if (m_pDuckBob != NULL)
   {
