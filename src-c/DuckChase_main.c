@@ -64,21 +64,22 @@ ULONG m_PaletteBackgroundImg[] =
  0x00000000
 };
 
-
+// Settings for the display
 #define VP_WIDTH 640
 #define VP_HEIGHT 256
 #define VP_DEPTH 4
 #define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
 
+// Settings for the bobs and sprites
 #define DUCK_WIDTH 59
 #define DUCK_HEIGTH 21
 #define DUCK_DEPTH 4
 #define DUCK_WORDWIDTH 4
 
-#define HUNTER_WIDTH 16
-#define HUNTER_HEIGTH 22
+#define HUNTER_WIDTH 25
+#define HUNTER_HEIGTH 27
 #define HUNTER_DEPTH 4
-#define HUNTER_WORDWIDTH 1
+#define HUNTER_WORDWIDTH 2
 
 ///
 
@@ -320,44 +321,44 @@ char *initAll()
   }
 
   // Load the background image
-  m_pBackgrBM = LoadRawBitMap("gfx/background_hires.raw",
+  m_pBackgrBM = LoadRawBitMap("raw/background.raw",
                               VP_WIDTH, VP_HEIGHT, VP_DEPTH);
   if (m_pBackgrBM == NULL)
   {
-    return ("Failed to load background_hires.raw.\n");
+    return ("Failed to load background.raw.\n");
   }
 
   // Load the duck
   m_pDuck1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "gfx/duck1_hires.raw",
+                                       "raw/duck1.raw",
                                        DUCK_WIDTH,
                                        DUCK_HEIGTH,
                                        DUCK_DEPTH);
   if (m_pDuck1ImageData == NULL)
   {
-    return ("Failed to load duck1_hires.raw.\n");
+    return ("Failed to load duck1.raw.\n");
   }
 
   m_pDuck2ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "gfx/duck2_hires.raw",
+                                       "raw/duck2.raw",
                                        DUCK_WIDTH,
                                        DUCK_HEIGTH,
                                        DUCK_DEPTH);
   if (m_pDuck2ImageData == NULL)
   {
-    return ("Failed to load duck2_hires.raw.\n");
+    return ("Failed to load duck2.raw.\n");
   }
 
   // Load the hunter
   m_pHunter1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                         "gfx/hunter_right1_hires.raw",
+                                         "raw/hunter_right1.raw",
                                          HUNTER_WIDTH,
                                          HUNTER_HEIGTH,
                                          HUNTER_DEPTH);
 
   if (m_pHunter1ImageData == NULL)
   {
-    return ("Failed to load hunter_right1_hires.raw.\n");
+    return ("Failed to load hunter_right1.RawDoFmt(.\n");
   }
 
   // This screen is only a trick: It just exists to ensure that after
