@@ -330,7 +330,7 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
 
 ///
 
-
+/// Init and cleanup
 
 char *initAll()
 {
@@ -456,7 +456,7 @@ char *initAll()
   NEWBOB newBob =
   {
     m_pDuck1ImageData, DUCK_WORDWIDTH, DUCK_HEIGTH, DUCK_DEPTH,
-    7,                  // Plane pick, 00111 enables all 3 low planes
+    15,                 // Plane pick, 01111 enables all 4 low planes
     0,                  // Plane on off (unused planes to turn on)
     SAVEBACK | OVERLAY, // VSprite flags
     0,                  // Double buffering
