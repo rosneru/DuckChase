@@ -86,24 +86,24 @@ BobContainer hunter[] =
  * 1 when current fps is in range [21, 40]
  * 2 when current fps is in range [40, upwards]
  */
-short gameSpeed = 1;
+SHORT gameSpeed = 1;
 
 // For each gameSpeed the different entities move with a different
 // speed (pixel-per-frame)
-short hunterDX[] = {19, 15, 10};
-short hunterDY[] = {0, 0, 0}; // Not used yet
+SHORT hunterDX[] = {19, 15, 10};
+SHORT hunterDY[] = {0, 0, 0}; // Not used yet
 
-short duckDX[] = {10, 8, 5};
-short duckDY[] = {0, 0, 0}; // Not used yet
+SHORT duckDX[] = {10, 8, 5};
+SHORT duckDY[] = {0, 0, 0}; // Not used yet
 
-short arrowDX[] = {15, 12, 8};
-short arrowDY[] = {8, 6, 4};
+SHORT arrowDX[] = {15, 12, 8};
+SHORT arrowDY[] = {8, 6, 4};
 
 // For each gameSpeed the switching of the images of some entities can
 // be adjusted here. The value means after how many frames the image
 // is switched
-short hunterImgSwitch[] = {2, 3, 5};
-short duckImgSwitch[] = {2, 3, 5};
+SHORT hunterImgSwitch[] = {2, 3, 5};
+SHORT duckImgSwitch[] = {2, 3, 5};
 
 #define VP_PALETTE_SIZE 32
 
@@ -125,8 +125,9 @@ ULONG m_PaletteBackgroundImg[] =
 
 /// Private globals variables
 
-short hunterFrameCnt = 0;
-short duckFrameCnt = 0;
+SHORT hunterFrameCnt = 0;
+SHORT duckFrameCnt = 0;
+ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
 
 struct BitMap *m_pBackgrBM = NULL;
 
@@ -168,7 +169,7 @@ ULONG bitsToWords(ULONG bits);
 /**
  * Draws a small points at the bottom for points and fps
  */
-void updatePointsDisplay(short fps, short strikes);
+void updatePointsDisplay(SHORT fps, SHORT strikes);
 
 /**
  * Update function for the hunter.
@@ -220,7 +221,7 @@ int main(void)
                 TAG_END);
 
   BOOL bRun = TRUE;
-  short counter = 0;
+  SHORT counter = 0;
 
   //
   // Main loop.
@@ -237,7 +238,7 @@ int main(void)
       if (dblElapsed >= 0)
       {
         // Sum the fps of each frame
-        short fps = (short)(50000 / dblElapsed);
+        SHORT fps = (SHORT)(50000 / dblElapsed);
         updatePointsDisplay(fps, 0);
 
         // Update game speed according current fps
@@ -306,35 +307,119 @@ ULONG bitsToWords(ULONG bits)
 ///
 
 /// Game
-
+BOOL m_bHunterLaunchesArrow = FALSE;
 void updateHunter(ULONG portState)
 {
   // Get the VSprite for better readabilty of the following code
   struct VSprite *vSprite = hunter[0].pBob->BobVSprite;
 
+
   // The hunter is moved left or right with the joystick
   if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
   {
+    BOOL bDirectionChanged = FALSE;
     if ((portState & JPF_JOY_RIGHT) != 0)
     {
+      m_bHunterLaunchesArrow = FALSE;
+
+      // Check if direction has changed
+      if(m_HunterLastDirection != JPF_JOY_RIGHT)
+      {
+        bDirectionChanged = TRUE;
+        hunterFrameCnt = 0;
+        m_HunterLastDirection = JPF_JOY_RIGHT;
+      }
+
+      // Move the hunter to right
       if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + hunter[0].width)
       {
         vSprite->X = -hunter[0].width;
       }
       else
       {
-        vSprite->X += 10;
+        vSprite->X += hunterDX[gameSpeed];
+      }
+
+      // Every some frames (or if the direction changed) switch the 
+      // hunter image
+      hunterFrameCnt++;
+      if ((bDirectionChanged == TRUE) || 
+          (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
+      {
+        hunterFrameCnt = 0;
+        if (vSprite->ImageData == hunter[0].pImageData) // TODO remove hard coded numbers
+        {
+          vSprite->ImageData = hunter[1].pImageData;
+        }
+        else
+        {
+          vSprite->ImageData = hunter[0].pImageData;
+        }
       }
     }
     else if ((portState & JPF_JOY_LEFT) != 0)
     {
-      if (vSprite->X - 10 < -hunter[0].width)
+      m_bHunterLaunchesArrow = FALSE;
+
+      // Check if direction has changed
+      if(m_HunterLastDirection != JPF_JOY_LEFT)
+      {
+        bDirectionChanged = TRUE;
+        hunterFrameCnt = 0;
+        m_HunterLastDirection = JPF_JOY_LEFT;
+      }
+
+      if (vSprite->X - hunterDX[gameSpeed] < -hunter[0].width)
       {
         vSprite->X = VP_WIDTH + hunter[0].width;
       }
       else
       {
-        vSprite->X -= 10;
+        vSprite->X -= hunterDX[gameSpeed];
+      }
+
+      // Every some frames (or if the direction changed) switch the 
+      // hunter image
+      hunterFrameCnt++;
+      if ((bDirectionChanged == TRUE) || 
+          (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
+      {
+        hunterFrameCnt = 0;
+        if (vSprite->ImageData == hunter[3].pImageData) // TODO remove hard coded numbers
+        {
+          vSprite->ImageData = hunter[4].pImageData;
+        }
+        else
+        {
+          vSprite->ImageData = hunter[3].pImageData;
+        }
+      }
+    }
+    else if((portState & JPF_BTN1) != 0)
+    {
+      m_bHunterLaunchesArrow = TRUE;
+      if(m_HunterLastDirection == JPF_RIGHT)
+      {
+        vSprite->ImageData = hunter[2].pImageData;      // TODO remove hard coded numbers
+      }
+      else
+      {
+        vSprite->ImageData = hunter[5].pImageData
+      }
+    }
+    else
+    {
+      if(m_bHunterLaunchesArrow == TRUE)
+      {
+        m_bHunterLaunchesArrow = FALSE;
+        if(m_HunterLastDirection == JPF_RIGHT)
+        {
+          vSprite->ImageData = hunter[0].pImageData;
+        }
+        else
+        {
+          vSprite->ImageData = hunter[3].pImageData;
+        }
       }
     }
   }
@@ -369,10 +454,10 @@ void updateDuck()
   }
 }
 
-void updatePointsDisplay(short fps, short strikes)
+void updatePointsDisplay(SHORT fps, SHORT strikes)
 {
-  short backPen = 0;
-  short frontPen = 5;
+  SHORT backPen = 0;
+  SHORT frontPen = 5;
 
   if (fps == 0 && strikes == 0)
   {
