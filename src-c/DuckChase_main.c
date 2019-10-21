@@ -261,7 +261,7 @@ int main(void)
     updateDuck();
     updateHunter(portState);
 
-    InitMasks(m_pDuckBob->BobVSprite);
+    InitMasks(duck[0].pBob->BobVSprite);
     drawBobGelsList(&m_RastPort, m_pViewPort);
 
     ULONG key = GetKey();
@@ -404,7 +404,7 @@ void updateHunter(ULONG portState)
       }
       else
       {
-        vSprite->ImageData = hunter[5].pImageData
+        vSprite->ImageData = hunter[5].pImageData;
       }
     }
     else
@@ -525,9 +525,9 @@ char *initAll()
   {
     duck[i].pImageData =  LoadRawImageData(m_pMemoryPoolChip,
                                            duck[i].pImgPath,
-                                           duck[i].width,
-                                           duck[i].height,
-                                           duck[i].depth);
+                                           duck[0].width,
+                                           duck[0].height,
+                                           duck[0].depth);
 
     if(duck[i].pImageData == NULL)
     {
@@ -542,9 +542,9 @@ char *initAll()
   {
     hunter[i].pImageData =  LoadRawImageData(m_pMemoryPoolChip,
                                              hunter[i].pImgPath,
-                                             hunter[i].width,
-                                             hunter[i].height,
-                                             hunter[i].depth);
+                                             hunter[0].width,
+                                             hunter[0].height,
+                                             hunter[0].depth);
 
     if(hunter[i].pImageData == NULL)
     {
@@ -645,7 +645,7 @@ char *initAll()
   newBob.nb_X = 20;
   newBob.nb_Y = 222;
 
-  duck[0].pBob = makeBob(&newBob);
+  hunter[0].pBob = makeBob(&newBob);
   if (duck[0].pBob == NULL)
   {
     return ("Failed to create GELs bob for hunter.\n");
