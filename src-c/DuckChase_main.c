@@ -90,7 +90,7 @@ SHORT gameSpeed = 1;
 
 // For each gameSpeed the different entities move with a different
 // speed (pixel-per-frame)
-SHORT hunterDX[] = {19, 15, 10};
+SHORT hunterDX[] = {3, 2, 1};
 SHORT hunterDY[] = {0, 0, 0}; // Not used yet
 
 SHORT duckDX[] = {10, 8, 5};
@@ -643,7 +643,7 @@ char *initAll()
   newBob.nb_LineHeight = hunter[0].height;
   newBob.nb_ImageDepth = hunter[0].depth;
   newBob.nb_X = 20;
-  newBob.nb_Y = 222;
+  newBob.nb_Y = 210;
 
   hunter[0].pBob = makeBob(&newBob);
   if (duck[0].pBob == NULL)
@@ -728,3 +728,4 @@ int cleanExit(char *pErrorMsg)
 }
 
 ///
+
