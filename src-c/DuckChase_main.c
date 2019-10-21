@@ -44,14 +44,6 @@
 #define VP_DEPTH 4
 #define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
 
-// Settings for the bobs and sprites
-#define DUCK_WIDTH 59
-#define DUCK_HEIGTH 21
-#define DUCK_DEPTH 4
-
-#define HUNTER_WIDTH 25
-#define HUNTER_HEIGTH 27
-#define HUNTER_DEPTH 4
 
 /**
  * A container for holding all needed data for a bob
@@ -69,18 +61,20 @@ typedef struct BobContainer
 
 BobContainer duck[] =
 {
-  {"raw/duck1.raw", DUCK_WIDTH, DUCK_HEIGTH, DUCK_DEPTH, NULL, NULL},
-  {"raw/duck2.raw", DUCK_WIDTH, DUCK_HEIGTH, DUCK_DEPTH, NULL, NULL},
+  // Dimensions only defined for the first item; all following share
+  {"raw/duck1.raw", 59, 21, 4, NULL, NULL},
+  {"raw/duck2.raw", 0, 0, 0, NULL, NULL}
 };
 
 BobContainer hunter[] =
 {
-  {"raw/hunter_right1.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
-  {"raw/hunter_right2.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
-  {"raw/hunter_right_shoot.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
-  {"raw/hunter_Left1.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
-  {"raw/hunter_Left2.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
-  {"raw/hunter_Left_shoot.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+  // Dimensions only defined for the first item; all following share
+  {"raw/hunter_right1.raw", 25, 27, 4, NULL, NULL},
+  {"raw/hunter_right2.raw", 0, 0, 0, NULL, NULL},
+  {"raw/hunter_right_shoot.raw", 0, 0, 0, NULL, NULL},
+  {"raw/hunter_Left1.raw", 0, 0, 0, NULL, NULL},
+  {"raw/hunter_Left2.raw", 0, 0, 0, NULL, NULL},
+  {"raw/hunter_Left_shoot.raw", 0, 0, 0, NULL, NULL}
 };
 
 /**
@@ -114,17 +108,18 @@ short duckImgSwitch[] = {2, 3, 5};
 #define VP_PALETTE_SIZE 32
 
 ULONG m_PaletteBackgroundImg[] =
-    {
-        0x00100000,
-        0x00000000, 0x00000000, 0x00000000, 0x28282828, 0x28282828, 0x28282828,
-        0x50505050, 0x49494949, 0x45454545, 0x7C7C7C7C, 0x6F6F6F6F, 0x66666666,
-        0xFBFBFBFB, 0xF1F1F1F1, 0xC7C7C7C7, 0x46464646, 0x85858585, 0x88888888,
-        0x83838383, 0xA5A5A5A5, 0x98989898, 0x68686868, 0x9D9D9D9D, 0x6A6A6A6A,
-        0xAEAEAEAE, 0xC0C0C0C0, 0x7C7C7C7C, 0x98989898, 0x97979797, 0x1A1A1A1A,
-        0xB8B8B8B8, 0xBBBBBBBB, 0x24242424, 0xD7D7D7D7, 0x99999999, 0x21212121,
-        0xFAFAFAFA, 0xBDBDBDBD, 0x2F2F2F2F, 0xD6D6D6D6, 0x5D5D5D5D, 0xE0E0E0E,
-        0xCCCCCCCC, 0x24242424, 0x1D1D1D1D, 0xFBFBFBFB, 0x49494949, 0x34343434,
-        0x00000000};
+{
+  0x00100000,
+  0x00000000, 0x00000000, 0x00000000, 0x28282828, 0x28282828, 0x28282828,
+  0x50505050, 0x49494949, 0x45454545, 0x7C7C7C7C, 0x6F6F6F6F, 0x66666666,
+  0xFBFBFBFB, 0xF1F1F1F1, 0xC7C7C7C7, 0x46464646, 0x85858585, 0x88888888,
+  0x83838383, 0xA5A5A5A5, 0x98989898, 0x68686868, 0x9D9D9D9D, 0x6A6A6A6A,
+  0xAEAEAEAE, 0xC0C0C0C0, 0x7C7C7C7C, 0x98989898, 0x97979797, 0x1A1A1A1A,
+  0xB8B8B8B8, 0xBBBBBBBB, 0x24242424, 0xD7D7D7D7, 0x99999999, 0x21212121,
+  0xFAFAFAFA, 0xBDBDBDBD, 0x2F2F2F2F, 0xD6D6D6D6, 0x5D5D5D5D, 0xE0E0E0E,
+  0xCCCCCCCC, 0x24242424, 0x1D1D1D1D, 0xFBFBFBFB, 0x49494949, 0x34343434,
+  0x00000000
+};
 
 ///
 
@@ -322,9 +317,9 @@ void updateHunter(ULONG portState)
   {
     if ((portState & JPF_JOY_RIGHT) != 0)
     {
-      if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + HUNTER_WIDTH)
+      if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + hunter[0].width)
       {
-        vSprite->X = -HUNTER_WIDTH;
+        vSprite->X = -hunter[0].width;
       }
       else
       {
@@ -333,9 +328,9 @@ void updateHunter(ULONG portState)
     }
     else if ((portState & JPF_JOY_LEFT) != 0)
     {
-      if (vSprite->X - 10 < -HUNTER_WIDTH)
+      if (vSprite->X - 10 < -hunter[0].width)
       {
-        vSprite->X = VP_WIDTH + HUNTER_WIDTH;
+        vSprite->X = VP_WIDTH + hunter[0].width;
       }
       else
       {
@@ -368,7 +363,7 @@ void updateDuck()
   // The Duck is flying leftwards. When it leaves the screen it comes
   // in from the right again.
   vSprite->X -= duckDX[gameSpeed];
-  if (vSprite->X < -DUCK_WIDTH)
+  if (vSprite->X < -duck[0].width)
   {
     vSprite->X = VP_WIDTH + 16;
   }
@@ -439,7 +434,7 @@ char *initAll()
     return ("Failed to load background.raw.\n");
   }
 
-  // Load the duck
+  // Load the duck images
   size_t numDucks = sizeof duck / sizeof duck[0];
   for(int i = 0; i < numDucks; i++)
   {
@@ -456,6 +451,7 @@ char *initAll()
     }
   }
 
+  // Load the hunter images
   size_t numHunters = sizeof hunter / sizeof hunter[0];
   for(int i = 0; i < numHunters; i++)
   {
