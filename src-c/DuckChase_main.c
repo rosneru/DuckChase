@@ -36,38 +36,50 @@
 
 ///
 
-/// User variables and settings
+/// User settings
 
-struct BitMap *m_pBackgrBM = NULL;
+/**
+ * Holds the game speed according the performance of the current 
+ * Amiga system. Is re-calculated every 50 frames.
+ * 
+ * Values:
+ * 0 when current fps is in range [0, 20]
+ * 1 when current fps is in range [21, 40]
+ * 2 when current fps is in range [40, upwards]
+ */
+short gameSpeed = 1;
 
-WORD *m_pDuck1ImageData = NULL;
-WORD *m_pDuck2ImageData = NULL;
-struct Bob *m_pDuckBob = NULL;
+// For each gameSpeed the different entities move with a different
+// speed (pixel-per-frame)
+short hunterDX[] = {19, 15, 10};
+short hunterDY[] = {0, 0, 0}; // Not used yet
 
-WORD *m_pHunter1ImageData = NULL;
-WORD *m_pHunter2ImageData = NULL;
-//struct Bob *m_pHunterBob = NULL;
+short duckDX[] = {10, 8, 5};
+short duckDY[] = {0, 0, 0}; // Not used yet
 
-struct AnimComp* m_pHunter1AnimComp = NULL;
-struct AnimComp* m_pHunter2AnimComp = NULL;
-struct AnimComp* m_pHunterAnimOb = NULL;
+short arrowDX[] = {15, 12, 8};
+short arrowDY[] = {8, 6, 4};
+
+// For each gameSpeed the switching of the images of some entities can
+// be adjusted here. The value means after how many frames the image
+// is switched
+short hunterImgSwitch[] = {2, 3, 5};
+short duckImgSwitch[] = {2, 3, 5};
 
 #define VP_PALETTE_SIZE 32
 
-
 ULONG m_PaletteBackgroundImg[] =
-{
- 0x00100000,
- 0x00000000,0x00000000,0x00000000, 0x28282828,0x28282828,0x28282828,
- 0x50505050,0x49494949,0x45454545, 0x7C7C7C7C,0x6F6F6F6F,0x66666666,
- 0xFBFBFBFB,0xF1F1F1F1,0xC7C7C7C7, 0x46464646,0x85858585,0x88888888,
- 0x83838383,0xA5A5A5A5,0x98989898, 0x68686868,0x9D9D9D9D,0x6A6A6A6A,
- 0xAEAEAEAE,0xC0C0C0C0,0x7C7C7C7C, 0x98989898,0x97979797,0x1A1A1A1A,
- 0xB8B8B8B8,0xBBBBBBBB,0x24242424, 0xD7D7D7D7,0x99999999,0x21212121,
- 0xFAFAFAFA,0xBDBDBDBD,0x2F2F2F2F, 0xD6D6D6D6,0x5D5D5D5D,0xE0E0E0E,
- 0xCCCCCCCC,0x24242424,0x1D1D1D1D, 0xFBFBFBFB,0x49494949,0x34343434,
- 0x00000000
-};
+    {
+        0x00100000,
+        0x00000000, 0x00000000, 0x00000000, 0x28282828, 0x28282828, 0x28282828,
+        0x50505050, 0x49494949, 0x45454545, 0x7C7C7C7C, 0x6F6F6F6F, 0x66666666,
+        0xFBFBFBFB, 0xF1F1F1F1, 0xC7C7C7C7, 0x46464646, 0x85858585, 0x88888888,
+        0x83838383, 0xA5A5A5A5, 0x98989898, 0x68686868, 0x9D9D9D9D, 0x6A6A6A6A,
+        0xAEAEAEAE, 0xC0C0C0C0, 0x7C7C7C7C, 0x98989898, 0x97979797, 0x1A1A1A1A,
+        0xB8B8B8B8, 0xBBBBBBBB, 0x24242424, 0xD7D7D7D7, 0x99999999, 0x21212121,
+        0xFAFAFAFA, 0xBDBDBDBD, 0x2F2F2F2F, 0xD6D6D6D6, 0x5D5D5D5D, 0xE0E0E0E,
+        0xCCCCCCCC, 0x24242424, 0x1D1D1D1D, 0xFBFBFBFB, 0x49494949, 0x34343434,
+        0x00000000};
 
 // Settings for the display
 #define VP_WIDTH 640
@@ -90,18 +102,28 @@ ULONG m_PaletteBackgroundImg[] =
 
 /// Private globals variables
 
-extern struct GfxBase *GfxBase;
+short hunterFrameCnt = 0;
+short duckFrameCnt = 0;
 
-APTR m_pMemoryPoolChip = NULL;
+WORD *m_pDuck1ImageData = NULL;
+WORD *m_pDuck2ImageData = NULL;
+struct Bob *m_pDuckBob = NULL;
 
-struct Screen* m_pDummyScreen;
+WORD *m_pHunter1ImageData = NULL;
+WORD *m_pHunter2ImageData = NULL;
+struct Bob *m_pHunterBob = NULL;
+
+struct BitMap *m_pBackgrBM = NULL;
+
+struct Screen *m_pDummyScreen;
 struct View *m_pOldView;
 struct View *m_pView;
 struct ViewPort *m_pViewPort;
-
 struct RastPort m_RastPort = {0};
-
 struct GelsInfo *m_pGelsInfo;
+
+APTR m_pMemoryPoolChip = NULL;
+extern struct GfxBase *GfxBase;
 
 /**
  * Initializes screen, window, duck bitmap & mask, backgr bitmap
@@ -127,6 +149,20 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort);
  */
 void updatePointsDisplay(short fps, short strikes);
 
+/**
+ * Update function for the hunter.
+ * 
+ * It is called everey frame. 
+ */
+void updateHunter(ULONG portState);
+
+/**
+ * Update function for the duck.
+ * 
+ * It is called everey frame.
+ */
+void updateDuck();
+
 ///
 
 /// Main
@@ -151,7 +187,7 @@ int main(void)
 
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_RastPort);
-//  AddBob(m_pHunterBob, &m_RastPort);
+  AddBob(m_pHunterBob, &m_RastPort);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   // Init LovLevel stuff
@@ -166,75 +202,42 @@ int main(void)
   short counter = 0;
 
   //
-  // Main loop. It runs until an intui message comes in.
+  // Main loop.
   //
   StartTimer();
   do
   {
-    // Every 5 frames change the duck image
-    counter++;
-    if (counter % 5 == 0)
-    {
-      if (m_pDuckBob->BobVSprite->ImageData == m_pDuck1ImageData)
-      {
-        m_pDuckBob->BobVSprite->ImageData = m_pDuck2ImageData;
-      }
-      else
-      {
-        m_pDuckBob->BobVSprite->ImageData = m_pDuck1ImageData;
-      }
-    }
-
+    // Every 50 frames update the fps dsiplay and re-calculate the game
+    // speed
     if (counter > 50)
     {
       counter = 0;
       double dblElapsed = PickTime(FALSE);
-
       if (dblElapsed >= 0)
       {
         // Sum the fps of each frame
-        double fps = 50000 / dblElapsed;
-        updatePointsDisplay((short)fps, 0);
+        short fps = (short)(50000 / dblElapsed);
+        updatePointsDisplay(fps, 0);
+
+        // Update game speed according current fps
+        if (fps > 40)
+        {
+          gameSpeed = 2;
+        }
+        else if (fps > 20)
+        {
+          gameSpeed = 1;
+        }
+        else
+        {
+          gameSpeed = 0;
+        }
       }
     }
 
-    // The Duck is flying leftwards. When it leaves the screen it comes
-    // in from the right again.
-    m_pDuckBob->BobVSprite->X -= 5;
-    if (m_pDuckBob->BobVSprite->X < -DUCK_WIDTH)
-    {
-      m_pDuckBob->BobVSprite->X = VP_WIDTH + 16;
-    }
-
-/*
-    // The hunter is moved left or right with the joystick
     ULONG portState = ReadJoyPort(1);
-    if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
-    {
-      if ((portState & JPF_JOY_RIGHT) != 0)
-      {
-        if (m_pHunterBob->BobVSprite->X + 10 > VP_WIDTH + HUNTER_WIDTH)
-        {
-          m_pHunterBob->BobVSprite->X = HUNTER_WIDTH;
-        }
-        else
-        {
-          m_pHunterBob->BobVSprite->X += 10;
-        }
-      }
-      else if ((portState & JPF_JOY_LEFT) != 0)
-      {
-        if (m_pHunterBob->BobVSprite->X - 10 < -HUNTER_WIDTH)
-        {
-          m_pHunterBob->BobVSprite->X = VP_WIDTH + HUNTER_WIDTH;
-        }
-        else
-        {
-          m_pHunterBob->BobVSprite->X -= 10;
-        }
-      }
-    }
-*/
+    updateDuck();
+    updateHunter(portState);
 
     InitMasks(m_pDuckBob->BobVSprite);
     drawBobGelsList(&m_RastPort, m_pViewPort);
@@ -249,16 +252,88 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
-//  RemBob(m_pHunterBob);
+  RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   return cleanExit(NULL);
 }
 
+void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
+{
+  SortGList(pRPort);
+  DrawGList(pRPort, pVPort);
+
+  // If the GelsList includes true VSprites, MrgCop() and LoadView() here
+
+  WaitTOF();
+}
+
 ///
 
 /// Game
+
+void updateHunter(ULONG portState)
+{
+  // Get the VSprite for better readabilty of the following code
+  struct VSprite *vSprite = m_pHunterBob->BobVSprite;
+
+  // The hunter is moved left or right with the joystick
+  if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+  {
+    if ((portState & JPF_JOY_RIGHT) != 0)
+    {
+      if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + HUNTER_WIDTH)
+      {
+        vSprite->X = -HUNTER_WIDTH;
+      }
+      else
+      {
+        vSprite->X += 10;
+      }
+    }
+    else if ((portState & JPF_JOY_LEFT) != 0)
+    {
+      if (vSprite->X - 10 < -HUNTER_WIDTH)
+      {
+        vSprite->X = VP_WIDTH + HUNTER_WIDTH;
+      }
+      else
+      {
+        vSprite->X -= 10;
+      }
+    }
+  }
+}
+
+void updateDuck()
+{
+  // Get the VSprite for better readabilty of the following code
+  struct VSprite *vSprite = m_pDuckBob->BobVSprite;
+
+  // Every some frames change the duck image
+  duckFrameCnt++;
+  if (duckFrameCnt % duckImgSwitch[gameSpeed] == 0)
+  {
+    duckFrameCnt = 0;
+    if (vSprite->ImageData == m_pDuck1ImageData)
+    {
+      vSprite->ImageData = m_pDuck2ImageData;
+    }
+    else
+    {
+      vSprite->ImageData = m_pDuck1ImageData;
+    }
+  }
+
+  // The Duck is flying leftwards. When it leaves the screen it comes
+  // in from the right again.
+  vSprite->X -= duckDX[gameSpeed];
+  if (vSprite->X < -DUCK_WIDTH)
+  {
+    vSprite->X = VP_WIDTH + 16;
+  }
+}
 
 void updatePointsDisplay(short fps, short strikes)
 {
@@ -298,16 +373,6 @@ void updatePointsDisplay(short fps, short strikes)
   {
     // TODO
   }
-}
-
-void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
-{
-  SortGList(pRPort);
-  DrawGList(pRPort, pVPort);
-
-  // If the GelsList includes true VSprites, MrgCop() and LoadView() here
-
-  WaitTOF();
 }
 
 ///
@@ -380,26 +445,23 @@ char *initAll()
     return ("Failed to load hunter_right2.raw.\n");
   }
 
-
-
   // This screen is only a trick: It just exists to ensure that after
   // closing the main view *Intuition* handles important things like
   // giving back the mouse pointer etc. which were lost by creating
   // our own view. So it is only opened with a depth of 1 losing about
   // 20k in HiRes or 10 in LoRes.
   m_pDummyScreen = OpenScreenTags(NULL,
-      SA_DisplayID, VP_MODE,
-      SA_Depth, 1,
-      SA_Width, VP_WIDTH,
-      SA_Height, VP_HEIGHT,
-      SA_ShowTitle, FALSE,
-      TAG_DONE);
+                                  SA_DisplayID, VP_MODE,
+                                  SA_Depth, 1,
+                                  SA_Width, VP_WIDTH,
+                                  SA_Height, VP_HEIGHT,
+                                  SA_ShowTitle, FALSE,
+                                  TAG_DONE);
 
   if (m_pDummyScreen == NULL)
   {
     return ("Faild to open the dummy screen!\n");
   }
-
 
   // Init view, viewport and rasinfo
   m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
@@ -440,7 +502,6 @@ char *initAll()
   WaitTOF();
   WaitTOF();
 
-
   // Init the gels system
   m_pGelsInfo = setupGelSys(&m_RastPort, 0x03);
   if (m_pGelsInfo == NULL)
@@ -450,17 +511,17 @@ char *initAll()
 
   // Create the bob ObtainBattSemaphore(jects for duck and hunter
   NEWBOB newBob =
-  {
-    m_pDuck1ImageData, DUCK_WORDWIDTH, DUCK_HEIGTH, DUCK_DEPTH,
-    15,                 // Plane pick, 01111 enables all 4 low planes
-    0,                  // Plane on off (unused planes to turn on)
-    SAVEBACK | OVERLAY, // VSprite flags
-    0,                  // Double buffering
-    VP_DEPTH,           // Raster depth
-    200, 40,            // initial x- and y-position
-    0,                  // Hit mask
-    0                   // Me mask
-  };
+      {
+          m_pDuck1ImageData, DUCK_WORDWIDTH, DUCK_HEIGTH, DUCK_DEPTH,
+          15,                 // Plane pick, 01111 enables all 4 low planes
+          0,                  // Plane on off (unused planes to turn on)
+          SAVEBACK | OVERLAY, // VSprite flags
+          0,                  // Double buffering
+          VP_DEPTH,           // Raster depth
+          200, 40,            // initial x- and y-position
+          0,                  // Hit mask
+          0                   // Me mask
+      };
 
   m_pDuckBob = makeBob(&newBob);
   if (m_pDuckBob == NULL)
@@ -475,72 +536,22 @@ char *initAll()
   newBob.nb_X = 20;
   newBob.nb_Y = 222;
 
-//  m_pHunterBob = makeBob(&newBob);
-//  if (m_pHunterBob == NULL)
-//  {
-//    return ("Failed to create GELs bob for hunter.\n");
-//  }
-
-  NEWANIMCOMP newAnimComp =
+  m_pHunterBob = makeBob(&newBob);
+  if (m_pHunterBob == NULL)
   {
-    NULL,         // Routine called when Comp is displayed (optional)
-    10,           // Initial delta offset position
-    10,           // Initial delta offset position
-    10,           // Initial Timer value
-    RINGTRIGGER   // Flags for the Component
-  };
-
-  m_pHunter1AnimComp = makeComp(&newBob, &newAnimComp);
-  if(m_pHunter1AnimComp == NULL)
-  {
-    return("Failed to create hunter1 AnimComp.\n");
+    return ("Failed to create GELs bob for hunter.\n");
   }
-
-  // Change new bob to image data for hunter2 and create anim comp
-  newBob.nb_Image = m_pHunter2ImageData;
-  m_pHunter2AnimComp = makeComp(&newBob, &newAnimComp);
-  if(m_pHunter2AnimComp == NULL)
-  {
-    return("Failed to create hunter2 AnimComp.\n");
-  }
-/*
-  NEWANIMSEQ newAnimSeq =
-  {
-    struct AnimOb  *nas_HeadOb; // common Head of Object.
-    WORD   *nas_Images;         // array of Comp image data
-    SHORT  *nas_Xt;             // arrays of initial offsets.
-    SHORT  *nas_Yt;             // arrays of initial offsets.
-    SHORT  *nas_Times;          // array of Initial Timer value.
-    WORD (**nas_Routines)();    // Array of fns called when comp drawn
-    SHORT   nas_CFlags;         // Flags for the Component.
-    SHORT   nas_Count;          // Num Comps in seq (= arrays size)
-    SHORT   nas_SingleImage;    // one (or count) images.
-  }
-*/
-
 
   return NULL;
 }
 
 int cleanExit(char *pErrorMsg)
 {
-  if(m_pHunter2AnimComp != NULL)
-  {
-    freeComp(m_pHunter2AnimComp, VP_DEPTH);
-  }
-
-  if(m_pHunter1AnimComp != NULL)
-  {
-    freeComp(m_pHunter1AnimComp, VP_DEPTH);
-  }
-
-/*
   if (m_pHunterBob != NULL)
   {
     freeBob(m_pHunterBob, HUNTER_DEPTH);
     m_pHunterBob = NULL;
   }
-*/
 
   if (m_pDuckBob != NULL)
   {
@@ -566,12 +577,12 @@ int cleanExit(char *pErrorMsg)
   }
 
   // Delete the custom view and viewport
-  if(m_pViewPort != NULL)
+  if (m_pViewPort != NULL)
   {
     DeleteAViewPort(m_pViewPort);
   }
 
-  if(m_pView != NULL)
+  if (m_pView != NULL)
   {
     DeleteAView(m_pView);
   }
@@ -581,7 +592,6 @@ int cleanExit(char *pErrorMsg)
     CloseScreen(m_pDummyScreen);
     m_pDummyScreen = NULL;
   }
-
 
   if (m_pBackgrBM != NULL)
   {
@@ -609,4 +619,3 @@ int cleanExit(char *pErrorMsg)
 }
 
 ///
-
