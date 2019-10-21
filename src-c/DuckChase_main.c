@@ -36,7 +36,52 @@
 
 ///
 
-/// User settings
+/// User accessible settings
+
+// Settings for the display
+#define VP_WIDTH 640
+#define VP_HEIGHT 256
+#define VP_DEPTH 4
+#define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
+
+// Settings for the bobs and sprites
+#define DUCK_WIDTH 59
+#define DUCK_HEIGTH 21
+#define DUCK_DEPTH 4
+
+#define HUNTER_WIDTH 25
+#define HUNTER_HEIGTH 27
+#define HUNTER_DEPTH 4
+
+/**
+ * A container for holding all needed data for a bob
+ */
+typedef struct BobContainer
+{
+  const char* pImgPath;
+  WORD width;
+  WORD height;
+  SHORT depth;
+  WORD* pImageData;
+  struct Bob* pBob;
+} BobContainer;
+
+
+BobContainer duck[] =
+{
+  {"raw/duck1.raw", DUCK_WIDTH, DUCK_HEIGTH, DUCK_DEPTH, NULL, NULL},
+  {"raw/duck2.raw", DUCK_WIDTH, DUCK_HEIGTH, DUCK_DEPTH, NULL, NULL},
+};
+
+BobContainer hunter[] =
+{
+  {"raw/hunter_right1.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+  {"raw/hunter_right2.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+  {"raw/hunter_right_shoot.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+  {"raw/hunter_Left1.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+  {"raw/hunter_Left2.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+  {"raw/hunter_Left_shoot.raw", HUNTER_WIDTH, HUNTER_HEIGTH, HUNTER_DEPTH, NULL, NULL},
+};
 
 /**
  * Holds the game speed according the performance of the current 
@@ -81,37 +126,12 @@ ULONG m_PaletteBackgroundImg[] =
         0xCCCCCCCC, 0x24242424, 0x1D1D1D1D, 0xFBFBFBFB, 0x49494949, 0x34343434,
         0x00000000};
 
-// Settings for the display
-#define VP_WIDTH 640
-#define VP_HEIGHT 256
-#define VP_DEPTH 4
-#define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
-
-// Settings for the bobs and sprites
-#define DUCK_WIDTH 59
-#define DUCK_HEIGTH 21
-#define DUCK_DEPTH 4
-#define DUCK_WORDWIDTH 4
-
-#define HUNTER_WIDTH 25
-#define HUNTER_HEIGTH 27
-#define HUNTER_DEPTH 4
-#define HUNTER_WORDWIDTH 2
-
 ///
 
 /// Private globals variables
 
 short hunterFrameCnt = 0;
 short duckFrameCnt = 0;
-
-WORD *m_pDuck1ImageData = NULL;
-WORD *m_pDuck2ImageData = NULL;
-struct Bob *m_pDuckBob = NULL;
-
-WORD *m_pHunter1ImageData = NULL;
-WORD *m_pHunter2ImageData = NULL;
-struct Bob *m_pHunterBob = NULL;
 
 struct BitMap *m_pBackgrBM = NULL;
 
@@ -143,6 +163,12 @@ int cleanExit(char *pErrorMsg);
  * Draws the bobs into the RastPort
  */
 void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort);
+
+/**
+ * Calculates the number of 16-bit-words needed for a given amount of 
+ * bits.
+ */
+ULONG bitsToWords(ULONG bits);
 
 /**
  * Draws a small points at the bottom for points and fps
@@ -186,8 +212,8 @@ int main(void)
   updatePointsDisplay(0, 0);
 
   // Add the bobs and initially draw them
-  AddBob(m_pDuckBob, &m_RastPort);
-  AddBob(m_pHunterBob, &m_RastPort);
+  AddBob(duck[0].pBob, &m_RastPort);
+  AddBob(hunter[0].pBob, &m_RastPort);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   // Init LovLevel stuff
@@ -252,8 +278,8 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
-  RemBob(m_pHunterBob);
-  RemBob(m_pDuckBob);
+  RemBob(hunter[0].pBob);
+  RemBob(duck[0].pBob);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   return cleanExit(NULL);
@@ -269,6 +295,19 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
   WaitTOF();
 }
 
+ULONG bitsToWords(ULONG bits)
+{
+  ULONG integers = bits / 16;
+  if((bits % 16) == 0)
+  {
+    return integers;
+  }
+  else
+  {
+    return integers + 1;
+  } 
+}
+
 ///
 
 /// Game
@@ -276,7 +315,7 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
 void updateHunter(ULONG portState)
 {
   // Get the VSprite for better readabilty of the following code
-  struct VSprite *vSprite = m_pHunterBob->BobVSprite;
+  struct VSprite *vSprite = hunter[0].pBob->BobVSprite;
 
   // The hunter is moved left or right with the joystick
   if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
@@ -309,20 +348,20 @@ void updateHunter(ULONG portState)
 void updateDuck()
 {
   // Get the VSprite for better readabilty of the following code
-  struct VSprite *vSprite = m_pDuckBob->BobVSprite;
+  struct VSprite *vSprite = duck[0].pBob->BobVSprite;
 
   // Every some frames change the duck image
   duckFrameCnt++;
   if (duckFrameCnt % duckImgSwitch[gameSpeed] == 0)
   {
     duckFrameCnt = 0;
-    if (vSprite->ImageData == m_pDuck1ImageData)
+    if (vSprite->ImageData == duck[0].pImageData)
     {
-      vSprite->ImageData = m_pDuck2ImageData;
+      vSprite->ImageData = duck[1].pImageData;
     }
     else
     {
-      vSprite->ImageData = m_pDuck1ImageData;
+      vSprite->ImageData = duck[0].pImageData;
     }
   }
 
@@ -401,48 +440,36 @@ char *initAll()
   }
 
   // Load the duck
-  m_pDuck1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "raw/duck1.raw",
-                                       DUCK_WIDTH,
-                                       DUCK_HEIGTH,
-                                       DUCK_DEPTH);
-  if (m_pDuck1ImageData == NULL)
+  size_t numDucks = sizeof duck / sizeof duck[0];
+  for(int i = 0; i < numDucks; i++)
   {
-    return ("Failed to load duck1.raw.\n");
+    duck[i].pImageData =  LoadRawImageData(m_pMemoryPoolChip,
+                                           duck[i].pImgPath,
+                                           duck[i].width,
+                                           duck[i].height,
+                                           duck[i].depth);
+
+    if(duck[i].pImageData == NULL)
+    {
+      printf("Failed to load '%s'. ", duck[i].pImgPath);
+      return("Init error.");
+    }
   }
 
-  m_pDuck2ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                       "raw/duck2.raw",
-                                       DUCK_WIDTH,
-                                       DUCK_HEIGTH,
-                                       DUCK_DEPTH);
-  if (m_pDuck2ImageData == NULL)
+  size_t numHunters = sizeof hunter / sizeof hunter[0];
+  for(int i = 0; i < numHunters; i++)
   {
-    return ("Failed to load duck2.raw.\n");
-  }
+    hunter[i].pImageData =  LoadRawImageData(m_pMemoryPoolChip,
+                                             hunter[i].pImgPath,
+                                             hunter[i].width,
+                                             hunter[i].height,
+                                             hunter[i].depth);
 
-  // Load the hunter img data #1
-  m_pHunter1ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                         "raw/hunter_right1.raw",
-                                         HUNTER_WIDTH,
-                                         HUNTER_HEIGTH,
-                                         HUNTER_DEPTH);
-
-  if (m_pHunter1ImageData == NULL)
-  {
-    return ("Failed to load hunter_right1.RawDoFmt(.\n");
-  }
-
-  // Load the hunter img data #2
-  m_pHunter2ImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                         "raw/hunter_right2.raw",
-                                         HUNTER_WIDTH,
-                                         HUNTER_HEIGTH,
-                                         HUNTER_DEPTH);
-
-  if (m_pHunter2ImageData == NULL)
-  {
-    return ("Failed to load hunter_right2.raw.\n");
+    if(hunter[i].pImageData == NULL)
+    {
+      printf("Failed to load '%s'. ", hunter[i].pImgPath);
+      return("Init error.");
+    }
   }
 
   // This screen is only a trick: It just exists to ensure that after
@@ -509,35 +536,36 @@ char *initAll()
     return ("Failed to initialize the GELs system.\n");
   }
 
-  // Create the bob ObtainBattSemaphore(jects for duck and hunter
+  // Create the bobs for duck and hunter
   NEWBOB newBob =
-      {
-          m_pDuck1ImageData, DUCK_WORDWIDTH, DUCK_HEIGTH, DUCK_DEPTH,
-          15,                 // Plane pick, 01111 enables all 4 low planes
-          0,                  // Plane on off (unused planes to turn on)
-          SAVEBACK | OVERLAY, // VSprite flags
-          0,                  // Double buffering
-          VP_DEPTH,           // Raster depth
-          200, 40,            // initial x- and y-position
-          0,                  // Hit mask
-          0                   // Me mask
-      };
+  {
+    duck[0].pImageData, 
+    bitsToWords(duck[0].width), duck[0].height, duck[0].depth,
+    15,                 // Plane pick, 01111 enables all 4 low planes
+    0,                  // Plane on off (unused planes to turn on)
+    SAVEBACK | OVERLAY, // VSprite flags
+    0,                  // Double buffering
+    VP_DEPTH,           // Raster depth
+    200, 40,            // initial x- and y-position
+    0,                  // Hit mask
+    0                   // Me mask
+  };
 
-  m_pDuckBob = makeBob(&newBob);
-  if (m_pDuckBob == NULL)
+  duck[0].pBob = makeBob(&newBob);
+  if (duck[0].pBob == NULL)
   {
     return ("Failed to create GELs bob for duck.\n");
   }
 
-  newBob.nb_Image = m_pHunter1ImageData;
-  newBob.nb_WordWidth = HUNTER_WORDWIDTH;
-  newBob.nb_LineHeight = HUNTER_HEIGTH;
-  newBob.nb_ImageDepth = HUNTER_DEPTH;
+  newBob.nb_Image = hunter[0].pImageData;
+  newBob.nb_WordWidth = bitsToWords(hunter[0].width);
+  newBob.nb_LineHeight = hunter[0].height;
+  newBob.nb_ImageDepth = hunter[0].depth;
   newBob.nb_X = 20;
   newBob.nb_Y = 222;
 
-  m_pHunterBob = makeBob(&newBob);
-  if (m_pHunterBob == NULL)
+  duck[0].pBob = makeBob(&newBob);
+  if (duck[0].pBob == NULL)
   {
     return ("Failed to create GELs bob for hunter.\n");
   }
@@ -547,16 +575,16 @@ char *initAll()
 
 int cleanExit(char *pErrorMsg)
 {
-  if (m_pHunterBob != NULL)
+  if (hunter[0].pBob != NULL)
   {
-    freeBob(m_pHunterBob, HUNTER_DEPTH);
-    m_pHunterBob = NULL;
+    freeBob(hunter[0].pBob, hunter[0].depth);
+    hunter[0].pBob = NULL;
   }
 
-  if (m_pDuckBob != NULL)
+  if (duck[0].pBob != NULL)
   {
-    freeBob(m_pDuckBob, DUCK_DEPTH);
-    m_pDuckBob = NULL;
+    freeBob(duck[0].pBob, duck[0].depth);
+    duck[0].pBob = NULL;
   }
 
   if (m_pGelsInfo != NULL)
