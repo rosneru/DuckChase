@@ -88,15 +88,15 @@ BobContainer hunter[] =
  */
 SHORT gameSpeed = 1;
 
-// For each gameSpeed the different entities move with a different
-// speed (pixel-per-frame)
-SHORT hunterDX[] = {3, 2, 1};
+// Depending on gameSpeed the entities can move with a different speed
+// (in pixel-per-frame)
+SHORT hunterDX[] = {9, 6, 3};
 SHORT hunterDY[] = {0, 0, 0}; // Not used yet
 
-SHORT duckDX[] = {10, 8, 5};
+SHORT duckDX[] = {12, 8, 4};
 SHORT duckDY[] = {0, 0, 0}; // Not used yet
 
-SHORT arrowDX[] = {15, 12, 8};
+SHORT arrowDX[] = {15, 10, 5};
 SHORT arrowDY[] = {8, 6, 4};
 
 // For each gameSpeed the switching of the images of some entities can
@@ -231,6 +231,7 @@ int main(void)
   {
     // Every 50 frames update the fps dsiplay and re-calculate the game
     // speed
+    counter++;
     if (counter > 50)
     {
       counter = 0;
@@ -262,6 +263,7 @@ int main(void)
     updateHunter(portState);
 
     InitMasks(duck[0].pBob->BobVSprite);
+    InitMasks(hunter[0].pBob->BobVSprite);
     drawBobGelsList(&m_RastPort, m_pViewPort);
 
     ULONG key = GetKey();
@@ -369,6 +371,7 @@ void updateHunter(ULONG portState)
         m_HunterLastDirection = JPF_JOY_LEFT;
       }
 
+      // Move the hunter to right
       if (vSprite->X - hunterDX[gameSpeed] < -hunter[0].width)
       {
         vSprite->X = VP_WIDTH + hunter[0].width;
@@ -395,7 +398,7 @@ void updateHunter(ULONG portState)
         }
       }
     }
-    else if((portState & JPF_BTN1) != 0)
+    else if((portState & JPF_BTN2) != 0)
     {
       m_bHunterLaunchesArrow = TRUE;
       if(m_HunterLastDirection == JPF_RIGHT)
@@ -646,7 +649,7 @@ char *initAll()
   newBob.nb_Y = 210;
 
   hunter[0].pBob = makeBob(&newBob);
-  if (duck[0].pBob == NULL)
+  if (hunter[0].pBob == NULL)
   {
     return ("Failed to create GELs bob for hunter.\n");
   }
