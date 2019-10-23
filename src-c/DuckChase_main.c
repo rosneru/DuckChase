@@ -46,35 +46,39 @@
 
 
 /**
- * A container for holding all needed data for a bob
+ * A container for holding all needed data for a images
  */
-typedef struct BobContainer
+typedef struct ImageContainer
 {
   const char* pImgPath;
   WORD width;
   WORD height;
   SHORT depth;
   WORD* pImageData;
-  struct Bob* pBob;
-} BobContainer;
+} ImageContainer;
+
+struct Bob* pDuckBob = NULL;
+struct Bob* pHunterBob = NULL;
 
 
-BobContainer duck[] =
+
+
+ImageContainer duckImages[] =
 {
   // Dimensions only defined for the first item; all following share
-  {"raw/duck1.raw", 59, 21, 4, NULL, NULL},
-  {"raw/duck2.raw", 0, 0, 0, NULL, NULL}
+  {"raw/duck1.raw", 59, 21, 4, NULL},
+  {"raw/duck2.raw", 0, 0, 0, NULL}
 };
 
-BobContainer hunter[] =
+ImageContainer hunterImages[] =
 {
   // Dimensions only defined for the first item; all following share
-  {"raw/hunter_right1.raw", 25, 27, 4, NULL, NULL},
-  {"raw/hunter_right2.raw", 0, 0, 0, NULL, NULL},
-  {"raw/hunter_right_shoot.raw", 0, 0, 0, NULL, NULL},
-  {"raw/hunter_Left1.raw", 0, 0, 0, NULL, NULL},
-  {"raw/hunter_Left2.raw", 0, 0, 0, NULL, NULL},
-  {"raw/hunter_Left_shoot.raw", 0, 0, 0, NULL, NULL}
+  {"raw/hunter_right1.raw", 25, 27, 4, NULL},
+  {"raw/hunter_right2.raw", 0, 0, 0, NULL},
+  {"raw/hunter_right_shoot.raw", 0, 0, 0, NULL},
+  {"raw/hunter_Left1.raw", 0, 0, 0, NULL},
+  {"raw/hunter_Left2.raw", 0, 0, 0, NULL},
+  {"raw/hunter_Left_shoot.raw", 0, 0, 0, NULL}
 };
 
 /**
@@ -93,7 +97,7 @@ SHORT gameSpeed = 1;
 SHORT hunterDX[] = {9, 6, 3};
 SHORT hunterDY[] = {0, 0, 0}; // Not used yet
 
-SHORT duckDX[] = {12, 8, 4};
+SHORT duckDX[] = {15, 10, 5};
 SHORT duckDY[] = {0, 0, 0}; // Not used yet
 
 SHORT arrowDX[] = {15, 10, 5};
@@ -102,8 +106,8 @@ SHORT arrowDY[] = {8, 6, 4};
 // For each gameSpeed the switching of the images of some entities can
 // be adjusted here. The value means after how many frames the image
 // is switched
-SHORT hunterImgSwitch[] = {2, 3, 5};
-SHORT duckImgSwitch[] = {2, 3, 5};
+SHORT hunterImgSwitch[] = {1, 2, 4};
+SHORT duckImgSwitch[] = {1, 2, 4};
 
 #define VP_PALETTE_SIZE 32
 
@@ -124,10 +128,6 @@ ULONG m_PaletteBackgroundImg[] =
 ///
 
 /// Private globals variables
-
-SHORT hunterFrameCnt = 0;
-SHORT duckFrameCnt = 0;
-ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
 
 struct BitMap *m_pBackgrBM = NULL;
 
@@ -208,8 +208,8 @@ int main(void)
   updatePointsDisplay(0, 0);
 
   // Add the bobs and initially draw them
-  AddBob(duck[0].pBob, &m_RastPort);
-  AddBob(hunter[0].pBob, &m_RastPort);
+  AddBob(pDuckBob, &m_RastPort);
+  AddBob(pHunterBob, &m_RastPort);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   // Init LovLevel stuff
@@ -262,8 +262,8 @@ int main(void)
     updateDuck();
     updateHunter(portState);
 
-    InitMasks(duck[0].pBob->BobVSprite);
-    InitMasks(hunter[0].pBob->BobVSprite);
+    InitMasks(pDuckBob->BobVSprite);
+    InitMasks(pHunterBob->BobVSprite);
     drawBobGelsList(&m_RastPort, m_pViewPort);
 
     ULONG key = GetKey();
@@ -276,8 +276,8 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
-  RemBob(hunter[0].pBob);
-  RemBob(duck[0].pBob);
+  RemBob(pHunterBob);
+  RemBob(pDuckBob);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   return cleanExit(NULL);
@@ -290,7 +290,7 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
   DrawGList(pRPort, pVPort);
 
   // If the GelsList includes true VSprites, 
-  // MrgCop() and LoadView() here (or before the WaitTOF???)
+  // MrgCop() and LoadView() here (or before the WaitTOF?)
 
 }
 
@@ -310,12 +310,16 @@ ULONG bitsToWords(ULONG bits)
 ///
 
 /// Game
+
+SHORT hunterFrameCnt = 0;
+ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
 BOOL m_bHunterLaunchesArrow = FALSE;
+BOOL m_bHunterRunning = FALSE;
+
 void updateHunter(ULONG portState)
 {
   // Get the VSprite for better readabilty of the following code
-  struct VSprite *vSprite = hunter[0].pBob->BobVSprite;
-
+  struct VSprite *vSprite = pHunterBob->BobVSprite;
 
   // The hunter is moved left or right with the joystick
   if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
@@ -324,6 +328,7 @@ void updateHunter(ULONG portState)
     if ((portState & JPF_JOY_RIGHT) != 0)
     {
       m_bHunterLaunchesArrow = FALSE;
+      m_bHunterRunning = TRUE;
 
       // Check if direction has changed
       if(m_HunterLastDirection != JPF_JOY_RIGHT)
@@ -334,9 +339,9 @@ void updateHunter(ULONG portState)
       }
 
       // Move the hunter to right
-      if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + hunter[0].width)
+      if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + hunterImages[0].width)
       {
-        vSprite->X = -hunter[0].width;
+        vSprite->X = -hunterImages[0].width;
       }
       else
       {
@@ -350,19 +355,20 @@ void updateHunter(ULONG portState)
           (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
       {
         hunterFrameCnt = 0;
-        if (vSprite->ImageData == hunter[0].pImageData) // TODO remove hard coded numbers
+        if (vSprite->ImageData == hunterImages[0].pImageData) // TODO remove hard coded numbers
         {
-          vSprite->ImageData = hunter[1].pImageData;
+          vSprite->ImageData = hunterImages[1].pImageData;
         }
         else
         {
-          vSprite->ImageData = hunter[0].pImageData;
+          vSprite->ImageData = hunterImages[0].pImageData;
         }
       }
     }
     else if ((portState & JPF_JOY_LEFT) != 0)
     {
       m_bHunterLaunchesArrow = FALSE;
+      m_bHunterRunning = TRUE;
 
       // Check if direction has changed
       if(m_HunterLastDirection != JPF_JOY_LEFT)
@@ -373,9 +379,9 @@ void updateHunter(ULONG portState)
       }
 
       // Move the hunter to right
-      if (vSprite->X - hunterDX[gameSpeed] < -hunter[0].width)
+      if (vSprite->X - hunterDX[gameSpeed] < -hunterImages[0].width)
       {
-        vSprite->X = VP_WIDTH + hunter[0].width;
+        vSprite->X = VP_WIDTH + hunterImages[0].width;
       }
       else
       {
@@ -389,26 +395,28 @@ void updateHunter(ULONG portState)
           (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
       {
         hunterFrameCnt = 0;
-        if (vSprite->ImageData == hunter[3].pImageData) // TODO remove hard coded numbers
+        if (vSprite->ImageData == hunterImages[3].pImageData) // TODO remove hard coded numbers
         {
-          vSprite->ImageData = hunter[4].pImageData;
+          vSprite->ImageData = hunterImages[4].pImageData;
         }
         else
         {
-          vSprite->ImageData = hunter[3].pImageData;
+          vSprite->ImageData = hunterImages[3].pImageData;
         }
       }
     }
     else if((portState & JPF_BTN2) != 0)
     {
       m_bHunterLaunchesArrow = TRUE;
+      m_bHunterRunning = FALSE;
+
       if(m_HunterLastDirection == JPF_RIGHT)
       {
-        vSprite->ImageData = hunter[2].pImageData;      // TODO remove hard coded numbers
+        vSprite->ImageData = hunterImages[2].pImageData;      // TODO remove hard coded numbers
       }
       else
       {
-        vSprite->ImageData = hunter[5].pImageData;
+        vSprite->ImageData = hunterImages[5].pImageData;
       }
     }
     else
@@ -418,55 +426,57 @@ void updateHunter(ULONG portState)
         m_bHunterLaunchesArrow = FALSE;
         if(m_HunterLastDirection == JPF_RIGHT)
         {
-          vSprite->ImageData = hunter[0].pImageData;
+          vSprite->ImageData = hunterImages[0].pImageData;
         }
         else
         {
-          vSprite->ImageData = hunter[3].pImageData;
+          vSprite->ImageData = hunterImages[3].pImageData;
         }
       }
-      else if(m_HunterLastDirection == JPF_RIGHT)
+      else if(m_bHunterRunning == TRUE)
       {
-        vSprite->ImageData = hunter[0].pImageData;
+        m_bHunterRunning = FALSE;
 
-        // To disable continuous re-loading the same image
-        m_HunterLastDirection = JPF_JOY_UP;
-      }
-      else if(m_HunterLastDirection == JPF_LEFT)
-      {
-        vSprite->ImageData = hunter[3].pImageData;
-
-        // To disable continuous re-loading the same image
-        m_HunterLastDirection = JPF_JOY_UP;
+        if(m_HunterLastDirection == JPF_RIGHT)
+        {
+          vSprite->ImageData = hunterImages[0].pImageData;
+        }
+        else
+        {
+          vSprite->ImageData = hunterImages[3].pImageData;
+        }
       }
     }
   }
 }
 
+
+SHORT duckFrameCnt = 0;
+
 void updateDuck()
 {
   // Get the VSprite for better readabilty of the following code
-  struct VSprite *vSprite = duck[0].pBob->BobVSprite;
+  struct VSprite *vSprite = pDuckBob->BobVSprite;
 
   // Every some frames change the duck image
   duckFrameCnt++;
   if (duckFrameCnt % duckImgSwitch[gameSpeed] == 0)
   {
     duckFrameCnt = 0;
-    if (vSprite->ImageData == duck[0].pImageData)
+    if (vSprite->ImageData == duckImages[0].pImageData)
     {
-      vSprite->ImageData = duck[1].pImageData;
+      vSprite->ImageData = duckImages[1].pImageData;
     }
     else
     {
-      vSprite->ImageData = duck[0].pImageData;
+      vSprite->ImageData = duckImages[0].pImageData;
     }
   }
 
   // The Duck is flying leftwards. When it leaves the screen it comes
   // in from the right again.
   vSprite->X -= duckDX[gameSpeed];
-  if (vSprite->X < -duck[0].width)
+  if (vSprite->X < -duckImages[0].width)
   {
     vSprite->X = VP_WIDTH + 16;
   }
@@ -538,35 +548,35 @@ char *initAll()
   }
 
   // Load the duck images
-  size_t numDucks = sizeof duck / sizeof duck[0];
-  for(int i = 0; i < numDucks; i++)
+  size_t numDuckImages = sizeof duckImages / sizeof duckImages[0];
+  for(int i = 0; i < numDuckImages; i++)
   {
-    duck[i].pImageData =  LoadRawImageData(m_pMemoryPoolChip,
-                                           duck[i].pImgPath,
-                                           duck[0].width,
-                                           duck[0].height,
-                                           duck[0].depth);
+    duckImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
+                                                duckImages[i].pImgPath,
+                                                duckImages[0].width,
+                                                duckImages[0].height,
+                                                duckImages[0].depth);
 
-    if(duck[i].pImageData == NULL)
+    if(duckImages[i].pImageData == NULL)
     {
-      printf("Failed to load '%s'. ", duck[i].pImgPath);
+      printf("Failed to load '%s'. ", duckImages[i].pImgPath);
       return("Init error.");
     }
   }
 
   // Load the hunter images
-  size_t numHunters = sizeof hunter / sizeof hunter[0];
-  for(int i = 0; i < numHunters; i++)
+  size_t numHunterImages = sizeof hunterImages / sizeof hunterImages[0];
+  for(int i = 0; i < numHunterImages; i++)
   {
-    hunter[i].pImageData =  LoadRawImageData(m_pMemoryPoolChip,
-                                             hunter[i].pImgPath,
-                                             hunter[0].width,
-                                             hunter[0].height,
-                                             hunter[0].depth);
+    hunterImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
+                                                  hunterImages[i].pImgPath,
+                                                  hunterImages[0].width,
+                                                  hunterImages[0].height,
+                                                  hunterImages[0].depth);
 
-    if(hunter[i].pImageData == NULL)
+    if(hunterImages[i].pImageData == NULL)
     {
-      printf("Failed to load '%s'. ", hunter[i].pImgPath);
+      printf("Failed to load '%s'. ", hunterImages[i].pImgPath);
       return("Init error.");
     }
   }
@@ -638,11 +648,11 @@ char *initAll()
   // Create the bobs for duck and hunter
   NEWBOB newBob =
   {
-    duck[0].pImageData, 
-    bitsToWords(duck[0].width), duck[0].height, duck[0].depth,
+    duckImages[0].pImageData,
+    bitsToWords(duckImages[0].width), duckImages[0].height, duckImages[0].depth,
     15,                 // Plane pick, 01111 enables all 4 low planes
     0,                  // Plane on off (unused planes to turn on)
-    SAVEBACK | OVERLAY, // VSprite flags
+    SAVEBACK | OVERLAY, // duckImages flags
     0,                  // Double buffering
     VP_DEPTH,           // Raster depth
     200, 40,            // initial x- and y-position
@@ -650,21 +660,21 @@ char *initAll()
     0                   // Me mask
   };
 
-  duck[0].pBob = makeBob(&newBob);
-  if (duck[0].pBob == NULL)
+  pDuckBob = makeBob(&newBob);
+  if (pDuckBob == NULL)
   {
     return ("Failed to create GELs bob for duck.\n");
   }
 
-  newBob.nb_Image = hunter[0].pImageData;
-  newBob.nb_WordWidth = bitsToWords(hunter[0].width);
-  newBob.nb_LineHeight = hunter[0].height;
-  newBob.nb_ImageDepth = hunter[0].depth;
+  newBob.nb_Image = hunterImages[0].pImageData;
+  newBob.nb_WordWidth = bitsToWords(hunterImages[0].width);
+  newBob.nb_LineHeight = hunterImages[0].height;
+  newBob.nb_ImageDepth = hunterImages[0].depth;
   newBob.nb_X = 20;
   newBob.nb_Y = 210;
 
-  hunter[0].pBob = makeBob(&newBob);
-  if (hunter[0].pBob == NULL)
+  pHunterBob = makeBob(&newBob);
+  if (pHunterBob == NULL)
   {
     return ("Failed to create GELs bob for hunter.\n");
   }
@@ -674,16 +684,16 @@ char *initAll()
 
 int cleanExit(char *pErrorMsg)
 {
-  if (hunter[0].pBob != NULL)
+  if (pHunterBob != NULL)
   {
-    freeBob(hunter[0].pBob, hunter[0].depth);
-    hunter[0].pBob = NULL;
+    freeBob(pHunterBob, hunterImages[0].depth);
+    pHunterBob = NULL;
   }
 
-  if (duck[0].pBob != NULL)
+  if (pDuckBob != NULL)
   {
-    freeBob(duck[0].pBob, duck[0].depth);
-    duck[0].pBob = NULL;
+    freeBob(pDuckBob, duckImages[0].depth);
+    pDuckBob = NULL;
   }
 
   if (m_pGelsInfo != NULL)
