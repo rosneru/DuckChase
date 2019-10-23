@@ -228,7 +228,7 @@ struct AnimComp *makeComp(NEWBOB *nBob, NEWANIMCOMP *nAnimComp)
       aComp->TimeSet      = nAnimComp->nac_Time; /* Num ticks active. */
       aComp->YTrans       = nAnimComp->nac_Yt; /* Offset rel to HeadOb */
       aComp->XTrans       = nAnimComp->nac_Xt;
-      aComp->AnimCRoutine = nAnimComp->nac_Routine; //TODO uro Fix
+// TODO      aComp->AnimCRoutine = nAnimComp->nac_Routine; //TODO uro Fix
       aComp->Flags        = nAnimComp->nac_CFlags;
       aComp->Timer        = 0;
       aComp->NextSeq      = aComp->PrevSeq  = NULL;

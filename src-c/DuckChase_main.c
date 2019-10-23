@@ -57,11 +57,6 @@ typedef struct ImageContainer
   WORD* pImageData;
 } ImageContainer;
 
-struct Bob* pDuckBob = NULL;
-struct Bob* pHunterBob = NULL;
-
-
-
 
 ImageContainer duckImages[] =
 {
@@ -80,6 +75,27 @@ ImageContainer hunterImages[] =
   {"raw/hunter_Left2.raw", 0, 0, 0, NULL},
   {"raw/hunter_Left_shoot.raw", 0, 0, 0, NULL}
 };
+
+ImageContainer arrowRImages[] =
+{
+  // Dimensions only defined for the first item; all following share
+  {"raw/arrow_right1_spr.raw", 16, 8, 2, NULL},
+  {"raw/arrow_right2_spr.raw", 0, 0, 0, NULL},
+  {"raw/arrow_right3_spr.raw", 0, 0, 0, NULL},
+  {"raw/arrow_right4_spr.raw", 0, 0, 0, NULL},
+  {"raw/arrow_right5_spr.raw", 0, 0, 0, NULL}
+};
+
+ImageContainer arrowLImages[] =
+{
+  // Dimensions only defined for the first item; all following share
+  {"raw/arrow_left1_spr.raw", 16, 8, 2, NULL},
+  {"raw/arrow_left2_spr.raw", 0, 0, 0, NULL},
+  {"raw/arrow_left3_spr.raw", 0, 0, 0, NULL},
+  {"raw/arrow_left4_spr.raw", 0, 0, 0, NULL},
+  {"raw/arrow_left5_spr.raw", 0, 0, 0, NULL}
+};
+
 
 /**
  * Holds the game speed according the performance of the current 
@@ -108,6 +124,12 @@ SHORT arrowDY[] = {8, 6, 4};
 // is switched
 SHORT hunterImgSwitch[] = {1, 2, 4};
 SHORT duckImgSwitch[] = {1, 2, 4};
+
+
+struct Bob* m_pDuckBob = NULL;
+struct Bob* m_pHunterBob = NULL;
+struct VSprite* m_pArrowRSprite = NULL;
+struct VSprite* m_pArrowLSprite = NULL;
 
 #define VP_PALETTE_SIZE 32
 
@@ -208,8 +230,8 @@ int main(void)
   updatePointsDisplay(0, 0);
 
   // Add the bobs and initially draw them
-  AddBob(pDuckBob, &m_RastPort);
-  AddBob(pHunterBob, &m_RastPort);
+  AddBob(m_pDuckBob, &m_RastPort);
+  AddBob(m_pHunterBob, &m_RastPort);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   // Init LovLevel stuff
@@ -262,8 +284,8 @@ int main(void)
     updateDuck();
     updateHunter(portState);
 
-    InitMasks(pDuckBob->BobVSprite);
-    InitMasks(pHunterBob->BobVSprite);
+    InitMasks(m_pDuckBob->BobVSprite);
+    InitMasks(m_pHunterBob->BobVSprite);
     drawBobGelsList(&m_RastPort, m_pViewPort);
 
     ULONG key = GetKey();
@@ -276,8 +298,8 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
-  RemBob(pHunterBob);
-  RemBob(pDuckBob);
+  RemBob(m_pHunterBob);
+  RemBob(m_pDuckBob);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   return cleanExit(NULL);
@@ -319,7 +341,7 @@ BOOL m_bHunterRunning = FALSE;
 void updateHunter(ULONG portState)
 {
   // Get the VSprite for better readabilty of the following code
-  struct VSprite *vSprite = pHunterBob->BobVSprite;
+  struct VSprite *vSprite = m_pHunterBob->BobVSprite;
 
   // The hunter is moved left or right with the joystick
   if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
@@ -456,7 +478,7 @@ SHORT duckFrameCnt = 0;
 void updateDuck()
 {
   // Get the VSprite for better readabilty of the following code
-  struct VSprite *vSprite = pDuckBob->BobVSprite;
+  struct VSprite *vSprite = m_pDuckBob->BobVSprite;
 
   // Every some frames change the duck image
   duckFrameCnt++;
@@ -548,7 +570,7 @@ char *initAll()
   }
 
   // Load the duck images
-  size_t numDuckImages = sizeof duckImages / sizeof duckImages[0];
+  int numDuckImages = sizeof duckImages / sizeof duckImages[0];
   for(int i = 0; i < numDuckImages; i++)
   {
     duckImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
@@ -565,7 +587,7 @@ char *initAll()
   }
 
   // Load the hunter images
-  size_t numHunterImages = sizeof hunterImages / sizeof hunterImages[0];
+  int numHunterImages = sizeof hunterImages / sizeof hunterImages[0];
   for(int i = 0; i < numHunterImages; i++)
   {
     hunterImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
@@ -577,6 +599,40 @@ char *initAll()
     if(hunterImages[i].pImageData == NULL)
     {
       printf("Failed to load '%s'. ", hunterImages[i].pImgPath);
+      return("Init error.");
+    }
+  }
+
+  // Load the arrow right images
+  int numRArrows = sizeof arrowRImages / sizeof arrowRImages[0];
+  for(int i = 0; i < numRArrows; i++)
+  {
+    arrowRImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
+                                                  arrowRImages[i].pImgPath,
+                                                  arrowRImages[0].width,
+                                                  arrowRImages[0].height,
+                                                  arrowRImages[0].depth);
+
+    if(arrowRImages[i].pImageData == NULL)
+    {
+      printf("Failed to load '%s'. ", arrowRImages[i].pImgPath);
+      return("Init error.");
+    }
+  }
+
+  // Load the arrow left images
+  int numLArrows = sizeof arrowLImages / sizeof arrowLImages[0];
+  for(int i = 0; i < numLArrows; i++)
+  {
+    arrowLImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
+                                                  arrowLImages[i].pImgPath,
+                                                  arrowLImages[0].width,
+                                                  arrowLImages[0].height,
+                                                  arrowLImages[0].depth);
+
+    if(arrowLImages[i].pImageData == NULL)
+    {
+      printf("Failed to load '%s'. ", arrowLImages[i].pImgPath);
       return("Init error.");
     }
   }
@@ -660,8 +716,8 @@ char *initAll()
     0                   // Me mask
   };
 
-  pDuckBob = makeBob(&newBob);
-  if (pDuckBob == NULL)
+  m_pDuckBob = makeBob(&newBob);
+  if (m_pDuckBob == NULL)
   {
     return ("Failed to create GELs bob for duck.\n");
   }
@@ -673,8 +729,8 @@ char *initAll()
   newBob.nb_X = 20;
   newBob.nb_Y = 210;
 
-  pHunterBob = makeBob(&newBob);
-  if (pHunterBob == NULL)
+  m_pHunterBob = makeBob(&newBob);
+  if (m_pHunterBob == NULL)
   {
     return ("Failed to create GELs bob for hunter.\n");
   }
@@ -684,16 +740,16 @@ char *initAll()
 
 int cleanExit(char *pErrorMsg)
 {
-  if (pHunterBob != NULL)
+  if (m_pHunterBob != NULL)
   {
-    freeBob(pHunterBob, hunterImages[0].depth);
-    pHunterBob = NULL;
+    freeBob(m_pHunterBob, hunterImages[0].depth);
+    m_pHunterBob = NULL;
   }
 
-  if (pDuckBob != NULL)
+  if (m_pDuckBob != NULL)
   {
-    freeBob(pDuckBob, duckImages[0].depth);
-    pDuckBob = NULL;
+    freeBob(m_pDuckBob, duckImages[0].depth);
+    m_pDuckBob = NULL;
   }
 
   if (m_pGelsInfo != NULL)
