@@ -286,11 +286,12 @@ int main(void)
 void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
 {
   SortGList(pRPort);
+  WaitTOF();
   DrawGList(pRPort, pVPort);
 
-  // If the GelsList includes true VSprites, MrgCop() and LoadView() here
+  // If the GelsList includes true VSprites, 
+  // MrgCop() and LoadView() here (or before the WaitTOF???)
 
-  WaitTOF();
 }
 
 ULONG bitsToWords(ULONG bits)
@@ -423,6 +424,20 @@ void updateHunter(ULONG portState)
         {
           vSprite->ImageData = hunter[3].pImageData;
         }
+      }
+      else if(m_HunterLastDirection == JPF_RIGHT)
+      {
+        vSprite->ImageData = hunter[0].pImageData;
+
+        // To disable continuous re-loading the same image
+        m_HunterLastDirection = JPF_JOY_UP;
+      }
+      else if(m_HunterLastDirection == JPF_LEFT)
+      {
+        vSprite->ImageData = hunter[3].pImageData;
+
+        // To disable continuous re-loading the same image
+        m_HunterLastDirection = JPF_JOY_UP;
       }
     }
   }
