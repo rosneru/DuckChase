@@ -148,15 +148,15 @@ ULONG m_PaletteBackgroundImg[] =
 
 ///
 
-/// Private globals variables
+/// Private global variables
 
-struct BitMap *m_pBackgrBM = NULL;
+struct BitMap* m_pBackgrBM = NULL;
 
-struct Screen *m_pScr = NULL;
-struct GelsInfo *m_pGelsInfo;
+struct Screen* m_pScr = NULL;
+struct GelsInfo* m_pGelsInfo;
 
 APTR m_pMemoryPoolChip = NULL;
-extern struct GfxBase *GfxBase;
+extern struct GfxBase* GfxBase;
 
 /**
  * Initializes screen, window, duck bitmap & mask, backgr bitmap
@@ -164,18 +164,28 @@ extern struct GfxBase *GfxBase;
  * Returns NULL on success. When it fails it returns a pointer to an
  * error msg.
  */
-char *initAll();
+char* initAll();
+
+/**
+ * Loading numItems images in the given container.
+ *
+ * Returns TRUE on success.
+ *
+ * In error case its prints the file name of the unloadable file to the
+ * console and returns FALSE.
+ */
+BOOL populateContainer(struct ImageContainer* pContainer, int numItems);
 
 /**
  * Closes and un-initializes all in reverse order. Prints the given
  * error msg if non-zero.
  */
-int cleanExit(char *pErrorMsg);
+int cleanExit(char* pErrorMsg);
 
 /**
  * Draws the bobs into the RastPort
  */
-void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort);
+void drawBobGelsList(struct RastPort* pRPort, struct ViewPort* pVPort);
 
 /**
  * Calculates the number of 16-bit-words needed for a given amount of 
@@ -543,9 +553,30 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
 
 /// Init and cleanup
 
+BOOL populateContainer(struct ImageContainer* pContainer, int numItems)
+{
+  for(int i = 0; i < numItems; i++)
+  {
+    pContainer[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
+                                                pContainer[i].pImgPath,
+                                                pContainer[0].width,
+                                                pContainer[0].height,
+                                                pContainer[0].depth);
+
+    if(pContainer[i].pImageData == NULL)
+    {
+      printf("Failed to load '%s'. ", pContainer[i].pImgPath);
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
+
+
 char *initAll()
 {
-  m_pMemoryPoolChip = CreatePool(MEMF_CHIP | MEMF_CLEAR, 200, 100);
+  m_pMemoryPoolChip = CreatePool(MEMF_CHIP | MEMF_CLEAR, 1024, 512);
   if (m_pMemoryPoolChip == NULL)
   {
     return ("Faild to create the memory pool!\n");
@@ -566,70 +597,30 @@ char *initAll()
 
   // Load the duck images
   int numDuckImages = sizeof duckImages / sizeof duckImages[0];
-  for(int i = 0; i < numDuckImages; i++)
+  if(populateContainer(duckImages, numDuckImages) == FALSE)
   {
-    duckImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                                duckImages[i].pImgPath,
-                                                duckImages[0].width,
-                                                duckImages[0].height,
-                                                duckImages[0].depth);
-
-    if(duckImages[i].pImageData == NULL)
-    {
-      printf("Failed to load '%s'. ", duckImages[i].pImgPath);
-      return("Init error.");
-    }
+    return("Init error.\n");
   }
 
   // Load the hunter images
   int numHunterImages = sizeof hunterImages / sizeof hunterImages[0];
-  for(int i = 0; i < numHunterImages; i++)
+  if(populateContainer(hunterImages, numHunterImages) == FALSE)
   {
-    hunterImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                                  hunterImages[i].pImgPath,
-                                                  hunterImages[0].width,
-                                                  hunterImages[0].height,
-                                                  hunterImages[0].depth);
-
-    if(hunterImages[i].pImageData == NULL)
-    {
-      printf("Failed to load '%s'. ", hunterImages[i].pImgPath);
-      return("Init error.");
-    }
+    return("Init error.\n");
   }
 
   // Load the arrow right images
   int numRArrows = sizeof arrowRImages / sizeof arrowRImages[0];
-  for(int i = 0; i < numRArrows; i++)
+  if(populateContainer(arrowRImages, numRArrows) == FALSE)
   {
-    arrowRImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                                  arrowRImages[i].pImgPath,
-                                                  arrowRImages[0].width,
-                                                  arrowRImages[0].height,
-                                                  arrowRImages[0].depth);
-
-    if(arrowRImages[i].pImageData == NULL)
-    {
-      printf("Failed to load '%s'. ", arrowRImages[i].pImgPath);
-      return("Init error.");
-    }
+    return("Init error.\n");
   }
 
   // Load the arrow left images
   int numLArrows = sizeof arrowLImages / sizeof arrowLImages[0];
-  for(int i = 0; i < numLArrows; i++)
+  if(populateContainer(arrowLImages, numLArrows) == FALSE)
   {
-    arrowLImages[i].pImageData = LoadRawImageData(m_pMemoryPoolChip,
-                                                  arrowLImages[i].pImgPath,
-                                                  arrowLImages[0].width,
-                                                  arrowLImages[0].height,
-                                                  arrowLImages[0].depth);
-
-    if(arrowLImages[i].pImageData == NULL)
-    {
-      printf("Failed to load '%s'. ", arrowLImages[i].pImgPath);
-      return("Init error.");
-    }
+    return("Init error.\n");
   }
   
   m_pScr = OpenScreenTags(NULL,
@@ -652,7 +643,10 @@ char *initAll()
     return ("Failed to initialize the GELs system.\n");
   }
 
+  //
   // Create the bobs for duck and hunter
+  //
+
   NEWBOB newBob =
   {
     duckImages[0].pImageData,
