@@ -1,7 +1,8 @@
-/* LowLevelView.c - Execute me to compile me with Lattice 6.2
+/**
+ * LowLevelView.c - Execute me to compile me with Lattice 6.2
  * sc data=near nominc strmer streq nostkchk saveds ign=73 LowLevelView
  * quit
-*/
+ */
 #include <exec/memory.h>
 #include <exec/libraries.h>
 #include <graphics/view.h>
@@ -12,6 +13,8 @@
 #include <graphics/gfxmacros.h>
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
+
+#include "lowlevelview.h"
 
 /// View
 

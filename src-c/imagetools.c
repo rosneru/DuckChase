@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#include "BitMapFunctions.h"
+#include "imagetools.h"
 
 struct BitMap *LoadRawBitMap(const char *pPath,
                              int width,

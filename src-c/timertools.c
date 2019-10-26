@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-#include "TimerFunctions.h"
+#include "timertools.h"
 
 /// Timer global variables
 

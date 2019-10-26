@@ -14,6 +14,8 @@
 
     (target "")
 
+    (arguments "")
+
     (options
 
         "-c99"
@@ -24,8 +26,6 @@
 
         "-lmsoft"
     )
-
-    (arguments "")
 )
 
 ; project configuration (do not delete)

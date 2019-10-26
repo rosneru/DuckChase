@@ -18,17 +18,19 @@ all : $(EXE)
 $(OBJDIR)animtools.o : animtools.c
 	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)animtools.o animtools.c
 
-$(OBJDIR)BitMapFunctions.o : BitMapFunctions.c
-	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)BitMapFunctions.o BitMapFunctions.c
+$(OBJDIR)imagetools.o : imagetools.c
+	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)imagetools.o imagetools.c
 
-$(OBJDIR)DuckChase_main.o : DuckChase_main.c
-	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)DuckChase_main.o DuckChase_main.c
+$(OBJDIR)lowlevelview.o : lowlevelview.c
+	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)lowlevelview.o lowlevelview.c
 
-$(OBJDIR)TimerFunctions.o : TimerFunctions.c
-	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)TimerFunctions.o TimerFunctions.c
+$(OBJDIR)main.o : main.c
+	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)main.o main.c
 
-OBJS = $(OBJDIR)TimerFunctions.o $(OBJDIR)DuckChase_main.o $(OBJDIR)BitMapFunctions.o \
-$(OBJDIR)animtools.o
+$(OBJDIR)timertools.o : timertools.c
+	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)timertools.o timertools.c
+
+OBJS = $(OBJDIR)timertools.o $(OBJDIR)main.o $(OBJDIR)lowlevelview.o $(OBJDIR)imagetools.o $(OBJDIR)animtools.o
 
 $(EXE) : $(OBJS)
 	$(LD) $(shell vbccprefs) -o $(EXE) $(OBJS)
