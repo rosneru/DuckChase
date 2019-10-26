@@ -153,7 +153,6 @@ ULONG m_PaletteBackgroundImg[] =
 struct BitMap *m_pBackgrBM = NULL;
 
 struct Screen *m_pScr = NULL;
-struct Window *m_pWin = NULL;
 struct GelsInfo *m_pGelsInfo;
 
 APTR m_pMemoryPoolChip = NULL;
@@ -219,16 +218,16 @@ int main(void)
   LoadRGB32(&m_pScr->ViewPort, m_PaletteBackgroundImg);
 
   // Blit the background image
-  BltBitMapRastPort(m_pBackgrBM, 0, 0, m_pWin->RPort,
+  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_pScr->RastPort,
                     0, 0, VP_WIDTH, 256, 0xC0);
 
   // Initialize the points display
   updatePointsDisplay(0, 0);
 
   // Add the bobs and initially draw them
-  AddBob(m_pDuckBob, m_pWin->RPort);
-  AddBob(m_pHunterBob, m_pWin->RPort);
-  drawBobGelsList(m_pWin->RPort, &m_pScr->ViewPort);
+  AddBob(m_pDuckBob, &m_pScr->RastPort);
+  AddBob(m_pHunterBob, &m_pScr->RastPort);
+  drawBobGelsList(&m_pScr->RastPort, &m_pScr->ViewPort);
 
   // Init LovLevel stuff
   SetJoyPortAttrs(1,
@@ -282,7 +281,7 @@ int main(void)
 
     InitMasks(m_pDuckBob->BobVSprite);
     InitMasks(m_pHunterBob->BobVSprite);
-    drawBobGelsList(m_pWin->RPort, &m_pScr->ViewPort);
+    drawBobGelsList(&m_pScr->RastPort, &m_pScr->ViewPort);
 
     ULONG key = GetKey();
     if ((key & 0x00ff) == 0x45) // RAW code ESC key
@@ -296,7 +295,7 @@ int main(void)
 
   RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
-  drawBobGelsList(m_pWin->RPort, &m_pScr->ViewPort);
+  drawBobGelsList(&m_pScr->RastPort, &m_pScr->ViewPort);
 
   return cleanExit(NULL);
 }
@@ -510,9 +509,9 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     // fps and strikes = 0 -> init display
 
     // Drawing a filled black rect at the bottom of the view
-    SetAPen(m_pWin->RPort, backPen);
-    SetBPen(m_pWin->RPort, backPen);
-    RectFill(m_pWin->RPort,
+    SetAPen(&m_pScr->RastPort, backPen);
+    SetBPen(&m_pScr->RastPort, backPen);
+    RectFill(&m_pScr->RastPort,
              0, VP_HEIGHT - 12,
              VP_WIDTH - 1, VP_HEIGHT - 1);
   }
@@ -523,15 +522,15 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     sprintf(fpsBuf, "FPS: %d", fps);
 
     // Drawing a filled black rect at the bottom of the view
-    SetAPen(m_pWin->RPort, backPen);
-    SetBPen(m_pWin->RPort, backPen);
-    RectFill(m_pWin->RPort,
+    SetAPen(&m_pScr->RastPort, backPen);
+    SetBPen(&m_pScr->RastPort, backPen);
+    RectFill(&m_pScr->RastPort,
              VP_WIDTH - 90, VP_HEIGHT - 12,
              VP_WIDTH - 4, VP_HEIGHT - 2);
 
-    Move(m_pWin->RPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
-    SetAPen(m_pWin->RPort, frontPen);
-    Text(m_pWin->RPort, fpsBuf, strlen(fpsBuf));
+    Move(&m_pScr->RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
+    SetAPen(&m_pScr->RastPort, frontPen);
+    Text(&m_pScr->RastPort, fpsBuf, strlen(fpsBuf));
   }
 
   if (strikes > 0)
@@ -646,21 +645,8 @@ char *initAll()
     return("Failed to open the screen.\n");
   }
 
-  m_pWin = OpenWindowTags(NULL,
-      WA_NoCareRefresh, TRUE,
-      WA_Activate, TRUE,
-      WA_Borderless, TRUE,
-      WA_Backdrop, TRUE,
-      WA_CustomScreen, m_pScr,
-      TAG_DONE);
-
-  if (m_pWin == NULL)
-  {
-    return("Faild to open the window.\n");
-  }
-
   // Init the gels system
-  m_pGelsInfo = setupGelSys(m_pWin->RPort, 0x03);
+  m_pGelsInfo = setupGelSys(&m_pScr->RastPort, 0x03);
   if (m_pGelsInfo == NULL)
   {
     return ("Failed to initialize the GELs system.\n");
@@ -719,14 +705,8 @@ int cleanExit(char *pErrorMsg)
 
   if (m_pGelsInfo != NULL)
   {
-    cleanupGelSys(m_pGelsInfo, m_pWin->RPort);
+    cleanupGelSys(m_pGelsInfo, &m_pScr->RastPort);
     m_pGelsInfo = NULL;
-  }
-
-  if(m_pWin != NULL)
-  {
-    CloseWindow (m_pWin);
-    m_pWin = NULL;
   }
 
   if(m_pScr != NULL)
