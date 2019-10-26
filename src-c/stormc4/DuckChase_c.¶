@@ -102,13 +102,6 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "Shared:DEV/Studies/DuckChase/src-c/LowlevelView.c"
-"/LowlevelView.c"
-Storm Shell Project (Dependencies)
-"objects_debug/LowlevelView.o" "objects_debug/LowlevelView.debug"
-""
-1 1
-File
 1 "Shared:DEV/Studies/DuckChase/src-c/TimerFunctions.c"
 "/TimerFunctions.c"
 "/TimerFunctions.h"
@@ -142,13 +135,6 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "Shared:DEV/Studies/DuckChase/src-c/LowlevelView.h"
-"Shared:DEV/Studies/DuckChase/src-c/LowlevelView.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
 2 "Shared:DEV/Studies/DuckChase/src-c/TimerFunctions.h"
 "Shared:DEV/Studies/DuckChase/src-c/TimerFunctions.h"
 Storm Shell Project (Dependencies)
@@ -161,7 +147,6 @@ Section
 7
 File
 10 "DuckChase_c"
-"DuckChase_c"
 Storm Shell Project (Dependencies)
 "" ""
 ""

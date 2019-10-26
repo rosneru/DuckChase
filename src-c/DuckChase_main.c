@@ -95,11 +95,19 @@ ImageContainer arrowLImages[] =
   {"raw/arrow_left5_spr.raw", 0, 0, 0, NULL}
 };
 
+/**
+ * The colors of the arrow sprite are deined independently of the
+ * playfield color map.
+ */
+WORD m_ArrowSpriteColors[] =
+{
+  0x000f, 0x00f0, 0x0f00
+};
 
 /**
- * Holds the game speed according the performance of the current 
+ * Holds the game speed according the performance of the current
  * Amiga system. Is re-calculated every 50 frames.
- * 
+ *
  * Values:
  * 0 when current fps is in range [0, 20]
  * 1 when current fps is in range [21, 40]
@@ -118,17 +126,16 @@ SHORT duckDY[] = {0, 0, 0}; // Not used yet
 SHORT arrowDX[] = {15, 10, 5};
 SHORT arrowDY[] = {8, 6, 4};
 
-// For each gameSpeed the switching of the images of some entities can
-// be adjusted here. The value means after how many frames the image
-// is switched
-SHORT hunterImgSwitch[] = {1, 2, 4};
-SHORT duckImgSwitch[] = {1, 2, 4};
+// For each gameSpeed the switching rate of the images of some
+// entities can be adjusted here. The value means after how many
+// frames the image is switched.
+SHORT hunterImgSwitch[] = {4, 4, 4};
+SHORT duckImgSwitch[] = {4, 4, 4};
 
 
 struct Bob* m_pDuckBob = NULL;
 struct Bob* m_pHunterBob = NULL;
-struct VSprite* m_pArrowRSprite = NULL;
-struct VSprite* m_pArrowLSprite = NULL;
+struct VSprite* m_pArrowSprite = NULL;
 
 #define VP_PALETTE_SIZE 32
 
@@ -188,7 +195,7 @@ int cleanExit(char* pErrorMsg);
 void drawBobGelsList(struct RastPort* pRPort, struct ViewPort* pVPort);
 
 /**
- * Calculates the number of 16-bit-words needed for a given amount of 
+ * Calculates the number of 16-bit-words needed for a given amount of
  * bits.
  */
 ULONG bitsToWords(ULONG bits);
@@ -200,14 +207,14 @@ void updatePointsDisplay(SHORT fps, SHORT strikes);
 
 /**
  * Update function for the hunter.
- * 
- * It is called everey frame. 
+ *
+ * It is called everey frame.
  */
 void updateHunter(ULONG portState);
 
 /**
  * Update function for the duck.
- * 
+ *
  * It is called everey frame.
  */
 void updateDuck();
@@ -237,6 +244,7 @@ int main(void)
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_pScr->RastPort);
   AddBob(m_pHunterBob, &m_pScr->RastPort);
+  AddVSprite(m_pArrowSprite, &m_pScr->RastPort);
   drawBobGelsList(&m_pScr->RastPort, &m_pScr->ViewPort);
 
   // Init LovLevel stuff
@@ -303,6 +311,7 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
+  RemVSprite(m_pArrowSprite);
   RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
   drawBobGelsList(&m_pScr->RastPort, &m_pScr->ViewPort);
@@ -316,7 +325,8 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
   WaitTOF();
   DrawGList(pRPort, pVPort);
 
-  // If the GelsList includes true VSprites, 
+  RemakeDisplay();
+  // If the GelsList includes true VSprites,
   // MrgCop() and LoadView() here (or before the WaitTOF?)
 
 }
@@ -331,7 +341,7 @@ ULONG bitsToWords(ULONG bits)
   else
   {
     return integers + 1;
-  } 
+  }
 }
 
 ///
@@ -375,10 +385,10 @@ void updateHunter(ULONG portState)
         vSprite->X += hunterDX[gameSpeed];
       }
 
-      // Every some frames (or if the direction changed) switch the 
+      // Every some frames (or if the direction changed) switch the
       // hunter image
       hunterFrameCnt++;
-      if ((bDirectionChanged == TRUE) || 
+      if ((bDirectionChanged == TRUE) ||
           (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
       {
         hunterFrameCnt = 0;
@@ -415,10 +425,10 @@ void updateHunter(ULONG portState)
         vSprite->X -= hunterDX[gameSpeed];
       }
 
-      // Every some frames (or if the direction changed) switch the 
+      // Every some frames (or if the direction changed) switch the
       // hunter image
       hunterFrameCnt++;
-      if ((bDirectionChanged == TRUE) || 
+      if ((bDirectionChanged == TRUE) ||
           (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
       {
         hunterFrameCnt = 0;
@@ -574,8 +584,11 @@ BOOL populateContainer(struct ImageContainer* pContainer, int numItems)
 }
 
 
-char *initAll()
+char* initAll()
 {
+  //
+  // Create memory pool
+  //
   m_pMemoryPoolChip = CreatePool(MEMF_CHIP | MEMF_CLEAR, 1024, 512);
   if (m_pMemoryPoolChip == NULL)
   {
@@ -586,6 +599,10 @@ char *initAll()
   {
     return ("Faild to initialize the timer!\n");
   }
+
+  //
+  // Load all images
+  //
 
   // Load the background image
   m_pBackgrBM = LoadRawBitMap("raw/background.raw",
@@ -622,7 +639,10 @@ char *initAll()
   {
     return("Init error.\n");
   }
-  
+
+  //
+  // Open the screen
+  //
   m_pScr = OpenScreenTags(NULL,
       SA_DisplayID, VP_MODE,
       SA_Depth, VP_DEPTH,
@@ -636,7 +656,9 @@ char *initAll()
     return("Failed to open the screen.\n");
   }
 
-  // Init the gels system
+  //
+  // Init the GELs system
+  //
   m_pGelsInfo = setupGelSys(&m_pScr->RastPort, 0x03);
   if (m_pGelsInfo == NULL)
   {
@@ -680,11 +702,39 @@ char *initAll()
     return ("Failed to create GELs bob for hunter.\n");
   }
 
+  //
+  // Create the arrow sprite
+  //
+  NEWVSPRITE newVSprite =
+  {
+    arrowRImages[0].pImageData,         // image data for the vsprite
+    m_ArrowSpriteColors,                // color array for the vsprite
+    1,                                  // width in words
+    arrowRImages[0].height,             // height in lines
+    2,                                  // depth of the image
+    160, 100,                           // initial x-,y-position
+    VSPRITE,                            // vsprite flags
+    0,                                  // Hit mask
+    0,                                  // Me mask
+  };
+
+  m_pArrowSprite = makeVSprite(&newVSprite);
+  if (m_pArrowSprite == NULL)
+  {
+    return ("Failed to create GELs VSprite for arrow.\n");
+  }
+
   return NULL;
 }
 
 int cleanExit(char *pErrorMsg)
 {
+  if (m_pArrowSprite != NULL)
+  {
+    freeVSprite(m_pArrowSprite);
+    m_pArrowSprite = NULL;
+  }
+
   if (m_pHunterBob != NULL)
   {
     freeBob(m_pHunterBob, hunterImages[0].depth);
