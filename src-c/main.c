@@ -791,6 +791,14 @@ int cleanExit(char *pErrorMsg)
   // Restore the old view
   if (GfxBase->ActiView == m_pView)
   {
+    do
+    {
+      LoadView(NULL);
+      WaitTOF();
+      WaitTOF();
+    }
+    while(GfxBase->ActiView != NULL);
+
     // Put back the old view
     LoadView(m_pOldView);
 
