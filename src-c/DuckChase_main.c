@@ -31,7 +31,6 @@
 
 #include "animtools_proto.h"
 #include "BitMapFunctions.h"
-#include "LowlevelView.h"
 #include "TimerFunctions.h"
 
 ///
@@ -153,11 +152,8 @@ ULONG m_PaletteBackgroundImg[] =
 
 struct BitMap *m_pBackgrBM = NULL;
 
-struct Screen *m_pDummyScreen;
-struct View *m_pOldView;
-struct View *m_pView;
-struct ViewPort *m_pViewPort;
-struct RastPort m_RastPort = {0};
+struct Screen *m_pScr = NULL;
+struct Window *m_pWin = NULL;
 struct GelsInfo *m_pGelsInfo;
 
 APTR m_pMemoryPoolChip = NULL;
@@ -220,19 +216,19 @@ int main(void)
   }
 
   // Load the palette of the background image
-  LoadRGB32(m_pViewPort, m_PaletteBackgroundImg);
+  LoadRGB32(&m_pScr->ViewPort, m_PaletteBackgroundImg);
 
   // Blit the background image
-  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_RastPort,
+  BltBitMapRastPort(m_pBackgrBM, 0, 0, m_pWin->RPort,
                     0, 0, VP_WIDTH, 256, 0xC0);
 
   // Initialize the points display
   updatePointsDisplay(0, 0);
 
   // Add the bobs and initially draw them
-  AddBob(m_pDuckBob, &m_RastPort);
-  AddBob(m_pHunterBob, &m_RastPort);
-  drawBobGelsList(&m_RastPort, m_pViewPort);
+  AddBob(m_pDuckBob, m_pWin->RPort);
+  AddBob(m_pHunterBob, m_pWin->RPort);
+  drawBobGelsList(m_pWin->RPort, &m_pScr->ViewPort);
 
   // Init LovLevel stuff
   SetJoyPortAttrs(1,
@@ -286,7 +282,7 @@ int main(void)
 
     InitMasks(m_pDuckBob->BobVSprite);
     InitMasks(m_pHunterBob->BobVSprite);
-    drawBobGelsList(&m_RastPort, m_pViewPort);
+    drawBobGelsList(m_pWin->RPort, &m_pScr->ViewPort);
 
     ULONG key = GetKey();
     if ((key & 0x00ff) == 0x45) // RAW code ESC key
@@ -300,7 +296,7 @@ int main(void)
 
   RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
-  drawBobGelsList(&m_RastPort, m_pViewPort);
+  drawBobGelsList(m_pWin->RPort, &m_pScr->ViewPort);
 
   return cleanExit(NULL);
 }
@@ -514,9 +510,9 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     // fps and strikes = 0 -> init display
 
     // Drawing a filled black rect at the bottom of the view
-    SetAPen(&m_RastPort, backPen);
-    SetBPen(&m_RastPort, backPen);
-    RectFill(&m_RastPort,
+    SetAPen(m_pWin->RPort, backPen);
+    SetBPen(m_pWin->RPort, backPen);
+    RectFill(m_pWin->RPort,
              0, VP_HEIGHT - 12,
              VP_WIDTH - 1, VP_HEIGHT - 1);
   }
@@ -527,15 +523,15 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     sprintf(fpsBuf, "FPS: %d", fps);
 
     // Drawing a filled black rect at the bottom of the view
-    SetAPen(&m_RastPort, backPen);
-    SetBPen(&m_RastPort, backPen);
-    RectFill(&m_RastPort,
+    SetAPen(m_pWin->RPort, backPen);
+    SetBPen(m_pWin->RPort, backPen);
+    RectFill(m_pWin->RPort,
              VP_WIDTH - 90, VP_HEIGHT - 12,
              VP_WIDTH - 4, VP_HEIGHT - 2);
 
-    Move(&m_RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
-    SetAPen(&m_RastPort, frontPen);
-    Text(&m_RastPort, fpsBuf, strlen(fpsBuf));
+    Move(m_pWin->RPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
+    SetAPen(m_pWin->RPort, frontPen);
+    Text(m_pWin->RPort, fpsBuf, strlen(fpsBuf));
   }
 
   if (strikes > 0)
@@ -636,66 +632,35 @@ char *initAll()
       return("Init error.");
     }
   }
+  
+  m_pScr = OpenScreenTags(NULL,
+      SA_DisplayID, VP_MODE,
+      SA_Depth, VP_DEPTH,
+      SA_Width, VP_WIDTH,
+      SA_Height, VP_HEIGHT,
+      SA_ShowTitle, FALSE,
+      TAG_DONE);
 
-  // This screen is only a trick: It just exists to ensure that after
-  // closing the main view *Intuition* handles important things like
-  // giving back the mouse pointer etc. which were lost by creating
-  // our own view. So it is only opened with a depth of 1 losing about
-  // 20k in HiRes or 10 in LoRes.
-  m_pDummyScreen = OpenScreenTags(NULL,
-                                  SA_DisplayID, VP_MODE,
-                                  SA_Depth, 1,
-                                  SA_Width, VP_WIDTH,
-                                  SA_Height, VP_HEIGHT,
-                                  SA_ShowTitle, FALSE,
-                                  TAG_DONE);
-
-  if (m_pDummyScreen == NULL)
+  if (m_pScr == NULL)
   {
-    return ("Faild to open the dummy screen!\n");
+    return("Failed to open the screen.\n");
   }
 
-  // Init view, viewport and rasinfo
-  m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
-  if (m_pView == NULL)
+  m_pWin = OpenWindowTags(NULL,
+      WA_NoCareRefresh, TRUE,
+      WA_Activate, TRUE,
+      WA_Borderless, TRUE,
+      WA_Backdrop, TRUE,
+      WA_CustomScreen, m_pScr,
+      TAG_DONE);
+
+  if (m_pWin == NULL)
   {
-    return ("Failed to create the view.\n");
+    return("Faild to open the window.\n");
   }
-
-  m_pViewPort = CreateAViewPort(m_pMemoryPoolChip, VP_WIDTH,
-                                VP_HEIGHT, VP_DEPTH,
-                                VP_MODE, VP_PALETTE_SIZE);
-
-  if (m_pViewPort == NULL)
-  {
-    return ("Faild to create the viewport.\n");
-  }
-
-  // Init rastport
-  InitRastPort(&m_RastPort);
-
-  // Link RastPort ands ViewPort
-  m_RastPort.BitMap = m_pViewPort->RasInfo->BitMap;
-
-  // Link View and ViewPort
-  m_pView->ViewPort = m_pViewPort;
-
-  // Construct preliminary Copper instruction list
-  MakeVPort(m_pView, m_pViewPort);
-
-  // Merge preliminary lists into a real Copper list in the View
-  // structure
-  MrgCop(m_pView);
-
-  // Save current View to restore later
-  m_pOldView = GfxBase->ActiView;
-
-  LoadView(m_pView);
-  WaitTOF();
-  WaitTOF();
 
   // Init the gels system
-  m_pGelsInfo = setupGelSys(&m_RastPort, 0x03);
+  m_pGelsInfo = setupGelSys(m_pWin->RPort, 0x03);
   if (m_pGelsInfo == NULL)
   {
     return ("Failed to initialize the GELs system.\n");
@@ -754,36 +719,20 @@ int cleanExit(char *pErrorMsg)
 
   if (m_pGelsInfo != NULL)
   {
-    cleanupGelSys(m_pGelsInfo, &m_RastPort);
+    cleanupGelSys(m_pGelsInfo, m_pWin->RPort);
     m_pGelsInfo = NULL;
   }
 
-  // Restore the old view
-  if (GfxBase->ActiView == m_pView)
+  if(m_pWin != NULL)
   {
-    // Put back the old view
-    LoadView(m_pOldView);
-
-    // Before freeing memory wait until the old view is being rendered
-    WaitTOF();
-    WaitTOF();
+    CloseWindow (m_pWin);
+    m_pWin = NULL;
   }
 
-  // Delete the custom view and viewport
-  if (m_pViewPort != NULL)
+  if(m_pScr != NULL)
   {
-    DeleteAViewPort(m_pViewPort);
-  }
-
-  if (m_pView != NULL)
-  {
-    DeleteAView(m_pView);
-  }
-
-  if (m_pDummyScreen != NULL)
-  {
-    CloseScreen(m_pDummyScreen);
-    m_pDummyScreen = NULL;
+    CloseScreen(m_pScr);
+    m_pScr = NULL;
   }
 
   if (m_pBackgrBM != NULL)
