@@ -21,6 +21,7 @@
 *    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
 *
 * History
+*   26.10.2019 - Changed from 3 to 4 bitplanes and set new colors
 *   05.10.2019 - Changed example from 22.07. to load a picture instead
 *   18.08.2019 - Moving the gray gradient
 *   18.08.2019 - Added a copper gray gradient
@@ -102,7 +103,7 @@ _main:
         ;
         ; Allocate memory for picture
         ;
-        move.l  #61440,d0           ;Size of needed memory
+        move.l  #81920,d0           ;Size of needed memory
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
@@ -113,7 +114,7 @@ _main:
         ; Load the Background image at reserved memory address
         move.l  #bgImgName,d1       ;Function expects file name in d1..
         move.l  d0,d2               ;..and buf addr in d2
-        move.l  #61440,d3           ;..and buf len in d3
+        move.l  #81920,d3           ;..and buf len in d3
         bsr     Load_file_to_buf
         move.l  #strErrLoadBgImg,d1 ;The error message if it failed
         tst.l   d0                  ;If d0 is zero
@@ -170,6 +171,13 @@ clearview
         move.w  d0,plane3+6
         swap    d0
         move.w  d0,plane3+2
+
+        swap    d0
+        add.l   d1,d0
+
+        move.w  d0,plane4+6
+        swap    d0
+        move.w  d0,plane4+2
 
         ; Activate the copperlist
         lea     _custom,a1
@@ -335,7 +343,7 @@ strErrLoadBgImg     even
 
 
 bgImgName           even
-                    dc.b          '/gfx/background_hires.raw',0
+                    dc.b          '/gfx/raw/background.raw',0
 
                     SECTION "dma",data,chip
                     even
@@ -346,7 +354,7 @@ copperlist
                     dc.w    diwstop,$2CC1
                     dc.w    ddfstrt,$003C
                     dc.w    ddfstop,$00d4
-                    dc.w    bplcon0,$B200   ; Hires, 3 bitplanes
+                    dc.w    bplcon0,$C200   ; Hires, 4 bitplanes
                     dc.w    bplcon1,$0000
                     dc.w    bplcon2,$0000
                     dc.w    bpl1mod,$0000
@@ -357,14 +365,24 @@ plane2              dc.w    bplpt+4,$0000
                     dc.w    bplpt+6,$0000
 plane3              dc.w    bplpt+8,$0000
                     dc.w    bplpt+10,$0000
-                    dc.w    color,$0AAA     ;COLOR00
-                    dc.w    color+2,$0000   ;COLOR01
-                    dc.w    color+4,$0FFF   ;COLOR02
-                    dc.w    color+6,$068B   ;COLOR03
-                    dc.w    color+8,$05A3   ;COLOR04
-                    dc.w    color+10,$0EB0  ;COLOR05
-                    dc.w    color+12,$0B52  ;COLOR06
-                    dc.w    color+14,$0F80  ;COLOR07
+plane4              dc.w    bplpt+12,$0000
+                    dc.w    bplpt+14,$0000
+                    dc.w    color+0,$0000   ;COLOR00
+                    dc.w    color+2,$0222   ;COLOR01
+                    dc.w    color+4,$0544   ;COLOR02
+                    dc.w    color+6,$0766   ;COLOR03
+                    dc.w    color+8,$0ffc   ;COLOR04
+                    dc.w    color+10,$0488  ;COLOR05
+                    dc.w    color+12,$08a9  ;COLOR06
+                    dc.w    color+14,$0696  ;COLOR07
+                    dc.w    color+16,$0ac7  ;COLOR08
+                    dc.w    color+18,$0991  ;COLOR09
+                    dc.w    color+20,$0bb2  ;COLOR10
+                    dc.w    color+22,$0d92  ;COLOR11
+                    dc.w    color+24,$0fb2  ;COLOR12
+                    dc.w    color+26,$0d50  ;COLOR13
+                    dc.w    color+28,$0c21  ;COLOR14
+                    dc.w    color+30,$0f43  ;COLOR15
 ;                    dc.w    $7007,$fffe     ;WAIT
 ;                    dc.w    color,$0fff     ;COLOR00 -> white
 ;                    dc.w    $e007,$fffe     ;WAIT
