@@ -679,6 +679,14 @@ char* initAll()
   // Save current View to restore later
   m_pOldView = GfxBase->ActiView;
 
+  do
+  {
+    LoadView(NULL);
+    WaitTOF();
+    WaitTOF();
+  }
+  while(GfxBase->ActiView != NULL);
+
   LoadView(m_pView);
   WaitTOF();
   WaitTOF();
