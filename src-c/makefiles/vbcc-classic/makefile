@@ -24,13 +24,10 @@ $(OBJDIR)BitMapFunctions.o : BitMapFunctions.c
 $(OBJDIR)DuckChase_main.o : DuckChase_main.c
 	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)DuckChase_main.o DuckChase_main.c
 
-$(OBJDIR)LowlevelView.o : LowlevelView.c
-	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)LowlevelView.o LowlevelView.c
-
 $(OBJDIR)TimerFunctions.o : TimerFunctions.c
 	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)TimerFunctions.o TimerFunctions.c
 
-OBJS = $(OBJDIR)TimerFunctions.o $(OBJDIR)LowlevelView.o $(OBJDIR)DuckChase_main.o $(OBJDIR)BitMapFunctions.o \
+OBJS = $(OBJDIR)TimerFunctions.o $(OBJDIR)DuckChase_main.o $(OBJDIR)BitMapFunctions.o \
 $(OBJDIR)animtools.o
 
 $(EXE) : $(OBJS)
