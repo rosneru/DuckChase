@@ -102,7 +102,7 @@ ImageContainer arrowLImages[] =
  */
 WORD m_ArrowSpriteColors[] =
 {
-  0x000f, 0x00f0, 0x0f00
+  0x0fc3, 0x0d61, 0x0d22
 };
 
 /**
