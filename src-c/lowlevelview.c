@@ -137,6 +137,7 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
                   {VTAG_VIEWPORTEXTRA_SET, (ULONG)vpextra},
                   {VTAG_NORMAL_DISP_SET, (ULONG)disinfo},
                   {VTAG_USERCLIP_SET, NULL},
+                  {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
                   {TAG_END}
                 };
 

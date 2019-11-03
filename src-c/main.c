@@ -361,129 +361,126 @@ void updateHunter(ULONG portState)
   struct VSprite *vSprite = m_pHunterBob->BobVSprite;
 
   // The hunter is moved left or right with the joystick
-  if ((portState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+  BOOL bDirectionChanged = FALSE;
+  if ((portState & JPF_JOY_RIGHT) != 0)
   {
-    BOOL bDirectionChanged = FALSE;
-    if ((portState & JPF_JOY_RIGHT) != 0)
+    m_bHunterLaunchesArrow = FALSE;
+    m_bHunterRunning = TRUE;
+
+    // Check if direction has changed
+    if(m_HunterLastDirection != JPF_JOY_RIGHT)
     {
-      m_bHunterLaunchesArrow = FALSE;
-      m_bHunterRunning = TRUE;
+      bDirectionChanged = TRUE;
+      hunterFrameCnt = 0;
+      m_HunterLastDirection = JPF_JOY_RIGHT;
+    }
 
-      // Check if direction has changed
-      if(m_HunterLastDirection != JPF_JOY_RIGHT)
-      {
-        bDirectionChanged = TRUE;
-        hunterFrameCnt = 0;
-        m_HunterLastDirection = JPF_JOY_RIGHT;
-      }
+    // Move the hunter to right
+    if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + hunterImages[0].width)
+    {
+      vSprite->X = -hunterImages[0].width;
+    }
+    else
+    {
+      vSprite->X += hunterDX[gameSpeed];
+    }
 
-      // Move the hunter to right
-      if (vSprite->X + hunterDX[gameSpeed] > VP_WIDTH + hunterImages[0].width)
+    // Every some frames (or if the direction changed) switch the
+    // hunter image
+    hunterFrameCnt++;
+    if ((bDirectionChanged == TRUE) ||
+        (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
+    {
+      hunterFrameCnt = 0;
+      if (vSprite->ImageData == hunterImages[0].pImageData) // TODO remove hard coded numbers
       {
-        vSprite->X = -hunterImages[0].width;
+        vSprite->ImageData = hunterImages[1].pImageData;
       }
       else
       {
-        vSprite->X += hunterDX[gameSpeed];
-      }
-
-      // Every some frames (or if the direction changed) switch the
-      // hunter image
-      hunterFrameCnt++;
-      if ((bDirectionChanged == TRUE) ||
-          (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
-      {
-        hunterFrameCnt = 0;
-        if (vSprite->ImageData == hunterImages[0].pImageData) // TODO remove hard coded numbers
-        {
-          vSprite->ImageData = hunterImages[1].pImageData;
-        }
-        else
-        {
-          vSprite->ImageData = hunterImages[0].pImageData;
-        }
+        vSprite->ImageData = hunterImages[0].pImageData;
       }
     }
-    else if ((portState & JPF_JOY_LEFT) != 0)
+  }
+  else if ((portState & JPF_JOY_LEFT) != 0)
+  {
+    m_bHunterLaunchesArrow = FALSE;
+    m_bHunterRunning = TRUE;
+
+    // Check if direction has changed
+    if(m_HunterLastDirection != JPF_JOY_LEFT)
     {
-      m_bHunterLaunchesArrow = FALSE;
-      m_bHunterRunning = TRUE;
+      bDirectionChanged = TRUE;
+      hunterFrameCnt = 0;
+      m_HunterLastDirection = JPF_JOY_LEFT;
+    }
 
-      // Check if direction has changed
-      if(m_HunterLastDirection != JPF_JOY_LEFT)
-      {
-        bDirectionChanged = TRUE;
-        hunterFrameCnt = 0;
-        m_HunterLastDirection = JPF_JOY_LEFT;
-      }
+    // Move the hunter to right
+    if (vSprite->X - hunterDX[gameSpeed] < -hunterImages[0].width)
+    {
+      vSprite->X = VP_WIDTH + hunterImages[0].width;
+    }
+    else
+    {
+      vSprite->X -= hunterDX[gameSpeed];
+    }
 
-      // Move the hunter to right
-      if (vSprite->X - hunterDX[gameSpeed] < -hunterImages[0].width)
+    // Every some frames (or if the direction changed) switch the
+    // hunter image
+    hunterFrameCnt++;
+    if ((bDirectionChanged == TRUE) ||
+        (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
+    {
+      hunterFrameCnt = 0;
+      if (vSprite->ImageData == hunterImages[3].pImageData) // TODO remove hard coded numbers
       {
-        vSprite->X = VP_WIDTH + hunterImages[0].width;
+        vSprite->ImageData = hunterImages[4].pImageData;
       }
       else
       {
-        vSprite->X -= hunterDX[gameSpeed];
-      }
-
-      // Every some frames (or if the direction changed) switch the
-      // hunter image
-      hunterFrameCnt++;
-      if ((bDirectionChanged == TRUE) ||
-          (hunterFrameCnt % hunterImgSwitch[gameSpeed] == 0))
-      {
-        hunterFrameCnt = 0;
-        if (vSprite->ImageData == hunterImages[3].pImageData) // TODO remove hard coded numbers
-        {
-          vSprite->ImageData = hunterImages[4].pImageData;
-        }
-        else
-        {
-          vSprite->ImageData = hunterImages[3].pImageData;
-        }
+        vSprite->ImageData = hunterImages[3].pImageData;
       }
     }
-    else if((portState & JPF_BTN2) != 0)
+  }
+  else if((portState & JPF_BTN2) != 0)
+  {
+    m_bHunterLaunchesArrow = TRUE;
+    m_bHunterRunning = FALSE;
+
+    if(m_HunterLastDirection == JPF_RIGHT)
     {
-      m_bHunterLaunchesArrow = TRUE;
+      vSprite->ImageData = hunterImages[2].pImageData;      // TODO remove hard coded numbers
+    }
+    else
+    {
+      vSprite->ImageData = hunterImages[5].pImageData;
+    }
+  }
+  else
+  {
+    if(m_bHunterLaunchesArrow == TRUE)
+    {
+      m_bHunterLaunchesArrow = FALSE;
+      if(m_HunterLastDirection == JPF_RIGHT)
+      {
+        vSprite->ImageData = hunterImages[0].pImageData;
+      }
+      else
+      {
+        vSprite->ImageData = hunterImages[3].pImageData;
+      }
+    }
+    else if(m_bHunterRunning == TRUE)
+    {
       m_bHunterRunning = FALSE;
 
       if(m_HunterLastDirection == JPF_RIGHT)
       {
-        vSprite->ImageData = hunterImages[2].pImageData;      // TODO remove hard coded numbers
+        vSprite->ImageData = hunterImages[0].pImageData;
       }
       else
       {
-        vSprite->ImageData = hunterImages[5].pImageData;
-      }
-    }
-    else
-    {
-      if(m_bHunterLaunchesArrow == TRUE)
-      {
-        m_bHunterLaunchesArrow = FALSE;
-        if(m_HunterLastDirection == JPF_RIGHT)
-        {
-          vSprite->ImageData = hunterImages[0].pImageData;
-        }
-        else
-        {
-          vSprite->ImageData = hunterImages[3].pImageData;
-        }
-      }
-      else if(m_bHunterRunning == TRUE)
-      {
-        m_bHunterRunning = FALSE;
-
-        if(m_HunterLastDirection == JPF_RIGHT)
-        {
-          vSprite->ImageData = hunterImages[0].pImageData;
-        }
-        else
-        {
-          vSprite->ImageData = hunterImages[3].pImageData;
-        }
+        vSprite->ImageData = hunterImages[3].pImageData;
       }
     }
   }
