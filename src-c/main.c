@@ -79,21 +79,13 @@ ImageContainer hunterImages[] =
 ImageContainer arrowRImages[] =
 {
   // Dimensions only defined for the first item; all following share
-  {"raw/arrow_right1_spr.raw", 16, 8, 2, NULL},
-  {"raw/arrow_right2_spr.raw", 0, 0, 0, NULL},
-  {"raw/arrow_right3_spr.raw", 0, 0, 0, NULL},
-  {"raw/arrow_right4_spr.raw", 0, 0, 0, NULL},
-  {"raw/arrow_right5_spr.raw", 0, 0, 0, NULL}
+  {"raw/arrow_right1.raw", 16, 8, 2, NULL}
 };
 
 ImageContainer arrowLImages[] =
 {
   // Dimensions only defined for the first item; all following share
-  {"raw/arrow_left1_spr.raw", 16, 8, 2, NULL},
-  {"raw/arrow_left2_spr.raw", 0, 0, 0, NULL},
-  {"raw/arrow_left3_spr.raw", 0, 0, 0, NULL},
-  {"raw/arrow_left4_spr.raw", 0, 0, 0, NULL},
-  {"raw/arrow_left5_spr.raw", 0, 0, 0, NULL}
+  {"raw/arrow_left1.raw", 16, 8, 2, NULL}
 };
 
 /**
@@ -726,7 +718,7 @@ char* initAll()
   newBob.nb_LineHeight = hunterImages[0].height;
   newBob.nb_ImageDepth = hunterImages[0].depth;
   newBob.nb_X = 20;
-  newBob.nb_Y = 210;
+  newBob.nb_Y = 216;
 
   m_pHunterBob = makeBob(&newBob);
   if (m_pHunterBob == NULL)
