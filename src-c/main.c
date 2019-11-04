@@ -46,7 +46,7 @@
 
 
 /**
- * A container for holding all needed data for a images
+ * A container for holding all needed data for ImageData based entities
  */
 typedef struct ImageContainer
 {
@@ -57,6 +57,17 @@ typedef struct ImageContainer
   WORD* pImageData;
 } ImageContainer;
 
+/**
+ * A container for holding all needed data for BitMap based entities
+ */
+typedef struct BitMapContainer
+{
+  const char* pImgPath;
+  WORD width;
+  WORD height;
+  SHORT depth;
+  struct BitMap* pBitMap;
+} BitMapContainer;
 
 ImageContainer duckImages[] =
 {
@@ -76,13 +87,13 @@ ImageContainer hunterImages[] =
   {"raw/hunter_Left_shoot.raw", 0, 0, 0, NULL}
 };
 
-ImageContainer arrowRImages[] =
+BitMapContainer arrowRImages[] =
 {
   // Dimensions only defined for the first item; all following share
   {"raw/arrow_right1.raw", 16, 8, 2, NULL}
 };
 
-ImageContainer arrowLImages[] =
+BitMapContainer arrowLImages[] =
 {
   // Dimensions only defined for the first item; all following share
   {"raw/arrow_left1.raw", 16, 8, 2, NULL}
@@ -128,7 +139,8 @@ SHORT duckImgSwitch[] = {4, 6, 8};
 
 struct Bob* m_pDuckBob = NULL;
 struct Bob* m_pHunterBob = NULL;
-struct VSprite* m_pArrowSprite = NULL;
+struct ExtSprite* m_pArrowSprite = NULL;
+LONG m_SpriteNumber = -1;
 
 #define VP_PALETTE_SIZE 32
 
@@ -177,7 +189,18 @@ char* initAll();
  * In error case its prints the file name of the unloadable file to the
  * console and returns FALSE.
  */
-BOOL populateContainer(struct ImageContainer* pContainer, int numItems);
+BOOL loadAllImages(struct ImageContainer* pContainer, int numItems);
+
+/**
+ * Loading numItems images in the given container.
+ *
+ * Returns TRUE on success.
+ *
+ * In error case its prints the file name of the unloadable file to the
+ * console and returns FALSE.
+ */
+BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems);
+
 
 /**
  * Closes and un-initializes all in reverse order. Prints the given
@@ -240,7 +263,6 @@ int main(void)
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_RastPort);
   AddBob(m_pHunterBob, &m_RastPort);
-  AddVSprite(m_pArrowSprite, &m_RastPort);
   drawBobGelsList(&m_RastPort, m_pViewPort);
 
   // Init LovLevel stuff
@@ -307,7 +329,6 @@ int main(void)
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 
-  RemVSprite(m_pArrowSprite);
   RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
   drawBobGelsList(&m_RastPort, m_pViewPort);
@@ -554,7 +575,7 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
 
 /// Init and cleanup
 
-BOOL populateContainer(struct ImageContainer* pContainer, int numItems)
+BOOL loadAllImages(struct ImageContainer* pContainer, int numItems)
 {
   for(int i = 0; i < numItems; i++)
   {
@@ -565,6 +586,25 @@ BOOL populateContainer(struct ImageContainer* pContainer, int numItems)
                                                 pContainer[0].depth);
 
     if(pContainer[i].pImageData == NULL)
+    {
+      printf("Failed to load '%s'. ", pContainer[i].pImgPath);
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
+
+BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems)
+{
+  for(int i = 0; i < numItems; i++)
+  {
+    pContainer[i].pBitMap = LoadRawBitMap(pContainer[i].pImgPath,
+                                          pContainer[0].width,
+                                          pContainer[0].height,
+                                          pContainer[0].depth);
+
+    if(pContainer[i].pBitMap == NULL)
     {
       printf("Failed to load '%s'. ", pContainer[i].pImgPath);
       return FALSE;
@@ -605,28 +645,28 @@ char* initAll()
 
   // Load the duck images
   int numDuckImages = sizeof duckImages / sizeof duckImages[0];
-  if(populateContainer(duckImages, numDuckImages) == FALSE)
+  if(loadAllImages(duckImages, numDuckImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the hunter images
   int numHunterImages = sizeof hunterImages / sizeof hunterImages[0];
-  if(populateContainer(hunterImages, numHunterImages) == FALSE)
+  if(loadAllImages(hunterImages, numHunterImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow right images
   int numRArrows = sizeof arrowRImages / sizeof arrowRImages[0];
-  if(populateContainer(arrowRImages, numRArrows) == FALSE)
+  if(loadAllBitMaps(arrowRImages, numRArrows) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow left images
   int numLArrows = sizeof arrowLImages / sizeof arrowLImages[0];
-  if(populateContainer(arrowLImages, numLArrows) == FALSE)
+  if(loadAllBitMaps(arrowLImages, numLArrows) == FALSE)
   {
     return("Init error.\n");
   }
@@ -726,36 +766,39 @@ char* initAll()
     return ("Failed to create GELs bob for hunter.\n");
   }
 
-  //
-  // Create the arrow sprite
-  //
-  NEWVSPRITE newVSprite =
-  {
-    arrowRImages[0].pImageData,         // image data for the vsprite
-    m_ArrowSpriteColors,                // color array for the vsprite
-    1,                                  // width in words
-    arrowRImages[0].height,             // height in lines
-    2,                                  // depth of the image
-    160, 100,                           // initial x-,y-position
-    VSPRITE,                            // vsprite flags
-    0,                                  // Hit mask
-    0,                                  // Me mask
-  };
+  m_pArrowSprite = AllocSpriteData(arrowRImages[0].pBitMap,
+                                   SPRITEA_Width, arrowRImages[0].width,
+                                   TAG_END);
 
-  m_pArrowSprite = makeVSprite(&newVSprite);
-  if (m_pArrowSprite == NULL)
+  if(m_pArrowSprite == NULL)
   {
-    return ("Failed to create GELs VSprite for arrow.\n");
+    return ("Failed to allocate sprite data.\n");
   }
+
+  m_SpriteNumber = GetExtSprite(m_pArrowSprite,
+                                TAG_END);
+
+  if(m_SpriteNumber < 0)
+  {
+    return("Failed to acquire a hardware sprite.\n");
+  }
+
+  MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
 
   return NULL;
 }
 
 int cleanExit(char *pErrorMsg)
 {
+  if(m_SpriteNumber >= 0)
+  {
+    FreeSprite(m_SpriteNumber);
+    m_SpriteNumber = -1;
+  }
+
   if (m_pArrowSprite != NULL)
   {
-    freeVSprite(m_pArrowSprite);
+    FreeSpriteData(m_pArrowSprite);
     m_pArrowSprite = NULL;
   }
 
