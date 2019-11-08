@@ -41,7 +41,7 @@
 // Settings for the display
 #define VP_WIDTH 640
 #define VP_HEIGHT 256
-#define VP_DEPTH 4
+#define VP_DEPTH 5
 #define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
 
 
@@ -99,14 +99,6 @@ BitMapContainer arrowLImages[] =
   {"raw/arrow_left1.raw", 16, 8, 2, NULL}
 };
 
-/**
- * The colors of the arrow sprite are deined independently of the
- * playfield color map.
- */
-WORD m_ArrowSpriteColors[] =
-{
-  0x0fc3, 0x0d61, 0x0d22
-};
 
 /**
  * Holds the game speed according the performance of the current
@@ -146,7 +138,7 @@ LONG m_SpriteNumber = -1;
 
 ULONG m_PaletteBackgroundImg[] =
 {
-  0x00100000,
+  0x00200000,
   0x00000000, 0x00000000, 0x00000000, 0x28282828, 0x28282828, 0x28282828,
   0x50505050, 0x49494949, 0x45454545, 0x7C7C7C7C, 0x6F6F6F6F, 0x66666666,
   0xFBFBFBFB, 0xF1F1F1F1, 0xC7C7C7C7, 0x46464646, 0x85858585, 0x88888888,
@@ -155,7 +147,24 @@ ULONG m_PaletteBackgroundImg[] =
   0xB8B8B8B8, 0xBBBBBBBB, 0x24242424, 0xD7D7D7D7, 0x99999999, 0x21212121,
   0xFAFAFAFA, 0xBDBDBDBD, 0x2F2F2F2F, 0xD6D6D6D6, 0x5D5D5D5D, 0xE0E0E0E,
   0xCCCCCCCC, 0x24242424, 0x1D1D1D1D, 0xFBFBFBFB, 0x49494949, 0x34343434,
+
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
+
   0x00000000
+};
+
+ULONG m_SpriteColors[] =
+{
+  0x28282828, 0x28282828, 0x28282828,
+  0x1B1B1B1B, 0x38383838, 0x59595959,
+  0xD6D6D6D6, 0x5D5D5D5D, 0x0E0E0E0E,
 };
 
 ///
@@ -249,9 +258,6 @@ int main(void)
   {
     return cleanExit(pErrorMsg);
   }
-
-  // Load the palette of the background image
-  LoadRGB32(m_pViewPort, m_PaletteBackgroundImg);
 
   // Blit the background image
   BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_RastPort,
@@ -515,10 +521,14 @@ void updateDuck()
     if (vSprite->ImageData == duckImages[0].pImageData)
     {
       vSprite->ImageData = duckImages[1].pImageData;
+      MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 50, 100);
+
     }
     else
     {
       vSprite->ImageData = duckImages[0].pImageData;
+      MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
+
     }
   }
 
@@ -637,7 +647,7 @@ char* initAll()
 
   // Load the background image
   m_pBackgrBM = LoadRawBitMap("raw/background.raw",
-                              VP_WIDTH, VP_HEIGHT, VP_DEPTH);
+                              VP_WIDTH, VP_HEIGHT, 4);
   if (m_pBackgrBM == NULL)
   {
     return ("Failed to load background.raw.\n");
@@ -671,6 +681,24 @@ char* initAll()
     return("Init error.\n");
   }
 
+  // Create the arrow sprite
+  m_pArrowSprite = AllocSpriteData(arrowRImages[0].pBitMap,
+                                   SPRITEA_Width, arrowRImages[0].width,
+                                   TAG_END);
+
+  if(m_pArrowSprite == NULL)
+  {
+    return ("Failed to allocate sprite data.\n");
+  }
+
+  m_SpriteNumber = GetExtSprite(m_pArrowSprite,
+                                TAG_END);
+
+  if(m_SpriteNumber < 0)
+  {
+    return("Failed to acquire a hardware sprite.\n");
+  }
+
   //
   // Init view, viewport and rasinfo
   //
@@ -689,10 +717,34 @@ char* initAll()
     return ("Faild to create the viewport.\n");
   }
 
+  //
+  // Load all needed colors
+  //
+
+  // Load the main 16 color palette of the background image
+  LoadRGB32(m_pViewPort, m_PaletteBackgroundImg);
+
+  // Load the arrow sprite colors: The start color register in the
+  // color MakeClass(p depends on the sprite number we got
+  int colReg = 16 + ((m_SpriteNumber & 0x06) << 1);
+
+  // But the first of the 4 colors is unused (transparent)
+  colReg++;
+
+  int n = sizeof m_SpriteColors / ((sizeof m_SpriteColors[0]) * 3);
+  for(int i = 0; i < n; i++)
+  {
+    int j = i * 3;
+
+    SetRGB32CM(m_pViewPort->ColorMap, colReg + i, m_SpriteColors[j],
+                                      m_SpriteColors[j + 1],
+                                      m_SpriteColors[j + 2]);
+  }
+
   // Init rastport
   InitRastPort(&m_RastPort);
 
-  // Link RastPort ands ViewPort
+  // Link RastPort and ViewPort
   m_RastPort.BitMap = m_pViewPort->RasInfo->BitMap;
 
   // Link View and ViewPort
@@ -766,24 +818,8 @@ char* initAll()
     return ("Failed to create GELs bob for hunter.\n");
   }
 
-  m_pArrowSprite = AllocSpriteData(arrowRImages[0].pBitMap,
-                                   SPRITEA_Width, arrowRImages[0].width,
-                                   TAG_END);
-
-  if(m_pArrowSprite == NULL)
-  {
-    return ("Failed to allocate sprite data.\n");
-  }
-
-  m_SpriteNumber = GetExtSprite(m_pArrowSprite,
-                                TAG_END);
-
-  if(m_SpriteNumber < 0)
-  {
-    return("Failed to acquire a hardware sprite.\n");
-  }
-
-  MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
+  // Move the sprite to a visible position
+//  MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
 
   return NULL;
 }

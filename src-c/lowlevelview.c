@@ -38,6 +38,7 @@ struct View *CreateAView(APTR pMemoryPool, ULONG modeid)
         ve = NULL;
       }
     }
+
     if (!ve)
     {
       view = NULL;
