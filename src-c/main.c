@@ -31,7 +31,6 @@
 
 #include "animtools_proto.h"
 #include "imagetools.h"
-#include "lowlevelview.h"
 #include "timertools.h"
 
 ///
@@ -41,7 +40,7 @@
 // Settings for the display
 #define VP_WIDTH 640
 #define VP_HEIGHT 256
-#define VP_DEPTH 5
+#define VP_DEPTH 4
 #define VP_MODE (PAL_MONITOR_ID | HIRES_KEY)
 
 
@@ -173,10 +172,7 @@ ULONG m_SpriteColors[] =
 
 struct BitMap* m_pBackgrBM = NULL;
 
-struct View *m_pOldView;
-struct View *m_pView;
-struct ViewPort *m_pViewPort;
-struct RastPort m_RastPort = {0};
+struct Screen* m_pScreen = NULL;
 struct GelsInfo* m_pGelsInfo;
 
 APTR m_pMemoryPoolChip = NULL;
@@ -260,16 +256,16 @@ int main(void)
   }
 
   // Blit the background image
-  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_RastPort,
+  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_pScreen->RastPort,
                     0, 0, VP_WIDTH, 256, 0xC0);
 
   // Initialize the points display
   updatePointsDisplay(0, 0);
 
   // Add the bobs and initially draw them
-  AddBob(m_pDuckBob, &m_RastPort);
-  AddBob(m_pHunterBob, &m_RastPort);
-  drawBobGelsList(&m_RastPort, m_pViewPort);
+  AddBob(m_pDuckBob, &m_pScreen->RastPort);
+  AddBob(m_pHunterBob, &m_pScreen->RastPort);
+  drawBobGelsList(&m_pScreen->RastPort, &m_pScreen->ViewPort);
 
   // Init LovLevel stuff
   SetJoyPortAttrs(1,
@@ -323,7 +319,7 @@ int main(void)
 
     InitMasks(m_pDuckBob->BobVSprite);
     InitMasks(m_pHunterBob->BobVSprite);
-    drawBobGelsList(&m_RastPort, m_pViewPort);
+    drawBobGelsList(&m_pScreen->RastPort, &m_pScreen->ViewPort);
 
     ULONG key = GetKey();
     if ((key & 0x00ff) == 0x45) // RAW code ESC key
@@ -337,7 +333,7 @@ int main(void)
 
   RemBob(m_pHunterBob);
   RemBob(m_pDuckBob);
-  drawBobGelsList(&m_RastPort, m_pViewPort);
+  drawBobGelsList(&m_pScreen->RastPort, &m_pScreen->ViewPort);
 
   return cleanExit(NULL);
 }
@@ -348,8 +344,8 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
   WaitTOF();
   DrawGList(pRPort, pVPort);
 
-  MrgCop(m_pView);
-  LoadView(m_pView);
+//  MrgCop(m_pView);
+//  LoadView(m_pView);
 }
 
 ULONG bitsToWords(ULONG bits)
@@ -521,13 +517,13 @@ void updateDuck()
     if (vSprite->ImageData == duckImages[0].pImageData)
     {
       vSprite->ImageData = duckImages[1].pImageData;
-      MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 50, 100);
+      MoveSprite(&m_pScreen->ViewPort, (struct SimpleSprite*) m_pArrowSprite, 50, 100);
 
     }
     else
     {
       vSprite->ImageData = duckImages[0].pImageData;
-      MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
+      MoveSprite(&m_pScreen->ViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
 
     }
   }
@@ -551,9 +547,9 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     // fps and strikes = 0 -> init display
 
     // Drawing a filled black rect at the bottom of the view
-    SetAPen(&m_RastPort, backPen);
-    SetBPen(&m_RastPort, backPen);
-    RectFill(&m_RastPort,
+    SetAPen(&m_pScreen->RastPort, backPen);
+    SetBPen(&m_pScreen->RastPort, backPen);
+    RectFill(&m_pScreen->RastPort,
              0, VP_HEIGHT - 12,
              VP_WIDTH - 1, VP_HEIGHT - 1);
   }
@@ -564,15 +560,15 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     sprintf(fpsBuf, "FPS: %d", fps);
 
     // Drawing a filled black rect at the bottom of the view
-    SetAPen(&m_RastPort, backPen);
-    SetBPen(&m_RastPort, backPen);
-    RectFill(&m_RastPort,
+    SetAPen(&m_pScreen->RastPort, backPen);
+    SetBPen(&m_pScreen->RastPort, backPen);
+    RectFill(&m_pScreen->RastPort,
              VP_WIDTH - 90, VP_HEIGHT - 12,
              VP_WIDTH - 4, VP_HEIGHT - 2);
 
-    Move(&m_RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
-    SetAPen(&m_RastPort, frontPen);
-    Text(&m_RastPort, fpsBuf, strlen(fpsBuf));
+    Move(&m_pScreen->RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
+    SetAPen(&m_pScreen->RastPort, frontPen);
+    Text(&m_pScreen->RastPort, fpsBuf, strlen(fpsBuf));
   }
 
   if (strikes > 0)
@@ -700,21 +696,19 @@ char* initAll()
   }
 
   //
-  // Init view, viewport and rasinfo
+  // Open the screen
   //
-  m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
-  if (m_pView == NULL)
-  {
-    return ("Failed to create the view.\n");
-  }
+  m_pScreen = OpenScreenTags(NULL,
+      SA_DisplayID, VP_MODE,
+      SA_Depth, VP_DEPTH,
+      SA_Width, VP_WIDTH,
+      SA_Height, VP_HEIGHT,
+      SA_ShowTitle, FALSE,
+      TAG_DONE);
 
-  m_pViewPort = CreateAViewPort(m_pMemoryPoolChip, VP_WIDTH,
-                                VP_HEIGHT, VP_DEPTH,
-                                VP_MODE, VP_PALETTE_SIZE);
-
-  if (m_pViewPort == NULL)
+  if (m_pScreen == NULL)
   {
-    return ("Faild to create the viewport.\n");
+    return("Failed to open the screen.\n");
   }
 
   //
@@ -722,7 +716,7 @@ char* initAll()
   //
 
   // Load the main 16 color palette of the background image
-  LoadRGB32(m_pViewPort, m_PaletteBackgroundImg);
+  LoadRGB32(&m_pScreen->ViewPort, m_PaletteBackgroundImg);
 
   // Load the arrow sprite colors: The start color register in the
   // color MakeClass(p depends on the sprite number we got
@@ -736,46 +730,15 @@ char* initAll()
   {
     int j = i * 3;
 
-    SetRGB32CM(m_pViewPort->ColorMap, colReg + i, m_SpriteColors[j],
-                                      m_SpriteColors[j + 1],
-                                      m_SpriteColors[j + 2]);
+    SetRGB32(&m_pScreen->ViewPort, colReg + i, m_SpriteColors[j],
+                                   m_SpriteColors[j + 1],
+                                   m_SpriteColors[j + 2]);
   }
-
-  // Init rastport
-  InitRastPort(&m_RastPort);
-
-  // Link RastPort and ViewPort
-  m_RastPort.BitMap = m_pViewPort->RasInfo->BitMap;
-
-  // Link View and ViewPort
-  m_pView->ViewPort = m_pViewPort;
-
-  // Construct preliminary Copper instruction list
-  MakeVPort(m_pView, m_pViewPort);
-
-  // Merge preliminary lists into a real Copper list in the View
-  // structure
-  MrgCop(m_pView);
-
-  // Save current View to restore later
-  m_pOldView = GfxBase->ActiView;
-
-  do
-  {
-    LoadView(NULL);
-    WaitTOF();
-    WaitTOF();
-  }
-  while(GfxBase->ActiView != NULL);
-
-  LoadView(m_pView);
-  WaitTOF();
-  WaitTOF();
 
   //
   // Init the GELs system
   //
-  m_pGelsInfo = setupGelSys(&m_RastPort, 0x03);
+  m_pGelsInfo = setupGelSys(&m_pScreen->RastPort, 0x03);
   if (m_pGelsInfo == NULL)
   {
     return ("Failed to initialize the GELs system.\n");
@@ -819,7 +782,7 @@ char* initAll()
   }
 
   // Move the sprite to a visible position
-//  MoveSprite(m_pViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
+//  MoveSprite(&m_pScreen->ViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
 
   return NULL;
 }
@@ -852,38 +815,14 @@ int cleanExit(char *pErrorMsg)
 
   if (m_pGelsInfo != NULL)
   {
-    cleanupGelSys(m_pGelsInfo, &m_RastPort);
+    cleanupGelSys(m_pGelsInfo, &m_pScreen->RastPort);
     m_pGelsInfo = NULL;
   }
 
-  // Restore the old view
-  if (GfxBase->ActiView == m_pView)
+  if(m_pScreen != NULL)
   {
-    do
-    {
-      LoadView(NULL);
-      WaitTOF();
-      WaitTOF();
-    }
-    while(GfxBase->ActiView != NULL);
-
-    // Put back the old view
-    LoadView(m_pOldView);
-
-    // Before freeing memory wait until the old view is being rendered
-    WaitTOF();
-    WaitTOF();
-  }
-
-  // Delete the custom view and viewport
-  if (m_pViewPort != NULL)
-  {
-    DeleteAViewPort(m_pViewPort);
-  }
-
-  if (m_pView != NULL)
-  {
-    DeleteAView(m_pView);
+    CloseScreen(m_pScreen);
+    m_pScreen = NULL;
   }
 
   if (m_pBackgrBM != NULL)
