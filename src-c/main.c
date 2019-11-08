@@ -18,6 +18,7 @@
 #include <exec/types.h>
 #include <graphics/gfx.h>
 #include <graphics/gfxbase.h>
+#include <graphics/videocontrol.h>
 #include <intuition/intuition.h>
 #include <libraries/lowlevel.h>
 
@@ -698,13 +699,22 @@ char* initAll()
   //
   // Open the screen
   //
+
+  // Give the screen an additional setting for hires sprites
+  struct TagItem vcTags[] =
+  {
+    {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
+    {TAG_END}
+  };
+
   m_pScreen = OpenScreenTags(NULL,
       SA_DisplayID, VP_MODE,
       SA_Depth, VP_DEPTH,
       SA_Width, VP_WIDTH,
       SA_Height, VP_HEIGHT,
       SA_ShowTitle, FALSE,
-      TAG_DONE);
+      SA_VideoControl, vcTags,
+      TAG_END);
 
   if (m_pScreen == NULL)
   {
