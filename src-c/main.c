@@ -791,26 +791,11 @@ char* initAll()
     return ("Failed to create GELs bob for hunter.\n");
   }
 
-  // Move the sprite to a visible position
-//  MoveSprite(&m_pScreen->ViewPort, (struct SimpleSprite*) m_pArrowSprite, 100, 100);
-
   return NULL;
 }
 
 int cleanExit(char *pErrorMsg)
 {
-  if(m_SpriteNumber >= 0)
-  {
-    FreeSprite(m_SpriteNumber);
-    m_SpriteNumber = -1;
-  }
-
-  if (m_pArrowSprite != NULL)
-  {
-    FreeSpriteData(m_pArrowSprite);
-    m_pArrowSprite = NULL;
-  }
-
   if (m_pHunterBob != NULL)
   {
     freeBob(m_pHunterBob, hunterImages[0].depth);
@@ -834,6 +819,19 @@ int cleanExit(char *pErrorMsg)
     CloseScreen(m_pScreen);
     m_pScreen = NULL;
   }
+
+  if(m_SpriteNumber >= 0)
+  {
+    FreeSprite(m_SpriteNumber);
+    m_SpriteNumber = -1;
+  }
+
+  if (m_pArrowSprite != NULL)
+  {
+    FreeSpriteData(m_pArrowSprite);
+    m_pArrowSprite = NULL;
+  }
+
 
   if (m_pBackgrBM != NULL)
   {
