@@ -53,7 +53,7 @@ typedef struct ImageContainer
   const char* pImgPath;
   WORD width;
   WORD height;
-  SHORT depth;
+  short depth;
   WORD* pImageData;
 } ImageContainer;
 
@@ -65,7 +65,7 @@ typedef struct BitMapContainer
   const char* pImgPath;
   WORD width;
   WORD height;
-  SHORT depth;
+  short depth;
   struct BitMap* pBitMap;
 } BitMapContainer;
 
@@ -120,24 +120,24 @@ BitMapContainer arrowVariantBitMaps[] =
  * 1 when current fps is in range [21, 40]
  * 2 when current fps is in range [40, upwards]
  */
-SHORT gameSpeed = 1;
+short gameSpeed = 1;
 
 // Depending on gameSpeed the entities can move with a different speed
 // (in pixel-per-frame)
-SHORT hunterDX[] = {9, 6, 3};
-SHORT hunterDY[] = {0, 0, 0}; // Not used yet
+short hunterDX[] = {9, 6, 3};
+short hunterDY[] = {0, 0, 0}; // Not used yet
 
-SHORT duckDX[] = {15, 10, 5};
-SHORT duckDY[] = {0, 0, 0}; // Not used yet
+short duckDX[] = {15, 10, 5};
+short duckDY[] = {0, 0, 0}; // Not used yet
 
-SHORT arrowDX[] = {15, 10, 5};
-SHORT arrowDY[] = {8, 6, 4};
+short arrowDX[] = {15, 10, 5};
+short arrowDY[] = {8, 6, 4};
 
 // For each gameSpeed the switching rate of the images of some
 // entities can be adjusted here. The value means after how many
 // frames the image is switched.
-SHORT hunterImgSwitch[] = {4, 6, 8};
-SHORT duckImgSwitch[] = {4, 6, 8};
+short hunterImgSwitch[] = {4, 6, 8};
+short duckImgSwitch[] = {4, 6, 8};
 
 
 struct Bob* m_pDuckBob = NULL;
@@ -181,6 +181,7 @@ ULONG m_SpriteColors[] =
 /// Private global variables
 
 const int MAX_ARROWS = 5;
+int m_NumArrowsAvailable = 0;
 
 struct BitMap* m_pBackgrBM = NULL;
 
@@ -237,16 +238,24 @@ void drawBobGelsList(struct RastPort* pRPort, struct ViewPort* pVPort);
 ULONG bitsToWords(ULONG bits);
 
 /**
- * Draws a small points at the bottom for points and fps
+ * Display the FPS at the bottom info display
  */
-void updatePointsDisplay(SHORT fps, SHORT numArrows);
+void updateInfoDisplayFPS(short fps);
+
+/**
+ * Updates the available (and already shot) arrows at the bottom info
+ * display
+ */
+void updateInfoDisplayArrows(short numArrowsAvailable);
 
 /**
  * Update function for the hunter.
  *
+ * Returns true if the hunter armed an arrow.
+ *
  * It is called everey frame.
  */
-void updateHunter(ULONG portState);
+BOOL updateHunter(ULONG portState);
 
 /**
  * Update function for the duck.
@@ -267,9 +276,10 @@ int main(void)
     return cleanExit(pErrorMsg);
   }
 
-  // Initialize the points display
-  SHORT numArrows = MAX_ARROWS;
-  updatePointsDisplay(0, numArrows);
+  // Initialize the info display
+  short numArrowsAvailable = MAX_ARROWS;
+  updateInfoDisplayFPS(0);
+  updateInfoDisplayArrows(numArrowsAvailable);
 
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_pScreen->RastPort);
@@ -285,7 +295,7 @@ int main(void)
                 TAG_END);
 
   BOOL bRun = TRUE;
-  SHORT counter = 0;
+  short counter = 0;
 
   //
   // Main loop.
@@ -303,8 +313,8 @@ int main(void)
       if (dblElapsed >= 0)
       {
         // Sum the fps of each frame
-        SHORT fps = (SHORT)(50000 / dblElapsed);
-        updatePointsDisplay(fps, numArrows);
+        short fps = (short)(50000 / dblElapsed);
+        updateInfoDisplayFPS(fps);
 
         // Update game speed according current fps
         if (fps > 40)
@@ -324,7 +334,12 @@ int main(void)
 
     ULONG portState = ReadJoyPort(1);
     updateDuck();
-    updateHunter(portState);
+    BOOL bArmedArrow = updateHunter(portState);
+    if(bArmedArrow == TRUE)
+    {
+      numArrowsAvailable--;
+      updateInfoDisplayArrows(numArrowsAvailable);
+    }
 
     InitMasks(m_pDuckBob->BobVSprite);
     InitMasks(m_pHunterBob->BobVSprite);
@@ -372,13 +387,15 @@ ULONG bitsToWords(ULONG bits)
 
 /// Game
 
-SHORT hunterFrameCnt = 0;
+short hunterFrameCnt = 0;
 ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
 BOOL m_bHunterLaunchesArrow = FALSE;
 BOOL m_bHunterRunning = FALSE;
 
-void updateHunter(ULONG portState)
+BOOL updateHunter(ULONG portState)
 {
+  BOOL bArrowLaunched = FALSE;
+
   // Get the VSprite for better readabilty of the following code
   struct VSprite *vSprite = m_pHunterBob->BobVSprite;
 
@@ -483,6 +500,8 @@ void updateHunter(ULONG portState)
     if(m_bHunterLaunchesArrow == TRUE)
     {
       m_bHunterLaunchesArrow = FALSE;
+      bArrowLaunched = TRUE;
+
       if(m_HunterLastDirection == JPF_RIGHT)
       {
         vSprite->ImageData = hunterImages[0].pImageData;
@@ -506,10 +525,12 @@ void updateHunter(ULONG portState)
       }
     }
   }
+
+  return bArrowLaunched;
 }
 
 
-SHORT duckFrameCnt = 0;
+short duckFrameCnt = 0;
 
 void updateDuck()
 {
@@ -544,10 +565,10 @@ void updateDuck()
   }
 }
 
-void updatePointsDisplay(SHORT fps, SHORT numArrows)
+void updateInfoDisplayFPS(short fps)
 {
-  SHORT backPen = 0;
-  SHORT frontPen = 5;
+  short backPen = 0;
+  short frontPen = 5;
 
   if (fps == 0)
   {
@@ -559,22 +580,6 @@ void updatePointsDisplay(SHORT fps, SHORT numArrows)
     RectFill(&m_pScreen->RastPort,
              0, VP_HEIGHT - 12,
              VP_WIDTH - 1, VP_HEIGHT - 1);
-  }
-
-  // Display how many arrows the hunter still has available
-  for(int i = 0; i < MAX_ARROWS; i++)
-  {
-    BltBitMapRastPort(arrowVariantBitMaps[2].pBitMap,
-                      0,
-                      0,
-                      &m_pScreen->RastPort,
-                      10 + i * (arrowVariantBitMaps[0].width + 2),
-                      VP_HEIGHT - 2 - 1 - arrowVariantBitMaps[0].height,
-                      arrowVariantBitMaps[0].width,
-                      arrowVariantBitMaps[0].height,
-                      0xC0);
-
-
   }
 
   if (fps > 0)
@@ -593,6 +598,40 @@ void updatePointsDisplay(SHORT fps, SHORT numArrows)
     Move(&m_pScreen->RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
     Text(&m_pScreen->RastPort, fpsBuf, strlen(fpsBuf));
   }
+}
+
+void updateInfoDisplayArrows(short numArrowsAvailable)
+{
+  // Show how many arrows the hunter still has available
+  if(numArrowsAvailable != m_NumArrowsAvailable)
+  {
+    m_NumArrowsAvailable = numArrowsAvailable;
+
+    // Start blitting with an highlighted image for the available arrows
+    struct BitMap* pBitMap = arrowVariantBitMaps[2].pBitMap;
+
+    for(int i = 0; i < MAX_ARROWS; i++)
+    {
+      if(i >= numArrowsAvailable)
+      {
+        // Blit the already shot arrows with a more ordinary image
+        pBitMap = arrowVariantBitMaps[1].pBitMap;
+      }
+
+      BltBitMapRastPort(pBitMap,
+                        0,
+                        0,
+                        &m_pScreen->RastPort,
+                        10 + i * (arrowVariantBitMaps[0].width + 2),
+                        VP_HEIGHT - 2 - 1 - arrowVariantBitMaps[0].height,
+                        arrowVariantBitMaps[0].width,
+                        arrowVariantBitMaps[0].height,
+                        0xC0);
+
+
+    }
+  }
+
 }
 
 ///
