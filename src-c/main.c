@@ -87,17 +87,28 @@ ImageContainer hunterImages[] =
   {"raw/hunter_Left_shoot.raw", 0, 0, 0, NULL}
 };
 
-BitMapContainer arrowRImages[] =
+BitMapContainer arrowRBitMaps[] =
 {
   // Dimensions only defined for the first item; all following share
   {"raw/arrow_right1.raw", 16, 8, 2, NULL}
 };
 
-BitMapContainer arrowLImages[] =
+BitMapContainer arrowLBitMaps[] =
 {
   // Dimensions only defined for the first item; all following share
   {"raw/arrow_left1.raw", 16, 8, 2, NULL}
 };
+
+// Some variants of the right arrow image, mapped to background palette
+// colors
+BitMapContainer arrowVariantBitMaps[] =
+{
+  // Dimensions only defined for the first item; all following share
+  {"raw/arrow_palette1.raw", 16, 8, 4, NULL},
+  {"raw/arrow_palette2.raw", 0, 0, 0, NULL},
+  {"raw/arrow_palette3.raw", 0, 0, 0, NULL},
+};
+
 
 
 /**
@@ -138,26 +149,24 @@ LONG m_SpriteNumberGot = -1;
 
 ULONG m_PaletteBackgroundImg[] =
 {
-  0x00200000,
-  0x00000000, 0x00000000, 0x00000000, 0x28282828, 0x28282828, 0x28282828,
-  0x50505050, 0x49494949, 0x45454545, 0x7C7C7C7C, 0x6F6F6F6F, 0x66666666,
-  0xFBFBFBFB, 0xF1F1F1F1, 0xC7C7C7C7, 0x46464646, 0x85858585, 0x88888888,
-  0x83838383, 0xA5A5A5A5, 0x98989898, 0x68686868, 0x9D9D9D9D, 0x6A6A6A6A,
-  0xAEAEAEAE, 0xC0C0C0C0, 0x7C7C7C7C, 0x98989898, 0x97979797, 0x1A1A1A1A,
-  0xB8B8B8B8, 0xBBBBBBBB, 0x24242424, 0xD7D7D7D7, 0x99999999, 0x21212121,
-  0xFAFAFAFA, 0xBDBDBDBD, 0x2F2F2F2F, 0xD6D6D6D6, 0x5D5D5D5D, 0xE0E0E0E,
-  0xCCCCCCCC, 0x24242424, 0x1D1D1D1D, 0xFBFBFBFB, 0x49494949, 0x34343434,
-
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-  0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
-
-  0x00000000
+  0x00100000, // 0x0010 - Load 16 colors, starting from 0x000
+  0x00000000, 0x00000000, 0x00000000,
+  0x28282828, 0x28282828, 0x28282828,
+  0x50505050, 0x49494949, 0x45454545,
+  0x7C7C7C7C, 0x6F6F6F6F, 0x66666666,
+  0xFBFBFBFB, 0xF1F1F1F1, 0xC7C7C7C7,
+  0x46464646, 0x85858585, 0x88888888,
+  0x83838383, 0xA5A5A5A5, 0x98989898,
+  0x68686868, 0x9D9D9D9D, 0x6A6A6A6A,
+  0xAEAEAEAE, 0xC0C0C0C0, 0x7C7C7C7C,
+  0x98989898, 0x97979797, 0x1A1A1A1A,
+  0xB8B8B8B8, 0xBBBBBBBB, 0x24242424,
+  0xD7D7D7D7, 0x99999999, 0x21212121,
+  0xFAFAFAFA, 0xBDBDBDBD, 0x2F2F2F2F,
+  0xD6D6D6D6, 0x5D5D5D5D, 0xE0E0E0E,
+  0xCCCCCCCC, 0x24242424, 0x1D1D1D1D,
+  0xFBFBFBFB, 0x49494949, 0x34343434,
+  0x00000000  // Termination
 };
 
 ULONG m_SpriteColors[] =
@@ -170,6 +179,8 @@ ULONG m_SpriteColors[] =
 ///
 
 /// Private global variables
+
+const int MAX_ARROWS = 5;
 
 struct BitMap* m_pBackgrBM = NULL;
 
@@ -228,7 +239,7 @@ ULONG bitsToWords(ULONG bits);
 /**
  * Draws a small points at the bottom for points and fps
  */
-void updatePointsDisplay(SHORT fps, SHORT strikes);
+void updatePointsDisplay(SHORT fps, SHORT numArrows);
 
 /**
  * Update function for the hunter.
@@ -256,12 +267,9 @@ int main(void)
     return cleanExit(pErrorMsg);
   }
 
-  // Blit the background image
-  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_pScreen->RastPort,
-                    0, 0, VP_WIDTH, 256, 0xC0);
-
   // Initialize the points display
-  updatePointsDisplay(0, 0);
+  SHORT numArrows = MAX_ARROWS;
+  updatePointsDisplay(0, numArrows);
 
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_pScreen->RastPort);
@@ -296,7 +304,7 @@ int main(void)
       {
         // Sum the fps of each frame
         SHORT fps = (SHORT)(50000 / dblElapsed);
-        updatePointsDisplay(fps, 0);
+        updatePointsDisplay(fps, numArrows);
 
         // Update game speed according current fps
         if (fps > 40)
@@ -345,8 +353,6 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
   WaitTOF();
   DrawGList(pRPort, pVPort);
 
-//  MrgCop(m_pView);
-//  LoadView(m_pView);
 }
 
 ULONG bitsToWords(ULONG bits)
@@ -538,14 +544,14 @@ void updateDuck()
   }
 }
 
-void updatePointsDisplay(SHORT fps, SHORT strikes)
+void updatePointsDisplay(SHORT fps, SHORT numArrows)
 {
   SHORT backPen = 0;
   SHORT frontPen = 5;
 
-  if (fps == 0 && strikes == 0)
+  if (fps == 0)
   {
-    // fps and strikes = 0 -> init display
+    // fps == 0 -> init display
 
     // Drawing a filled black rect at the bottom of the view
     SetAPen(&m_pScreen->RastPort, backPen);
@@ -553,6 +559,22 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
     RectFill(&m_pScreen->RastPort,
              0, VP_HEIGHT - 12,
              VP_WIDTH - 1, VP_HEIGHT - 1);
+  }
+
+  // Display how many arrows the hunter still has available
+  for(int i = 0; i < MAX_ARROWS; i++)
+  {
+    BltBitMapRastPort(arrowVariantBitMaps[2].pBitMap,
+                      0,
+                      0,
+                      &m_pScreen->RastPort,
+                      10 + i * (arrowVariantBitMaps[0].width + 2),
+                      VP_HEIGHT - 2 - 1 - arrowVariantBitMaps[0].height,
+                      arrowVariantBitMaps[0].width,
+                      arrowVariantBitMaps[0].height,
+                      0xC0);
+
+
   }
 
   if (fps > 0)
@@ -567,14 +589,9 @@ void updatePointsDisplay(SHORT fps, SHORT strikes)
              VP_WIDTH - 90, VP_HEIGHT - 12,
              VP_WIDTH - 4, VP_HEIGHT - 2);
 
-    Move(&m_pScreen->RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
     SetAPen(&m_pScreen->RastPort, frontPen);
+    Move(&m_pScreen->RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
     Text(&m_pScreen->RastPort, fpsBuf, strlen(fpsBuf));
-  }
-
-  if (strikes > 0)
-  {
-    // TODO
   }
 }
 
@@ -665,22 +682,29 @@ char* initAll()
   }
 
   // Load the arrow right images
-  int numRArrows = sizeof arrowRImages / sizeof arrowRImages[0];
-  if(loadAllBitMaps(arrowRImages, numRArrows) == FALSE)
+  int numRArrows = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
+  if(loadAllBitMaps(arrowRBitMaps, numRArrows) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow left images
-  int numLArrows = sizeof arrowLImages / sizeof arrowLImages[0];
-  if(loadAllBitMaps(arrowLImages, numLArrows) == FALSE)
+  int numLArrows = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
+  if(loadAllBitMaps(arrowLBitMaps, numLArrows) == FALSE)
   {
     return("Init error.\n");
   }
 
+  int numArrowVars = sizeof arrowVariantBitMaps / sizeof arrowVariantBitMaps[0];
+  if(loadAllBitMaps(arrowVariantBitMaps, numArrowVars) == FALSE)
+  {
+    return("Init error.\n");
+  }
+
+
   // Create the arrow sprite
-  m_pArrowSprite = AllocSpriteData(arrowRImages[0].pBitMap,
-                                   SPRITEA_Width, arrowRImages[0].width,
+  m_pArrowSprite = AllocSpriteData(arrowRBitMaps[0].pBitMap,
+                                   SPRITEA_Width, arrowRBitMaps[0].width,
                                    TAG_END);
 
   if(m_pArrowSprite == NULL)
@@ -727,6 +751,10 @@ char* initAll()
   {
     return("Failed to open the screen.\n");
   }
+
+  // Blit the background image
+  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_pScreen->RastPort,
+                    0, 0, VP_WIDTH, VP_HEIGHT, 0xC0);
 
   //
   // Load all needed colors
