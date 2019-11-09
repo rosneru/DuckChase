@@ -132,7 +132,7 @@ SHORT duckImgSwitch[] = {4, 6, 8};
 struct Bob* m_pDuckBob = NULL;
 struct Bob* m_pHunterBob = NULL;
 struct ExtSprite* m_pArrowSprite = NULL;
-LONG m_SpriteNumber = -1;
+LONG m_SpriteNumberGot = -1;
 
 #define VP_PALETTE_SIZE 32
 
@@ -688,13 +688,18 @@ char* initAll()
     return ("Failed to allocate sprite data.\n");
   }
 
-  m_SpriteNumber = GetExtSprite(m_pArrowSprite,
+  m_SpriteNumberGot = GetExtSprite(m_pArrowSprite,
                                 TAG_END);
 
-  if(m_SpriteNumber < 0)
+  if(m_SpriteNumberGot < 0)
   {
     return("Failed to acquire a hardware sprite.\n");
   }
+
+  // Relatively safe way to replace the mouse pointer (sprite 0) with
+  // the arrow sprite
+  int spriteNumberInUse = 0;
+  m_pArrowSprite->es_SimpleSprite.num = spriteNumberInUse;
 
   //
   // Open the screen
@@ -730,7 +735,7 @@ char* initAll()
 
   // Load the arrow sprite colors: The start color register in the
   // color MakeClass(p depends on the sprite number we got
-  int colReg = 16 + ((m_SpriteNumber & 0x06) << 1);
+  int colReg = 16 + ((spriteNumberInUse & 0x06) << 1);
 
   // But the first of the 4 colors is unused (transparent)
   colReg++;
@@ -820,10 +825,10 @@ int cleanExit(char *pErrorMsg)
     m_pScreen = NULL;
   }
 
-  if(m_SpriteNumber >= 0)
+  if(m_SpriteNumberGot >= 0)
   {
-    FreeSprite(m_SpriteNumber);
-    m_SpriteNumber = -1;
+    FreeSprite(m_SpriteNumberGot);
+    m_SpriteNumberGot = -1;
   }
 
   if (m_pArrowSprite != NULL)
