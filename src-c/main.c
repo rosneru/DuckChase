@@ -705,7 +705,7 @@ char* initAll()
   // Open the screen
   //
 
-  // Give the screen an additional setting for hires sprites
+  // Additional setting for the screen to use hires sprites
   struct TagItem vcTags[] =
   {
     {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
@@ -719,6 +719,8 @@ char* initAll()
       SA_Height, VP_HEIGHT,
       SA_ShowTitle, FALSE,
       SA_VideoControl, vcTags,
+      SA_Quiet, TRUE,
+      SA_Type, CUSTOMSCREEN,
       TAG_END);
 
   if (m_pScreen == NULL)
