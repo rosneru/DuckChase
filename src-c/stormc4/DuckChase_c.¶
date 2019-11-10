@@ -83,7 +83,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "Shared:DEV/Studies/DuckChase/src-c/timertools.c"
-"/timertools.c"
+"Shared:DEV/Studies/DuckChase/src-c/timertools.c"
 "/timertools.h"
 Storm Shell Project (Dependencies)
 "objects_debug/timertools.o" "objects_debug/timertools.debug"
@@ -91,7 +91,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "Shared:DEV/Studies/DuckChase/src-c/imagetools.c"
-"/imagetools.c"
+"Shared:DEV/Studies/DuckChase/src-c/imagetools.c"
 "/imagetools.h"
 Storm Shell Project (Dependencies)
 "objects_debug/imagetools.o" "objects_debug/imagetools.debug"
@@ -103,7 +103,6 @@ File
 "/animtools_proto.h"
 "/animtools.h"
 "/imagetools.h"
-"/lowlevelview.h"
 "/timertools.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
@@ -147,6 +146,7 @@ Section
 7
 File
 10 "DuckChase_c"
+"DuckChase_c"
 Storm Shell Project (Dependencies)
 "" ""
 ""
