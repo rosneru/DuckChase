@@ -181,6 +181,15 @@ ULONG m_SpriteColors[] =
 /// Private global variables
 
 const int MAX_ARROWS = 5;
+const int MAX_STRAIN = 118;
+
+short hunterFrameCnt = 0;
+ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
+BOOL m_bHunterLaunchesArrow = FALSE;
+BOOL m_bHunterRunning = FALSE;
+
+short duckFrameCnt = 0;
+
 int m_NumArrowsAvailable = 0;
 
 struct BitMap* m_pBackgrBM = NULL;
@@ -251,15 +260,20 @@ void drawBobGelsList(struct RastPort* pRPort, struct ViewPort* pVPort);
 ULONG bitsToWords(ULONG bits);
 
 /**
- * Display the FPS at the bottom info display
+ * Display the FPS at the bottom info area
  */
 void updateInfoDisplayFPS(short fps);
 
 /**
- * Updates the available (and already shot) arrows at the bottom info
- * display
+ * Updates the available/shot arrows at the bottom info area
  */
 void updateInfoDisplayArrows(short numArrowsAvailable);
+
+/**
+ * Updates the strain display at the bottom info area
+ */
+void updateInfoDisplayStrain(short strain);
+
 
 /**
  * Update function for the hunter.
@@ -291,6 +305,7 @@ int main(void)
 
   // Initialize the info display
   short numArrowsAvailable = MAX_ARROWS;
+  short strain = 0;
   updateInfoDisplayFPS(0);
   updateInfoDisplayArrows(numArrowsAvailable);
 
@@ -346,12 +361,31 @@ int main(void)
     }
 
     ULONG portState = ReadJoyPort(1);
+
+    // Update the duck
     updateDuck();
-    BOOL bArmedArrow = updateHunter(portState);
-    if(bArmedArrow == TRUE)
+
+    // Update the hunter
+    BOOL bArrowLaunched = updateHunter(portState);
+
+    // When hunter is launching the arrow update the strain and display
+    if((m_bHunterLaunchesArrow == TRUE) && (strain < MAX_STRAIN))
     {
+      strain++;
+      updateInfoDisplayStrain(strain);
+    }
+
+    // When hunter launched the arrow activate the sprite and decrement
+    // available arrows
+    if(bArrowLaunched == TRUE)
+    {
+      // TODO activate the arrow sprite with the latest strain
+
       numArrowsAvailable--;
       updateInfoDisplayArrows(numArrowsAvailable);
+
+      strain = 0;
+      updateInfoDisplayStrain(strain);
     }
 
     InitMasks(m_pDuckBob->BobVSprite);
@@ -399,11 +433,6 @@ ULONG bitsToWords(ULONG bits)
 ///
 
 /// Game
-
-short hunterFrameCnt = 0;
-ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
-BOOL m_bHunterLaunchesArrow = FALSE;
-BOOL m_bHunterRunning = FALSE;
 
 BOOL updateHunter(ULONG portState)
 {
@@ -543,7 +572,6 @@ BOOL updateHunter(ULONG portState)
 }
 
 
-short duckFrameCnt = 0;
 
 void updateDuck()
 {
@@ -602,33 +630,52 @@ void updateInfoDisplayFPS(short fps)
 void updateInfoDisplayArrows(short numArrowsAvailable)
 {
   // Show how many arrows the hunter still has available
-  if(numArrowsAvailable != m_NumArrowsAvailable)
+  if(numArrowsAvailable == m_NumArrowsAvailable)
   {
-    m_NumArrowsAvailable = numArrowsAvailable;
-
-    // Start blitting with an highlighted image for the available arrows
-    struct BitMap* pBitMap = arrowVariantBitMaps[2].pBitMap;
-
-    for(int i = 0; i < MAX_ARROWS; i++)
-    {
-      if(i >= numArrowsAvailable)
-      {
-        // Blit the already shot arrows with a more ordinary image
-        pBitMap = arrowVariantBitMaps[1].pBitMap;
-      }
-
-      BltBitMapRastPort(pBitMap, 0, 0, &m_pScreen->RastPort,
-                        110 + i * (arrowVariantBitMaps[0].width + 5),
-                        VP_HEIGHT - 1 - arrowVariantBitMaps[0].height,
-                        arrowVariantBitMaps[0].width,
-                        arrowVariantBitMaps[0].height,
-                        0xC0);
-
-
-    }
+    return;
   }
 
+  m_NumArrowsAvailable = numArrowsAvailable;
+
+  // Start blitting with an highlighted image for the available arrows
+  struct BitMap* pBitMap = arrowVariantBitMaps[2].pBitMap;
+
+  for(int i = 0; i < MAX_ARROWS; i++)
+  {
+    if(i >= numArrowsAvailable)
+    {
+      // Blit the already shot arrows with a more ordinary image
+      pBitMap = arrowVariantBitMaps[1].pBitMap;
+    }
+
+    BltBitMapRastPort(pBitMap, 0, 0, &m_pScreen->RastPort,
+                      110 + i * (arrowVariantBitMaps[0].width + 5),
+                      VP_HEIGHT - 1 - arrowVariantBitMaps[0].height,
+                      arrowVariantBitMaps[0].width,
+                      arrowVariantBitMaps[0].height,
+                      0xC0);
+
+
+  }
 }
+
+
+void updateInfoDisplayStrain(short strain)
+{
+
+  if(strain == 0)
+  {
+    SetAPen(&m_pScreen->RastPort, 0);
+    EraseRect(&m_pScreen->RastPort, 401, 247, 401 + 117, 247 + 5);
+    return;
+  }
+
+
+  SetAPen(&m_pScreen->RastPort, 15);
+  Move(&m_pScreen->RastPort, 400 + strain, 247);
+  Draw(&m_pScreen->RastPort, 400 + strain, 247 + 5);
+}
+
 
 ///
 
