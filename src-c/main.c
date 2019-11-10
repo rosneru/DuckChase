@@ -568,36 +568,22 @@ void updateDuck()
 void updateInfoDisplayFPS(short fps)
 {
   short backPen = 0;
-  short frontPen = 5;
+  short frontPen = 6;
 
-  if (fps == 0)
-  {
-    // fps == 0 -> init display
+  char fpsBuf[16];
+  sprintf(fpsBuf, "%d", fps);
 
-    // Drawing a filled black rect at the bottom of the view
-    SetAPen(&m_pScreen->RastPort, backPen);
-    SetBPen(&m_pScreen->RastPort, backPen);
-    RectFill(&m_pScreen->RastPort,
-             0, VP_HEIGHT - 12,
-             VP_WIDTH - 1, VP_HEIGHT - 1);
-  }
+  // Drawing a filled black rect at the bottom of the view
+  SetAPen(&m_pScreen->RastPort, backPen);
+  SetBPen(&m_pScreen->RastPort, backPen);
+  RectFill(&m_pScreen->RastPort,
+           VP_WIDTH - 20, VP_HEIGHT - 12,
+           VP_WIDTH - 4, VP_HEIGHT - 2);
 
-  if (fps > 0)
-  {
-    char fpsBuf[16];
-    sprintf(fpsBuf, "FPS: %d", fps);
+  SetAPen(&m_pScreen->RastPort, frontPen);
+  Move(&m_pScreen->RastPort, VP_WIDTH - 26, VP_HEIGHT - 4);
+  Text(&m_pScreen->RastPort, fpsBuf, strlen(fpsBuf));
 
-    // Drawing a filled black rect at the bottom of the view
-    SetAPen(&m_pScreen->RastPort, backPen);
-    SetBPen(&m_pScreen->RastPort, backPen);
-    RectFill(&m_pScreen->RastPort,
-             VP_WIDTH - 90, VP_HEIGHT - 12,
-             VP_WIDTH - 4, VP_HEIGHT - 2);
-
-    SetAPen(&m_pScreen->RastPort, frontPen);
-    Move(&m_pScreen->RastPort, VP_WIDTH - 90, VP_HEIGHT - 2 - 1);
-    Text(&m_pScreen->RastPort, fpsBuf, strlen(fpsBuf));
-  }
 }
 
 void updateInfoDisplayArrows(short numArrowsAvailable)
@@ -618,12 +604,9 @@ void updateInfoDisplayArrows(short numArrowsAvailable)
         pBitMap = arrowVariantBitMaps[1].pBitMap;
       }
 
-      BltBitMapRastPort(pBitMap,
-                        0,
-                        0,
-                        &m_pScreen->RastPort,
-                        10 + i * (arrowVariantBitMaps[0].width + 2),
-                        VP_HEIGHT - 2 - 1 - arrowVariantBitMaps[0].height,
+      BltBitMapRastPort(pBitMap, 0, 0, &m_pScreen->RastPort,
+                        110 + i * (arrowVariantBitMaps[0].width + 5),
+                        VP_HEIGHT - 1 - arrowVariantBitMaps[0].height,
                         arrowVariantBitMaps[0].width,
                         arrowVariantBitMaps[0].height,
                         0xC0);
