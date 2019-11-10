@@ -206,6 +206,10 @@ char* initAll();
  *
  * In error case its prints the file name of the unloadable file to the
  * console and returns FALSE.
+ *
+ * IMPORTANT: Freeing the images is not required as they are loaded
+ *            into a memory pool which is freed at program end as a
+ *            whole.
  */
 BOOL loadAllImages(struct ImageContainer* pContainer, int numItems);
 
@@ -216,8 +220,17 @@ BOOL loadAllImages(struct ImageContainer* pContainer, int numItems);
  *
  * In error case its prints the file name of the unloadable file to the
  * console and returns FALSE.
+ *
+ * IMPORTANT: Freeing the images is required. At program clean up the
+ *            method freeAllBitMaps must be called for each container.
+ *
  */
 BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems);
+
+/**
+ * Frees all the BitMaps of the given container.
+ */
+void freeAllBitMaps(struct BitMapContainer* pContainer, int numItems);
 
 
 /**
@@ -660,6 +673,15 @@ BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems)
   return TRUE;
 }
 
+void freeAllBitMaps(struct BitMapContainer* pContainer, int numItems)
+{
+  for(int i = 0; i < numItems; i++)
+  {
+    FreeRawBitMap(pContainer[i].pBitMap); // function checks NULL
+  }
+}
+
+
 
 char* initAll()
 {
@@ -690,39 +712,38 @@ char* initAll()
   }
 
   // Load the duck images
-  int numDuckImages = sizeof duckImages / sizeof duckImages[0];
-  if(loadAllImages(duckImages, numDuckImages) == FALSE)
+  int numImages = sizeof duckImages / sizeof duckImages[0];
+  if(loadAllImages(duckImages, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the hunter images
-  int numHunterImages = sizeof hunterImages / sizeof hunterImages[0];
-  if(loadAllImages(hunterImages, numHunterImages) == FALSE)
+  numImages = sizeof hunterImages / sizeof hunterImages[0];
+  if(loadAllImages(hunterImages, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow right images
-  int numRArrows = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
-  if(loadAllBitMaps(arrowRBitMaps, numRArrows) == FALSE)
+  numImages = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
+  if(loadAllBitMaps(arrowRBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow left images
-  int numLArrows = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
-  if(loadAllBitMaps(arrowLBitMaps, numLArrows) == FALSE)
+  numImages = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
+  if(loadAllBitMaps(arrowLBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
-  int numArrowVars = sizeof arrowVariantBitMaps / sizeof arrowVariantBitMaps[0];
-  if(loadAllBitMaps(arrowVariantBitMaps, numArrowVars) == FALSE)
+  numImages = sizeof arrowVariantBitMaps / sizeof arrowVariantBitMaps[0];
+  if(loadAllBitMaps(arrowVariantBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
-
 
   // Create the arrow sprite
   m_pArrowSprite = AllocSpriteData(arrowRBitMaps[0].pBitMap,
@@ -743,7 +764,7 @@ char* initAll()
   }
 
   // Relatively safe way to replace the mouse pointer (sprite 0) with
-  // the arrow sprite
+  // the arrow sprite (See AABoing source from Aminet)
   int spriteNumberInUse = 0;
   m_pArrowSprite->es_SimpleSprite.num = spriteNumberInUse;
 
@@ -759,15 +780,15 @@ char* initAll()
   };
 
   m_pScreen = OpenScreenTags(NULL,
-      SA_DisplayID, VP_MODE,
-      SA_Depth, VP_DEPTH,
-      SA_Width, VP_WIDTH,
-      SA_Height, VP_HEIGHT,
-      SA_ShowTitle, FALSE,
-      SA_VideoControl, vcTags,
-      SA_Quiet, TRUE,
-      SA_Type, CUSTOMSCREEN,
-      TAG_END);
+                             SA_DisplayID, VP_MODE,
+                             SA_Depth, VP_DEPTH,
+                             SA_Width, VP_WIDTH,
+                             SA_Height, VP_HEIGHT,
+                             SA_ShowTitle, FALSE,
+                             SA_VideoControl, vcTags,
+                             SA_Quiet, TRUE,
+                             SA_Type, CUSTOMSCREEN,
+                             TAG_END);
 
   if (m_pScreen == NULL)
   {
@@ -889,7 +910,17 @@ int cleanExit(char *pErrorMsg)
     m_pArrowSprite = NULL;
   }
 
+  // Free all arrow BitMap images
+  int numImages = sizeof arrowVariantBitMaps / sizeof arrowVariantBitMaps[0];
+  freeAllBitMaps(arrowVariantBitMaps, numImages);
 
+  numImages = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
+  freeAllBitMaps(arrowLBitMaps, numImages);
+
+  numImages = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
+  freeAllBitMaps(arrowRBitMaps, numImages);
+
+  // Also free the BitMap of the background image
   if (m_pBackgrBM != NULL)
   {
     FreeRawBitMap(m_pBackgrBM);
