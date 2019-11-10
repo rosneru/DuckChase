@@ -98,14 +98,6 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "Shared:DEV/Studies/DuckChase/src-c/lowlevelview.c"
-"/lowlevelview.c"
-"/lowlevelview.h"
-Storm Shell Project (Dependencies)
-"objects_debug/lowlevelview.o" "objects_debug/lowlevelview.debug"
-""
-1 1
-File
 1 "Shared:DEV/Studies/DuckChase/src-c/main.c"
 "/main.c"
 "/animtools_proto.h"
@@ -149,20 +141,12 @@ Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
-File
-2 "Shared:DEV/Studies/DuckChase/src-c/lowlevelview.h"
-"Shared:DEV/Studies/DuckChase/src-c/lowlevelview.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
 Section
 10 1 40
 0 0 0 0
 7
 File
 10 "DuckChase_c"
-"DuckChase_c"
 Storm Shell Project (Dependencies)
 "" ""
 ""
