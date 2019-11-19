@@ -278,7 +278,7 @@ ULONG m_HunterLastDirection = JPF_JOY_RIGHT;
 BOOL m_bHunterLaunchesArrow = FALSE;
 BOOL m_bHunterRunning = FALSE;
 short duckFrameCnt = 0;
-int m_NumArrowsAvailable = 0;
+int m_NumArrowsLeft = 0;
 short m_FormerStrain = 0;
 
 
@@ -357,7 +357,7 @@ void updateInfoDisplayFPS(short fps);
 /**
  * Updates the available/shot arrows at the bottom info area
  */
-void updateInfoDisplayArrows(short numArrowsAvailable);
+void updateInfoDisplayArrows(short numArrowsLeft);
 
 /**
  * Updates the strain display at the bottom info area
@@ -381,6 +381,11 @@ BOOL updateHunter(ULONG portState);
  */
 void updateDuck();
 
+/**
+ * Displays a picture showing if the hunter or the duck has won.
+ */
+void displayWinner(long numArrowsLeft);
+
 ///
 
 /// Main
@@ -394,10 +399,10 @@ int main(void)
   }
 
   // Initialize the info display
-  short numArrowsAvailable = MAX_ARROWS;
+  short numArrowsLeft = MAX_ARROWS;
   short strain = 0;
   updateInfoDisplayFPS(0);
-  updateInfoDisplayArrows(numArrowsAvailable);
+  updateInfoDisplayArrows(numArrowsLeft);
 
   // Add the bobs and initially draw them
   AddBob(m_pDuckBob, &m_pScreen->RastPort);
@@ -421,7 +426,7 @@ int main(void)
   StartTimer();
   do
   {
-    // Every 50 frames update the fps dsiplay and re-calculate the game
+    // Every 50 frames update the fps display and re-calculate the game
     // speed
     counter++;
     if (counter > 50)
@@ -471,8 +476,8 @@ int main(void)
     {
       // TODO activate the arrow sprite with the latest strain
 
-      numArrowsAvailable--;
-      updateInfoDisplayArrows(numArrowsAvailable);
+      numArrowsLeft--;
+      updateInfoDisplayArrows(numArrowsLeft);
 
       strain = 0;
       updateInfoDisplayStrain(strain);
@@ -487,8 +492,15 @@ int main(void)
     {
       bRun = FALSE;
     }
+
+    if(numArrowsLeft == 0)
+    {
+      bRun = FALSE;
+    }
   }
   while (bRun == TRUE);
+
+  displayWinner(numArrowsLeft);
 
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
@@ -500,6 +512,72 @@ int main(void)
   return cleanExit(NULL);
 }
 
+
+void displayWinner(long numArrowsLeft)
+{
+  // Define the image source array. The selected image must be in this
+  // container. Width and height are read of item 0.
+  BitMapContainer* pImageSource = NULL;
+
+  // Define the concrete BitMap from above container array to display.
+  struct BitMap* pSelectedBitMap = NULL;
+
+  // Blit the 'duck wins' or 'hunter wins' image depending on if there
+  // are arrows left ore not
+  if(numArrowsLeft > 0)
+  {
+    // Select the duck BitMap container as image source
+    pImageSource = &winnerHunterBitMaps[0];
+
+    // Select one of the 'duck wins' images to display
+    pSelectedBitMap = winnerHunterBitMaps[1].pBitMap;
+
+  }
+  else
+  {
+    // Select the duck BitMap container as image source
+    pImageSource = &winnerDuckBitMaps[0];
+
+    // Select one of the 'duck wins' images to display
+    pSelectedBitMap = winnerDuckBitMaps[1].pBitMap;
+  }
+
+  // Create a mask to have the BitMap background transparent
+  struct BitMap* pMask = CreateBitMapMask(pSelectedBitMap,
+                                          pImageSource->width,
+                                          pImageSource->height);
+  if(pMask == NULL)
+  {
+    return;
+  }
+
+  // Blit the selected 'duck wins' image on the screen
+  int x = (VP_WIDTH - pImageSource->width) / 2;
+  int y = (VP_HEIGHT - pImageSource->height) / 2;
+  BltMaskBitMapRastPort(pSelectedBitMap,
+                        0,
+                        0,
+                        &m_pScreen->RastPort,
+                        x,
+                        y,
+                        pImageSource->width,
+                        pImageSource->height,
+                        0xe0,
+                        pMask->Planes[0]);
+
+  WaitBlit();
+  FreeBitMapMask(pMask);
+
+  // Wait for 8 seconds
+  for(int i = 0; i < 400; i++)
+  {
+    // In PAL each WaitTOF() waits for 1/50 second
+    WaitTOF();
+  }
+
+}
+
+
 void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
 {
   SortGList(pRPort);
@@ -507,6 +585,7 @@ void drawBobGelsList(struct RastPort *pRPort, struct ViewPort *pVPort)
   DrawGList(pRPort, pVPort);
 
 }
+
 
 ULONG bitsToWords(ULONG bits)
 {
@@ -719,22 +798,22 @@ void updateInfoDisplayFPS(short fps)
 }
 
 
-void updateInfoDisplayArrows(short numArrowsAvailable)
+void updateInfoDisplayArrows(short numArrowsLeft)
 {
   // Show how many arrows the hunter still has available
-  if(numArrowsAvailable == m_NumArrowsAvailable)
+  if(numArrowsLeft == m_NumArrowsLeft)
   {
     return;
   }
 
-  m_NumArrowsAvailable = numArrowsAvailable;
+  m_NumArrowsLeft = numArrowsLeft;
 
   // Start blitting with an highlighted image for the available arrows
   struct BitMap* pBitMap = arrowVariantBitMaps[2].pBitMap;
 
   for(int i = 0; i < MAX_ARROWS; i++)
   {
-    if(i >= numArrowsAvailable)
+    if(i >= numArrowsLeft)
     {
       // Blit the already shot arrows with a more ordinary image
       pBitMap = arrowVariantBitMaps[1].pBitMap;
@@ -771,7 +850,7 @@ void updateInfoDisplayStrain(short strain)
   {
     SetAPen(&m_pScreen->RastPort, 0);
 
-    // TODO save
+    // TODO remove constants
     EraseRect(&m_pScreen->RastPort, 401, 247, 401 + 117, 247 + 5);
 
     m_FormerStrain = 0;
@@ -787,6 +866,7 @@ void updateInfoDisplayStrain(short strain)
     LoadRGB32(&m_pScreen->ViewPort, m_StrainColor);
   }
 
+  // TODO remove constants
   SetAPen(&m_pScreen->RastPort, 15);
   RectFill(&m_pScreen->RastPort,
            401 + m_FormerStrain,

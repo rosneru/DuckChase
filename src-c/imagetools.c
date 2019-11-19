@@ -87,7 +87,7 @@ struct BitMap *CreateBitMapMask(struct BitMap *pSrcBm,
   }
 
   struct BitMap *pMaskBm = AllocBitMap(width, height, 1, BMF_CLEAR, NULL);
-  return pMaskBm;
+  PLANEPTR pMask = pMaskBm->Planes[0];
 
   int numBytes = pSrcBm->BytesPerRow * pSrcBm->Rows;
   for (int i = 0; i < numBytes; i++)
@@ -100,7 +100,7 @@ struct BitMap *CreateBitMapMask(struct BitMap *pSrcBm,
       maskByte |= plane[i];
     }
 
-    //pMask[i] = maskByte;
+    pMask[i] = maskByte;
   }
 
   return pMaskBm;
