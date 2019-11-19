@@ -110,6 +110,23 @@ BitMapContainer arrowVariantBitMaps[] =
 };
 
 
+// Some variants the 'hunter wins' pictures
+BitMapContainer winnerHunterBitMaps[] =
+{
+  // Dimensions only defined for the first item; all following share
+  {"raw/winner_hunter_plain.raw", 458, 112, 4, NULL},
+  {"raw/winner_hunter_comic.raw", 0, 0, 0, NULL},
+};
+
+// Some variants the 'duck wins' pictures
+BitMapContainer winnerDuckBitMaps[] =
+{
+  // Dimensions only defined for the first item; all following share
+  {"raw/winner_duck_plain.raw", 564, 112, 4, NULL},
+  {"raw/winner_duck_comic.raw", 0, 0, 0, NULL},
+};
+
+
 
 /**
  * Holds the game speed according the performance of the current
@@ -876,14 +893,28 @@ char* initAll()
     return("Init error.\n");
   }
 
-  // Load the arrow right images
+  // Load the 'duck wins' bitmaps
+  numImages = sizeof winnerDuckBitMaps / sizeof winnerDuckBitMaps[0];
+  if(loadAllBitMaps(winnerDuckBitMaps, numImages) == FALSE)
+  {
+    return("Init error.\n");
+  }
+
+  // Load the 'hunter wins' bitmaps
+  numImages = sizeof winnerHunterBitMaps / sizeof winnerHunterBitMaps[0];
+  if(loadAllBitMaps(winnerHunterBitMaps, numImages) == FALSE)
+  {
+    return("Init error.\n");
+  }
+
+  // Load the arrow right bitmaps
   numImages = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
   if(loadAllBitMaps(arrowRBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
-  // Load the arrow left images
+  // Load the arrow left bitmaps
   numImages = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
   if(loadAllBitMaps(arrowLBitMaps, numImages) == FALSE)
   {
@@ -1070,6 +1101,13 @@ int cleanExit(char *pErrorMsg)
 
   numImages = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
   freeAllBitMaps(arrowRBitMaps, numImages);
+
+  // Also free the winner situation BitMaps
+  numImages = sizeof winnerHunterBitMaps / sizeof winnerHunterBitMaps[0];
+  freeAllBitMaps(winnerHunterBitMaps, numImages);
+
+  numImages = sizeof winnerDuckBitMaps / sizeof winnerDuckBitMaps[0];
+  freeAllBitMaps(winnerDuckBitMaps, numImages);
 
   // Also free the BitMap of the background image
   if (m_pBackgrBM != NULL)
