@@ -73,8 +73,8 @@ Section
 0 1 1 0
 4
 File
-1 "Shared:DEV/Studies/DuckChase/src-c/animtools.c"
-"Shared:DEV/Studies/DuckChase/src-c/animtools.c"
+1 "/animtools.c"
+"/animtools.c"
 "/animtools.h"
 "/animtools_proto.h"
 Storm Shell Project (Dependencies)
@@ -82,23 +82,23 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "Shared:DEV/Studies/DuckChase/src-c/timertools.c"
-"Shared:DEV/Studies/DuckChase/src-c/timertools.c"
+1 "/timertools.c"
+"/timertools.c"
 "/timertools.h"
 Storm Shell Project (Dependencies)
 "objects_debug/timertools.o" "objects_debug/timertools.debug"
 ""
 1 1
 File
-1 "Shared:DEV/Studies/DuckChase/src-c/imagetools.c"
-"Shared:DEV/Studies/DuckChase/src-c/imagetools.c"
+1 "/imagetools.c"
+"/imagetools.c"
 "/imagetools.h"
 Storm Shell Project (Dependencies)
 "objects_debug/imagetools.o" "objects_debug/imagetools.debug"
 ""
 1 1
 File
-1 "Shared:DEV/Studies/DuckChase/src-c/main.c"
+1 "/main.c"
 "/main.c"
 "/animtools_proto.h"
 "/animtools.h"
@@ -113,29 +113,29 @@ Section
 0 1 1 0
 2
 File
-2 "Shared:DEV/Studies/DuckChase/src-c/animtools.h"
-"Shared:DEV/Studies/DuckChase/src-c/animtools.h"
+2 "/animtools.h"
+"/animtools.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "Shared:DEV/Studies/DuckChase/src-c/animtools_proto.h"
-"Shared:DEV/Studies/DuckChase/src-c/animtools_proto.h"
+2 "/animtools_proto.h"
+"/animtools_proto.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "Shared:DEV/Studies/DuckChase/src-c/timertools.h"
-"Shared:DEV/Studies/DuckChase/src-c/timertools.h"
+2 "/timertools.h"
+"/timertools.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "Shared:DEV/Studies/DuckChase/src-c/imagetools.h"
-"Shared:DEV/Studies/DuckChase/src-c/imagetools.h"
+2 "/imagetools.h"
+"/imagetools.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
