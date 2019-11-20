@@ -1,0 +1,37 @@
+# Amiga related
+objects_debug
+*.link
+*.map
+*.qiq
+*.info
+*.pro.user
+*.autosave
+*.obj
+*.info
+build-*
+!release/**
+
+# gitignore for C++
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Visual Studio Files
+Debug
+Release
+*.suo
+*.csproj.user
+*.vcxproj.user
+ipch
+*sdf
+.vs
