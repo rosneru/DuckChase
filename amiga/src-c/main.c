@@ -285,6 +285,7 @@ short m_FormerStrain = 0;
 struct BitMap* m_pBackgrBM = NULL;
 
 struct Screen* m_pScreen = NULL;
+struct BitMap* m_pScreenBitmap = NULL;
 struct GelsInfo* m_pGelsInfo;
 
 APTR m_pMemoryPoolChip = NULL;
@@ -310,7 +311,7 @@ char* initAll();
  *            into a memory pool which is freed at program end as a
  *            whole.
  */
-BOOL loadAllImages(struct ImageContainer* pContainer, int numItems);
+BOOL loadImageContainer(struct ImageContainer* pContainer, int numItems);
 
 /**
  * Loading numItems images in the given container.
@@ -324,12 +325,12 @@ BOOL loadAllImages(struct ImageContainer* pContainer, int numItems);
  *            method freeAllBitMaps must be called for each container.
  *
  */
-BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems);
+BOOL loadBitMapContainer(struct BitMapContainer* pContainer, int numItems);
 
 /**
  * Frees all the BitMaps of the given container.
  */
-void freeAllBitMaps(struct BitMapContainer* pContainer, int numItems);
+void freeBitMapContainer(struct BitMapContainer* pContainer, int numItems);
 
 
 /**
@@ -882,7 +883,7 @@ void updateInfoDisplayStrain(short strain)
 
 /// Init and cleanup
 
-BOOL loadAllImages(struct ImageContainer* pContainer, int numItems)
+BOOL loadImageContainer(struct ImageContainer* pContainer, int numItems)
 {
   for(int i = 0; i < numItems; i++)
   {
@@ -902,7 +903,7 @@ BOOL loadAllImages(struct ImageContainer* pContainer, int numItems)
   return TRUE;
 }
 
-BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems)
+BOOL loadBitMapContainer(struct BitMapContainer* pContainer, int numItems)
 {
   for(int i = 0; i < numItems; i++)
   {
@@ -921,7 +922,7 @@ BOOL loadAllBitMaps(struct BitMapContainer* pContainer, int numItems)
   return TRUE;
 }
 
-void freeAllBitMaps(struct BitMapContainer* pContainer, int numItems)
+void freeBitMapContainer(struct BitMapContainer* pContainer, int numItems)
 {
   for(int i = 0; i < numItems; i++)
   {
@@ -961,48 +962,48 @@ char* initAll()
 
   // Load the duck images
   int numImages = sizeof duckImages / sizeof duckImages[0];
-  if(loadAllImages(duckImages, numImages) == FALSE)
+  if(loadImageContainer(duckImages, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the hunter images
   numImages = sizeof hunterImages / sizeof hunterImages[0];
-  if(loadAllImages(hunterImages, numImages) == FALSE)
+  if(loadImageContainer(hunterImages, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the 'duck wins' bitmaps
   numImages = sizeof winnerDuckBitMaps / sizeof winnerDuckBitMaps[0];
-  if(loadAllBitMaps(winnerDuckBitMaps, numImages) == FALSE)
+  if(loadBitMapContainer(winnerDuckBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the 'hunter wins' bitmaps
   numImages = sizeof winnerHunterBitMaps / sizeof winnerHunterBitMaps[0];
-  if(loadAllBitMaps(winnerHunterBitMaps, numImages) == FALSE)
+  if(loadBitMapContainer(winnerHunterBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow right bitmaps
   numImages = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
-  if(loadAllBitMaps(arrowRBitMaps, numImages) == FALSE)
+  if(loadBitMapContainer(arrowRBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   // Load the arrow left bitmaps
   numImages = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
-  if(loadAllBitMaps(arrowLBitMaps, numImages) == FALSE)
+  if(loadBitMapContainer(arrowLBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
 
   numImages = sizeof arrowVariantBitMaps / sizeof arrowVariantBitMaps[0];
-  if(loadAllBitMaps(arrowVariantBitMaps, numImages) == FALSE)
+  if(loadBitMapContainer(arrowVariantBitMaps, numImages) == FALSE)
   {
     return("Init error.\n");
   }
@@ -1031,8 +1032,23 @@ char* initAll()
   m_pArrowSprite->es_SimpleSprite.num = spriteNumberInUse;
 
   //
-  // Open the screen
+  // Create BitMap & Open the screen
   //
+  m_pScreenBitmap = AllocBitMap(VP_WIDTH, 
+                                VP_WIDTH,
+                                VP_DEPTH,
+                                BMF_STANDARD | BMF_INTERLEAVED | BMF_CLEAR,
+                                NULL);
+
+  if (m_pScreenBitmap == NULL)
+  {
+    return("Failed to open the screen bitmap.\n");
+  }
+
+	if (!(GetBitMapAttr(m_pScreenBitmap,BMA_FLAGS) & BMF_INTERLEAVED))
+	{
+		return("Screen bitmap is not in interleaved format!??");
+	}
 
   // Additional setting for the screen to use hires sprites
   struct TagItem vcTags[] =
@@ -1050,6 +1066,7 @@ char* initAll()
                              SA_VideoControl, vcTags,
                              SA_Quiet, TRUE,
                              SA_Type, CUSTOMSCREEN,
+                             SA_BitMap, m_pScreenBitmap,
                              TAG_END);
 
   if (m_pScreen == NULL)
@@ -1160,6 +1177,13 @@ int cleanExit(char *pErrorMsg)
     m_pScreen = NULL;
   }
 
+  if(m_pScreenBitmap != NULL)
+  {
+    WaitBlit();
+    FreeBitMap(m_pScreenBitmap);
+    m_pScreenBitmap = NULL;
+  }
+
   if(m_SpriteNumberGot >= 0)
   {
     FreeSprite(m_SpriteNumberGot);
@@ -1174,20 +1198,20 @@ int cleanExit(char *pErrorMsg)
 
   // Free all arrow BitMap images
   int numImages = sizeof arrowVariantBitMaps / sizeof arrowVariantBitMaps[0];
-  freeAllBitMaps(arrowVariantBitMaps, numImages);
+  freeBitMapContainer(arrowVariantBitMaps, numImages);
 
   numImages = sizeof arrowLBitMaps / sizeof arrowLBitMaps[0];
-  freeAllBitMaps(arrowLBitMaps, numImages);
+  freeBitMapContainer(arrowLBitMaps, numImages);
 
   numImages = sizeof arrowRBitMaps / sizeof arrowRBitMaps[0];
-  freeAllBitMaps(arrowRBitMaps, numImages);
+  freeBitMapContainer(arrowRBitMaps, numImages);
 
   // Also free the winner situation BitMaps
   numImages = sizeof winnerHunterBitMaps / sizeof winnerHunterBitMaps[0];
-  freeAllBitMaps(winnerHunterBitMaps, numImages);
+  freeBitMapContainer(winnerHunterBitMaps, numImages);
 
   numImages = sizeof winnerDuckBitMaps / sizeof winnerDuckBitMaps[0];
-  freeAllBitMaps(winnerDuckBitMaps, numImages);
+  freeBitMapContainer(winnerDuckBitMaps, numImages);
 
   // Also free the BitMap of the background image
   if (m_pBackgrBM != NULL)
