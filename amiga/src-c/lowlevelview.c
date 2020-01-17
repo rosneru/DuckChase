@@ -96,7 +96,7 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
   struct DimensionInfo dimquery = {0};
 
   if ((1L<<depth) <= colors)  /* There must be enough colors in the */
-  {                           /* colormap for the ViewPort’s bitmap. */
+  {                           /* colormap for the ViewPortï¿½s bitmap. */
     if (pViewPort = (struct ViewPort*) AllocPooled(pMemoryPool, sizeof(struct ViewPort)))
     {
       InitVPort(pViewPort); /* This function clears some of the   */
@@ -187,6 +187,151 @@ struct ViewPort *CreateAViewPort(APTR pMemoryPool,
 }
 
 void DeleteAViewPort(struct ViewPort *pViewPort)
+{
+  struct TagItem ti[2];
+  ti[0].ti_Tag = VTAG_VIEWPORTEXTRA_GET;
+  ti[0].ti_Data = NULL; /* VideoControl() will write over this with */
+                        /* ViewPortExtra address.                   */
+  ti[1].ti_Tag = VTAG_END_CM;
+
+  /* Can't use VideoControlTags() here. */
+  VideoControl(pViewPort->ColorMap, ti);
+
+  if (ti[0].ti_Data)
+  {
+    /* Free the ViewPortExtra, if it exists. */
+    GfxFree((APTR)ti[0].ti_Data);
+  }
+
+  FreeBitMap(pViewPort->RasInfo->BitMap);
+  FreeColorMap(pViewPort->ColorMap);
+}
+
+///
+
+
+/// AABoing excerpts
+
+
+struct View *CreateBView(APTR pMemoryPool, ULONG modeid)
+{
+  struct ViewExtra *ve;
+  struct View *view = NULL;
+  if (view = (struct View*)AllocPooled(pMemoryPool, sizeof(struct View)))
+  {
+    InitView(view);
+  }
+
+  return (view);
+}
+
+void DeleteBView(struct View *pView)
+{
+  if(pView != NULL)
+  {
+    if(pView->LOFCprList != NULL)
+    {
+      // Deallocate the hardware Copper list created by MrgCop()
+      FreeCprList(pView->LOFCprList);
+      pView->LOFCprList = NULL;
+    }
+
+    if(pView->SHFCprList != NULL)
+    {
+      // Deallocate also the interlace-only hardware Copper list
+      FreeCprList(pView->SHFCprList);
+      pView->SHFCprList = NULL;
+    }
+  }
+}
+
+
+
+struct ViewPort *CreateBViewPort(APTR pMemoryPool,
+                                 ULONG sizex,
+                                 ULONG sizey,
+                                 ULONG depth,
+                                 ULONG modeid,
+                                 ULONG colors)
+{
+  struct ViewPort *pViewPort = NULL;
+  struct ViewPortExtra *vpextra = NULL;
+  struct DimensionInfo dimquery = {0};
+
+  if ((1L<<depth) <= colors)  /* There must be enough colors in the */
+  {                           /* colormap for the ViewPort's bitmap. */
+    if (pViewPort = (struct ViewPort*) AllocPooled(pMemoryPool, sizeof(struct ViewPort)))
+    {
+      InitVPort(pViewPort); /* This function clears some of the   */
+                            /* ViewPort field so call it before   */
+                            /* initializing any ViewPort fields.  */
+      if (pViewPort->ColorMap = GetColorMap(colors))
+      {
+        /* I need a ColorMap if I want to use certain */
+        /* VideoControl() features.                   */
+        if (pViewPort->RasInfo = (struct RasInfo *)
+                AllocPooled(pMemoryPool, sizeof(struct RasInfo)))
+        {
+          if (pViewPort->RasInfo->BitMap =
+                  AllocBitMap(sizex, sizey, depth,
+                              BMF_DISPLAYABLE | BMF_CLEAR,
+                              NULL))
+          {
+            if (vpextra = (struct ViewPortExtra*) GfxNew(VIEWPORT_EXTRA_TYPE))
+            {
+
+                pViewPort->DWidth = sizex;
+                pViewPort->DHeight = sizey;
+                pViewPort->Modes = modeid;
+
+                struct TagItem vcTags[] =
+                {
+                  /* This tag associates a ColorMap with a ViewPort. */
+                  {VTAG_ATTACH_CM_SET, (ULONG)pViewPort },
+                  /* This tag associates a ViewPortExtra with a      */
+                  /* ViewPort. Notice that VideoControl() (*not*     */
+                  /* GfxAssociate()) associates the VP and VPE.      */
+                  {VTAG_VIEWPORTEXTRA_SET, (ULONG)vpextra},
+                  {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
+                  {TAG_END}
+                };
+
+                VideoControl(pViewPort->ColorMap, vcTags);
+
+
+            }
+
+            if (!vpextra)
+            {
+              FreeBitMap(pViewPort->RasInfo->BitMap);
+              pViewPort->RasInfo->BitMap = NULL;
+            }
+          }
+
+          if (!(pViewPort->RasInfo->BitMap))
+          {
+            pViewPort->RasInfo = NULL;
+          }
+        }
+
+        if (!(pViewPort->RasInfo))
+        {
+          FreeColorMap(pViewPort->ColorMap);
+          pViewPort->ColorMap = NULL;
+        }
+      }
+
+      if (!(pViewPort->ColorMap))
+      {
+        pViewPort = NULL;
+      }
+    }
+  }
+
+  return (pViewPort);
+}
+
+void DeleteBViewPort(struct ViewPort *pViewPort)
 {
   struct TagItem ti[2];
   ti[0].ti_Tag = VTAG_VIEWPORTEXTRA_GET;

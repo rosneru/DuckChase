@@ -21,4 +21,17 @@ struct ViewPort* CreateAViewPort(APTR pMemoryPool,
 
 void DeleteAViewPort(struct ViewPort *pViewPort);
 
+
+struct View* CreateBView(APTR pMemoryPool, ULONG modeid);
+void DeleteBView(struct View *pView);
+
+struct ViewPort* CreateBViewPort(APTR pMemoryPool,
+                                 ULONG sizex,
+                                 ULONG sizey,
+                                 ULONG depth,
+                                 ULONG modeid,
+                                 ULONG colors);
+
+void DeleteBViewPort(struct ViewPort *pViewPort);
+
 #endif
