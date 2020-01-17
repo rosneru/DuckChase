@@ -30,7 +30,7 @@ $(OBJDIR)main.o : main.c
 $(OBJDIR)timertools.o : timertools.c
 	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)timertools.o timertools.c
 
-OBJS = $(OBJDIR)timertools.o $(OBJDIR)main.o $(OBJDIR)imagetools.o $(OBJDIR)animtools.o
+OBJS = $(OBJDIR)timertools.o $(OBJDIR)main.o $(OBJDIR)lowlevelview.o $(OBJDIR)imagetools.o $(OBJDIR)animtools.o
 
 $(EXE) : $(OBJS)
 	$(LD) $(shell vbccprefs) -o $(EXE) $(OBJS)

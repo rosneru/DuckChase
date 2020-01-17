@@ -1039,13 +1039,13 @@ char* initAll()
   //
   // Init view, viewport and rasinfo
   //
-  m_pView = CreateAView(m_pMemoryPoolChip, VP_MODE);
+  m_pView = CreateBView(m_pMemoryPoolChip, VP_MODE);
   if (m_pView == NULL)
   {
     return ("Failed to create the view.\n");
   }
 
-  m_pViewPort = CreateAViewPort(m_pMemoryPoolChip, VP_WIDTH,
+  m_pViewPort = CreateBViewPort(m_pMemoryPoolChip, VP_WIDTH,
                                 VP_HEIGHT, VP_DEPTH,
                                 VP_MODE, VP_PALETTE_SIZE);
 
@@ -1053,10 +1053,6 @@ char* initAll()
   {
     return ("Faild to create the viewport.\n");
   }
-
-  // Blit the background image
-  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_RastPort,
-                    0, 0, VP_WIDTH, VP_HEIGHT, 0xC0);
 
   //
   // Load all needed colors
@@ -1159,6 +1155,10 @@ char* initAll()
     return ("Failed to create GELs bob for hunter.\n");
   }
 
+  // Blit the background image
+  BltBitMapRastPort(m_pBackgrBM, 0, 0, &m_RastPort,
+                    0, 0, VP_WIDTH, VP_HEIGHT, 0xC0);
+
   return NULL;
 }
 
@@ -1204,19 +1204,12 @@ int cleanExit(char *pErrorMsg)
   // Delete the custom view and viewport
   if (m_pViewPort != NULL)
   {
-    DeleteAViewPort(m_pViewPort);
+    DeleteBViewPort(m_pViewPort);
   }
 
   if (m_pView != NULL)
   {
-    DeleteAView(m_pView);
-  }
-
-  if(m_pScreenBitmap != NULL)
-  {
-    WaitBlit();
-    FreeBitMap(m_pScreenBitmap);
-    m_pScreenBitmap = NULL;
+    DeleteBView(m_pView);
   }
 
   if(m_SpriteNumberGot >= 0)
