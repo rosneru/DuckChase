@@ -21,6 +21,9 @@ $(OBJDIR)animtools.o : animtools.c
 $(OBJDIR)imagetools.o : imagetools.c
 	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)imagetools.o imagetools.c
 
+$(OBJDIR)lowlevelview.o : lowlevelview.c
+	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)lowlevelview.o lowlevelview.c
+
 $(OBJDIR)main.o : main.c
 	$(CC) $(shell vbccprefs) -c -o $(OBJDIR)main.o main.c
 
