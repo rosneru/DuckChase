@@ -4,7 +4,7 @@
 #include "Duck.h"
 
 Duck::Duck(IGameView& gameView)
-  : GelsBob(gameView.Depth(), 59, 21, 3), // TODO find better solution
+  : EntityBob(gameView.Depth(), 59, 21, 3), // TODO find better solution
     m_GameView(gameView),
     m_pLastError(NULL),
     m_AnimFrameCnt(1),

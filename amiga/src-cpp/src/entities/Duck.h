@@ -1,7 +1,7 @@
 #ifndef DUCK_H
 #define DUCK_H
 
-#include "GelsBob.h"
+#include "EntityBob.h"
 #include "IGameView.h"
 
 /**
@@ -11,7 +11,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Duck : public GelsBob
+class Duck : public EntityBob
 {
 public:
   Duck(IGameView& gameView);

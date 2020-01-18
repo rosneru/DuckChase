@@ -1,7 +1,7 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "HwSprite.h"
+#include "EntitySprite.h"
 #include "Hunter.h"
 #include "IGameView.h"
 
@@ -12,7 +12,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Bullet : public HwSprite
+class Bullet : public EntitySprite
 {
 public:
   Bullet(IGameView& gameView, Hunter& hunter);

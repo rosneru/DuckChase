@@ -18,13 +18,13 @@
  * @author Uwe Rosner
  * @date 04/08/2019
  */
-class HwSprite : public EntityBase
+class EntitySprite : public EntityBase
 {
 public:
-  HwSprite(int p_ImageWidth,
+  EntitySprite(int p_ImageWidth,
            int p_ImageHeight);
 
-  virtual ~HwSprite();
+  virtual ~EntitySprite();
 
 
   /**

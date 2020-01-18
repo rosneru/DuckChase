@@ -21,15 +21,15 @@
  * @author Uwe Rosner
  * @date 11/07/2019
  */
-class GelsBob : public EntityBase
+class EntityBob : public EntityBase
 {
 public:
-  GelsBob(short p_pViewDepth,
+  EntityBob(short p_pViewDepth,
           int p_ImageWidth,
           int p_ImageHeight,
           short p_ImageDepth);
 
-  virtual ~GelsBob();
+  virtual ~EntityBob();
 
   /**
    * Loads an image from a RAW file with given path and stores it as

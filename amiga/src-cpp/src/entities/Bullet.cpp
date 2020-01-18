@@ -6,7 +6,7 @@
 
 
 Bullet::Bullet(IGameView& gameView, Hunter& hunter)
-  : HwSprite(16, 13), // TODO find better solution
+  : EntitySprite(16, 13), // TODO find better solution
     m_GameView(gameView),
     m_Hunter(hunter),
     m_pLastError(NULL),

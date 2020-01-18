@@ -5,9 +5,9 @@
 #include <graphics/gels.h>
 
 #include "animtools_proto.h"
-#include "GelsBob.h"
+#include "EntityBob.h"
 
-GelsBob::GelsBob(short p_pViewDepth,
+EntityBob::EntityBob(short p_pViewDepth,
                  int p_ImageWidth,
                  int p_ImageHeight,
                  short p_ImageDepth)
@@ -45,14 +45,14 @@ GelsBob::GelsBob(short p_pViewDepth,
   m_NewBob.nb_MeMask = 0;                       // Me mask
 }
 
-GelsBob::~GelsBob()
+EntityBob::~EntityBob()
 {
   SetInvisible();
   clear();
 }
 
 
-bool GelsBob::AddRawImage(const char *p_pPath)
+bool EntityBob::AddRawImage(const char *p_pPath)
 {
   // Opening the file
   BPTR fileHandle = Open(p_pPath, MODE_OLDFILE);
@@ -82,7 +82,7 @@ bool GelsBob::AddRawImage(const char *p_pPath)
 }
 
 
-bool GelsBob::LoadImgFromArray(const WORD *p_pAddress)
+bool EntityBob::LoadImgFromArray(const WORD *p_pAddress)
 {
   WORD* pImageData = createNextImageData();
   if(pImageData == NULL)
@@ -101,7 +101,7 @@ bool GelsBob::LoadImgFromArray(const WORD *p_pAddress)
 }
 
 
-struct Bob *GelsBob::Get()
+struct Bob *EntityBob::Get()
 {
   if (m_pBob == NULL)
   {
@@ -155,7 +155,7 @@ struct Bob *GelsBob::Get()
 }
 
 
-void GelsBob::AddToRastPort(struct RastPort* pRastPort)
+void EntityBob::AddToRastPort(struct RastPort* pRastPort)
 {
   if(m_pRastPort != NULL)
   {
@@ -177,7 +177,7 @@ void GelsBob::AddToRastPort(struct RastPort* pRastPort)
 }
 
 
-int GelsBob::XPos() const
+int EntityBob::XPos() const
 {
   if(m_pBob == NULL)
   {
@@ -188,7 +188,7 @@ int GelsBob::XPos() const
 }
 
 
-int GelsBob::YPos() const
+int EntityBob::YPos() const
 {
   if(m_pBob == NULL)
   {
@@ -198,17 +198,17 @@ int GelsBob::YPos() const
   return m_pBob->BobVSprite->Y;
 }
 
-int GelsBob::Width() const
+int EntityBob::Width() const
 {
   return m_ImageWidth;
 }
 
-int GelsBob::Height() const
+int EntityBob::Height() const
 {
   return m_ImageHeight;
 }
 
-void GelsBob::Move(int x, int y)
+void EntityBob::Move(int x, int y)
 {
   if(m_pBob == NULL)
   {
@@ -220,7 +220,7 @@ void GelsBob::Move(int x, int y)
 }
 
 
-void GelsBob::SetInvisible()
+void EntityBob::SetInvisible()
 {
   if(m_bIsVisible == false)
   {
@@ -238,7 +238,7 @@ void GelsBob::SetInvisible()
 }
 
 
-void GelsBob::SetVisible()
+void EntityBob::SetVisible()
 {
   if(m_bIsVisible == true)
   {
@@ -261,13 +261,13 @@ void GelsBob::SetVisible()
 }
 
 
-bool GelsBob::IsVisible() const
+bool EntityBob::IsVisible() const
 {
   return m_bIsVisible;
 }
 
 
-void GelsBob::NextImage()
+void EntityBob::NextImage()
 {
   if(m_bIsVisible == false)
   {
@@ -309,7 +309,7 @@ void GelsBob::NextImage()
 }
 
 
-WORD* GelsBob::createNextImageData()
+WORD* EntityBob::createNextImageData()
 {
   // Find the next free index in image data array
   int idx = -1;
@@ -336,7 +336,7 @@ WORD* GelsBob::createNextImageData()
 }
 
 
-void GelsBob::clear()
+void EntityBob::clear()
 {
   if (m_pBob != NULL)
   {
