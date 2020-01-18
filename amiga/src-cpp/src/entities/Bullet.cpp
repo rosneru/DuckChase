@@ -92,9 +92,15 @@ bool Bullet::Init()
   };
 
   // Which 4 pens  to set depends on the sprite number we got
-  int spriteNum = SpriteNumber();
+  int spriteNumGot = SpriteNumber();
 
-  int spriteColRegStart = 16 + ((spriteNum & 0x06) << 1);
+  // Relatively safe way to replace the mouse pointer (sprite 0) with
+  // the arrow sprite (See AABoing source from Aminet) is to simply
+  // set it to 0. This is the number the mouse uses otherwise.
+  int spriteNumberInUse = 0;
+  Get()->es_SimpleSprite.num = spriteNumberInUse;
+
+  int spriteColRegStart = 16 + ((spriteNumberInUse & 0x06) << 1);
   for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
   {
     int r = colorsBulletSprite[i - spriteColRegStart][0];
@@ -123,19 +129,16 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   if(IsVisible() == false)
   {
-    if((joyPortState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+    if((joyPortState & JPF_BUTTON_RED) != 0)
     {
-      if((joyPortState & JPF_BUTTON_RED) != 0)
-      {
-        //
-        // Arming the bullet
-        //
-        Move(m_Hunter.XPos(), m_Hunter.YPos());
-        SetVisible();
+      //
+      // Arming the bullet
+      //
+      Move(m_Hunter.XPos(), m_Hunter.YPos());
+      SetVisible();
 
-        m_XSpeed_pps = m_Hunter.XSpeed_pps();
-        m_YSpeed_pps = -150;
-      }
+      m_XSpeed_pps = m_Hunter.XSpeed_pps();
+      m_YSpeed_pps = -150;
     }
 
     return;

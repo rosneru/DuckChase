@@ -26,7 +26,6 @@ public:
 
 private:
   struct View* m_pView;
-  struct ViewExtra* m_pViewExtra;
 
   enum InitError
   {

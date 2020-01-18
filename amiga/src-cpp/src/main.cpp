@@ -1,7 +1,8 @@
-#include <libraries/lowlevel.h>
-#include <clib/graphics_protos.h>
 #include <clib/exec_protos.h>
 #include <clib/lowlevel_protos.h>
+
+#include <graphics/modeid.h>
+#include <libraries/lowlevel.h>
 
 #include <stdio.h>
 
@@ -9,10 +10,6 @@
 #include "GameViewLowlevel.h"
 #include "GameViewIntui20.h"
 #include "GameViewGfxLib.h"
-
-
-int cleanup(int);
-int fail(STRPTR);
 
 
 int main(void)
@@ -25,9 +22,9 @@ int main(void)
                 TAG_END);
 
 
-  GameViewLowlevel gameView(640, 256, 3, 32);
-//  GameViewIntui20 gameView(640, 256, 3);
-//  GameViewGfxLib gameView(640, 256, 3);
+  GameViewLowlevel gameView(640, 256, 3, 32, PAL_MONITOR_ID | HIRES_KEY);
+  //GameViewIntui20 gameView(640, 256, 3);
+  //GameViewGfxLib gameView(640, 256, 3);
   Game game(gameView);
 
   if(game.Run() == false)

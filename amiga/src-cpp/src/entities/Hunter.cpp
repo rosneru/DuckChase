@@ -48,42 +48,38 @@ bool Hunter::Init()
 
 void Hunter::Update(unsigned long elapsed, unsigned long joyPortState)
 {
-  if((joyPortState & JP_TYPE_MASK) == JP_TYPE_JOYSTK)
+  if((joyPortState & JPF_JOY_RIGHT) != 0)
   {
-    if((joyPortState & JPF_JOY_RIGHT) != 0)
+    m_XSpeed_pps = 500;
+    int dX = pps2Dist(m_XSpeed_pps, elapsed);
+
+    if(XPos() + dX > 640 + Width())
     {
-      m_XSpeed_pps = 500;
-      int dX = pps2Dist(m_XSpeed_pps, elapsed);
-
-      if(XPos() + dX > 640 + Width())
-      {
-        Move(-Width(), YPos());
-      }
-      else
-      {
-        Move(XPos() + dX, YPos());
-      }
-
-    }
-    else if((joyPortState & JPF_JOY_LEFT) != 0)
-    {
-      m_XSpeed_pps = -500;
-      int dX = pps2Dist(m_XSpeed_pps, elapsed);
-
-      if(XPos() + dX < -Width())
-      {
-        Move(640 + Width(), YPos());
-      }
-      else
-      {
-        Move(XPos() + dX, YPos());
-      }
+      Move(-Width(), YPos());
     }
     else
     {
-      m_XSpeed_pps = 0;
+      Move(XPos() + dX, YPos());
     }
 
+  }
+  else if((joyPortState & JPF_JOY_LEFT) != 0)
+  {
+    m_XSpeed_pps = -500;
+    int dX = pps2Dist(m_XSpeed_pps, elapsed);
+
+    if(XPos() + dX < -Width())
+    {
+      Move(640 + Width(), YPos());
+    }
+    else
+    {
+      Move(XPos() + dX, YPos());
+    }
+  }
+  else
+  {
+    m_XSpeed_pps = 0;
   }
 }
 

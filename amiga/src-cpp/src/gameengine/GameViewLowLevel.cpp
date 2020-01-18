@@ -1,10 +1,12 @@
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
+#include <clib/intuition_protos.h>
 #include <graphics/copper.h>
 #include <graphics/gfxbase.h>
 #include <graphics/displayinfo.h>
 #include <graphics/gfxnodes.h>
 #include <graphics/videocontrol.h>
+#include <intuition/screens.h>
 
 #include "GameViewLowlevel.h"
 
@@ -14,10 +16,13 @@ extern struct GfxBase* GfxBase;
 GameViewLowlevel::GameViewLowlevel(short width,
                                    short height,
                                    short depth,
-                                   short colors)
+                                   short numColors,
+                                   ULONG modeId)
   : m_Width(width),
     m_Heigth(height),
     m_Depth(depth),
+    m_NumColors(numColors),
+    m_ModeId(modeId),
     m_pLastError("Initialized sucessfully."),
     m_pOldView(NULL),
     m_pView(NULL),
@@ -26,7 +31,7 @@ GameViewLowlevel::GameViewLowlevel(short width,
     m_FrameToggle(0),
     m_pBitMapArray()
 {
-  m_NumColors = colors;
+
 }
 
 
@@ -87,9 +92,27 @@ bool GameViewLowlevel::Open()
     }
   }
 
-  ULONG modeId = (PAL_MONITOR_ID | HIRES_KEY);
+  // This screen is only a trick: It just exists to ensure that after
+  // closing the main view *Intuition* handles important things like
+  // giving back the mouse pointer etc. which were lost by creating
+  // our own view. So it is only opened with a depth of 1 losing about
+  // 20k in HiRes or 10 in LoRes.
+  m_pDummyScreen = OpenScreenTags(NULL,
+      SA_DisplayID, m_ModeId,
+      SA_Depth, 1,
+      SA_Width, m_Width,
+      SA_Height, m_Heigth,
+      SA_ShowTitle, FALSE,
+      TAG_DONE);
 
-  if(m_LowLevelView.Create(modeId) == false)
+  if (m_pDummyScreen == NULL)
+  {
+    m_pLastError = "Faild to open the dummy screen!\n";
+    Close();
+    return false;
+  }
+
+  if(m_LowLevelView.Create(m_ModeId) == false)
   {
     m_pLastError = (char*)m_LowLevelView.LastError();
     Close();
@@ -101,7 +124,7 @@ bool GameViewLowlevel::Open()
   if(m_LowLevelViewPort.Create(m_Width,
                                m_Heigth,
                                m_Depth,
-                               modeId,
+                               m_ModeId,
                                m_NumColors,
                                m_pBitMapArray[0]) == false)
   {
@@ -115,7 +138,7 @@ bool GameViewLowlevel::Open()
 
   // Create a RastPort to draw into
   InitRastPort(&m_RastPort);
-  m_RastPort.BitMap = m_pBitMapArray[0];
+  m_RastPort.BitMap = m_pViewPort->RasInfo->BitMap;
   SetRast(&m_RastPort, 0);
 
   m_pView->ViewPort = m_pViewPort;
@@ -127,8 +150,16 @@ bool GameViewLowlevel::Open()
   // structure
   MrgCop(m_pView);
 
-  // Save current View to restore later
+  //Save current View to restore later
   m_pOldView = GfxBase->ActiView;
+
+  do
+  {
+    LoadView(NULL);
+    WaitTOF();
+    WaitTOF();
+  }
+  while(GfxBase->ActiView != NULL);
 
   LoadView(m_pView);
   WaitTOF();
@@ -139,8 +170,16 @@ bool GameViewLowlevel::Open()
 
 void GameViewLowlevel::Close()
 {
-  if(GfxBase->ActiView == m_pView)
+  if (GfxBase->ActiView == m_pView)
   {
+    do
+    {
+      LoadView(NULL);
+      WaitTOF();
+      WaitTOF();
+    }
+    while(GfxBase->ActiView != NULL);
+
     // Put back the old view
     LoadView(m_pOldView);
 
@@ -152,6 +191,11 @@ void GameViewLowlevel::Close()
   m_LowLevelViewPort.Delete();
   m_LowLevelView.Delete();
 
+  if(m_pDummyScreen != NULL)
+  {
+    CloseScreen(m_pDummyScreen);
+    m_pDummyScreen = NULL;
+  }
 
   //  Free the double buffers
   for(int i = 0; i < 2; i++)

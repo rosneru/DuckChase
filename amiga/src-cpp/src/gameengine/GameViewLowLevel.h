@@ -20,7 +20,12 @@
 class GameViewLowlevel : public IGameView
 {
 public:
-  GameViewLowlevel(short width, short height, short depth, short colors);
+  GameViewLowlevel(short width, 
+                   short height, 
+                   short depth, 
+                   short numColors,
+                   ULONG modeId);
+
   ~GameViewLowlevel();
 
   bool Open();
@@ -46,8 +51,10 @@ private:
   short m_Heigth;
   short m_Depth;
   short m_NumColors;
+  ULONG m_ModeId;
   char* m_pLastError;
 
+  struct Screen* m_pDummyScreen;
   LowlevelView m_LowLevelView;
   LowlevelViewPort m_LowLevelViewPort;
 

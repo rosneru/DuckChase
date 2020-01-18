@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/DuckChase",
+            "program": "${workspaceFolder}/DuckChase_debug",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

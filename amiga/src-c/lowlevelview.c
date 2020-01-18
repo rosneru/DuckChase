@@ -293,12 +293,10 @@ struct ViewPort *CreateBViewPort(APTR pMemoryPool,
                   /* GfxAssociate()) associates the VP and VPE.      */
                   {VTAG_VIEWPORTEXTRA_SET, (ULONG)vpextra},
                   {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
-                  {TAG_END}
+                  {TAG_DONE}
                 };
 
                 VideoControl(pViewPort->ColorMap, vcTags);
-
-
             }
 
             if (!vpextra)

@@ -31,7 +31,6 @@ public:
 private:
   struct ViewPort* m_pViewPort;
   struct ViewPortExtra* m_pViewPortExtra;
-  struct DisplayInfo* m_pDisplayInfo;
 
   enum InitError
   {
@@ -42,8 +41,6 @@ private:
     IE_GettingRasInfo,
     IE_GettingVPExtra,
     IE_GettingDisplayInfo,
-    IE_SettingVideoControl,
-    IE_SettingPalExtra,
   };
 
   InitError m_InitError;

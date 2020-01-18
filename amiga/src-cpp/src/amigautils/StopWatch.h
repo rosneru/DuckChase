@@ -3,6 +3,7 @@
 
 #include <clib/timer_protos.h>
 #include <clib/exec_protos.h>
+#include <devices/timer.h>
 #include <exec/ports.h>
 #include <exec/io.h>
 /**
@@ -33,22 +34,25 @@ public:
   /**
    * Picks the elapsed time.
    *
-   * @param p_bKeepStartPoint
+   * @param bKeepStartPoint
    * When true stop watch is not reset when picking. That means that
    * the former start time will be used at next pick again.
    *
    * @returns
    * Elapsed time in milliseconds or -1.0 if an error occurred
    */
-  double Pick(bool p_bKeepStartPoint = false);
+  long Pick(bool bKeepStartPoint = false);
 
 private:
   ULONG m_ClocksPerSecond;
   struct MsgPort* m_pMsgPort;
-  struct IORequest* m_pIORequest;
+  struct timerequest* m_pTimeRequest;
   bool m_bInitialized;
   struct EClockVal m_StartClock;
   struct EClockVal m_StopClock;
+
+  void initTimerDevice();
+  void freeTimerDevice();
 };
 
 #endif
