@@ -3,7 +3,7 @@
 
 #include <intuition/screens.h>
 #include "animtools.h"
-#include "EntityBase.h"
+#include "ShapeBase.h"
 
 #define MAX_IMAGES (8)
 /**
@@ -21,15 +21,15 @@
  * @author Uwe Rosner
  * @date 11/07/2019
  */
-class EntityBob : public EntityBase
+class ShapeBob : public ShapeBase
 {
 public:
-  EntityBob(short p_pViewDepth,
+  ShapeBob(short p_pViewDepth,
           int p_ImageWidth,
           int p_ImageHeight,
           short p_ImageDepth);
 
-  virtual ~EntityBob();
+  virtual ~ShapeBob();
 
   /**
    * Loads an image from a RAW file with given path and stores it as

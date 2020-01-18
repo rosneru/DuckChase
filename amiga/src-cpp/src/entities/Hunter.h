@@ -1,7 +1,7 @@
 #ifndef HUNTER_H
 #define HUNTER_H
 
-#include "EntityBob.h"
+#include "ShapeBob.h"
 #include "IGameView.h"
 
 /**
@@ -11,7 +11,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Hunter : public EntityBob
+class Hunter : public ShapeBob
 {
 public:
   Hunter(IGameView& gameView);

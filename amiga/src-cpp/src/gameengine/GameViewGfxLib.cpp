@@ -26,8 +26,8 @@ GameViewGfxLib::GameViewGfxLib(short viewWidth,
     m_pViewExtra(NULL),
     m_pMonitorSpec(NULL),
     m_pViewPortExtra(NULL),
-    m_FrameToggle(0),
     m_pBitMapArray(),
+    m_FrameToggle(0),
     m_InitError(IE_None)
 {
   m_ViewNumColors = 1L << viewDepth;

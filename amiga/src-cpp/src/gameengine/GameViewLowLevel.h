@@ -52,7 +52,7 @@ private:
   short m_Depth;
   short m_NumColors;
   ULONG m_ModeId;
-  char* m_pLastError;
+  const char* m_pLastError;
 
   struct Screen* m_pDummyScreen;
   LowlevelView m_LowLevelView;
@@ -64,8 +64,8 @@ private:
   struct ViewPort* m_pViewPort;
   struct RastPort m_RastPort;
 
-  struct BitMap* m_pBitMapArray[2];
   WORD m_FrameToggle;
+  struct BitMap* m_pBitMapArray[2];
 
 
 

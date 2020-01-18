@@ -5,9 +5,9 @@
 #include <graphics/gels.h>
 
 #include "animtools_proto.h"
-#include "EntityBob.h"
+#include "ShapeBob.h"
 
-EntityBob::EntityBob(short p_pViewDepth,
+ShapeBob::ShapeBob(short p_pViewDepth,
                  int p_ImageWidth,
                  int p_ImageHeight,
                  short p_ImageDepth)
@@ -15,9 +15,9 @@ EntityBob::EntityBob(short p_pViewDepth,
       m_ImageHeight(p_ImageHeight),
       m_pBob(NULL),
       m_pRastPort(NULL),
+      m_bIsVisible(false),
       m_pImageShadow(NULL),
-      m_CurrentImageIndex(-1),
-      m_bIsVisible(false)
+      m_CurrentImageIndex(-1)
 {
   // Zeroing all image ptrs of this bob
   for(int i = 0; i < MAX_IMAGES; i++)
@@ -45,14 +45,14 @@ EntityBob::EntityBob(short p_pViewDepth,
   m_NewBob.nb_MeMask = 0;                       // Me mask
 }
 
-EntityBob::~EntityBob()
+ShapeBob::~ShapeBob()
 {
   SetInvisible();
   clear();
 }
 
 
-bool EntityBob::AddRawImage(const char *p_pPath)
+bool ShapeBob::AddRawImage(const char *p_pPath)
 {
   // Opening the file
   BPTR fileHandle = Open(p_pPath, MODE_OLDFILE);
@@ -82,7 +82,7 @@ bool EntityBob::AddRawImage(const char *p_pPath)
 }
 
 
-bool EntityBob::LoadImgFromArray(const WORD *p_pAddress)
+bool ShapeBob::LoadImgFromArray(const WORD *p_pAddress)
 {
   WORD* pImageData = createNextImageData();
   if(pImageData == NULL)
@@ -101,7 +101,7 @@ bool EntityBob::LoadImgFromArray(const WORD *p_pAddress)
 }
 
 
-struct Bob *EntityBob::Get()
+struct Bob *ShapeBob::Get()
 {
   if (m_pBob == NULL)
   {
@@ -155,7 +155,7 @@ struct Bob *EntityBob::Get()
 }
 
 
-void EntityBob::AddToRastPort(struct RastPort* pRastPort)
+void ShapeBob::AddToRastPort(struct RastPort* pRastPort)
 {
   if(m_pRastPort != NULL)
   {
@@ -177,7 +177,7 @@ void EntityBob::AddToRastPort(struct RastPort* pRastPort)
 }
 
 
-int EntityBob::XPos() const
+int ShapeBob::XPos() const
 {
   if(m_pBob == NULL)
   {
@@ -188,7 +188,7 @@ int EntityBob::XPos() const
 }
 
 
-int EntityBob::YPos() const
+int ShapeBob::YPos() const
 {
   if(m_pBob == NULL)
   {
@@ -198,17 +198,17 @@ int EntityBob::YPos() const
   return m_pBob->BobVSprite->Y;
 }
 
-int EntityBob::Width() const
+int ShapeBob::Width() const
 {
   return m_ImageWidth;
 }
 
-int EntityBob::Height() const
+int ShapeBob::Height() const
 {
   return m_ImageHeight;
 }
 
-void EntityBob::Move(int x, int y)
+void ShapeBob::Move(int x, int y)
 {
   if(m_pBob == NULL)
   {
@@ -220,7 +220,7 @@ void EntityBob::Move(int x, int y)
 }
 
 
-void EntityBob::SetInvisible()
+void ShapeBob::SetInvisible()
 {
   if(m_bIsVisible == false)
   {
@@ -238,7 +238,7 @@ void EntityBob::SetInvisible()
 }
 
 
-void EntityBob::SetVisible()
+void ShapeBob::SetVisible()
 {
   if(m_bIsVisible == true)
   {
@@ -261,13 +261,13 @@ void EntityBob::SetVisible()
 }
 
 
-bool EntityBob::IsVisible() const
+bool ShapeBob::IsVisible() const
 {
   return m_bIsVisible;
 }
 
 
-void EntityBob::NextImage()
+void ShapeBob::NextImage()
 {
   if(m_bIsVisible == false)
   {
@@ -309,7 +309,7 @@ void EntityBob::NextImage()
 }
 
 
-WORD* EntityBob::createNextImageData()
+WORD* ShapeBob::createNextImageData()
 {
   // Find the next free index in image data array
   int idx = -1;
@@ -336,7 +336,7 @@ WORD* EntityBob::createNextImageData()
 }
 
 
-void EntityBob::clear()
+void ShapeBob::clear()
 {
   if (m_pBob != NULL)
   {

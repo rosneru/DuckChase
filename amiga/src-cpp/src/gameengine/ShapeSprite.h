@@ -1,14 +1,14 @@
 #ifndef HW_SPRITE_H
 #define HW_SPRITE_H
 
-#include <intuition/screens.h>
+#include "ShapeBase.h"
 #include "animtools.h"
-#include "EntityBase.h"
+#include <intuition/screens.h>
 
 #define MAX_IMAGES (8)
 /**
- * Encapsulates an Hardware/ExtSprite provided by functions of AmigaOS
- * graphics.libary v39+
+ * Encapsulates an animatable graphics object using Hardware/ExtSprite
+ * functione as by AmigaOS graphics.libary v39+
  *
  * A sprite can contain up to MAX_IMAGES images which all must have the
  * same width, height and depth.
@@ -18,14 +18,12 @@
  * @author Uwe Rosner
  * @date 04/08/2019
  */
-class EntitySprite : public EntityBase
+class ShapeSprite : public ShapeBase
 {
-public:
-  EntitySprite(int p_ImageWidth,
-           int p_ImageHeight);
+  public:
+  ShapeSprite(int p_ImageWidth, int p_ImageHeight);
 
-  virtual ~EntitySprite();
-
+  virtual ~ShapeSprite();
 
   /**
    * Loads an image from a RAW file with given path and stores it as
@@ -41,8 +39,8 @@ public:
   bool AddRawImage(const char* p_pPath);
 
   /**
-   * Getting the struct Sprite* of this sprite. The sprite will be newly created
-   * if it doesn't already exists.
+   * Getting the struct Sprite* of this sprite. The sprite will be newly
+   * created if it doesn't already exists.
    *
    * @returns
    * The struct sprite or null if creation has failed.
@@ -55,7 +53,6 @@ public:
    * Sprites need a ViewPort to be displayed
    */
   void SetViewPort(struct ViewPort* pViewPort);
-
 
   //
   // Implementing part of the interface IEntity. Init(), Update(),
@@ -75,14 +72,14 @@ public:
 
   void NextImage();
 
-private:
+  private:
   int m_ImageWidth;
   int m_ImageHeight;
   int m_CurrentImageIndex;
 
   struct ViewPort* m_pViewPort;
 
-  long m_ImageBufSize;               // Buffer for each image in bytes
+  long m_ImageBufSize; // Buffer for each image in bytes
   struct ExtSprite* m_pSpriteDataArray[MAX_IMAGES]; // Array of pointers to the images
   struct ExtSprite* m_pCurrentSprite;
   struct ExtSprite* m_pEmptySprite;

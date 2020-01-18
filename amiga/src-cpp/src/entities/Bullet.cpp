@@ -6,9 +6,9 @@
 
 
 Bullet::Bullet(IGameView& gameView, Hunter& hunter)
-  : EntitySprite(16, 13), // TODO find better solution
-    m_GameView(gameView),
+  : m_GameView(gameView),
     m_Hunter(hunter),
+    m_Sprite(16, 13),    // TODO Remove constants / find better solution
     m_pLastError(NULL),
     m_AnimFrameCnt(1),
     m_XSpeed_pps(0),
@@ -29,7 +29,7 @@ bool Bullet::Init()
   //
   // Loading all the hunter images
   //
-  if(AddRawImage("gfx/bullet1_hires.raw") == false)
+  if(m_Sprite.AddRawImage("gfx/bullet1_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #1 (gfx/bullet1_hires.raw).\n";
     return false;
@@ -41,31 +41,31 @@ bool Bullet::Init()
     return false;
   }
 */
-  if(AddRawImage("gfx/bullet3_hires.raw") == false)
+  if(m_Sprite.AddRawImage("gfx/bullet3_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #3 (gfx/bullet3_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("gfx/bullet4_hires.raw") == false)
+  if(m_Sprite.AddRawImage("gfx/bullet4_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #4 (gfx/bullet4_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("gfx/bullet5_hires.raw") == false)
+  if(m_Sprite.AddRawImage("gfx/bullet5_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #5 (gfx/bullet5_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("gfx/bullet6_hires.raw") == false)
+  if(m_Sprite.AddRawImage("gfx/bullet6_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #6 (gfx/bullet6_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("gfx/bullet7_hires.raw") == false)
+  if(m_Sprite.AddRawImage("gfx/bullet7_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #7 (gfx/bullet7_hires.raw).\n";
     return false;
@@ -91,14 +91,13 @@ bool Bullet::Init()
     {0x2E2E2E2E, 0x14141414, 0x9090909},
   };
 
-  // Which 4 pens  to set depends on the sprite number we got
-  int spriteNumGot = SpriteNumber();
-
-  // Relatively safe way to replace the mouse pointer (sprite 0) with
-  // the arrow sprite (See AABoing source from Aminet) is to simply
-  // set it to 0. This is the number the mouse uses otherwise.
+  // Which 4 pens to set depends on the sprite number we got. But we'll
+  // manually set the number to 0 because: 
+  //   A relatively safe way to replace the mouse pointer (sprite 0) 
+  //   with the arrow sprite (See AABoing source from Aminet) is to 
+  //   simply set it to 0. This is the number the mouse uses otherwise.
   int spriteNumberInUse = 0;
-  Get()->es_SimpleSprite.num = spriteNumberInUse;
+  m_Sprite.Get()->es_SimpleSprite.num = spriteNumberInUse;
 
   int spriteColRegStart = 16 + ((spriteNumberInUse & 0x06) << 1);
   for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
@@ -110,13 +109,13 @@ bool Bullet::Init()
   }
 
   // Sprite must have a ViewPort to be displayed
-  SetViewPort(m_GameView.ViewPort());
+  m_Sprite.SetViewPort(m_GameView.ViewPort());
 
   // Move sprite at desiresd start position
-  Move(300, 244);
+  m_Sprite.Move(300, 244);
 
   // Though for the beginning set it invisible
-  SetInvisible();
+  m_Sprite.SetInvisible();
 
   return true;
 }
@@ -127,15 +126,15 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   // When invisible only check if fire button is pressed
   //
-  if(IsVisible() == false)
+  if(m_Sprite.IsVisible() == false)
   {
     if((joyPortState & JPF_BUTTON_RED) != 0)
     {
       //
       // Arming the bullet
       //
-      Move(m_Hunter.XPos(), m_Hunter.YPos());
-      SetVisible();
+      m_Sprite.Move(m_Hunter.XPos(), m_Hunter.YPos());
+      m_Sprite.SetVisible();
 
       m_XSpeed_pps = m_Hunter.XSpeed_pps();
       m_YSpeed_pps = -150;
@@ -153,23 +152,23 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
   int dY = pps2Dist(m_YSpeed_pps, elapsed);
 
-  if(YPos() + dY < 0)
+  if(m_Sprite.YPos() + dY < 0)
   {
-    SetInvisible();
+    m_Sprite.SetInvisible();
     m_XSpeed_pps = 0;
     m_YSpeed_pps = 0;
   }
-  else if(XPos() + dX < 1)
+  else if(m_Sprite.XPos() + dX < 1)
   {
-    Move(640, YPos() + dY);
+    m_Sprite.Move(640, m_Sprite.YPos() + dY);
   }
-  else if(XPos() + dX > 640)
+  else if(m_Sprite.XPos() + dX > 640)
   {
-    Move(0, YPos() + dY);
+    m_Sprite.Move(0, m_Sprite.YPos() + dY);
   }
   else
   {
-    Move(XPos() + dX, YPos() + dY);
+    m_Sprite.Move(m_Sprite.XPos() + dX, m_Sprite.YPos() + dY);
   }
 
 
@@ -178,7 +177,7 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   if(m_AnimFrameCnt % 10 == 0)
   {
-    NextImage();
+    m_Sprite.NextImage();
     m_AnimFrameCnt = 0;
   }
 
@@ -199,4 +198,10 @@ int Bullet::XSpeed_pps()
 int Bullet::YSpeed_pps()
 {
   return m_YSpeed_pps;
+}
+
+
+int Bullet::pps2Dist(int pps, long elapsed_ms)
+{
+  return pps * elapsed_ms / 1000;
 }

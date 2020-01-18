@@ -30,13 +30,13 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/entities/Bullet.h \
 		$(SRC_ROOT)/entities/Duck.h \
 		$(SRC_ROOT)/entities/Hunter.h \
-		$(SRC_ROOT)/gameengine/EntityBase.h \
-		$(SRC_ROOT)/gameengine/EntityBob.h \
-		$(SRC_ROOT)/gameengine/EntitySprite.h \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.h \
 		$(SRC_ROOT)/gameengine/GameViewIntui20.h \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.h \
 		$(SRC_ROOT)/gameengine/IGameView.h \
+		$(SRC_ROOT)/gameengine/ShapeBase.h \
+		$(SRC_ROOT)/gameengine/ShapeBob.h \
+		$(SRC_ROOT)/gameengine/ShapeSprite.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h \
 		$(SRC_ROOT)/Game.h \
@@ -48,12 +48,12 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/entities/Bullet.o \
 		$(SRC_ROOT)/entities/Duck.o \
 		$(SRC_ROOT)/entities/Hunter.o \
-		$(SRC_ROOT)/gameengine/EntityBase.o \
-		$(SRC_ROOT)/gameengine/EntityBob.o \
-		$(SRC_ROOT)/gameengine/EntitySprite.o \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.o \
 		$(SRC_ROOT)/gameengine/GameViewIntui20.o \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.o \
+		$(SRC_ROOT)/gameengine/ShapeBase.o \
+		$(SRC_ROOT)/gameengine/ShapeBob.o \
+		$(SRC_ROOT)/gameengine/ShapeSprite.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.o \
 		$(SRC_ROOT)/Game.o \

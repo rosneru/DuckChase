@@ -5,7 +5,7 @@
 #include "Hunter.h"
 
 Hunter::Hunter(IGameView& gameView)
-  : EntityBob(gameView.Depth(), 16, 22, 3), // TODO find better solution
+  : ShapeBob(gameView.Depth(), 16, 22, 3), // TODO find better solution
     m_GameView(gameView),
     m_pLastError(NULL),
     m_AnimFrameCnt(1),  // TODO CHECK Why not 0?

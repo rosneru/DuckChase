@@ -5,9 +5,9 @@
 #include <graphics/gels.h>
 
 #include "animtools_proto.h"
-#include "EntitySprite.h"
+#include "ShapeSprite.h"
 
-EntitySprite::EntitySprite(int p_ImageWidth,
+ShapeSprite::ShapeSprite(int p_ImageWidth,
                    int p_ImageHeight)
     : m_ImageWidth(p_ImageWidth),
       m_ImageHeight(p_ImageHeight),
@@ -24,12 +24,12 @@ EntitySprite::EntitySprite(int p_ImageWidth,
   }
 }
 
-EntitySprite::~EntitySprite()
+ShapeSprite::~ShapeSprite()
 {
   clear();
 }
 
-bool EntitySprite::AddRawImage(const char *p_pPath)
+bool ShapeSprite::AddRawImage(const char *p_pPath)
 {
   // This currently is only using sprite / image 0
   // TODO Change this!!
@@ -137,17 +137,17 @@ bool EntitySprite::AddRawImage(const char *p_pPath)
 }
 
 
-struct ExtSprite *EntitySprite::Get()
+struct ExtSprite *ShapeSprite::Get()
 {
   return m_pCurrentSprite;
 }
 
-int EntitySprite::SpriteNumber()
+int ShapeSprite::SpriteNumber()
 {
   return m_HwSpriteNumber;
 }
 
-void EntitySprite::SetViewPort(struct ViewPort* pViewPort)
+void ShapeSprite::SetViewPort(struct ViewPort* pViewPort)
 {
   if(m_pViewPort != NULL)
   {
@@ -159,7 +159,7 @@ void EntitySprite::SetViewPort(struct ViewPort* pViewPort)
 }
 
 
-int EntitySprite::XPos() const
+int ShapeSprite::XPos() const
 {
   if(m_pCurrentSprite == NULL)
   {
@@ -171,7 +171,7 @@ int EntitySprite::XPos() const
 }
 
 
-int EntitySprite::YPos() const
+int ShapeSprite::YPos() const
 {
   if(m_pCurrentSprite == NULL)
   {
@@ -182,18 +182,18 @@ int EntitySprite::YPos() const
   return pSpr->y;
 }
 
-int EntitySprite::Width() const
+int ShapeSprite::Width() const
 {
   return m_ImageWidth;
 }
 
-int EntitySprite::Height() const
+int ShapeSprite::Height() const
 {
   return m_ImageHeight;
 }
 
 
-void EntitySprite::Move(int x, int y)
+void ShapeSprite::Move(int x, int y)
 {
   if(m_pCurrentSprite == NULL)
   {
@@ -210,7 +210,7 @@ void EntitySprite::Move(int x, int y)
 }
 
 
-void EntitySprite::SetInvisible()
+void ShapeSprite::SetInvisible()
 {
   if(m_pCurrentSprite == NULL)
   {
@@ -228,7 +228,7 @@ void EntitySprite::SetInvisible()
 }
 
 
-void EntitySprite::SetVisible()
+void ShapeSprite::SetVisible()
 {
   if(m_pCurrentSprite == NULL)
   {
@@ -246,13 +246,13 @@ void EntitySprite::SetVisible()
 }
 
 
-bool EntitySprite::IsVisible() const
+bool ShapeSprite::IsVisible() const
 {
   return m_pCurrentSprite != m_pEmptySprite;
 }
 
 
-void EntitySprite::NextImage()
+void ShapeSprite::NextImage()
 {
   if(m_pCurrentSprite == m_pEmptySprite)
   {
@@ -299,7 +299,7 @@ void EntitySprite::NextImage()
 }
 
 
-int EntitySprite::getNextFreeSpriteImageIdx()
+int ShapeSprite::getNextFreeSpriteImageIdx()
 {
   // Find the next free index in image data array
   int idx = -1;
@@ -316,7 +316,7 @@ int EntitySprite::getNextFreeSpriteImageIdx()
 }
 
 
-void EntitySprite::clear()
+void ShapeSprite::clear()
 {
 
   if (m_HwSpriteNumber >= 0)
