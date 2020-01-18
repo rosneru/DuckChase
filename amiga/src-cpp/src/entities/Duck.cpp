@@ -4,10 +4,11 @@
 #include "Duck.h"
 
 Duck::Duck(IGameView& gameView)
-  : ShapeBob(gameView.Depth(), 59, 21, 3), // TODO find better solution
+  : EntityBase(&m_Shape),
     m_GameView(gameView),
-    m_pLastError(NULL),
+    m_Shape(gameView.Depth(), 59, 21, 3), // TODO find better solution
     m_AnimFrameCnt(1),
+    m_pLastError(NULL),
     m_XSpeed_pps(0),
     m_YSpeed_pps(0)
 {
@@ -24,13 +25,13 @@ bool Duck::Init()
   //
   // Loading all the duck images
   //
-  if(AddRawImage("gfx/duck1_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/duck1_hires.raw") == false)
   {
     m_pLastError = "Couldn't load duck image #1 (gfx/duck1_hires.raw).\n";
     return false;
   }
 
-  if(AddRawImage("gfx/duck2_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/duck2_hires.raw") == false)
   {
     m_pLastError = "Couldn't load duck image #2 (gfx/duck2_hires.raw).\n";
     return false;
@@ -39,8 +40,8 @@ bool Duck::Init()
   //
   // Initialize postion of the duck bob and add it to the scene
   //
-  AddToRastPort(m_GameView.RastPort());
-  Move(200, 40);
+  m_Shape.AddToRastPort(m_GameView.RastPort());
+  m_Shape.Move(200, 40);
 
   return true;
 }
@@ -53,19 +54,19 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
   m_XSpeed_pps = -240;
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
-  if(XPos() + dX < -Width())
+  if(XPos() + dX < -m_Shape.Width())
   {
-    Move(656, YPos());
+    m_Shape.Move(656, m_Shape.YPos());
   }
   else
   {
-    Move(XPos() + dX, YPos());
+    m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
   }
 
   // Change the duck image every 2 frames
   if(m_AnimFrameCnt % 4 == 0)
   {
-    NextImage();
+    m_Shape.NextImage();
     m_AnimFrameCnt = 0;
   }
 

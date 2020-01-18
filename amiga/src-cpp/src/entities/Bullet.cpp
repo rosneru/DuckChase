@@ -6,9 +6,10 @@
 
 
 Bullet::Bullet(IGameView& gameView, Hunter& hunter)
-  : m_GameView(gameView),
+  : EntityBase(&m_Shape),
+    m_GameView(gameView),
     m_Hunter(hunter),
-    m_Sprite(16, 13),    // TODO Remove constants / find better solution
+    m_Shape(16, 13),    // TODO Remove constants / find better solution
     m_pLastError(NULL),
     m_AnimFrameCnt(1),
     m_XSpeed_pps(0),
@@ -29,7 +30,7 @@ bool Bullet::Init()
   //
   // Loading all the hunter images
   //
-  if(m_Sprite.AddRawImage("gfx/bullet1_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/bullet1_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #1 (gfx/bullet1_hires.raw).\n";
     return false;
@@ -41,31 +42,31 @@ bool Bullet::Init()
     return false;
   }
 */
-  if(m_Sprite.AddRawImage("gfx/bullet3_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/bullet3_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #3 (gfx/bullet3_hires.raw).\n";
     return false;
   }
 
-  if(m_Sprite.AddRawImage("gfx/bullet4_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/bullet4_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #4 (gfx/bullet4_hires.raw).\n";
     return false;
   }
 
-  if(m_Sprite.AddRawImage("gfx/bullet5_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/bullet5_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #5 (gfx/bullet5_hires.raw).\n";
     return false;
   }
 
-  if(m_Sprite.AddRawImage("gfx/bullet6_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/bullet6_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #6 (gfx/bullet6_hires.raw).\n";
     return false;
   }
 
-  if(m_Sprite.AddRawImage("gfx/bullet7_hires.raw") == false)
+  if(m_Shape.AddRawImage("gfx/bullet7_hires.raw") == false)
   {
     m_pLastError = "Couldn't load bullet image #7 (gfx/bullet7_hires.raw).\n";
     return false;
@@ -97,7 +98,7 @@ bool Bullet::Init()
   //   with the arrow sprite (See AABoing source from Aminet) is to 
   //   simply set it to 0. This is the number the mouse uses otherwise.
   int spriteNumberInUse = 0;
-  m_Sprite.Get()->es_SimpleSprite.num = spriteNumberInUse;
+  m_Shape.Get()->es_SimpleSprite.num = spriteNumberInUse;
 
   int spriteColRegStart = 16 + ((spriteNumberInUse & 0x06) << 1);
   for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
@@ -109,13 +110,13 @@ bool Bullet::Init()
   }
 
   // Sprite must have a ViewPort to be displayed
-  m_Sprite.SetViewPort(m_GameView.ViewPort());
+  m_Shape.SetViewPort(m_GameView.ViewPort());
 
   // Move sprite at desiresd start position
-  m_Sprite.Move(300, 244);
+  m_Shape.Move(300, 244);
 
   // Though for the beginning set it invisible
-  m_Sprite.SetInvisible();
+  m_Shape.SetInvisible();
 
   return true;
 }
@@ -126,15 +127,15 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   // When invisible only check if fire button is pressed
   //
-  if(m_Sprite.IsVisible() == false)
+  if(m_Shape.IsVisible() == false)
   {
     if((joyPortState & JPF_BUTTON_RED) != 0)
     {
       //
       // Arming the bullet
       //
-      m_Sprite.Move(m_Hunter.XPos(), m_Hunter.YPos());
-      m_Sprite.SetVisible();
+      m_Shape.Move(m_Hunter.XPos(), m_Hunter.YPos());
+      m_Shape.SetVisible();
 
       m_XSpeed_pps = m_Hunter.XSpeed_pps();
       m_YSpeed_pps = -150;
@@ -152,23 +153,23 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
   int dY = pps2Dist(m_YSpeed_pps, elapsed);
 
-  if(m_Sprite.YPos() + dY < 0)
+  if(m_Shape.YPos() + dY < 0)
   {
-    m_Sprite.SetInvisible();
+    m_Shape.SetInvisible();
     m_XSpeed_pps = 0;
     m_YSpeed_pps = 0;
   }
-  else if(m_Sprite.XPos() + dX < 1)
+  else if(m_Shape.XPos() + dX < 1)
   {
-    m_Sprite.Move(640, m_Sprite.YPos() + dY);
+    m_Shape.Move(640, m_Shape.YPos() + dY);
   }
-  else if(m_Sprite.XPos() + dX > 640)
+  else if(m_Shape.XPos() + dX > 640)
   {
-    m_Sprite.Move(0, m_Sprite.YPos() + dY);
+    m_Shape.Move(0, m_Shape.YPos() + dY);
   }
   else
   {
-    m_Sprite.Move(m_Sprite.XPos() + dX, m_Sprite.YPos() + dY);
+    m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos() + dY);
   }
 
 
@@ -177,7 +178,7 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   if(m_AnimFrameCnt % 10 == 0)
   {
-    m_Sprite.NextImage();
+    m_Shape.NextImage();
     m_AnimFrameCnt = 0;
   }
 
@@ -198,10 +199,4 @@ int Bullet::XSpeed_pps()
 int Bullet::YSpeed_pps()
 {
   return m_YSpeed_pps;
-}
-
-
-int Bullet::pps2Dist(int pps, long elapsed_ms)
-{
-  return pps * elapsed_ms / 1000;
 }

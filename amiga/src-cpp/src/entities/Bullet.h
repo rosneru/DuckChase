@@ -1,9 +1,10 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "ShapeSprite.h"
+#include "EntityBase.h"
 #include "Hunter.h"
 #include "IGameView.h"
+#include "ShapeSprite.h"
 
 /**
  * The bullet.
@@ -12,7 +13,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Bullet
+class Bullet : public EntityBase
 {
 public:
   Bullet(IGameView& gameView, Hunter& hunter);
@@ -30,7 +31,8 @@ public:
 private:
   IGameView& m_GameView;
   Hunter& m_Hunter;
-  ShapeSprite m_Sprite;
+
+  ShapeSprite m_Shape;
 
   const char* m_pLastError;
 
@@ -38,12 +40,6 @@ private:
 
   int m_XSpeed_pps;
   int m_YSpeed_pps;
-
-  /**
-   * Returns the distance in pixels which is calculated from the pixel-
-   * per-second value und the elapsed time.
-   */
-  int pps2Dist(int pps, long elapsed_ms);
 };
 
 #endif

@@ -1,9 +1,10 @@
-#ifndef ENTITY_BASE_H
-#define ENTITY_BASE_H
+#ifndef SHAPE_BASE_H
+#define SHAPE_BASE_H
 
 
 /**
- * Represents an entity which populates the game world.
+ * Represents a shape, an graphical object which can be moved above the
+ * background without distracting it.
  *
  *
  * @author Uwe Rosner

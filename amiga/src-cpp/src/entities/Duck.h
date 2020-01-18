@@ -1,6 +1,7 @@
 #ifndef DUCK_H
 #define DUCK_H
 
+#include "EntityBase.h"
 #include "ShapeBob.h"
 #include "IGameView.h"
 
@@ -11,7 +12,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Duck : public ShapeBob
+class Duck : public EntityBase
 {
 public:
   Duck(IGameView& gameView);
@@ -27,8 +28,12 @@ public:
 
 private:
   IGameView& m_GameView;
-  const char* m_pLastError;
+
+  ShapeBob m_Shape;
+
   int m_AnimFrameCnt;
+
+  const char* m_pLastError;
 
   int m_XSpeed_pps;
   int m_YSpeed_pps;

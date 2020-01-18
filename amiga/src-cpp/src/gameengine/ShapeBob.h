@@ -1,5 +1,5 @@
-#ifndef GELS_BOB_H
-#define GELS_BOB_H
+#ifndef SHAPE_BOB_H
+#define SHAPE_BOB_H
 
 #include <intuition/screens.h>
 #include "animtools.h"
@@ -7,7 +7,8 @@
 
 #define MAX_IMAGES (8)
 /**
- * Encapsulates an blitter object (Bob) of the AmigaOS GELs system.
+ * Encapsulates an animatable graphics object using the blitter hardware
+ * (Gels system) related functions of AmigaOS graphics.libary.
  *
  * Currently it is using the animtools structures and functions as
  * presented in the RKRM libraries.
@@ -15,8 +16,8 @@
  * A bob can contain up to MAX_IMAGES images which all must have the
  * same width, height and depth.
  *
- * The images can be loaded from a memory array, RAW file or by
- * datatype methods (TBD).
+ * The images can be loaded from a memory array, RAW file or by datatype
+ * methods (TBD).
  *
  * @author Uwe Rosner
  * @date 11/07/2019
@@ -25,9 +26,9 @@ class ShapeBob : public ShapeBase
 {
 public:
   ShapeBob(short p_pViewDepth,
-          int p_ImageWidth,
-          int p_ImageHeight,
-          short p_ImageDepth);
+           int p_ImageWidth,
+           int p_ImageHeight,
+           short p_ImageDepth);
 
   virtual ~ShapeBob();
 

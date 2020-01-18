@@ -1,5 +1,5 @@
-#ifndef HW_SPRITE_H
-#define HW_SPRITE_H
+#ifndef SHAPE_SPRITE_H
+#define SHAPE_SPRITE_H
 
 #include "ShapeBase.h"
 #include "animtools.h"
@@ -7,8 +7,8 @@
 
 #define MAX_IMAGES (8)
 /**
- * Encapsulates an animatable graphics object using Hardware/ExtSprite
- * functione as by AmigaOS graphics.libary v39+
+ * Encapsulates an animatable graphics object using the sprite hardware
+ * (ExtSprite) related functions of AmigaOS graphics.libary v39+.
  *
  * A sprite can contain up to MAX_IMAGES images which all must have the
  * same width, height and depth.

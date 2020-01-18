@@ -1,8 +1,9 @@
 #ifndef HUNTER_H
 #define HUNTER_H
 
-#include "ShapeBob.h"
+#include "EntityBase.h"
 #include "IGameView.h"
+#include "ShapeBob.h"
 
 /**
  * The hunter.
@@ -11,7 +12,7 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Hunter : public ShapeBob
+class Hunter : public EntityBase
 {
 public:
   Hunter(IGameView& gameView);
@@ -27,6 +28,9 @@ public:
 
 private:
   IGameView& m_GameView;
+
+  ShapeBob m_Shape;
+
   const char* m_pLastError;
   int m_AnimFrameCnt;
 
