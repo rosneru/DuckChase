@@ -110,8 +110,8 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "animtools/animtools.c"
-"animtools/animtools.c"
+1 "animtools/animtools.cpp"
+"animtools/animtools.cpp"
 "animtools/animtools.h"
 "animtools/animtools_proto.h"
 Storm Shell Project (Dependencies)
@@ -122,8 +122,9 @@ File
 1 "entities/Bullet.cpp"
 "entities/Bullet.cpp"
 "entities/Bullet.h"
+"entities/EntityBase.h"
 "entities/Hunter.h"
-"gameengine/EntityBase.h"
+"gameengine/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Bullet.o" "objects_debug/Bullet.debug"
 ""
@@ -132,16 +133,26 @@ File
 1 "entities/Duck.cpp"
 "entities/Duck.cpp"
 "entities/Duck.h"
-"gameengine/EntityBase.h"
+"entities/EntityBase.h"
+"gameengine/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Duck.o" "objects_debug/Duck.debug"
+""
+1 1
+File
+1 "entities/EntityBase.cpp"
+"entities/EntityBase.cpp"
+"entities/EntityBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/EntityBase.o" "objects_debug/EntityBase.debug"
 ""
 1 1
 File
 1 "entities/Hunter.cpp"
 "entities/Hunter.cpp"
 "entities/Hunter.h"
-"gameengine/EntityBase.h"
+"entities/EntityBase.h"
+"gameengine/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Hunter.o" "objects_debug/Hunter.debug"
 ""
@@ -151,19 +162,12 @@ File
 "Game.cpp"
 "animtools/animtools.h"
 "Game.h"
-"PointsDisplay.h"
+"entities/EntityBase.h"
 "entities/Hunter.h"
-"gameengine/EntityBase.h"
+"gameengine/ShapeBase.h"
+"PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
-""
-1 1
-File
-1 "gameengine/EntityBase.cpp"
-"gameengine/EntityBase.cpp"
-"gameengine/EntityBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/EntityBase.o" "objects_debug/EntityBase.debug"
 ""
 1 1
 File
@@ -185,32 +189,40 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gameengine/GameViewLowlevel.cpp"
-"gameengine/GameViewLowlevel.cpp"
+1 "gameengine/GameViewLowLevel.cpp"
+"gameengine/GameViewLowLevel.cpp"
 "gameengine/GameViewLowlevel.h"
 "gameengine/IGameView.h"
 Storm Shell Project (Dependencies)
-"objects_debug/GameViewLowlevel.o" "objects_debug/GameViewLowlevel.debug"
+"objects_debug/GameViewLowLevel.o" "objects_debug/GameViewLowLevel.debug"
 ""
 1 1
 File
-1 "gameengine/GelsBob.cpp"
-"gameengine/GelsBob.cpp"
-"animtools/animtools.h"
-"gameengine/GelsBob.h"
-"gameengine/EntityBase.h"
+1 "gameengine/ShapeBase.cpp"
+"gameengine/ShapeBase.cpp"
+"gameengine/ShapeBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/GelsBob.o" "objects_debug/GelsBob.debug"
+"objects_debug/ShapeBase.o" "objects_debug/ShapeBase.debug"
 ""
 1 1
 File
-1 "gameengine/HwSprite.cpp"
-"gameengine/HwSprite.cpp"
+1 "gameengine/ShapeBob.cpp"
+"gameengine/ShapeBob.cpp"
 "animtools/animtools.h"
-"gameengine/HwSprite.h"
-"gameengine/EntityBase.h"
+"gameengine/ShapeBob.h"
+"gameengine/ShapeBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/HwSprite.o" "objects_debug/HwSprite.debug"
+"objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
+""
+1 1
+File
+1 "gameengine/ShapeSprite.cpp"
+"gameengine/ShapeSprite.cpp"
+"animtools/animtools.h"
+"gameengine/ShapeSprite.h"
+"gameengine/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeSprite.o" "objects_debug/ShapeSprite.debug"
 ""
 1 1
 File
@@ -233,9 +245,10 @@ File
 1 "main.cpp"
 "main.cpp"
 "Game.h"
-"PointsDisplay.h"
+"entities/EntityBase.h"
 "entities/Hunter.h"
-"gameengine/EntityBase.h"
+"gameengine/ShapeBase.h"
+"PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -295,6 +308,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "entities/EntityBase.h"
+"entities/EntityBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "entities/Hunter.h"
 "entities/Hunter.h"
 Storm Shell Project (Dependencies)
@@ -304,13 +324,6 @@ Storm Shell Project (Dependencies)
 File
 2 "Game.h"
 "Game.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gameengine/EntityBase.h"
-"gameengine/EntityBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -330,22 +343,8 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gameengine/GameViewLowlevel.h"
-"gameengine/GameViewLowlevel.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gameengine/GelsBob.h"
-"gameengine/GelsBob.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gameengine/HwSprite.h"
-"gameengine/HwSprite.h"
+2 "gameengine/GameViewLowLevel.h"
+"gameengine/GameViewLowLevel.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -353,6 +352,27 @@ Storm Shell Project (Dependencies)
 File
 2 "gameengine/IGameView.h"
 "gameengine/IGameView.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/ShapeBase.h"
+"gameengine/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/ShapeBob.h"
+"gameengine/ShapeBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gameengine/ShapeSprite.h"
+"gameengine/ShapeSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

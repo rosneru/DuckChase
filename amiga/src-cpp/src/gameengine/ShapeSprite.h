@@ -5,7 +5,6 @@
 #include "animtools.h"
 #include <intuition/screens.h>
 
-#define MAX_IMAGES (8)
 /**
  * Encapsulates an animatable graphics object using the sprite hardware
  * (ExtSprite) related functions of AmigaOS graphics.libary v39+.
@@ -75,12 +74,13 @@ class ShapeSprite : public ShapeBase
   private:
   int m_ImageWidth;
   int m_ImageHeight;
+  const short m_MaxImages;
   int m_CurrentImageIndex;
 
   struct ViewPort* m_pViewPort;
 
   long m_ImageBufSize; // Buffer for each image in bytes
-  struct ExtSprite* m_pSpriteDataArray[MAX_IMAGES]; // Array of pointers to the images
+  struct ExtSprite** m_pSpriteDataArray; // Array of pointers to the images
   struct ExtSprite* m_pCurrentSprite;
   struct ExtSprite* m_pEmptySprite;
   int m_HwSpriteNumber;

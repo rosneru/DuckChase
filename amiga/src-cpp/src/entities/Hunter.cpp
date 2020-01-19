@@ -7,7 +7,7 @@
 Hunter::Hunter(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
-    m_Shape(gameView.Depth(), 16, 22, 3), // TODO find better solution
+    m_Shape(3, 16, 22, 3), // TODO find better solution
     m_pLastError(NULL),
     m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
     m_XSpeed_pps(0),

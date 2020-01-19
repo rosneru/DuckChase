@@ -6,7 +6,7 @@
 Duck::Duck(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
-    m_Shape(gameView.Depth(), 59, 21, 3), // TODO find better solution
+    m_Shape(3, 59, 21, 3), // TODO find better solution
     m_AnimFrameCnt(1),
     m_pLastError(NULL),
     m_XSpeed_pps(0),

@@ -11,12 +11,12 @@
 
 Game::Game(IGameView& gameView)
   : m_GameView(gameView),
-    m_PointsDisplay(m_GameView, 1, 5, 5, 3),  // TODO Change constants
+    m_PointsDisplay(gameView, 1, 5, 5, 3),  // TODO Change constants
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
-    m_Duck(m_GameView),
-    m_Hunter(m_GameView),
-    m_Bullet(m_GameView, m_Hunter)
+    m_Duck(gameView),
+    m_Hunter(gameView)
+    //m_Bullet(gameView, m_Hunter)
 {
 
 }
@@ -24,14 +24,14 @@ Game::Game(IGameView& gameView)
 
 Game::~Game()
 {
-  // Free the resources allocated by the Gels system
-  if(m_pGelsInfo != NULL)
-  {
-    cleanupGelSys(m_pGelsInfo, m_GameView.RastPort());
-  }
+  // // Free the resources allocated by the Gels system
+  // if(m_pGelsInfo != NULL)
+  // {
+  //   cleanupGelSys(m_pGelsInfo, m_GameView.RastPort());
+  // }
 
-  WaitTOF();
-  WaitTOF();
+  // WaitTOF();
+  // WaitTOF();
 
   m_GameView.Close();
 }
@@ -39,6 +39,7 @@ Game::~Game()
 
 bool Game::Run()
 {
+
   if(m_GameView.Open() == false)
   {
     m_pLastError = m_GameView.LastError();
@@ -82,12 +83,12 @@ bool Game::Run()
     return false;
   }
 
-  if(m_Bullet.Init() == false)
-  {
-    // TODO CHECK: Does m_Bullet.LastError still exist outside here?
-    m_pLastError = m_Bullet.LastError();
-    return false;
-  }
+  // if(m_Bullet.Init() == false)
+  // {
+  //   // TODO CHECK: Does m_Bullet.LastError still exist outside here?
+  //   m_pLastError = m_Bullet.LastError();
+  //   return false;
+  // }
 
   //
   // Load and display the background image
@@ -176,7 +177,7 @@ bool Game::gameLoop()
     ULONG portState = ReadJoyPort(1);
     m_Duck.Update(elapsed_ms, portState);
     m_Hunter.Update(elapsed_ms, portState);
-    m_Bullet.Update(elapsed_ms, portState);
+    //m_Bullet.Update(elapsed_ms, portState);
 
     //
     // Render the changed scenery

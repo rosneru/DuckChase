@@ -35,6 +35,8 @@ bool Bullet::Init()
     m_pLastError = "Couldn't load bullet image #1 (gfx/bullet1_hires.raw).\n";
     return false;
   }
+
+  return false;
 /*
   if(AddRawImage("gfx/bullet2_hires.raw") == false)
   {

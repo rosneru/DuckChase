@@ -35,9 +35,7 @@ public:
   void UpdateInfo(const char* pInfo);
 
 private:
-  IGameView& m_GameView;
-  short m_ViewWidth;
-  short m_ViewHeight;
+  IGameView& m_View;
   short m_BackPen;
   short m_StrikesPen;
   short m_FpsPen;

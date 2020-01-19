@@ -5,7 +5,7 @@
 #include "animtools.h"
 #include "ShapeBase.h"
 
-#define MAX_IMAGES (8)
+#define MAX_IMAGES 8
 /**
  * Encapsulates an animatable graphics object using the blitter hardware
  * (Gels system) related functions of AmigaOS graphics.libary.

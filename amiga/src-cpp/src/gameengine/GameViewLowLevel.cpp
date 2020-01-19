@@ -170,26 +170,37 @@ bool GameViewLowlevel::Open()
 
 void GameViewLowlevel::Close()
 {
-  if (GfxBase->ActiView == m_pView)
+  if(m_pView != NULL)
   {
-    do
+    if (GfxBase->ActiView == m_pView)
     {
-      LoadView(NULL);
+      do
+      {
+        LoadView(NULL);
+        WaitTOF();
+        WaitTOF();
+      }
+      while(GfxBase->ActiView != NULL);
+
+      // Put back the old view
+      LoadView(m_pOldView);
+
+      // Before freeing memory wait until the old view is being rendered
       WaitTOF();
       WaitTOF();
     }
-    while(GfxBase->ActiView != NULL);
-
-    // Put back the old view
-    LoadView(m_pOldView);
-
-    // Before freeing memory wait until the old view is being rendered
-    WaitTOF();
-    WaitTOF();
   }
 
-  m_LowLevelViewPort.Delete();
-  m_LowLevelView.Delete();
+  if(m_pViewPort != NULL)
+  {
+    m_LowLevelViewPort.Delete();
+    m_pViewPort = NULL;
+  }
+  if(m_pView != NULL)
+  {
+    m_LowLevelView.Delete();
+    m_pView = NULL;
+  }
 
   if(m_pDummyScreen != NULL)
   {
