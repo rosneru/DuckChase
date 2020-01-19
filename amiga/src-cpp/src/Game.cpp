@@ -125,9 +125,6 @@ const char* Game::LastError() const
 
 bool Game::gameLoop()
 {
-  short fpsCnt = 0;
-  long fps = 0;
-
   StopWatch stopWatch;
   stopWatch.Start();
 
@@ -145,46 +142,46 @@ bool Game::gameLoop()
   UWORD oldTaskPriority = 65535;
   oldTaskPriority = SetTaskPri(FindTask(0), 30);
 
+  short frameCounter = -2;
+  long elapsed_ms = 0;
   bool bContinue = true;
   do
   {
     //
-    // Calculate and update the FPS value
+    // Calculate the elapsed time and update the FPS value
     //
-    double dblElapsed = stopWatch.Pick();
+    frameCounter++;
+    if(frameCounter > 50)
+    {
+      frameCounter = 1;
+      long elapsed = stopWatch.Pick(false) / 50;
+      if(elapsed >= 0)
+      {
+        // Sum the fps of each frame
+        long fps = (short)(1000 / elapsed);
+        m_PointsDisplay.UpdateFps(fps);
+      }
+    }
+    else if(frameCounter < 1)
+    {
+      // This occurs one time only, namely after the first cycle. So the
+      // elapsed time is calculated early and entities can be updated
+      // properly before the first 50 frames are counted.
+      elapsed_ms = stopWatch.Pick(false);
+    }
 
     //
     // Read the Joyport and update the entities
     //
     ULONG portState = ReadJoyPort(1);
-    m_Duck.Update(dblElapsed, portState);
-    m_Hunter.Update(dblElapsed, portState);
-    m_Bullet.Update(dblElapsed, portState);
+    m_Duck.Update(elapsed_ms, portState);
+    m_Hunter.Update(elapsed_ms, portState);
+    m_Bullet.Update(elapsed_ms, portState);
 
     //
     // Render the changed scenery
     //
     m_GameView.Render();
-
-    //
-    // Calculate and display the fps
-    //
-    if(dblElapsed >= 0)
-    {
-      // Sum the fps of each frame
-      fps += 1000 / dblElapsed;
-      fpsCnt++;
-    }
-
-    // Every 8 frames display the avg fps
-    if(fpsCnt % 8 == 0)
-    {
-      fps = fps >> 3; // Division by 8
-      m_PointsDisplay.UpdateFps(fps);
-
-      fps = 0;
-      fpsCnt = 0;
-    }
 
 
     //

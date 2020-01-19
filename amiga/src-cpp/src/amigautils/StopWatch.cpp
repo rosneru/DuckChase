@@ -62,7 +62,7 @@ long StopWatch::Pick(bool bKeepStartPoint)
     ReadEClock(&m_StartClock);
   }
 
-  return static_cast<LONG>(millisecs);
+  return static_cast<long>(millisecs);
 }
 
 
