@@ -7,6 +7,7 @@ Duck::Duck(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_Shape(3, 59, 21, 3), // TODO find better solution
+    m_DuckAnim(3, 59, 21),
     m_AnimFrameCnt(1),
     m_pLastError(NULL),
     m_XSpeed_pps(0),
@@ -22,6 +23,9 @@ Duck::~Duck()
 
 bool Duck::Init()
 {
+  const char* ppFiles[]  = {"gfx/duck1_hires.raw", 
+                            "gfx/duck1_hires.raw", 
+                            NULL};
   //
   // Loading all the duck images
   //

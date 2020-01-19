@@ -39,8 +39,8 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/gameengine/ShapeBob.h \
 		$(SRC_ROOT)/gameengine/ShapeSprite.h \
 		$(SRC_ROOT)/gfxtools/AnimSeqBase.h \
-		$(SRC_ROOT)/gfxtools/AnimSeqBobData.h \
-		$(SRC_ROOT)/gfxtools/AnimSeqSpriteData.h \
+		$(SRC_ROOT)/gfxtools/AnimSeqBob.h \
+		$(SRC_ROOT)/gfxtools/AnimSeqSprite.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h \
 		$(SRC_ROOT)/Game.h \
@@ -60,8 +60,8 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/gameengine/ShapeBob.o \
 		$(SRC_ROOT)/gameengine/ShapeSprite.o \
 		$(SRC_ROOT)/gfxtools/AnimSeqBase.o \
-		$(SRC_ROOT)/gfxtools/AnimSeqBobData.o \
-		$(SRC_ROOT)/gfxtools/AnimSeqSpriteData.o \
+		$(SRC_ROOT)/gfxtools/AnimSeqBob.o \
+		$(SRC_ROOT)/gfxtools/AnimSeqSprite.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.o \
 		$(SRC_ROOT)/Game.o \

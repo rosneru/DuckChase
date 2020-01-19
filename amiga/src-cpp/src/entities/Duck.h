@@ -1,6 +1,7 @@
 #ifndef DUCK_H
 #define DUCK_H
 
+#include "AnimSeqBob.h"
 #include "EntityBase.h"
 #include "ShapeBob.h"
 #include "IGameView.h"
@@ -19,7 +20,7 @@ public:
   ~Duck();
 
   bool Init();
-   void Update(unsigned long elapsed, unsigned long joyPortState);
+  void Update(unsigned long elapsed, unsigned long joyPortState);
 
   const char* LastError() const;
 
@@ -30,6 +31,7 @@ private:
   IGameView& m_GameView;
 
   ShapeBob m_Shape;
+  AnimSeqBob m_DuckAnim;
 
   int m_AnimFrameCnt;
 
