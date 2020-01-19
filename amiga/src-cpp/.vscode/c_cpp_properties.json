@@ -9,6 +9,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src/animtools",
                 "${workspaceFolder}/src/gameengine",
+                "${workspaceFolder}/src/gfxtools",
                 "${workspaceFolder}/src/lowlevelview",
                 "${workspaceFolder}/src/entities",
                 "${workspaceFolder}/src/amigautils"
