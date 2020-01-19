@@ -1,4 +1,5 @@
 #include <clib/graphics_protos.h>
+#include <clib/exec_protos.h>
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
@@ -130,6 +131,20 @@ bool Game::gameLoop()
   StopWatch stopWatch;
   stopWatch.Start();
 
+  SetJoyPortAttrs(1,
+                  SJA_Type, SJA_TYPE_AUTOSENSE,
+                  TAG_END);
+
+  SystemControl(SCON_TakeOverSys, TRUE,
+                TAG_END);
+
+
+  // AABoing: set task priority to 30 so that beam-synchronized stuff
+  // will happen reliably. It is NOT SAFE to call intuition with this
+  // high task priority.
+  UWORD oldTaskPriority = 65535;
+  oldTaskPriority = SetTaskPri(FindTask(0), 30);
+
   bool bContinue = true;
   do
   {
@@ -183,6 +198,14 @@ bool Game::gameLoop()
     }
   }
   while (bContinue);
+
+  if(oldTaskPriority != 65535)
+  {
+    SetTaskPri(FindTask(0), oldTaskPriority);
+  }
+
+  SystemControl(SCON_TakeOverSys, FALSE,
+                TAG_END);
 
   return true;
 }

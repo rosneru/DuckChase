@@ -14,6 +14,8 @@ class ShapeBase;
 class EntityBase
 {
 public:
+  virtual bool Init() = 0;
+
   /**
    * Gets the current x-position of the shape which is associated with
    * this entity.
