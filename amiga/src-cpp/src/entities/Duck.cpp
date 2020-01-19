@@ -1,4 +1,3 @@
-
 #include <clib/graphics_protos.h>
 
 #include "Duck.h"
@@ -24,8 +23,15 @@ Duck::~Duck()
 bool Duck::Init()
 {
   const char* ppFiles[]  = {"gfx/duck1_hires.raw", 
-                            "gfx/duck1_hires.raw", 
+                            "gfx/duck2_hires.raw",
                             NULL};
+
+  if(m_DuckAnim.Load(ppFiles) == false)
+  {
+    m_pLastError = m_DuckAnim.LastError();
+    return false;
+  }
+
   //
   // Loading all the duck images
   //

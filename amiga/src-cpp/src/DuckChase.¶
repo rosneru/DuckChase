@@ -13,6 +13,8 @@ C/C++ Environment
 0
 "lowlevelview/"
 0
+"gfxtools/"
+0
 Includepath (End)
 0 "" 80
 1 "objects_debug"
@@ -135,6 +137,7 @@ File
 "entities/Duck.h"
 "entities/EntityBase.h"
 "gameengine/ShapeBase.h"
+"gfxtools/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Duck.o" "objects_debug/Duck.debug"
 ""
@@ -166,6 +169,7 @@ File
 "entities/Hunter.h"
 "gameengine/ShapeBase.h"
 "PointsDisplay.h"
+"gfxtools/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -218,11 +222,36 @@ Storm Shell Project (Dependencies)
 File
 1 "gameengine/ShapeSprite.cpp"
 "gameengine/ShapeSprite.cpp"
-"animtools/animtools.h"
 "gameengine/ShapeSprite.h"
 "gameengine/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeSprite.o" "objects_debug/ShapeSprite.debug"
+""
+1 1
+File
+1 "gfxtools/AnimSeqBase.cpp"
+"gfxtools/AnimSeqBase.cpp"
+"gfxtools/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimSeqBase.o" "objects_debug/AnimSeqBase.debug"
+""
+1 1
+File
+1 "gfxtools/AnimSeqBob.cpp"
+"gfxtools/AnimSeqBob.cpp"
+"gfxtools/AnimSeqBob.h"
+"gfxtools/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimSeqBob.o" "objects_debug/AnimSeqBob.debug"
+""
+1 1
+File
+1 "gfxtools/AnimSeqSprite.cpp"
+"gfxtools/AnimSeqSprite.cpp"
+"gfxtools/AnimSeqSprite.h"
+"gfxtools/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimSeqSprite.o" "objects_debug/AnimSeqSprite.debug"
 ""
 1 1
 File
@@ -249,6 +278,7 @@ File
 "entities/Hunter.h"
 "gameengine/ShapeBase.h"
 "PointsDisplay.h"
+"gfxtools/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -373,6 +403,27 @@ Storm Shell Project (Dependencies)
 File
 2 "gameengine/ShapeSprite.h"
 "gameengine/ShapeSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gfxtools/AnimSeqBase.h"
+"gfxtools/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gfxtools/AnimSeqBob.h"
+"gfxtools/AnimSeqBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "gfxtools/AnimSeqSprite.h"
+"gfxtools/AnimSeqSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

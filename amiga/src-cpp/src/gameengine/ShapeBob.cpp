@@ -267,6 +267,7 @@ bool ShapeBob::IsVisible() const
 }
 
 
+// TODO remove
 void ShapeBob::NextImage()
 {
   if(m_bIsVisible == false)

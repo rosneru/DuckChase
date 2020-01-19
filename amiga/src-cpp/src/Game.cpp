@@ -24,14 +24,14 @@ Game::Game(IGameView& gameView)
 
 Game::~Game()
 {
-  // // Free the resources allocated by the Gels system
-  // if(m_pGelsInfo != NULL)
-  // {
-  //   cleanupGelSys(m_pGelsInfo, m_GameView.RastPort());
-  // }
+  // Free the resources allocated by the Gels system
+  if(m_pGelsInfo != NULL)
+  {
+    cleanupGelSys(m_pGelsInfo, m_GameView.RastPort());
+  }
 
-  // WaitTOF();
-  // WaitTOF();
+  WaitTOF();
+  WaitTOF();
 
   m_GameView.Close();
 }
