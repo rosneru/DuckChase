@@ -6,12 +6,12 @@
 #include <graphics/modeid.h>
 #include <graphics/videocontrol.h>
 
-#include "GameViewIntui20.h"
+#include "GameViewIntui.h"
 
 extern struct GfxBase* GfxBase;
 
 
-GameViewIntui20::GameViewIntui20(short viewWidth,
+GameViewIntui::GameViewIntui(short viewWidth,
                                short viewHeight,
                                short viewDepth)
   : m_ViewWidth(viewWidth),
@@ -26,12 +26,12 @@ GameViewIntui20::GameViewIntui20(short viewWidth,
 }
 
 
-GameViewIntui20::~GameViewIntui20()
+GameViewIntui::~GameViewIntui()
 {
 
 }
 
-bool GameViewIntui20::Open()
+bool GameViewIntui::Open()
 {
   if(m_pScreen != NULL)
   {
@@ -116,7 +116,7 @@ bool GameViewIntui20::Open()
   return true;
 }
 
-void GameViewIntui20::Close()
+void GameViewIntui::Close()
 {
   if(m_pScreen != NULL)
   {
@@ -148,25 +148,25 @@ void GameViewIntui20::Close()
   }
 }
 
-short GameViewIntui20::Width()
+short GameViewIntui::Width()
 {
   return m_ViewWidth;
 }
 
 
-short GameViewIntui20::Height()
+short GameViewIntui::Height()
 {
   return m_ViewHeight;
 }
 
 
-short GameViewIntui20::Depth()
+short GameViewIntui::Depth()
 {
   return m_ViewDepth;
 }
 
 
-struct RastPort* GameViewIntui20::RastPort()
+struct RastPort* GameViewIntui::RastPort()
 {
   if(m_pScreen == NULL)
   {
@@ -177,7 +177,7 @@ struct RastPort* GameViewIntui20::RastPort()
 }
 
 
-struct ViewPort* GameViewIntui20::ViewPort()
+struct ViewPort* GameViewIntui::ViewPort()
 {
   if(m_pScreen == NULL)
   {
@@ -187,7 +187,7 @@ struct ViewPort* GameViewIntui20::ViewPort()
   return &(m_pScreen->ViewPort);
 }
 
-void GameViewIntui20::SetColor32(int i, int r, int g, int b)
+void GameViewIntui::SetColor32(int i, int r, int g, int b)
 {
   if(m_pScreen != NULL)
   {
@@ -195,7 +195,7 @@ void GameViewIntui20::SetColor32(int i, int r, int g, int b)
   }
 }
 
-void GameViewIntui20::Render()
+void GameViewIntui::Render()
 {
   if(m_pScreen == NULL)
   {
@@ -221,7 +221,7 @@ void GameViewIntui20::Render()
 
 }
 
-const char* GameViewIntui20::LastError() const
+const char* GameViewIntui::LastError() const
 {
   switch(m_InitError)
   {
@@ -251,7 +251,7 @@ const char* GameViewIntui20::LastError() const
   }
 }
 
-const char* GameViewIntui20::ViewName() const
+const char* GameViewIntui::ViewName() const
 {
   return "Simple (Intuition) view";
 }

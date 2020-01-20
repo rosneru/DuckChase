@@ -16,11 +16,11 @@
  * @author Uwe Rosner
  * @date 31/07/2019
  */
-class GameViewIntui20 : public IGameView
+class GameViewIntui : public IGameView
 {
 public:
-  GameViewIntui20(short viewWidth, short viewHeight, short viewDepth);
-  ~GameViewIntui20();
+  GameViewIntui(short viewWidth, short viewHeight, short viewDepth);
+  ~GameViewIntui();
 
   bool Open();
   void Close();

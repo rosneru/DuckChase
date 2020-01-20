@@ -32,7 +32,7 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/entities/Duck.h \
 		$(SRC_ROOT)/entities/Hunter.h \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.h \
-		$(SRC_ROOT)/gameengine/GameViewIntui20.h \
+		$(SRC_ROOT)/gameengine/GameViewIntui.h \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.h \
 		$(SRC_ROOT)/gameengine/IGameView.h \
 		$(SRC_ROOT)/gameengine/ShapeBase.h \
@@ -54,7 +54,7 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/entities/Duck.o \
 		$(SRC_ROOT)/entities/Hunter.o \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.o \
-		$(SRC_ROOT)/gameengine/GameViewIntui20.o \
+		$(SRC_ROOT)/gameengine/GameViewIntui.o \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.o \
 		$(SRC_ROOT)/gameengine/ShapeBase.o \
 		$(SRC_ROOT)/gameengine/ShapeBob.o \
