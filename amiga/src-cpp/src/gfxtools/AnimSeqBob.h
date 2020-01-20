@@ -12,12 +12,11 @@ public:
   virtual ~AnimSeqBob();
   bool Load(const char** ppFileNames);
 
-  const char* LastError();
+
 
 private:
+  WORD** m_ppImages;
   size_t m_ImageCount;
-  char* m_pLastError; 
-  const char* m_pLoadError;
 };
 
 #endif

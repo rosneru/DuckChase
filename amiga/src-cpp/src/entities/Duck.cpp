@@ -28,7 +28,7 @@ bool Duck::Init()
 
   if(m_DuckAnim.Load(ppFiles) == false)
   {
-    m_pLastError = m_DuckAnim.LastError();
+    m_pLastError = m_DuckAnim.ErrorMsg();
     return false;
   }
 
