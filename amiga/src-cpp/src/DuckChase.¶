@@ -184,12 +184,10 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gameengine/GameViewIntui20.cpp"
-"gameengine/GameViewIntui20.cpp"
-"gameengine/GameViewIntui20.h"
-"gameengine/IGameView.h"
+1 "gameengine/GameViewIntui.cpp"
+"gameengine/GameViewIntui.cpp"
 Storm Shell Project (Dependencies)
-"objects_debug/GameViewIntui20.o" "objects_debug/GameViewIntui20.debug"
+"objects_debug/GameViewIntui.o" "objects_debug/GameViewIntui.debug"
 ""
 1 1
 File
@@ -366,8 +364,8 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gameengine/GameViewIntui20.h"
-"gameengine/GameViewIntui20.h"
+2 "gameengine/GameViewIntui.h"
+"gameengine/GameViewIntui.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
