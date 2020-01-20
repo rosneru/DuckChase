@@ -4,6 +4,7 @@
 #include <exec/memory.h>
 #include <graphics/gfxbase.h>
 #include <graphics/modeid.h>
+#include <graphics/videocontrol.h>
 
 #include "GameViewIntui20.h"
 
@@ -84,17 +85,25 @@ bool GameViewIntui20::Open()
     }
   }
 
+  // Additional setting for the screen to use hires sprites
+  struct TagItem vcTags[] =
+  {
+    {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
+    {TAG_END}
+  };
+
   m_pScreen = OpenScreenTags(NULL,
+    SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
     SA_Depth, m_ViewDepth,
-    SA_Top, 0,
-    SA_Left, 0,
     SA_Width, m_ViewWidth,
     SA_Height, m_ViewHeight,
-    SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
+    SA_ShowTitle, FALSE,
+    SA_VideoControl, vcTags,
     SA_Quiet, TRUE,
+    SA_Type, CUSTOMSCREEN,
     SA_Exclusive, TRUE,
     SA_BitMap, m_pBitMapArray[0],
-    TAG_END);
+    TAG_DONE);
 
   if(m_pScreen == NULL)
   {

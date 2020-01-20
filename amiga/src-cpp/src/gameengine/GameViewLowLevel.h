@@ -48,7 +48,7 @@ public:
 
 private:
   short m_Width;
-  short m_Heigth;
+  short m_Height;
   short m_Depth;
   short m_NumColors;
   ULONG m_ModeId;

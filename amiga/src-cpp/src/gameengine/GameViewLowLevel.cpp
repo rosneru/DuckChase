@@ -19,7 +19,7 @@ GameViewLowlevel::GameViewLowlevel(short width,
                                    short numColors,
                                    ULONG modeId)
   : m_Width(width),
-    m_Heigth(height),
+    m_Height(height),
     m_Depth(depth),
     m_NumColors(numColors),
     m_ModeId(modeId),
@@ -63,8 +63,7 @@ bool GameViewLowlevel::Open()
     }
 
     // Init BitMap i
-    InitBitMap(m_pBitMapArray[i], m_Depth, m_Width,
-               m_Heigth);
+    InitBitMap(m_pBitMapArray[i], m_Depth, m_Width, m_Height);
 
     // Set the plane pointers to NULL so the cleanup routine will know
     // if they were used
@@ -77,7 +76,7 @@ bool GameViewLowlevel::Open()
     for (int depth = 0; depth < m_Depth; depth++)
     {
       m_pBitMapArray[i]->Planes[depth] = (PLANEPTR)
-        AllocRaster(m_Width, m_Heigth);
+        AllocRaster(m_Width, m_Height);
 
       if (m_pBitMapArray[i]->Planes[depth] == NULL)
       {
@@ -88,7 +87,7 @@ bool GameViewLowlevel::Open()
 
       // Set all bits of this newly created BitPlane to 0
       BltClear(m_pBitMapArray[i]->Planes[depth],
-               (m_Width / 8) * m_Heigth, 1);
+               (m_Width / 8) * m_Height, 1);
     }
   }
 
@@ -101,7 +100,7 @@ bool GameViewLowlevel::Open()
       SA_DisplayID, m_ModeId,
       SA_Depth, 1,
       SA_Width, m_Width,
-      SA_Height, m_Heigth,
+      SA_Height, m_Height,
       SA_ShowTitle, FALSE,
       TAG_DONE);
 
@@ -122,7 +121,7 @@ bool GameViewLowlevel::Open()
   m_pView = m_LowLevelView.View();
 
   if(m_LowLevelViewPort.Create(m_Width,
-                               m_Heigth,
+                               m_Height,
                                m_Depth,
                                m_ModeId,
                                m_NumColors,
@@ -219,7 +218,7 @@ void GameViewLowlevel::Close()
         if (m_pBitMapArray[i]->Planes[depth] != NULL)
         {
           FreeRaster(m_pBitMapArray[i]->Planes[depth],
-                     m_Width, m_Heigth);
+                     m_Width, m_Height);
 
           m_pBitMapArray[i]->Planes[depth] = NULL;
         }
@@ -241,7 +240,7 @@ short GameViewLowlevel::Width()
 
 short GameViewLowlevel::Height()
 {
-  return m_Heigth;
+  return m_Height;
 }
 
 
