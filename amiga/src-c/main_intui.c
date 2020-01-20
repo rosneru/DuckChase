@@ -1035,7 +1035,7 @@ char* initAll()
   // Create BitMap & Open the screen
   //
   m_pScreenBitmap = AllocBitMap(VP_WIDTH, 
-                                VP_WIDTH,
+                                VP_HEIGHT,
                                 VP_DEPTH,
                                 BMF_STANDARD | BMF_INTERLEAVED | BMF_CLEAR,
                                 NULL);

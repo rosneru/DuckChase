@@ -56,7 +56,7 @@ private:
     IE_None,
     IE_AlreadyInitialized,
     IE_GettingBitMapMem,
-    IE_GettingBitPlanes,
+    IE_GettingInterleavedBitMap,
     IE_OpeningScreen,
   };
 

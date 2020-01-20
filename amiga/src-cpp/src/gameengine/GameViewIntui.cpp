@@ -42,11 +42,16 @@ bool GameViewIntui::Open()
   m_InitError = IE_None;
 
 
+  // Allocate memory for each of the two BitMaps
   for(int i = 0; i < 2; i++)
   {
-    // Allocate memory for BitMap i
-    m_pBitMapArray[i] = (struct BitMap *)
-     AllocVec(sizeof(struct BitMap), MEMF_CHIP);
+    m_pBitMapArray[i] = AllocBitMap(m_ViewWidth, 
+                                    m_ViewHeight,
+                                    m_ViewDepth,
+                                    BMF_STANDARD
+                                      | BMF_INTERLEAVED
+                                      | BMF_CLEAR,
+                                    NULL);
 
     if(m_pBitMapArray[i] == NULL)
     {
@@ -55,33 +60,11 @@ bool GameViewIntui::Open()
       return false;
     }
 
-    // Init BitMap i
-    InitBitMap(m_pBitMapArray[i], m_ViewDepth, m_ViewWidth,
-               m_ViewHeight);
-
-    // Set the plane pointers to NULL so the cleanup routine will know
-    // if they were used
-    for (int depth = 0; depth < m_ViewDepth; depth++)
+    if (!(GetBitMapAttr(m_pBitMapArray[i], BMA_FLAGS) & BMF_INTERLEAVED))
     {
-      m_pBitMapArray[i]->Planes[depth] = NULL;
-    }
-
-    // Allocate memory for the BitPlanes
-    for (int depth = 0; depth < m_ViewDepth; depth++)
-    {
-      m_pBitMapArray[i]->Planes[depth] = (PLANEPTR)
-        AllocRaster(m_ViewWidth, m_ViewHeight);
-
-      if (m_pBitMapArray[i]->Planes[depth] == NULL)
-      {
-        m_InitError = IE_GettingBitPlanes;
-        Close();
-        return false;
-      }
-
-      // Set all bits of this newly created BitPlane to 0
-      BltClear(m_pBitMapArray[i]->Planes[depth],
-               (m_ViewWidth / 8) * m_ViewHeight, 1);
+      m_InitError = IE_GettingInterleavedBitMap;
+      Close();
+      return false;
     }
   }
 
@@ -124,25 +107,12 @@ void GameViewIntui::Close()
     m_pScreen = NULL;
   }
 
-  //  Free the double buffers
+  //  Free the double buffer BitMaps
   for(int i = 0; i < 2; i++)
   {
     if(m_pBitMapArray[i] != NULL)
     {
-      // Free all BitPlanes of this buffer
-      for (int depth = 0; depth < m_ViewDepth; depth++)
-      {
-        if (m_pBitMapArray[i]->Planes[depth] != NULL)
-        {
-          FreeRaster(m_pBitMapArray[i]->Planes[depth],
-                     m_ViewWidth, m_ViewHeight);
-
-          m_pBitMapArray[i]->Planes[depth] = NULL;
-        }
-      }
-
-      // Then free the buffer itself
-      FreeVec(m_pBitMapArray[i]);
+      FreeBitMap(m_pBitMapArray[i]);
       m_pBitMapArray[i] = NULL;
     }
   }
@@ -237,8 +207,8 @@ const char* GameViewIntui::LastError() const
       return "Could not get BitMap memory.\n";
       break;
 
-    case IE_GettingBitPlanes:
-      return "Could not get BitPlanes.\n";
+    case IE_GettingInterleavedBitMap:
+      return "Got no *interleaved* BitMap.\n";
       break;
 
     case IE_OpeningScreen:
