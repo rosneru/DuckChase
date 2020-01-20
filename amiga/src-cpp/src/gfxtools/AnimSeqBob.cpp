@@ -62,7 +62,8 @@ bool AnimSeqBob::Load(const char** ppFileNames)
   }
   
   // Create dynamic array for all images according to the number of files
-  m_ppImages = (WORD**) AllocVec(m_ImageCount, MEMF_CLEAR);
+  m_ppImages = (WORD**) AllocVec(m_ImageCount * sizeof(WORD*), 
+                                 MEMF_CLEAR);
   if(m_ppImages == NULL)
   {
     setErrorMsg(m_pAllocError);
