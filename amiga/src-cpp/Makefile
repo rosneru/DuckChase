@@ -25,6 +25,12 @@ endif
 
 DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/amigautils/StopWatch.h \
+		$(SRC_ROOT)/animtools/AnimSeqBase.h \
+		$(SRC_ROOT)/animtools/AnimSeqBob.h \
+		$(SRC_ROOT)/animtools/AnimSeqSprite.h \
+		$(SRC_ROOT)/animtools/ShapeBase.h \
+		$(SRC_ROOT)/animtools/ShapeBob.h \
+		$(SRC_ROOT)/animtools/ShapeSprite.h \
 		$(SRC_ROOT)/animtools/animtools.h \
 		$(SRC_ROOT)/animtools/animtools_proto.h \
 		$(SRC_ROOT)/entities/EntityBase.h \
@@ -35,12 +41,6 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/gameengine/GameViewIntui.h \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.h \
 		$(SRC_ROOT)/gameengine/IGameView.h \
-		$(SRC_ROOT)/gameengine/ShapeBase.h \
-		$(SRC_ROOT)/gameengine/ShapeBob.h \
-		$(SRC_ROOT)/gameengine/ShapeSprite.h \
-		$(SRC_ROOT)/gfxtools/AnimSeqBase.h \
-		$(SRC_ROOT)/gfxtools/AnimSeqBob.h \
-		$(SRC_ROOT)/gfxtools/AnimSeqSprite.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h \
 		$(SRC_ROOT)/Game.h \
@@ -48,6 +48,12 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 
 _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/amigautils/StopWatch.o \
+		$(SRC_ROOT)/animtools/AnimSeqBase.o \
+		$(SRC_ROOT)/animtools/AnimSeqBob.o \
+		$(SRC_ROOT)/animtools/AnimSeqSprite.o \
+		$(SRC_ROOT)/animtools/ShapeBase.o \
+		$(SRC_ROOT)/animtools/ShapeBob.o \
+		$(SRC_ROOT)/animtools/ShapeSprite.o \
 		$(SRC_ROOT)/animtools/animtools.o \
 		$(SRC_ROOT)/entities/EntityBase.o \
 		$(SRC_ROOT)/entities/Bullet.o \
@@ -56,12 +62,6 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.o \
 		$(SRC_ROOT)/gameengine/GameViewIntui.o \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.o \
-		$(SRC_ROOT)/gameengine/ShapeBase.o \
-		$(SRC_ROOT)/gameengine/ShapeBob.o \
-		$(SRC_ROOT)/gameengine/ShapeSprite.o \
-		$(SRC_ROOT)/gfxtools/AnimSeqBase.o \
-		$(SRC_ROOT)/gfxtools/AnimSeqBob.o \
-		$(SRC_ROOT)/gfxtools/AnimSeqSprite.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.o \
 		$(SRC_ROOT)/Game.o \
