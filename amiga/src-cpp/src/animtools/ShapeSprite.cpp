@@ -12,6 +12,7 @@ ShapeSprite::ShapeSprite(int p_ImageWidth, int p_ImageHeight)
     m_ImageHeight(p_ImageHeight),
     m_MaxImages(8),
     m_CurrentImageIndex(-1),
+    m_pAnimSeq(NULL),
     m_pViewPort(NULL),
     m_pSpriteDataArray(NULL),
     m_pCurrentSprite(NULL),
@@ -237,6 +238,13 @@ bool ShapeSprite::IsVisible() const
 {
   return m_pCurrentSprite != m_pEmptySprite;
 }
+
+
+void ShapeSprite::SetAnimSequence(AnimSeqBase* pAnimSequence)
+{
+  m_pAnimSeq = static_cast<AnimSeqBob*>(pAnimSequence);
+}
+
 
 void ShapeSprite::NextImage()
 {

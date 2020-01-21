@@ -5,8 +5,8 @@
 Duck::Duck(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
-    m_Shape(3, 59, 21, 3), // TODO find better solution
-    m_DuckAnim(59, 21, 3),
+    m_Shape(gameView.Depth()),
+    m_DuckAnimSeq(59, 21, 3),
     m_AnimFrameCnt(1),
     m_pLastError(NULL),
     m_XSpeed_pps(0),
@@ -22,30 +22,21 @@ Duck::~Duck()
 
 bool Duck::Init()
 {
+  //
+  // Loading all duck anim sequences
+  //
   const char* ppFiles[]  = {"gfx/duck1_hires.raw",
                             "gfx/duck2_hires.raw",
                             NULL};
 
-  if(m_DuckAnim.Load(ppFiles) == false)
+  if(m_DuckAnimSeq.Load(ppFiles) == false)
   {
-    m_pLastError = m_DuckAnim.ErrorMsg();
+    m_pLastError = m_DuckAnimSeq.ErrorMsg();
     return false;
   }
 
-  //
-  // Loading all the duck images
-  //
-  if(m_Shape.AddRawImage("gfx/duck1_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load duck image #1 (gfx/duck1_hires.raw).\n";
-    return false;
-  }
+  m_Shape.SetAnimSequence(&m_DuckAnimSeq);
 
-  if(m_Shape.AddRawImage("gfx/duck2_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load duck image #2 (gfx/duck2_hires.raw).\n";
-    return false;
-  }
 
   //
   // Initialize postion of the duck bob and add it to the scene

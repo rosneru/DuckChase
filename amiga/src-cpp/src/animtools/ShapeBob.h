@@ -2,6 +2,8 @@
 #define SHAPE_BOB_H
 
 #include <intuition/screens.h>
+
+#include "AnimSeqBob.h"
 #include "animtools.h"
 #include "ShapeBase.h"
 
@@ -25,46 +27,10 @@
 class ShapeBob : public ShapeBase
 {
 public:
-  ShapeBob(short p_pViewDepth,
-           int p_ImageWidth,
-           int p_ImageHeight,
-           short p_ImageDepth);
+  ShapeBob(int rasterDepth);
 
   virtual ~ShapeBob();
 
-  /**
-   * Loads an image from a RAW file with given path and stores it as
-   * next (or first if none already exists) image for this bob.
-   *
-   * In total up to MAX_IMAGES images can be loaded for each bob.
-   *
-   * @returns
-   * On success true; when image can't be loaded because of wrong path,
-   * not enough chip memory or MAX_IMAGES exceeded for this bob, it
-   * returns false.
-   */
-  bool AddRawImage(const char* p_pPath);
-
-  /**
-   * Loads an image from a given array and stores it as next (or first
-   * if none already exists) image for this bob.
-   *
-   * In total up to MAX_IMAGES images can be loaded for each bob.
-   *
-   * @returns
-   * On success true; when image can't be loaded because of not enough
-   * chip memory or MAX_IMAGES exceeded for this bob, it returns false.
-   */
-  bool LoadImgFromArray(const WORD* p_pAddress);
-
-  /**
-   * Getting the struct Bob* of this bob. The bob will be newly created
-   * if it doesn't already exists.
-   *
-   * @returns
-   * The struct bob or null if creation has failed.
-   */
-  struct Bob* Get();
 
   /**
    * Bobs are onyl visible in one deicated RastPort..
@@ -88,27 +54,20 @@ public:
   void SetVisible();
   bool IsVisible() const;
 
+  void SetAnimSequence(AnimSeqBase* pAnimSequence);
   void NextImage();
 
 private:
-  int m_ImageWidth;
-  int m_ImageHeight;
+  int m_RasterDepth;
 
   struct Bob* m_pBob;
+  AnimSeqBob* m_pAnimSeq;
+
   struct RastPort* m_pRastPort;
 
   bool m_bIsVisible;
 
-  WORD* m_pImageShadow;
-
-  int m_CurrentImageIndex;
-  long m_ImageBufSize;               // Buffer for each image in bytes
-  WORD* m_ppImagesArray[MAX_IMAGES]; // Array of pointers to the images
-
-  NEWBOB m_NewBob;
-
-  WORD* createNextImageData();
-  void clear();
+  void createBob();
 };
 
 #endif

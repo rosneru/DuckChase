@@ -10,7 +10,7 @@ public:
   virtual ~ImgLoaderRawPure();
   bool Load(const char* pFileName);
 
-  const WORD* GetImageData();
+  WORD* GetImageData();
 
 private:
   WORD* m_pImageData;

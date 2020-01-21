@@ -1,6 +1,7 @@
 #ifndef HUNTER_H
 #define HUNTER_H
 
+#include "AnimSeqBob.h"
 #include "EntityBase.h"
 #include "IGameView.h"
 #include "ShapeBob.h"
@@ -30,6 +31,7 @@ private:
   IGameView& m_GameView;
 
   ShapeBob m_Shape;
+  AnimSeqBob m_HunterAnimSeq;
 
   const char* m_pLastError;
   int m_AnimFrameCnt;

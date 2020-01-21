@@ -7,7 +7,8 @@
 Hunter::Hunter(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
-    m_Shape(3, 16, 22, 3), // TODO find better solution
+    m_Shape(gameView.Depth()),
+    m_HunterAnimSeq(16, 22, 3),
     m_pLastError(NULL),
     m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
     m_XSpeed_pps(0),
@@ -24,19 +25,19 @@ Hunter::~Hunter()
 bool Hunter::Init()
 {
   //
-  // Loading all the hunter images
+  // Loading all hunter anim sequences
   //
-  if(m_Shape.AddRawImage("gfx/hunter1_hires.raw") == false)
+  const char* ppFiles[]  = {"gfx/hunter1_hires.raw",
+                            "gfx/hunter2_hires.raw",
+                            NULL};
+
+  if(m_HunterAnimSeq.Load(ppFiles) == false)
   {
-    m_pLastError = "Couldn't load duck image #1 (gfx/hunter1_hires.raw).\n";
+    m_pLastError = m_HunterAnimSeq.ErrorMsg();
     return false;
   }
 
-  if(m_Shape.AddRawImage("gfx/hunter2_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load duck image #2 (gfx/hunter2_hires.raw).\n";
-    return false;
-  }
+  m_Shape.SetAnimSequence(&m_HunterAnimSeq);
 
   //
   // Initialize postion of the duck bob and add it to the scene

@@ -31,7 +31,7 @@ private:
   IGameView& m_GameView;
 
   ShapeBob m_Shape;
-  AnimSeqBob m_DuckAnim;
+  AnimSeqBob m_DuckAnimSeq;
 
   int m_AnimFrameCnt;
 

@@ -22,6 +22,27 @@ AnimSeqBase::~AnimSeqBase()
   freeErrorMsg();
 }
 
+int AnimSeqBase::GetWidth()
+{
+  return m_Width;
+}
+
+int AnimSeqBase::GetWordWidth()
+{
+  return m_WordWidth;
+}
+
+int AnimSeqBase::GetHeight()
+{
+  return m_Height;
+}
+
+int AnimSeqBase::GetDepth()
+{
+  return m_Depth;
+}
+
+
 
 const char* AnimSeqBase::ErrorMsg()
 {

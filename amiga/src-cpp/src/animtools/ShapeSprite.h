@@ -1,9 +1,11 @@
 #ifndef SHAPE_SPRITE_H
 #define SHAPE_SPRITE_H
 
+#include <intuition/screens.h>
+
+#include "AnimSeqBob.h"
 #include "ShapeBase.h"
 #include "animtools.h"
-#include <intuition/screens.h>
 
 /**
  * Encapsulates an animatable graphics object using the sprite hardware
@@ -19,7 +21,7 @@
  */
 class ShapeSprite : public ShapeBase
 {
-  public:
+public:
   ShapeSprite(int p_ImageWidth, int p_ImageHeight);
 
   virtual ~ShapeSprite();
@@ -69,13 +71,15 @@ class ShapeSprite : public ShapeBase
   void SetVisible();
   bool IsVisible() const;
 
+  void SetAnimSequence(AnimSeqBase* pAnimSequence);
   void NextImage();
 
-  private:
+private:
   int m_ImageWidth;
   int m_ImageHeight;
   const short m_MaxImages;
   int m_CurrentImageIndex;
+  AnimSeqBob* m_pAnimSeq; // TODO Change type to AnimSeqSprite
 
   struct ViewPort* m_pViewPort;
 
@@ -84,6 +88,7 @@ class ShapeSprite : public ShapeBase
   struct ExtSprite* m_pCurrentSprite;
   struct ExtSprite* m_pEmptySprite;
   int m_HwSpriteNumber;
+
 
   int getNextFreeSpriteImageIdx();
   void clear();

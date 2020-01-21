@@ -6,6 +6,11 @@
 class AnimSeqBase
 {
 public:
+  int GetWidth();
+  int GetWordWidth();
+  int GetHeight();
+  int GetDepth();
+
   const char* ErrorMsg();
 
 protected:

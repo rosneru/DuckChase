@@ -1,126 +1,74 @@
-#include <clib/exec_protos.h>
 #include <clib/dos_protos.h>
+#include <clib/exec_protos.h>
 #include <clib/intuition_protos.h>
 
 #include <graphics/gels.h>
 
-#include "animtools_proto.h"
 #include "ShapeBob.h"
+#include "animtools_proto.h"
 
-ShapeBob::ShapeBob(short p_pViewDepth,
-                 int p_ImageWidth,
-                 int p_ImageHeight,
-                 short p_ImageDepth)
-    : m_ImageWidth(p_ImageWidth),
-      m_ImageHeight(p_ImageHeight),
-      m_pBob(NULL),
-      m_pRastPort(NULL),
-      m_bIsVisible(false),
-      m_pImageShadow(NULL),
-      m_CurrentImageIndex(-1)
+ShapeBob::ShapeBob(int rasterDepth)
+  : m_RasterDepth(rasterDepth),
+    m_pBob(NULL),
+    m_pAnimSeq(NULL),
+    m_pRastPort(NULL),
+    m_bIsVisible(false)
 {
-  // Zeroing all image ptrs of this bob
-  for(int i = 0; i < MAX_IMAGES; i++)
-  {
-    m_ppImagesArray[i] = NULL;
-  }
 
-  // Determine wordWidth and imageBufSize
-  SHORT wordWidth = ((p_ImageWidth + 15) & -16) >> 4;
-  m_ImageBufSize = wordWidth * 2 * p_ImageHeight * p_ImageDepth;
-
-  // Fill the NewBob struct
-  m_NewBob.nb_Image = NULL;                     // Image data
-  m_NewBob.nb_WordWidth = wordWidth;            // Bob width
-  m_NewBob.nb_LineHeight = p_ImageHeight;       // Bob height in lines
-  m_NewBob.nb_ImageDepth = p_ImageDepth;        // Image depth
-  m_NewBob.nb_PlanePick = 7;   // TODO generalize!!             // Planes that get image data
-  m_NewBob.nb_PlaneOnOff = 0;                   // Unused planes to turn on
-  m_NewBob.nb_BFlags = SAVEBACK | OVERLAY;      // Bog flags
-  m_NewBob.nb_DBuf = 1;                         // DoubleBuffering.
-  m_NewBob.nb_RasDepth = p_pViewDepth;          // Depth of the raster
-  m_NewBob.nb_X = 0;                            // Initial x position
-  m_NewBob.nb_Y = 0;                            // Initial y position
-  m_NewBob.nb_HitMask = 0;                      // Hit mask
-  m_NewBob.nb_MeMask = 0;                       // Me mask
 }
 
 ShapeBob::~ShapeBob()
 {
   SetInvisible();
-  clear();
+  
+  if (m_pBob != NULL)
+  {
+    freeBob(m_pBob, m_RasterDepth);
+    m_pBob = NULL;
+  }
 }
 
-
-bool ShapeBob::AddRawImage(const char *p_pPath)
+void ShapeBob::createBob()
 {
-  // Opening the file
-  BPTR fileHandle = Open(p_pPath, MODE_OLDFILE);
-  if (fileHandle == NULL)
+  if (m_pBob != NULL)
   {
-    return false;
+    return;
   }
 
-  WORD* pImageData = createNextImageData();
-  if(pImageData == NULL)
+  if (m_pAnimSeq == NULL)
   {
-    // Image index full or memory allocation failed
-    Close(fileHandle);
-    return false;
+    // An anim must have been added
+    return;
   }
 
-  // Read the file data into target chip memory buffer
-  if (Read(fileHandle, pImageData, m_ImageBufSize) != m_ImageBufSize)
+  WORD* pImageData = m_pAnimSeq->GetFirstImage();
+  if (pImageData == NULL)
   {
-    // Error while reading
-    Close(fileHandle);
-    return false;
+    // At least one image must be loaded
+    return;
   }
 
-  Close(fileHandle);
-  return true;
+  // Create the bob using the first image
+  // Fill the NewBob struct
+  NEWBOB newBob;
+  newBob.nb_Image = pImageData;                     // Img data
+  newBob.nb_WordWidth = m_pAnimSeq->GetWordWidth(); // Img width in words
+  newBob.nb_LineHeight = m_pAnimSeq->GetHeight();   // Img height in lines
+  newBob.nb_ImageDepth = m_pAnimSeq->GetDepth();    // Img depth
+  newBob.nb_PlanePick = 7;                          // Planes that get image data // TODO generalize!!
+  newBob.nb_PlaneOnOff = 0;              // Don't turn on unused planes
+  newBob.nb_BFlags = SAVEBACK | OVERLAY; // Bog flags
+  newBob.nb_DBuf = 1;                    // DoubleBuffering.
+  newBob.nb_RasDepth = m_RasterDepth;    // Depth of the raster
+  newBob.nb_X = 0;                       // Initial x position
+  newBob.nb_Y = 0;                       // Initial y position
+  newBob.nb_HitMask = 0;                 // Hit mask
+  newBob.nb_MeMask = 0;                  // Me mask
+
+  // Create the Bob
+  m_pBob = makeBob(&newBob);
 }
 
-
-bool ShapeBob::LoadImgFromArray(const WORD *p_pAddress)
-{
-  WORD* pImageData = createNextImageData();
-  if(pImageData == NULL)
-  {
-    // Image index full or memory allocation failed
-    return false;
-  }
-
-  // Copy source data to target chip memory buffer
-  for (int i = 0; i < (m_ImageBufSize / 2); i++)
-  {
-    pImageData[i] = p_pAddress[i];
-  }
-
-  return true;
-}
-
-
-struct Bob *ShapeBob::Get()
-{
-  if (m_pBob == NULL)
-  {
-    if(m_ppImagesArray[0] == NULL)
-    {
-      // At least one image must be loaded
-      return NULL;
-    }
-
-    // Bob doesn't exist - create it using the first image of the image
-    // data array pointers
-    m_NewBob.nb_Image = m_ppImagesArray[0];
-
-    // Create the Bob
-    m_pBob = makeBob(&m_NewBob);
-
-    if(m_pBob != NULL)
-    {
-      m_CurrentImageIndex = 0;
 /*
       // Create shadow mask (or'ing all bits of all bitplanes)
       m_pImageShadow = (WORD*) AllocVec(m_NewBob.nb_WordWidth * 2
@@ -148,24 +96,18 @@ struct Bob *ShapeBob::Get()
       // Set the shadow mask to the bob
       m_pBob->ImageShadow = m_pImageShadow;
 */
-    }
-  }
-
-  return m_pBob;
-}
-
 
 void ShapeBob::AddToRastPort(struct RastPort* pRastPort)
 {
-  if(m_pRastPort != NULL)
+  if (m_pRastPort != NULL)
   {
     // RastPort already set
     return;
   }
 
-  Get();
+  createBob();
 
-  if(m_pBob == NULL)
+  if (m_pBob == NULL)
   {
     // No bob to set into RastPort
     return;
@@ -176,10 +118,9 @@ void ShapeBob::AddToRastPort(struct RastPort* pRastPort)
   m_bIsVisible = true;
 }
 
-
 int ShapeBob::XPos() const
 {
-  if(m_pBob == NULL)
+  if (m_pBob == NULL)
   {
     return 0;
   }
@@ -187,10 +128,9 @@ int ShapeBob::XPos() const
   return m_pBob->BobVSprite->X;
 }
 
-
 int ShapeBob::YPos() const
 {
-  if(m_pBob == NULL)
+  if (m_pBob == NULL)
   {
     return 0;
   }
@@ -200,17 +140,27 @@ int ShapeBob::YPos() const
 
 int ShapeBob::Width() const
 {
-  return m_ImageWidth;
+  if(m_pAnimSeq == NULL)
+  {
+    return 0;
+  }
+
+  return m_pAnimSeq->GetWidth();
 }
 
 int ShapeBob::Height() const
 {
-  return m_ImageHeight;
+  if(m_pAnimSeq == NULL)
+  {
+    return 0;
+  }
+
+  return m_pAnimSeq->GetHeight();
 }
 
 void ShapeBob::Move(int x, int y)
 {
-  if(m_pBob == NULL)
+  if (m_pBob == NULL)
   {
     return;
   }
@@ -219,16 +169,15 @@ void ShapeBob::Move(int x, int y)
   m_pBob->BobVSprite->Y = y;
 }
 
-
 void ShapeBob::SetInvisible()
 {
-  if(m_bIsVisible == false)
+  if (m_bIsVisible == false)
   {
     // Already invisible
     return;
   }
 
-  if(m_pBob == NULL)
+  if (m_pBob == NULL)
   {
     return;
   }
@@ -237,21 +186,20 @@ void ShapeBob::SetInvisible()
   m_bIsVisible = false;
 }
 
-
 void ShapeBob::SetVisible()
 {
-  if(m_bIsVisible == true)
+  if (m_bIsVisible == true)
   {
     // Already visible
     return;
   }
 
-  if(m_pBob == NULL)
+  if (m_pBob == NULL)
   {
     return;
   }
 
-  if(m_pRastPort == NULL)
+  if (m_pRastPort == NULL)
   {
     return;
   }
@@ -260,104 +208,41 @@ void ShapeBob::SetVisible()
   m_bIsVisible = true;
 }
 
-
 bool ShapeBob::IsVisible() const
 {
   return m_bIsVisible;
 }
 
+void ShapeBob::SetAnimSequence(AnimSeqBase* pAnimSequence)
+{
+  m_pAnimSeq = static_cast<AnimSeqBob*>(pAnimSequence);
 
-// TODO remove
+  if (m_pBob == NULL)
+  {
+    // If no bob object exists, create it
+    createBob();
+  }
+}
+
 void ShapeBob::NextImage()
 {
-  if(m_bIsVisible == false)
+  if (m_bIsVisible == false)
   {
     // Only animate when bob is visible
     return;
   }
 
-  if(m_CurrentImageIndex < 0)
+  if (m_pAnimSeq == NULL)
   {
-    // No image loaded
     return;
   }
 
-  // Get the image data for the next image
-  int nextIndex = m_CurrentImageIndex + 1;
-
-  if(nextIndex >= MAX_IMAGES)
+  WORD* pNextImg = m_pAnimSeq->GetNextImage();
+  if (pNextImg == NULL)
   {
-    nextIndex = 0;
-  }
-
-  if(m_ppImagesArray[nextIndex] == NULL)
-  {
-    // No next image available, starting again with the first
-    nextIndex = 0;
-  }
-
-  if(nextIndex == m_CurrentImageIndex)
-  {
-    // Nothing has changed
     return;
   }
 
-  WORD* pImageData = m_ppImagesArray[nextIndex];
-  m_pBob->BobVSprite->ImageData = pImageData;
-  m_CurrentImageIndex = nextIndex;
-
+  m_pBob->BobVSprite->ImageData = pNextImg;
   InitMasks(m_pBob->BobVSprite);
-}
-
-
-WORD* ShapeBob::createNextImageData()
-{
-  // Find the next free index in image data array
-  int idx = -1;
-  for(int i = 0; i < MAX_IMAGES; i++)
-  {
-    if(m_ppImagesArray[i] == NULL)
-    {
-      idx = i;
-      break;
-    }
-  }
-
-  if(idx == -1)
-  {
-    // No free image data index found
-    return NULL;
-  }
-
-  // Allocate chip memory
-  m_ppImagesArray[idx] = (WORD*) AllocVec(m_ImageBufSize,
-                                          MEMF_CHIP|MEMF_CLEAR);
-
-  return m_ppImagesArray[idx];
-}
-
-
-void ShapeBob::clear()
-{
-  if (m_pBob != NULL)
-  {
-    freeBob(m_pBob, m_NewBob.nb_RasDepth);
-    m_pBob = NULL;
-  }
-
-  if (m_pImageShadow != NULL)
-  {
-    FreeVec(m_pImageShadow);
-  }
-
-  for(int i = 0; i < MAX_IMAGES; i++)
-  {
-    WORD* pImageData = m_ppImagesArray[i];
-    if (pImageData != NULL)
-    {
-      FreeVec(pImageData);
-    }
-
-    m_ppImagesArray[i] = NULL;
-  }
 }

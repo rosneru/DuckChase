@@ -1,4 +1,10 @@
 {
   "C_Cpp.intelliSenseEngineFallback": "Enabled",
-  "editor.rulers": [72]
+  "editor.rulers": [
+    72
+  ],
+  "files.associations": {
+    "cstdio": "cpp",
+    "cstdlib": "cpp"
+  }
 }

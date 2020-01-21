@@ -68,7 +68,7 @@ bool ImgLoaderRawPure::Load(const char* pFileName)
   return true;
 }
 
-const WORD* ImgLoaderRawPure::GetImageData()
+WORD* ImgLoaderRawPure::GetImageData()
 {
   return m_pImageData;
 }

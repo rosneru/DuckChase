@@ -14,11 +14,13 @@ public:
   virtual ~AnimSeqBob();
   bool Load(const char** ppFileNames);
 
-
+  WORD* GetFirstImage();
+  WORD* GetNextImage();
 
 private:
   ImgLoaderRawPure** m_ppImages;
   size_t m_ImageCount;
+  size_t m_CurrentImageId;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef SHAPE_BASE_H
 #define SHAPE_BASE_H
 
+class AnimSeqBase;
 
 /**
  * Represents a shape, an graphical object which can be moved above the
@@ -74,8 +75,14 @@ public:
   virtual bool IsVisible() const = 0;
 
   /**
-   * Sets the next anim image to the object. After the last image
-   * the first image is displayed again.
+   * Set a sequence of images to the anim object which displayed as the
+   * shapes main content. It can be animated by calling \ref NextImage.
+   */
+  virtual void SetAnimSequence(AnimSeqBase* pAnimSequence) = 0;
+
+  /**
+   * Set the shape to display the next anim image. It's done circular:
+   * After the last image the first image is displayed again.
    */
   virtual void NextImage() = 0;
 
