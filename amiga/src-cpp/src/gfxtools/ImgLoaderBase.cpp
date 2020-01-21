@@ -1,36 +1,38 @@
+#include <clib/dos_protos.h>
 #include <clib/exec_protos.h>
+#include <dos/dos.h>
 #include <exec/memory.h>
 
 #include <string.h>
 
-#include "AnimSeqBase.h"
+#include "ImgLoaderBase.h"
 
-AnimSeqBase::AnimSeqBase(int width, int height, int depth)
+ImgLoaderBase::ImgLoaderBase(int width, int height, int depth)
   : m_Width(width),
     m_Height(height),
     m_Depth(depth),
     m_pErrorMsg(NULL),
-    m_pInternalError("Internal error in AnimSeq."),
-    m_pLoadError("Failed to load file: "),
-    m_pAllocError("Failed to alloc memory for anim sequence object.")
+    m_pAllocError("Failed to alloc memory for anim sequence object."),
+    m_pInternalError("Internal error in ImgLoaderBase."),
+    m_pLoadError("Failed to load file: ")
 {
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
 }
 
-AnimSeqBase::~AnimSeqBase()
+ImgLoaderBase::~ImgLoaderBase()
 {
   freeErrorMsg();
 }
 
 
-const char* AnimSeqBase::ErrorMsg()
+const char* ImgLoaderBase::ErrorMsg()
 {
   return m_pErrorMsg;
 }
 
 
-void AnimSeqBase::setErrorMsg(const char* pMsgPart1, 
-                              const char* pMsgPart2)
+void ImgLoaderBase::setErrorMsg(const char* pMsgPart1, 
+                                const char* pMsgPart2)
 {
   freeErrorMsg();
 
@@ -41,7 +43,7 @@ void AnimSeqBase::setErrorMsg(const char* pMsgPart1,
 }
 
 
-void AnimSeqBase::setErrorMsg(const char* pMsg)
+void ImgLoaderBase::setErrorMsg(const char* pMsg)
 {
   freeErrorMsg();
   
@@ -50,7 +52,7 @@ void AnimSeqBase::setErrorMsg(const char* pMsg)
   strcpy(m_pErrorMsg, pMsg);
 }
 
-void AnimSeqBase::freeErrorMsg()
+void ImgLoaderBase::freeErrorMsg()
 {
   if(m_pErrorMsg != NULL)
   {

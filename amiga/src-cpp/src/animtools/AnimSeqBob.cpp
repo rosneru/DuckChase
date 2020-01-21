@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ImgLoaderRawPure.h"
 #include "AnimSeqBob.h"
+
 
 AnimSeqBob::AnimSeqBob(int width, int height, int depth)
   : AnimSeqBase(width, height, depth),
@@ -22,12 +24,12 @@ AnimSeqBob::~AnimSeqBob()
     {
       if(m_ppImages[i] != NULL)
       {
-        FreeVec(m_ppImages[i]);
+        delete m_ppImages[i];
         m_ppImages[i] = NULL;
       }
     }
 
-    FreeVec(m_ppImages);
+    delete[] m_ppImages;
     m_ppImages = NULL;
   }
 }
@@ -62,23 +64,28 @@ bool AnimSeqBob::Load(const char** ppFileNames)
   }
   
   // Create dynamic array for all images according to the number of files
-  m_ppImages = (WORD**) AllocVec(m_ImageCount * sizeof(WORD*), 
-                                 MEMF_CLEAR);
+  m_ppImages = (ImgLoaderRawPure**) new ImgLoaderRawPure*[m_ImageCount];
   if(m_ppImages == NULL)
   {
     setErrorMsg(m_pAllocError);
     return false;
   }
 
-  // Load all files, for BOB data thei're supposed to be RAW
+  // Load all files
   for(size_t i = 0; i < m_ImageCount; i++)
   {
-    m_ppImages[i] = loadRawImageData(ppFileNames[i]);
-    if(m_ppImages[i] == NULL)
+    // BOB data are pure RAW data
+    ImgLoaderRawPure* pImg = new ImgLoaderRawPure(m_Width, 
+                                                  m_Height, 
+                                                  m_Depth);
+
+    if(pImg->Load(ppFileNames[i]) == false )
     {
-      setErrorMsg(m_pLoadError, ppFileNames[i]);
+      setErrorMsg(pImg->ErrorMsg());
       return false;
     }
+
+    m_ppImages[i] = pImg;
   }
 
   return true;

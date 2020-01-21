@@ -5,6 +5,8 @@
 
 #include "AnimSeqBase.h"
 
+class ImgLoaderRawPure;
+
 class AnimSeqBob : public AnimSeqBase
 {
 public: 
@@ -15,7 +17,7 @@ public:
 
 
 private:
-  WORD** m_ppImages;
+  ImgLoaderRawPure** m_ppImages;
   size_t m_ImageCount;
 };
 

@@ -41,6 +41,9 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/gameengine/GameViewIntui.h \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.h \
 		$(SRC_ROOT)/gameengine/IGameView.h \
+		$(SRC_ROOT)/gfxtools/ImgLoaderBase.h \
+		$(SRC_ROOT)/gfxtools/ImgLoaderRawBitMap.h \
+		$(SRC_ROOT)/gfxtools/ImgLoaderRawPure.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h \
 		$(SRC_ROOT)/Game.h \
@@ -62,6 +65,9 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.o \
 		$(SRC_ROOT)/gameengine/GameViewIntui.o \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.o \
+		$(SRC_ROOT)/gfxtools/ImgLoaderBase.o \
+		$(SRC_ROOT)/gfxtools/ImgLoaderRawBitMap.o \
+		$(SRC_ROOT)/gfxtools/ImgLoaderRawPure.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.o \
 		$(SRC_ROOT)/Game.o \
