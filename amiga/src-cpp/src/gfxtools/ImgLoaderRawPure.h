@@ -3,6 +3,14 @@
 
 #include "ImgLoaderBase.h"
 
+/**
+ * Class for loading a RAW image file into an ImagData array. This is
+ * the format which can be displayed directly as a bob.
+ *
+ *
+ * @author Uwe Rosner
+ * @date 21/01/2020
+ */
 class ImgLoaderRawPure : public ImgLoaderBase
 {
 public: 

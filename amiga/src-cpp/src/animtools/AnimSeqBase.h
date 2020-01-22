@@ -3,6 +3,12 @@
 
 #include <exec/types.h>
 
+/**
+ * Encapsulates a generic anim sequence for shapes.
+ *
+ * @author Uwe Rosner
+ * @date 19/01/2020
+ */
 class AnimSeqBase
 {
 public:

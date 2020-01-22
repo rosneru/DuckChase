@@ -3,6 +3,12 @@
 
 #include <exec/types.h>
 
+/**
+ * Encapsulates a generic image loader.
+ *
+ * @author Uwe Rosner
+ * @date 21/01/2020
+ */
 class ImgLoaderBase
 {
 public:

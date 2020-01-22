@@ -3,6 +3,12 @@
 
 #include "ImgLoaderBase.h"
 
+/**
+ * Class for loading a RAW image file into a Bitmap.
+ *
+ * @author Uwe Rosner
+ * @date 21/01/2020
+ */
 class ImgLoaderRawBitMap : public ImgLoaderBase
 {
 public: 
