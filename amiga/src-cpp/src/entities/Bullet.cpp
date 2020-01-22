@@ -32,7 +32,6 @@ bool Bullet::Init()
   // Loading all bullet anim sequences
   //
   const char* ppFiles[]  = {"gfx/bullet1_hires.raw",
-                            "gfx/bullet2_hires.raw",
                             "gfx/bullet3_hires.raw",
                             "gfx/bullet4_hires.raw",
                             "gfx/bullet5_hires.raw",

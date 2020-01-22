@@ -41,7 +41,7 @@ private:
   Picture m_PicBackground;
   Duck m_Duck;
   Hunter m_Hunter;
-  //Bullet m_Bullet;
+  Bullet m_Bullet;
 
   bool gameLoop();
 };
