@@ -28,6 +28,7 @@ Bullet::~Bullet()
 
 bool Bullet::Init()
 {
+
   //
   // Loading all bullet anim sequences
   //

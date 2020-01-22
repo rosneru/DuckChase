@@ -112,6 +112,34 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "animtools/AnimSeqBase.cpp"
+"animtools/AnimSeqBase.cpp"
+"animtools/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimSeqBase.o" "objects_debug/AnimSeqBase.debug"
+""
+1 1
+File
+1 "animtools/AnimSeqBob.cpp"
+"animtools/AnimSeqBob.cpp"
+"animtools/AnimSeqBob.h"
+"animtools/AnimSeqBase.h"
+"gfxtools/ImgLoaderBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimSeqBob.o" "objects_debug/AnimSeqBob.debug"
+""
+1 1
+File
+1 "animtools/AnimSeqSprite.cpp"
+"animtools/AnimSeqSprite.cpp"
+"animtools/AnimSeqSprite.h"
+"animtools/AnimSeqBase.h"
+"gfxtools/ImgLoaderBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimSeqSprite.o" "objects_debug/AnimSeqSprite.debug"
+""
+1 1
+File
 1 "animtools/animtools.cpp"
 "animtools/animtools.cpp"
 "animtools/animtools.h"
@@ -121,12 +149,48 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "animtools/ShapeBase.cpp"
+"animtools/ShapeBase.cpp"
+"animtools/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeBase.o" "objects_debug/ShapeBase.debug"
+""
+1 1
+File
+1 "animtools/ShapeBob.cpp"
+"animtools/ShapeBob.cpp"
+"animtools/ShapeBob.h"
+"animtools/AnimSeqBob.h"
+"animtools/AnimSeqBase.h"
+"animtools/animtools.h"
+"animtools/ShapeBase.h"
+"animtools/animtools_proto.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
+""
+1 1
+File
+1 "animtools/ShapeSprite.cpp"
+"animtools/ShapeSprite.cpp"
+"animtools/ShapeSprite.h"
+"animtools/AnimSeqSprite.h"
+"animtools/AnimSeqBase.h"
+"animtools/ShapeBase.h"
+"animtools/animtools.h"
+"animtools/animtools_proto.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeSprite.o" "objects_debug/ShapeSprite.debug"
+""
+1 1
+File
 1 "entities/Bullet.cpp"
 "entities/Bullet.cpp"
 "entities/Bullet.h"
 "entities/EntityBase.h"
 "entities/Hunter.h"
-"gameengine/ShapeBase.h"
+"animtools/AnimSeqBase.h"
+"animtools/animtools.h"
+"animtools/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Bullet.o" "objects_debug/Bullet.debug"
 ""
@@ -136,8 +200,9 @@ File
 "entities/Duck.cpp"
 "entities/Duck.h"
 "entities/EntityBase.h"
-"gameengine/ShapeBase.h"
-"gfxtools/AnimSeqBase.h"
+"animtools/AnimSeqBase.h"
+"animtools/animtools.h"
+"animtools/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Duck.o" "objects_debug/Duck.debug"
 ""
@@ -155,7 +220,9 @@ File
 "entities/Hunter.cpp"
 "entities/Hunter.h"
 "entities/EntityBase.h"
-"gameengine/ShapeBase.h"
+"animtools/AnimSeqBase.h"
+"animtools/animtools.h"
+"animtools/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Hunter.o" "objects_debug/Hunter.debug"
 ""
@@ -167,9 +234,9 @@ File
 "Game.h"
 "entities/EntityBase.h"
 "entities/Hunter.h"
-"gameengine/ShapeBase.h"
 "PointsDisplay.h"
-"gfxtools/AnimSeqBase.h"
+"animtools/AnimSeqBase.h"
+"animtools/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -186,6 +253,8 @@ Storm Shell Project (Dependencies)
 File
 1 "gameengine/GameViewIntui.cpp"
 "gameengine/GameViewIntui.cpp"
+"gameengine/GameViewIntui.h"
+"gameengine/IGameView.h"
 Storm Shell Project (Dependencies)
 "objects_debug/GameViewIntui.o" "objects_debug/GameViewIntui.debug"
 ""
@@ -200,56 +269,29 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "gameengine/ShapeBase.cpp"
-"gameengine/ShapeBase.cpp"
-"gameengine/ShapeBase.h"
+1 "gfxtools/ImgLoaderBase.cpp"
+"gfxtools/ImgLoaderBase.cpp"
+"gfxtools/ImgLoaderBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/ShapeBase.o" "objects_debug/ShapeBase.debug"
+"objects_debug/ImgLoaderBase.o" "objects_debug/ImgLoaderBase.debug"
 ""
 1 1
 File
-1 "gameengine/ShapeBob.cpp"
-"gameengine/ShapeBob.cpp"
-"animtools/animtools.h"
-"gameengine/ShapeBob.h"
-"gameengine/ShapeBase.h"
+1 "gfxtools/ImgLoaderRawBitMap.cpp"
+"gfxtools/ImgLoaderRawBitMap.cpp"
+"gfxtools/ImgLoaderRawBitMap.h"
+"gfxtools/ImgLoaderBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
+"objects_debug/ImgLoaderRawBitMap.o" "objects_debug/ImgLoaderRawBitMap.debug"
 ""
 1 1
 File
-1 "gameengine/ShapeSprite.cpp"
-"gameengine/ShapeSprite.cpp"
-"gameengine/ShapeSprite.h"
-"gameengine/ShapeBase.h"
+1 "gfxtools/ImgLoaderRawPure.cpp"
+"gfxtools/ImgLoaderRawPure.cpp"
+"gfxtools/ImgLoaderRawPure.h"
+"gfxtools/ImgLoaderBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/ShapeSprite.o" "objects_debug/ShapeSprite.debug"
-""
-1 1
-File
-1 "gfxtools/AnimSeqBase.cpp"
-"gfxtools/AnimSeqBase.cpp"
-"gfxtools/AnimSeqBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/AnimSeqBase.o" "objects_debug/AnimSeqBase.debug"
-""
-1 1
-File
-1 "gfxtools/AnimSeqBob.cpp"
-"gfxtools/AnimSeqBob.cpp"
-"gfxtools/AnimSeqBob.h"
-"gfxtools/AnimSeqBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/AnimSeqBob.o" "objects_debug/AnimSeqBob.debug"
-""
-1 1
-File
-1 "gfxtools/AnimSeqSprite.cpp"
-"gfxtools/AnimSeqSprite.cpp"
-"gfxtools/AnimSeqSprite.h"
-"gfxtools/AnimSeqBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/AnimSeqSprite.o" "objects_debug/AnimSeqSprite.debug"
+"objects_debug/ImgLoaderRawPure.o" "objects_debug/ImgLoaderRawPure.debug"
 ""
 1 1
 File
@@ -274,9 +316,9 @@ File
 "Game.h"
 "entities/EntityBase.h"
 "entities/Hunter.h"
-"gameengine/ShapeBase.h"
 "PointsDisplay.h"
-"gfxtools/AnimSeqBase.h"
+"animtools/AnimSeqBase.h"
+"animtools/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -308,6 +350,27 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "animtools/AnimSeqBase.h"
+"animtools/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "animtools/AnimSeqBob.h"
+"animtools/AnimSeqBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "animtools/AnimSeqSprite.h"
+"animtools/AnimSeqSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "animtools/animtools.h"
 "animtools/animtools.h"
 Storm Shell Project (Dependencies)
@@ -317,6 +380,27 @@ Storm Shell Project (Dependencies)
 File
 2 "animtools/animtools_proto.h"
 "animtools/animtools_proto.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "animtools/ShapeBase.h"
+"animtools/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "animtools/ShapeBob.h"
+"animtools/ShapeBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "animtools/ShapeSprite.h"
+"animtools/ShapeSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -385,43 +469,22 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "gameengine/ShapeBase.h"
-"gameengine/ShapeBase.h"
+2 "gfxtools/ImgLoaderBase.h"
+"gfxtools/ImgLoaderBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gameengine/ShapeBob.h"
-"gameengine/ShapeBob.h"
+2 "gfxtools/ImgLoaderRawBitMap.h"
+"gfxtools/ImgLoaderRawBitMap.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gameengine/ShapeSprite.h"
-"gameengine/ShapeSprite.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gfxtools/AnimSeqBase.h"
-"gfxtools/AnimSeqBase.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gfxtools/AnimSeqBob.h"
-"gfxtools/AnimSeqBob.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "gfxtools/AnimSeqSprite.h"
-"gfxtools/AnimSeqSprite.h"
+2 "gfxtools/ImgLoaderRawPure.h"
+"gfxtools/ImgLoaderRawPure.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

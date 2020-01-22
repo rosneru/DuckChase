@@ -47,7 +47,7 @@ void ShapeSprite::SetViewPort(struct ViewPort* pViewPort)
 {
   if (m_pViewPort != NULL)
   {
-    // RastPort already set
+    // Already set
     return;
   }
 
@@ -88,12 +88,7 @@ int ShapeSprite::Height() const
 
 void ShapeSprite::Move(int x, int y)
 {
-  if (m_pCurrentSprite == NULL)
-  {
-    return;
-  }
-
-  if (m_pViewPort == NULL)
+  if ((m_pCurrentSprite == NULL) || (m_pViewPort == NULL))
   {
     return;
   }
@@ -104,12 +99,7 @@ void ShapeSprite::Move(int x, int y)
 
 void ShapeSprite::SetInvisible()
 {
-  if (m_pCurrentSprite == NULL)
-  {
-    return;
-  }
-
-  if (m_pViewPort == NULL)
+  if ((m_pCurrentSprite == NULL) || (m_pViewPort == NULL))
   {
     return;
   }
@@ -135,6 +125,12 @@ void ShapeSprite::SetVisible()
 
 bool ShapeSprite::IsVisible() const
 {
+  if ((m_pCurrentSprite == NULL) || 
+      (m_pViewPort == NULL))
+  {
+    return false;
+  }
+
   return m_pCurrentSprite != m_pEmptySprite;
 }
 
@@ -161,12 +157,9 @@ void ShapeSprite::NextImage()
     return;
   }
 
-  if (m_pViewPort == NULL)
-  {
-    return;
-  }
-
-  if (m_pAnimSeq == NULL)
+  if ((m_pCurrentSprite == NULL) || 
+      (m_pViewPort == NULL) || 
+      (m_pAnimSeq == NULL))
   {
     return;
   }
@@ -180,7 +173,7 @@ void ShapeSprite::NextImage()
 
   struct ExtSprite* pOldSprite = m_pCurrentSprite;
   m_pCurrentSprite = pNextImg;
-  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_END);
+  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_DONE);
 }
 
 void ShapeSprite::createSprite()
@@ -200,7 +193,7 @@ void ShapeSprite::createSprite()
   // Successful loading of the first sprite requires that it also can
   // be allocated from hardware
   m_HardwareSpriteNumber = GetExtSprite(m_pAnimSeq->GetFirstImage(),
-                                       TAG_END);
+                                        TAG_END);
 
   if (m_HardwareSpriteNumber < 0)
   {
