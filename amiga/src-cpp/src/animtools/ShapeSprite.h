@@ -3,7 +3,7 @@
 
 #include <intuition/screens.h>
 
-#include "AnimSeqBob.h"
+#include "AnimSeqSprite.h"
 #include "ShapeBase.h"
 #include "animtools.h"
 
@@ -25,19 +25,6 @@ public:
   ShapeSprite(int p_ImageWidth, int p_ImageHeight);
 
   virtual ~ShapeSprite();
-
-  /**
-   * Loads an image from a RAW file with given path and stores it as
-   * next (or first if none already exists) image for this sprite.
-   *
-   * In total up to MAX_IMAGES images can be loaded for each sprite.
-   *
-   * @returns
-   * On success true; when image can't be loaded because of wrong path,
-   * not enough chip memory or MAX_IMAGES exceeded for this sprite, it
-   * returns false.
-   */
-  bool AddRawImage(const char* p_pPath);
 
   /**
    * Getting the struct Sprite* of this sprite. The sprite will be newly
@@ -75,23 +62,20 @@ public:
   void NextImage();
 
 private:
-  int m_ImageWidth;
-  int m_ImageHeight;
-  const short m_MaxImages;
-  int m_CurrentImageIndex;
-  AnimSeqBob* m_pAnimSeq; // TODO Change type to AnimSeqSprite
+  int m_Width;
+  int m_Height;
+
+  AnimSeqSprite* m_pAnimSeq;
 
   struct ViewPort* m_pViewPort;
 
   long m_ImageBufSize; // Buffer for each image in bytes
-  struct ExtSprite** m_pSpriteDataArray; // Array of pointers to the images
-  struct ExtSprite* m_pCurrentSprite;
   struct ExtSprite* m_pEmptySprite;
-  int m_HwSpriteNumber;
+  struct ExtSprite* m_pCurrentSprite;
+  int m_HardwareSpriteNumber;
 
 
-  int getNextFreeSpriteImageIdx();
-  void clear();
+  void createSprite();
 };
 
 #endif

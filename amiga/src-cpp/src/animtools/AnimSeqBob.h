@@ -25,6 +25,7 @@ public:
 
   WORD* GetFirstImage();
   WORD* GetNextImage();
+  WORD* GetCurrentImage();
 
 private:
   ImgLoaderRawPure** m_ppImages;

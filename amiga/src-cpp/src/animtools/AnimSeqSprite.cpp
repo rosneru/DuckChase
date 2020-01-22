@@ -65,7 +65,7 @@ bool AnimSeqSprite::Load(const char** ppFileNames)
 
   // Create a dynamic array for all images according to the number of
   // files
-  m_ppImages = (struct ExtSprite**) AllocVec(
+  m_ppImages = (struct ExtSprite**)AllocVec(
     m_ImageCount * sizeof(struct ExtSprite*), MEMF_ANY);
 
   if (m_ppImages == NULL)
@@ -87,9 +87,9 @@ bool AnimSeqSprite::Load(const char** ppFileNames)
     }
 
     pSpriteImage = AllocSpriteData(image.GetBitMap(), 
-                                  SPRITEA_Width, m_Width,
-                                  TAG_DONE);
-    if(pSpriteImage == NULL)
+                                   SPRITEA_Width, m_Width, 
+                                   TAG_DONE);
+    if (pSpriteImage == NULL)
     {
       setErrorMsg(m_pAllocError);
       return false;
@@ -111,11 +111,6 @@ struct ExtSprite* AnimSeqSprite::GetFirstImage()
   // Select the first image
   m_CurrentImageId = 0;
 
-  if (m_ppImages[m_CurrentImageId] == NULL)
-  {
-    return NULL;
-  }
-
   return m_ppImages[m_CurrentImageId];
 }
 
@@ -133,7 +128,12 @@ struct ExtSprite* AnimSeqSprite::GetNextImage()
     m_CurrentImageId = 0;
   }
 
-  if (m_ppImages[m_CurrentImageId] == NULL)
+  return m_ppImages[m_CurrentImageId];
+}
+
+struct ExtSprite* AnimSeqSprite::GetCurrentImage()
+{
+  if ((m_ppImages == NULL) || (m_ImageCount == 0))
   {
     return NULL;
   }

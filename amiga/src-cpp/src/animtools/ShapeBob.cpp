@@ -215,6 +215,11 @@ bool ShapeBob::IsVisible() const
 
 void ShapeBob::SetAnimSequence(AnimSeqBase* pAnimSequence)
 {
+  if(pAnimSequence == NULL)
+  {
+    return;
+  }
+
   m_pAnimSeq = static_cast<AnimSeqBob*>(pAnimSequence);
 
   if (m_pBob == NULL)

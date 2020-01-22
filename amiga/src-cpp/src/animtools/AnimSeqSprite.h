@@ -25,6 +25,7 @@ public:
 
   struct ExtSprite* GetFirstImage();
   struct ExtSprite* GetNextImage();
+  struct ExtSprite* GetCurrentImage();
 
 private:
   struct ExtSprite** m_ppImages;

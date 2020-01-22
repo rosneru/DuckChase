@@ -1,6 +1,7 @@
 #ifndef BULLET_H
 #define BULLET_H
 
+#include "AnimSeqSprite.h"
 #include "EntityBase.h"
 #include "Hunter.h"
 #include "IGameView.h"
@@ -33,6 +34,7 @@ private:
   Hunter& m_Hunter;
 
   ShapeSprite m_Shape;
+  AnimSeqSprite m_BulletAnimSeq;
 
   const char* m_pLastError;
 

@@ -130,3 +130,13 @@ WORD* AnimSeqBob::GetNextImage()
 
   return m_ppImages[m_CurrentImageId]->GetImageData();
 }
+
+WORD* AnimSeqBob::GetCurrentImage()
+{
+  if ((m_ppImages == NULL) || (m_ImageCount == 0))
+  {
+    return NULL;
+  }
+
+  return m_ppImages[m_CurrentImageId]->GetImageData();
+}

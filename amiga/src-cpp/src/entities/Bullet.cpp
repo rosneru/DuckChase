@@ -10,6 +10,7 @@ Bullet::Bullet(IGameView& gameView, Hunter& hunter)
     m_GameView(gameView),
     m_Hunter(hunter),
     m_Shape(16, 13),    // TODO Remove constants / find better solution
+    m_BulletAnimSeq(16, 13, 2),
     m_pLastError(NULL),
     m_AnimFrameCnt(1),
     m_XSpeed_pps(0),
@@ -28,59 +29,24 @@ Bullet::~Bullet()
 bool Bullet::Init()
 {
   //
-  // Loading all the hunter images
+  // Loading all bullet anim sequences
   //
-  if(m_Shape.AddRawImage("gfx/bullet1_hires.raw") == false)
+  const char* ppFiles[]  = {"gfx/bullet1_hires.raw",
+                            "gfx/bullet2_hires.raw",
+                            "gfx/bullet3_hires.raw",
+                            "gfx/bullet4_hires.raw",
+                            "gfx/bullet5_hires.raw",
+                            "gfx/bullet6_hires.raw",
+                            "gfx/bullet7_hires.raw",
+                            NULL};
+
+  if(m_BulletAnimSeq.Load(ppFiles) == false)
   {
-    m_pLastError = "Couldn't load bullet image #1 (gfx/bullet1_hires.raw).\n";
+    m_pLastError = m_BulletAnimSeq.ErrorMsg();
     return false;
   }
 
-  return false;
-/*
-  if(AddRawImage("gfx/bullet2_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #2 (gfx/bullet2_hires.raw).\n";
-    return false;
-  }
-*/
-  if(m_Shape.AddRawImage("gfx/bullet3_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #3 (gfx/bullet3_hires.raw).\n";
-    return false;
-  }
-
-  if(m_Shape.AddRawImage("gfx/bullet4_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #4 (gfx/bullet4_hires.raw).\n";
-    return false;
-  }
-
-  if(m_Shape.AddRawImage("gfx/bullet5_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #5 (gfx/bullet5_hires.raw).\n";
-    return false;
-  }
-
-  if(m_Shape.AddRawImage("gfx/bullet6_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #6 (gfx/bullet6_hires.raw).\n";
-    return false;
-  }
-
-  if(m_Shape.AddRawImage("gfx/bullet7_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #7 (gfx/bullet7_hires.raw).\n";
-    return false;
-  }
-/*
-  if(AddRawImage("gfx/bullet8_hires.raw") == false)
-  {
-    m_pLastError = "Couldn't load bullet image #8 (gfx/bullet8_hires.raw).\n";
-    return false;
-  }
-*/
-
+  m_Shape.SetAnimSequence(&m_BulletAnimSeq);
 
   //
   // Set the colors for the sprite
