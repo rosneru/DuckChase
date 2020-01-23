@@ -178,16 +178,33 @@ void ShapeSprite::NextImage()
 
 void ShapeSprite::createSprite()
 {
-  if (m_HardwareSpriteNumber >= 0)
+  if ((m_pAnimSeq == NULL) || (m_HardwareSpriteNumber >= 0))
   {
-    // Hardware sprite and empty sprite already allocated
     return;
   }
 
   // Allocate the empty sprite data (for setting sprite invisible)
   if (m_pEmptySprite == NULL)
   {
-    m_pEmptySprite = AllocSpriteData(NULL, TAG_END);
+    struct BitMap* pBitMap = AllocBitMap(m_pAnimSeq->GetWidth(),
+                                         m_pAnimSeq->GetHeight(),
+                                         m_pAnimSeq->GetDepth(),
+                                         BMF_CLEAR,
+                                         NULL);
+    if(pBitMap == NULL)
+    {
+      // Not enough memory for empty sprite bitmap
+      return;
+    }
+
+    m_pEmptySprite = AllocSpriteData(pBitMap, TAG_END);
+    if(m_pEmptySprite == NULL)
+    {
+      // Not enough memory for empty sprite
+      return;
+    }
+
+    FreeBitMap(pBitMap);
   }
 
   // Successful loading of the first sprite requires that it also can
