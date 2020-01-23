@@ -207,21 +207,13 @@ void ShapeSprite::createSprite()
     FreeBitMap(pBitMap);
   }
 
-  // Successful loading of the first sprite requires that it also can
-  // be allocated from hardware
-  m_HardwareSpriteNumber = GetExtSprite(m_pAnimSeq->GetFirstImage(),
-                                        TAG_END);
+  // Trying to allocate a hardware sprite
+  m_pCurrentSprite = m_pAnimSeq->GetFirstImage();
+  m_HardwareSpriteNumber = GetExtSprite(m_pCurrentSprite, TAG_DONE);
 
   if (m_HardwareSpriteNumber < 0)
   {
     // No hardware sprite available
-    return;
+    m_pCurrentSprite = NULL;
   }
-
-  // Now this is the current sprite until the image is changed e.g. by
-  // calling NextImage()
-  m_pCurrentSprite = m_pAnimSeq->GetCurrentImage();
-
-  // Relatively safe way to use sprite 0 as demonstrated by demo AABoing
-  // m_pCurrentSprite->es_SimpleSprite.num = 0;
 }

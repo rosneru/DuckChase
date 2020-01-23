@@ -29,12 +29,6 @@ bool ImgLoaderRawPure::Load(const char* pFileName)
     return false;
   }
 
-  if(m_pImageData != NULL)
-  {
-    setErrorMsg(m_pInternalError);
-    return false;
-  }
-
   BPTR fileHandle = Open(pFileName, MODE_OLDFILE);
   if (fileHandle == 0)
   {
@@ -45,13 +39,15 @@ bool ImgLoaderRawPure::Load(const char* pFileName)
   // Determine needed memory size for image data
   LONG bufSizeBytes = m_WordWidth * 2 * m_Height * m_Depth;
 
-  m_pImageData = (WORD*) AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(m_pImageData == NULL)
   {
-    setErrorMsg(m_pAllocError);
-    Close(fileHandle);
-    FreeVec(m_pImageData);
-    return false;
+    m_pImageData = (WORD*) AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
+    if(m_pImageData == NULL)
+    {
+      setErrorMsg(m_pAllocError);
+      Close(fileHandle);
+      return false;
+    }
   }
 
   // Read the file data into target chip memory buffer
@@ -61,6 +57,7 @@ bool ImgLoaderRawPure::Load(const char* pFileName)
     setErrorMsg(m_pLoadError, pFileName);
     Close(fileHandle);
     FreeVec(m_pImageData);
+    m_pImageData = NULL;
     return false;
   }
 

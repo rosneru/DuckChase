@@ -14,6 +14,16 @@ class ImgLoaderRawBitMap : public ImgLoaderBase
 public: 
   ImgLoaderRawBitMap(int width, int height, int depth);
   virtual ~ImgLoaderRawBitMap();
+
+  /**
+   * Loading the raw image of given filename into a bitmap. Dimensions
+   * of the image have to be set in constructor.
+   *
+   * NOTE: Can be called multiple times to load more images with the
+   * same dimensions.
+   *
+   * @returns On success: true, on failure: false
+   */
   bool Load(const char* pFileName);
 
   struct BitMap* GetBitMap();
