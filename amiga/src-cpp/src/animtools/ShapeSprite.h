@@ -27,7 +27,7 @@
 class ShapeSprite : public ShapeBase
 {
 public:
-  ShapeSprite(int p_ImageWidth, int p_ImageHeight);
+  ShapeSprite();
 
   virtual ~ShapeSprite();
 
@@ -67,9 +67,6 @@ public:
   void NextImage();
 
 private:
-  int m_Width;
-  int m_Height;
-
   AnimSeqSprite* m_pAnimSeq;
 
   struct ViewPort* m_pViewPort;

@@ -6,7 +6,7 @@ Duck::Duck(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_Shape(gameView.Depth()),
-    m_DuckAnimSeq(59, 21, 3),
+    m_DuckAnimSeq(59, 21, 3), // width, height, depth of each anim image
     m_AnimFrameCnt(1),
     m_pLastError(NULL),
     m_XSpeed_pps(0),

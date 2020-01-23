@@ -7,10 +7,8 @@
 #include "ShapeSprite.h"
 #include "animtools_proto.h"
 
-ShapeSprite::ShapeSprite(int width, int height)
-  : m_Width(width),
-    m_Height(height),
-    m_pAnimSeq(NULL),
+ShapeSprite::ShapeSprite()
+  : m_pAnimSeq(NULL),
     m_pViewPort(NULL),
     m_pEmptySprite(NULL),
     m_pCurrentSprite(NULL),
@@ -78,12 +76,12 @@ int ShapeSprite::YPos() const
 
 int ShapeSprite::Width() const
 {
-  return m_Width;
+  return m_pAnimSeq->GetWidth();
 }
 
 int ShapeSprite::Height() const
 {
-  return m_Height;
+  return m_pAnimSeq->GetHeight();
 }
 
 void ShapeSprite::Move(int x, int y)

@@ -9,8 +9,8 @@ Bullet::Bullet(IGameView& gameView, Hunter& hunter)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_Hunter(hunter),
-    m_Shape(16, 13),    // TODO Remove constants / find better solution
-    m_BulletAnimSeq(16, 13, 2),
+    m_Shape(),
+    m_BulletAnimSeq(16, 13, 2), // width, height, depth of each anim image
     m_pLastError(NULL),
     m_AnimFrameCnt(1),
     m_XSpeed_pps(0),
