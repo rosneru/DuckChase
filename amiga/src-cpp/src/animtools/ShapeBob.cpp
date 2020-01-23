@@ -97,7 +97,7 @@ void ShapeBob::createBob()
       m_pBob->ImageShadow = m_pImageShadow;
 */
 
-void ShapeBob::AddToRastPort(struct RastPort* pRastPort)
+void ShapeBob::SetRastPort(struct RastPort* pRastPort)
 {
   if (m_pRastPort != NULL)
   {

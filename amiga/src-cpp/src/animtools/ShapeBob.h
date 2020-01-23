@@ -15,12 +15,16 @@
  * Currently it is using the animtools structures and functions as
  * presented in the RKRM libraries.
  *
- * A bob can contain up to MAX_IMAGES images which all must have the
- * same width, height and depth.
+ * To use a ShapeBob, perform the followng steps:
  *
- * The images can be loaded from a memory array, RAW file or by datatype
- * methods (TBD).
+ * First, \ref SetAnimSequence should be called to set an animation (can
+ * also be a single image) to the bob. 
+ * 
+ * Then, with \ref SetRastPort a valid RastPort for the bob should be 
+ * set.
  *
+ * See the other public metods for more.
+ * 
  * @author Uwe Rosner
  * @date 11/07/2019
  */
@@ -33,15 +37,13 @@ public:
 
 
   /**
-   * Bobs are onyl visible in one deicated RastPort..
+   * Sets the RastPort in which the bob is drawn.
    */
-  void AddToRastPort(struct RastPort* pRastPort);
+  void SetRastPort(struct RastPort* pRastPort);
 
 
   //
-  // Implementing part of the interface IEntity. Init(), Update(),
-  // XSpeed_pps() and YSpeed_pps() must be implemented in derived
-  // classes.
+  // Implementing the abstract methods of interface ShapeBase.
   //
 
   int XPos() const;

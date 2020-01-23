@@ -41,7 +41,7 @@ bool Duck::Init()
   //
   // Initialize postion of the duck bob and add it to the scene
   //
-  m_Shape.AddToRastPort(m_GameView.RastPort());
+  m_Shape.SetRastPort(m_GameView.RastPort());
   m_Shape.Move(200, 40);
 
   return true;

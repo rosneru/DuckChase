@@ -11,10 +11,15 @@
  * Encapsulates an animatable graphics object using the sprite hardware
  * (ExtSprite) related functions of AmigaOS graphics.libary v39+.
  *
- * A sprite can contain up to MAX_IMAGES images which all must have the
- * same width, height and depth.
+ * To use a ShapeBob, perform the followng steps:
  *
- * The images can be loaded from RAW files.
+ * First, \ref SetAnimSequence should be called to set an animation (can
+ * also be a single image) to the sprite. 
+ * 
+ * Then, with \ref SetViewPort a valid ViewPort for the sprite should be 
+ * set.
+ *
+ * See the other public metods for more.
  *
  * @author Uwe Rosner
  * @date 04/08/2019

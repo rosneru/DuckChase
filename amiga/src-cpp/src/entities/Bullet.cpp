@@ -48,6 +48,12 @@ bool Bullet::Init()
 
   m_Shape.SetAnimSequence(&m_BulletAnimSeq);
 
+  // We want the bullet sprite to replace the mouse pointer. So we set
+  // the bullet sprite number to 0, which is the mouse pointers sprite
+  // number. See AABoing source from Aminet
+  int usedSpriteNumber = 0;
+  m_Shape.Get()->es_SimpleSprite.num = usedSpriteNumber;
+
   //
   // Set the colors for the sprite
   //
@@ -60,15 +66,8 @@ bool Bullet::Init()
     {0x2E2E2E2E, 0x14141414, 0x9090909},
   };
 
-  // Which 4 pens to set depends on the sprite number we got. But we'll
-  // manually set the number to 0 because: 
-  //   A relatively safe way to replace the mouse pointer (sprite 0) 
-  //   with the arrow sprite (See AABoing source from Aminet) is to 
-  //   simply set it to 0. This is the number the mouse uses otherwise.
-  int spriteNumberInUse = 0;
-  m_Shape.Get()->es_SimpleSprite.num = spriteNumberInUse;
-
-  int spriteColRegStart = 16 + ((spriteNumberInUse & 0x06) << 1);
+  // Which 4 pens to set depends on the used sprite number 
+  int spriteColRegStart = 16 + ((usedSpriteNumber & 0x06) << 1);
   for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
   {
     int r = colorsBulletSprite[i - spriteColRegStart][0];

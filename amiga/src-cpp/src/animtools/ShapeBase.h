@@ -14,24 +14,6 @@ class AnimSeqBase;
 class ShapeBase
 {
 public:
-  // /**
-  //  * Updates this entity in the game world.
-  //  */
-  // virtual void Update(unsigned long elapsed,
-  //                     unsigned long joyPortState) = 0;
-
-  /**
-   * Returns the hunter's speed in x-direction in pixel per second.
-   * Negative for left movement, zero if no movement.
-   */
-//  virtual int XSpeed_pps() const = 0;
-
-  /**
-   * Returns the hunter's speed in y-direction in pixel per second.
-   * Negative for upward movement, zero if no movement.
-   */
-//  virtual int YSpeed_pps() const = 0;
-
   /**
    * Gets the current y-position of the object.
    */

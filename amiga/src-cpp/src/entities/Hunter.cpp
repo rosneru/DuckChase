@@ -42,7 +42,7 @@ bool Hunter::Init()
   //
   // Initialize postion of the duck bob and add it to the scene
   //
-  m_Shape.AddToRastPort(m_GameView.RastPort());
+  m_Shape.SetRastPort(m_GameView.RastPort());
   m_Shape.Move(20, 222);
 
   return true;
