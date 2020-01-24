@@ -32,10 +32,10 @@ ShapeSprite::~ShapeSprite()
   }
 }
 
-void ShapeSprite::SetVPortColorsForSprite(struct ViewPort* pViewPort, 
+void ShapeSprite::SetVPortColorsForSprite(struct ViewPort* pViewPort,
                                           ULONG* pColors)
 {
-  // Which 3 pens to set depends on the used sprite number 
+  // Which 3 pens to set depends on the used sprite number
   size_t startPen = 16 + ((m_SpriteNumberUsing & 0x06) << 1);
 
   // But the first of the 4 sprite pens is always unused
@@ -45,10 +45,9 @@ void ShapeSprite::SetVPortColorsForSprite(struct ViewPort* pViewPort,
   size_t iColArray = 0;
   for(size_t iPen = startPen; iPen < (startPen + numCols); iPen++)
   {
-    iColArray += numCols;
-    int r = pColors[iColArray];
-    int g = pColors[iColArray + 1];
-    int b = pColors[iColArray + 2];
+    ULONG r = pColors[iColArray++];
+    ULONG g = pColors[iColArray++];
+    ULONG b = pColors[iColArray++];
     SetRGB32(pViewPort, iPen, r, g, b);
   }
 }
@@ -142,8 +141,8 @@ void ShapeSprite::SetInvisible()
 
 void ShapeSprite::SetVisible()
 {
-  if ((m_pCurrentSprite == NULL) || 
-      (m_pViewPort == NULL) || 
+  if ((m_pCurrentSprite == NULL) ||
+      (m_pViewPort == NULL) ||
       (m_pAnimSeq == NULL))
   {
     return;
@@ -156,7 +155,7 @@ void ShapeSprite::SetVisible()
 
 bool ShapeSprite::IsVisible() const
 {
-  if ((m_pCurrentSprite == NULL) || 
+  if ((m_pCurrentSprite == NULL) ||
       (m_pViewPort == NULL))
   {
     return false;
@@ -188,8 +187,8 @@ void ShapeSprite::NextImage()
     return;
   }
 
-  if ((m_pCurrentSprite == NULL) || 
-      (m_pViewPort == NULL) || 
+  if ((m_pCurrentSprite == NULL) ||
+      (m_pViewPort == NULL) ||
       (m_pAnimSeq == NULL))
   {
     return;

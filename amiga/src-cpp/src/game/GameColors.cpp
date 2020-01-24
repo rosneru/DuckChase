@@ -2,11 +2,12 @@
 
 
 /**
- * The default color set for the view
+ * The default color set for the view. Only the first 8 are used on
+ * background right now.
  */
 GameColors::ViewColors GameColors::m_sViewColors =
 {
-  0x00080000, // 0x0008 - Load 8 colors, starting from 0x000
+  0x00200000, // 0x0020 - Load 32 colors, starting from 0x000
   0xa0a0a0a0, 0xa0a0a0a0, 0xa0a0a0a0,
   0x00000000, 0x00000000, 0x00000000,
   0xf0f0f0f0, 0xf0f0f0f0, 0xf0f0f0f0,
@@ -15,9 +16,36 @@ GameColors::ViewColors GameColors::m_sViewColors =
   0xe0e0e0e0, 0xb0b0b0b0, 0x00000000,
   0xb0b0b0b0, 0x50505050, 0x20202020,
   0xf0f0f0f0, 0x80808080, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
+  0x00000000, 0x00000000, 0x00000000,
   0x00000000  // Termination
 };
 
+/**
+ * The 3 colors for the arrow sprite
+ */
 GameColors::ArrowSpriteColors GameColors::m_sArrowSpriteColors =
 {
   0xE5E5E5E5, 0x14141414, 0x1D1D1D1D,
@@ -27,7 +55,8 @@ GameColors::ArrowSpriteColors GameColors::m_sArrowSpriteColors =
 
 
 GameColors::GameColors()
-  : m_RGB32View(m_sViewColors)
+  : m_RGB32View(m_sViewColors),
+    m_RGB32ArrowSprite(m_sArrowSpriteColors)
 {
 
 }

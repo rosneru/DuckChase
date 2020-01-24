@@ -43,14 +43,14 @@ private:
   // This struct is a workaround for C++98 not allowing array 
   // initialization in the initializer list.
   //
-  // It is defined to a size of 26 because:
+  // It is defined to a size of 98 because:
   //   1..Header, 
-  //   3x8=24..the 8 colors, 
+  //   3 x 32 = 96..the 32 colors, 
   //   1..Termination
   //
   struct ViewColors
   { 
-    ULONG elem[26];
+    ULONG elem[98];
   };
 
   // Declaring a static variable to hold the ColorArray data.

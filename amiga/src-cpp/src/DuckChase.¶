@@ -52,7 +52,7 @@ Defines (End)
 0 0 1 0 1 0 0
 0 0 0 0
 0 ""
-1 0 0 0
+0 0 0 0
 1 0 0 1 0 1 0 1 0 1
 1 1 0 1 0 1
 0 1 1 1 1 0 0
@@ -532,7 +532,6 @@ Section
 7
 File
 10 "DuckChase"
-"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
