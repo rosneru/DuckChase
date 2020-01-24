@@ -15,6 +15,8 @@ C/C++ Environment
 0
 "gfxtools/"
 0
+"game/"
+0
 Includepath (End)
 0 "" 80
 1 "objects_debug"
@@ -228,17 +230,33 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "Game.cpp"
-"Game.cpp"
+1 "game/Game.cpp"
+"game/Game.cpp"
 "animtools/animtools.h"
-"Game.h"
+"game/Game.h"
+"animtools/AnimSeqBase.h"
 "entities/EntityBase.h"
 "entities/Hunter.h"
-"PointsDisplay.h"
-"animtools/AnimSeqBase.h"
 "animtools/ShapeBase.h"
+"game/PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
+""
+1 1
+File
+1 "game/GameColors.cpp"
+"game/GameColors.cpp"
+"game/GameColors.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameColors.o" "objects_debug/GameColors.debug"
+""
+1 1
+File
+1 "game/PointsDisplay.cpp"
+"game/PointsDisplay.cpp"
+"game/PointsDisplay.h"
+Storm Shell Project (Dependencies)
+"objects_debug/PointsDisplay.o" "objects_debug/PointsDisplay.debug"
 ""
 1 1
 File
@@ -313,22 +331,13 @@ Storm Shell Project (Dependencies)
 File
 1 "main.cpp"
 "main.cpp"
-"Game.h"
+"animtools/AnimSeqBase.h"
 "entities/EntityBase.h"
 "entities/Hunter.h"
-"PointsDisplay.h"
-"animtools/AnimSeqBase.h"
 "animtools/ShapeBase.h"
+"game/PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
-""
-1 1
-File
-1 "PointsDisplay.cpp"
-"PointsDisplay.cpp"
-"PointsDisplay.h"
-Storm Shell Project (Dependencies)
-"objects_debug/PointsDisplay.o" "objects_debug/PointsDisplay.debug"
 ""
 1 1
 Section
@@ -434,8 +443,22 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "Game.h"
-"Game.h"
+2 "game/Game.h"
+"game/Game.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "game/GameColors.h"
+"game/GameColors.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "game/PointsDisplay.h"
+"game/PointsDisplay.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -503,19 +526,13 @@ Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
-File
-2 "PointsDisplay.h"
-"PointsDisplay.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
 Section
 10 1 40
 0 0 0 0
 7
 File
 10 "DuckChase"
+"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
