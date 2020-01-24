@@ -6,6 +6,7 @@
 #include <graphics/view.h>
 #include <intuition/screens.h>
 
+#include "GameColors.h"
 #include "IGameView.h"
 
 #define	OK_REDRAW	1	/* Buffer fully detached, ready for redraw */
@@ -31,7 +32,7 @@ public:
   GameViewIntui30ScrBuf(short viewWidth, short viewHeight, short viewDepth);
   ~GameViewIntui30ScrBuf();
 
-  bool Open();
+  bool Open(GameColors& colors);
   void Close();
 
   short Width();

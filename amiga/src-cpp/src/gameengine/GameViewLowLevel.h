@@ -6,7 +6,7 @@
 
 #include "lowlevelview.h"
 #include "lowlevelviewport.h"
-
+#include "GameColors.h"
 #include "IGameView.h"
 
 /**
@@ -28,7 +28,7 @@ public:
 
   ~GameViewLowlevel();
 
-  bool Open();
+  bool Open(GameColors& colors);
   void Close();
 
   short Width();
@@ -37,8 +37,6 @@ public:
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
-
-  void SetColor32(int i, int r, int g, int b);
 
   void Render();
 

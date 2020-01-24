@@ -47,6 +47,7 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h \
 		$(SRC_ROOT)/Game.h \
+		$(SRC_ROOT)/GameColors.h \
 		$(SRC_ROOT)/PointsDisplay.h
 
 _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
@@ -71,6 +72,7 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.o \
 		$(SRC_ROOT)/Game.o \
+		$(SRC_ROOT)/GameColors.o \
 		$(SRC_ROOT)/main.o \
 		$(SRC_ROOT)/PointsDisplay.o
  

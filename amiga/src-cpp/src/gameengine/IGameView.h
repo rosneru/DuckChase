@@ -4,6 +4,7 @@
 #include <graphics/gfx.h>
 #include <graphics/view.h>
 
+#include "GameColors.h"
 
 /**
  * Represents an Interface for all supported GameViews.
@@ -28,7 +29,7 @@
 class IGameView
 {
 public:
-  virtual bool Open() = 0;
+  virtual bool Open(GameColors& colors) = 0;
   virtual void Close() = 0;
 
   virtual short Width() = 0;
@@ -37,8 +38,6 @@ public:
 
   virtual struct RastPort* RastPort() = 0;
   virtual struct ViewPort* ViewPort() = 0;
-
-  virtual void SetColor32(int i, int r, int g, int b) = 0;
 
   virtual void Render() = 0;
 

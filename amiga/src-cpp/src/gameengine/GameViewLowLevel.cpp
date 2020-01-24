@@ -40,7 +40,7 @@ GameViewLowlevel::~GameViewLowlevel()
 
 }
 
-bool GameViewLowlevel::Open()
+bool GameViewLowlevel::Open(GameColors& colors)
 {
   if(m_pViewPort != NULL)
   {
@@ -260,15 +260,6 @@ struct ViewPort* GameViewLowlevel::ViewPort()
 {
   return m_pViewPort;
 }
-
-void GameViewLowlevel::SetColor32(int i, int r, int g, int b)
-{
-  if((m_pViewPort != NULL) && (m_pViewPort->ColorMap != NULL))
-  {
-    SetRGB32CM(m_pViewPort->ColorMap, i, r, g, b);
-  }
-}
-
 
 
 void GameViewLowlevel::Render()

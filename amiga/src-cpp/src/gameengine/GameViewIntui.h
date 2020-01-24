@@ -6,11 +6,12 @@
 #include <graphics/view.h>
 #include <intuition/screens.h>
 
+#include "GameColors.h"
 #include "IGameView.h"
 
 /**
  * Represents an view for games using the Intuition interface of
- * Amiga OS2.0. It uses a intuition screen with two (double buffering)
+ * Amiga OS3.0+. It uses a intuition screen with two (double buffering)
  * custom bitmaps which are set up manually.
  *
  * @author Uwe Rosner
@@ -22,7 +23,7 @@ public:
   GameViewIntui(short viewWidth, short viewHeight, short viewDepth);
   ~GameViewIntui();
 
-  bool Open();
+  bool Open(GameColors& colors);
   void Close();
 
   short Width();
@@ -31,8 +32,6 @@ public:
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
-
-  void SetColor32(int i, int r, int g, int b);
 
   void Render();
 

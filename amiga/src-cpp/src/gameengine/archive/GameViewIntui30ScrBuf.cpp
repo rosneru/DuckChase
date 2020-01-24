@@ -35,7 +35,7 @@ GameViewIntui30ScrBuf::~GameViewIntui30ScrBuf()
 
 }
 
-bool GameViewIntui30ScrBuf::Open()
+bool GameViewIntui30ScrBuf::Open(GameColors& colors)
 {
   if(m_pScreen != NULL)
   {

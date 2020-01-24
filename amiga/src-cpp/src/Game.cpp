@@ -40,7 +40,7 @@ Game::~Game()
 bool Game::Run()
 {
 
-  if(m_GameView.Open() == false)
+  if(m_GameView.Open(m_GameColors) == false)
   {
     m_pLastError = m_GameView.LastError();
     return false;
@@ -53,18 +53,6 @@ bool Game::Run()
     m_pLastError = "Could not initialize the Gels system\n";
     return false;
   }
-
-  //
-  // Setting the used color table (extracted from pic wit BtoC32)
-  //
-  USHORT colorsBackgr[8] =
-  {
-    0xAAA, 0x0, 0xFFF, 0x68B, 0x5A3, 0xEB0, 0xB52, 0xF80
-  };
-
-
-  // Change colors to those in colorsBackgr
-  LoadRGB4(m_GameView.ViewPort(), colorsBackgr, 8);
 
   //
   // Initializing all the entities which populate the game world

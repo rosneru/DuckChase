@@ -39,7 +39,7 @@ GameViewGfxLib::~GameViewGfxLib()
 
 }
 
-bool GameViewGfxLib::Open()
+bool GameViewGfxLib::Open(GameColors& colors)
 {
   if(m_pViewExtra != NULL)
   {
@@ -348,14 +348,6 @@ struct RastPort* GameViewGfxLib::RastPort()
 struct ViewPort* GameViewGfxLib::ViewPort()
 {
   return m_pViewPort;
-}
-
-void GameViewGfxLib::SetColor32(int i, int r, int g, int b)
-{
-  if((m_pViewPort != NULL) && (m_pViewPort->ColorMap != NULL))
-  {
-    SetRGB32CM(m_pViewPort->ColorMap, i, r, g, b);
-  }
 }
 
 

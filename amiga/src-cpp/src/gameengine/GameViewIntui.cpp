@@ -31,7 +31,7 @@ GameViewIntui::~GameViewIntui()
 
 }
 
-bool GameViewIntui::Open()
+bool GameViewIntui::Open(GameColors& colors)
 {
   if(m_pScreen != NULL)
   {
@@ -72,7 +72,7 @@ bool GameViewIntui::Open()
   struct TagItem vcTags[] =
   {
     {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
-    {TAG_END}
+    {TAG_DONE}
   };
 
   m_pScreen = OpenScreenTags(NULL,
@@ -85,6 +85,7 @@ bool GameViewIntui::Open()
     SA_Quiet, TRUE,
     SA_Type, CUSTOMSCREEN,
     SA_Exclusive, TRUE,
+    SA_Colors32, colors.GetRGB32View(),
     SA_BitMap, m_pBitMapArray[0],
     TAG_DONE);
 
@@ -157,13 +158,6 @@ struct ViewPort* GameViewIntui::ViewPort()
   return &(m_pScreen->ViewPort);
 }
 
-void GameViewIntui::SetColor32(int i, int r, int g, int b)
-{
-  if(m_pScreen != NULL)
-  {
-    SetRGB32(&m_pScreen->ViewPort, i, r, g, b);
-  }
-}
 
 void GameViewIntui::Render()
 {

@@ -10,6 +10,7 @@
 #include "Hunter.h"
 #include "Picture.h"
 
+#include "GameColors.h"
 #include "PointsDisplay.h"
 
 /**
@@ -37,6 +38,7 @@ private:
 
   const char* m_pLastError;
 
+  GameColors m_GameColors;
 
   Picture m_PicBackground;
   Duck m_Duck;

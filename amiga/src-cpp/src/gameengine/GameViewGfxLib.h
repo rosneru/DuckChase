@@ -3,7 +3,7 @@
 
 #include <graphics/view.h>
 
-
+#include "GameColors.h"
 #include "IGameView.h"
 
 /**
@@ -20,7 +20,7 @@ public:
   GameViewGfxLib(short viewWidth, short viewHeight, short viewDepth);
   ~GameViewGfxLib();
 
-  bool Open();
+  bool Open(GameColors& colors);
   void Close();
 
   short Width();
@@ -29,8 +29,6 @@ public:
 
   struct RastPort* RastPort();
   struct ViewPort* ViewPort();
-
-  void SetColor32(int i, int r, int g, int b);
 
   void Render();
 
