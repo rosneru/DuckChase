@@ -5,9 +5,10 @@
 #include "Bullet.h"
 
 
-Bullet::Bullet(IGameView& gameView, Hunter& hunter)
+Bullet::Bullet(IGameView& gameView, GameColors& colors, Hunter& hunter)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
+    m_GameColors(colors),
     m_Hunter(hunter),
     m_Shape(),
     m_BulletAnimSeq(16, 13, 2), // width, height, depth of each anim image
@@ -58,22 +59,24 @@ bool Bullet::Init()
   // Set the colors for the sprite
   //
 
-  ULONG colorsBulletSprite[4][3] =
-  {
-    {0xAAAAAAAA, 0xAAAAAAAA, 0xAAAAAAAA},
-    {0xE5E5E5E5, 0x14141414, 0x1D1D1D1D},
-    {0xC2C2C2C2, 0x5A5A5A5A, 0x20202020},
-    {0x2E2E2E2E, 0x14141414, 0x9090909},
-  };
+  ULONG* colorsBulletSprite = m_GameColors.GetRGB32ArrowSprite();
 
-  // Which 4 pens to set depends on the used sprite number 
-  int spriteColRegStart = 16 + ((usedSpriteNumber & 0x06) << 1);
-  for(int i = spriteColRegStart; i < (spriteColRegStart + 4); i++)
+
+  // Which 3 pens to set depends on the used sprite number 
+  size_t startPen = 16 + ((usedSpriteNumber & 0x06) << 1);
+
+  // But the first of the 4 sprite pens is always unused
+  startPen++;
+
+  size_t numCols = 3;
+  size_t iColArray = 0;
+  for(size_t iPen = startPen; iPen < (startPen + numCols); iPen++)
   {
-    int r = colorsBulletSprite[i - spriteColRegStart][0];
-    int g = colorsBulletSprite[i - spriteColRegStart][1];
-    int b = colorsBulletSprite[i - spriteColRegStart][2];
-    SetRGB32(m_GameView.ViewPort(), i, r, g, b);
+    iColArray += numCols;
+    int r = colorsBulletSprite[iColArray];
+    int g = colorsBulletSprite[iColArray + 1];
+    int b = colorsBulletSprite[iColArray + 2];
+    SetRGB32(m_GameView.ViewPort(), iPen, r, g, b);
   }
 
   // Sprite must have a ViewPort to be displayed

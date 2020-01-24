@@ -2,7 +2,7 @@
 
 
 /**
- * The default color set
+ * The default color set for the view
  */
 GameColors::ViewColors GameColors::m_sViewColors =
 {
@@ -18,6 +18,12 @@ GameColors::ViewColors GameColors::m_sViewColors =
   0x00000000  // Termination
 };
 
+GameColors::ArrowSpriteColors GameColors::m_sArrowSpriteColors =
+{
+  0xE5E5E5E5, 0x14141414, 0x1D1D1D1D,
+  0xC2C2C2C2, 0x5A5A5A5A, 0x20202020,
+  0x2E2E2E2E, 0x14141414, 0x9090909
+};
 
 
 GameColors::GameColors()
@@ -43,3 +49,7 @@ ULONG* GameColors::GetRGB32View()
   return m_RGB32View.elem;
 }
 
+ULONG* GameColors::GetRGB32ArrowSprite()
+{
+  return m_RGB32ArrowSprite.elem;
+}

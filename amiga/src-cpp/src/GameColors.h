@@ -16,7 +16,6 @@ class GameColors
 public:
 
   GameColors();
-
   virtual ~GameColors();
 
   bool Load();
@@ -27,12 +26,22 @@ public:
    */
   ULONG* GetRGB32View();
 
+  /**
+   * Return the ColorArray for the arrow sprite.
+   * 
+   * Has a size of 9: 3 rows, and values r, g, b for in each row.
+   * 
+   * NOTE: This can not be used for LoadRGB32. It has no header longword
+   * and no terminating \0 longword. Use it only with SetRGB32.
+   * array
+   */
+  ULONG* GetRGB32ArrowSprite();
 
 
 private:
-  // It's useful to store the colors at a central place
+  // It's useful to store the colors at a central place.
   // This struct is a workaround for C++98 not allowing array 
-  // initialization in th initializer list.
+  // initialization in the initializer list.
   //
   // It is defined to a size of 26 because:
   //   1..Header, 
@@ -52,6 +61,15 @@ private:
   // Declaring a member variable for the Color array. In the
   // constructor it is initialized with the static array data.
   ViewColors m_RGB32View;
+
+  struct ArrowSpriteColors
+  {
+    ULONG elem[9];
+  };
+
+  static ArrowSpriteColors m_sArrowSpriteColors;
+
+  ArrowSpriteColors m_RGB32ArrowSprite;
 };
 
 #endif // GAME_COLORS_H

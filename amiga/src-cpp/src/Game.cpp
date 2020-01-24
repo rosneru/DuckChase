@@ -16,7 +16,7 @@ Game::Game(IGameView& gameView)
     m_pLastError(NULL),
     m_Duck(gameView),
     m_Hunter(gameView),
-    m_Bullet(gameView, m_Hunter)
+    m_Bullet(gameView, m_GameColors ,m_Hunter)
 {
 
 }

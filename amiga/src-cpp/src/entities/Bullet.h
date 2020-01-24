@@ -4,6 +4,7 @@
 #include "AnimSeqSprite.h"
 #include "EntityBase.h"
 #include "Hunter.h"
+#include "GameColors.h"
 #include "IGameView.h"
 #include "ShapeSprite.h"
 
@@ -17,7 +18,7 @@
 class Bullet : public EntityBase
 {
 public:
-  Bullet(IGameView& gameView, Hunter& hunter);
+  Bullet(IGameView& gameView, GameColors& colors, Hunter& hunter);
   ~Bullet();
 
   bool Init();
@@ -31,6 +32,7 @@ public:
 
 private:
   IGameView& m_GameView;
+  GameColors& m_GameColors;
   Hunter& m_Hunter;
 
   ShapeSprite m_Shape;
