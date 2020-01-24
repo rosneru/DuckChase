@@ -12,7 +12,8 @@ ShapeSprite::ShapeSprite()
     m_pViewPort(NULL),
     m_pEmptySprite(NULL),
     m_pCurrentSprite(NULL),
-    m_HardwareSpriteNumber(-1)
+    m_SpriteNumberGot(-1),
+    m_SpriteNumberUsing(-1)
 {
 }
 
@@ -24,21 +25,53 @@ ShapeSprite::~ShapeSprite()
     m_pEmptySprite = NULL;
   }
 
-  if (m_HardwareSpriteNumber >= 0)
+  if (m_SpriteNumberGot >= 0)
   {
-    FreeSprite(m_HardwareSpriteNumber);
-    m_HardwareSpriteNumber = -1;
+    FreeSprite(m_SpriteNumberGot);
+    m_SpriteNumberGot = -1;
   }
 }
 
-struct ExtSprite* ShapeSprite::Get()
+void ShapeSprite::SetVPortColorsForSprite(struct ViewPort* pViewPort, 
+                                          ULONG* pColors)
 {
-  return m_pCurrentSprite;
+  // Which 3 pens to set depends on the used sprite number 
+  size_t startPen = 16 + ((m_SpriteNumberUsing & 0x06) << 1);
+
+  // But the first of the 4 sprite pens is always unused
+  startPen++;
+
+  size_t numCols = 3;
+  size_t iColArray = 0;
+  for(size_t iPen = startPen; iPen < (startPen + numCols); iPen++)
+  {
+    iColArray += numCols;
+    int r = pColors[iColArray];
+    int g = pColors[iColArray + 1];
+    int b = pColors[iColArray + 2];
+    SetRGB32(pViewPort, iPen, r, g, b);
+  }
 }
 
-int ShapeSprite::SpriteNumber()
+void ShapeSprite::UseMouseSprite()
 {
-  return m_HardwareSpriteNumber;
+  if(m_pCurrentSprite == NULL)
+  {
+    return;
+  }
+
+  if(m_SpriteNumberUsing == 0)
+  {
+    // Already done
+    return;
+  }
+
+  // This sprite should replace the mouse pointer. So we set ist sprite
+  // number to 0, which is the mouse pointers sprite number. See AABoing
+  // source from Aminet
+
+  m_SpriteNumberUsing = 0;
+  m_pCurrentSprite->es_SimpleSprite.num = m_SpriteNumberUsing;
 }
 
 void ShapeSprite::SetViewPort(struct ViewPort* pViewPort)
@@ -140,7 +173,7 @@ void ShapeSprite::SetAnimSequence(AnimSeqBase* pAnimSequence)
   }
 
   m_pAnimSeq = static_cast<AnimSeqSprite*>(pAnimSequence);
-  if(m_HardwareSpriteNumber < 0)
+  if(m_SpriteNumberGot < 0)
   {
     // If no sprite object exists, create it
     createSprite();
@@ -176,7 +209,7 @@ void ShapeSprite::NextImage()
 
 void ShapeSprite::createSprite()
 {
-  if ((m_pAnimSeq == NULL) || (m_HardwareSpriteNumber >= 0))
+  if ((m_pAnimSeq == NULL) || (m_SpriteNumberGot >= 0))
   {
     return;
   }
@@ -207,9 +240,9 @@ void ShapeSprite::createSprite()
 
   // Trying to allocate a hardware sprite
   m_pCurrentSprite = m_pAnimSeq->GetFirstImage();
-  m_HardwareSpriteNumber = GetExtSprite(m_pCurrentSprite, TAG_DONE);
+  m_SpriteNumberGot = GetExtSprite(m_pCurrentSprite, TAG_DONE);
 
-  if (m_HardwareSpriteNumber < 0)
+  if (m_SpriteNumberGot < 0)
   {
     // No hardware sprite available
     m_pCurrentSprite = NULL;

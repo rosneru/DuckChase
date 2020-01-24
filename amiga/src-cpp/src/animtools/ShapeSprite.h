@@ -32,15 +32,12 @@ public:
   virtual ~ShapeSprite();
 
   /**
-   * Getting the struct Sprite* of this sprite. The sprite will be newly
-   * created if it doesn't already exists.
-   *
-   * @returns
-   * The struct sprite or null if creation has failed.
+   * Setting the colors of given  ViewPort to given colors for sprite.
    */
-  struct ExtSprite* Get();
+  void SetVPortColorsForSprite(struct ViewPort* pViewPort, 
+                               ULONG* pColors);
 
-  int SpriteNumber();
+  void UseMouseSprite();
 
   /**
    * Sprites need a ViewPort to be displayed
@@ -74,8 +71,8 @@ private:
   long m_ImageBufSize; // Buffer for each image in bytes
   struct ExtSprite* m_pEmptySprite;
   struct ExtSprite* m_pCurrentSprite;
-  int m_HardwareSpriteNumber;
-
+  int m_SpriteNumberGot;
+  int m_SpriteNumberUsing;
 
   void createSprite();
 };

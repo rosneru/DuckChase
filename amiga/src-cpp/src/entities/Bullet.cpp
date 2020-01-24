@@ -49,40 +49,17 @@ bool Bullet::Init()
 
   m_Shape.SetAnimSequence(&m_BulletAnimSeq);
 
-  // We want the bullet sprite to replace the mouse pointer. So we set
-  // the bullet sprite number to 0, which is the mouse pointers sprite
-  // number. See AABoing source from Aminet
-  int usedSpriteNumber = 0;
-  m_Shape.Get()->es_SimpleSprite.num = usedSpriteNumber;
+  // We want the bullet sprite to replace the mouse pointer
+  m_Shape.UseMouseSprite();
 
-  //
-  // Set the colors for the sprite
-  //
-
-  ULONG* colorsBulletSprite = m_GameColors.GetRGB32ArrowSprite();
-
-
-  // Which 3 pens to set depends on the used sprite number 
-  size_t startPen = 16 + ((usedSpriteNumber & 0x06) << 1);
-
-  // But the first of the 4 sprite pens is always unused
-  startPen++;
-
-  size_t numCols = 3;
-  size_t iColArray = 0;
-  for(size_t iPen = startPen; iPen < (startPen + numCols); iPen++)
-  {
-    iColArray += numCols;
-    int r = colorsBulletSprite[iColArray];
-    int g = colorsBulletSprite[iColArray + 1];
-    int b = colorsBulletSprite[iColArray + 2];
-    SetRGB32(m_GameView.ViewPort(), iPen, r, g, b);
-  }
+  // Set the colors for the sprite in view port
+  m_Shape.SetVPortColorsForSprite(m_GameView.ViewPort(),
+                                  m_GameColors.GetRGB32ArrowSprite());
 
   // Sprite must have a ViewPort to be displayed
   m_Shape.SetViewPort(m_GameView.ViewPort());
 
-  // Move sprite at desiresd start position
+  // Move sprite at desired start position
   m_Shape.Move(300, 244);
 
   // Though for the beginning set it invisible
