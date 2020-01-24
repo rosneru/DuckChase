@@ -37,6 +37,9 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/entities/Bullet.h \
 		$(SRC_ROOT)/entities/Duck.h \
 		$(SRC_ROOT)/entities/Hunter.h \
+		$(SRC_ROOT)/game/Game.h \
+		$(SRC_ROOT)/game/GameColors.h \
+		$(SRC_ROOT)/game/PointsDisplay.h \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.h \
 		$(SRC_ROOT)/gameengine/GameViewIntui.h \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.h \
@@ -45,10 +48,7 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/gfxtools/ImgLoaderRawBitMap.h \
 		$(SRC_ROOT)/gfxtools/ImgLoaderRawPure.h \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.h \
-		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h \
-		$(SRC_ROOT)/Game.h \
-		$(SRC_ROOT)/GameColors.h \
-		$(SRC_ROOT)/PointsDisplay.h
+		$(SRC_ROOT)/lowlevelview/lowlevelviewport.h
 
 _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/amigautils/StopWatch.o \
@@ -63,6 +63,9 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/entities/Bullet.o \
 		$(SRC_ROOT)/entities/Duck.o \
 		$(SRC_ROOT)/entities/Hunter.o \
+		$(SRC_ROOT)/game/Game.o \
+		$(SRC_ROOT)/game/GameColors.o \
+		$(SRC_ROOT)/game/PointsDisplay.o \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.o \
 		$(SRC_ROOT)/gameengine/GameViewIntui.o \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.o \
@@ -71,16 +74,14 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/gfxtools/ImgLoaderRawPure.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelview.o \
 		$(SRC_ROOT)/lowlevelview/lowlevelviewport.o \
-		$(SRC_ROOT)/Game.o \
-		$(SRC_ROOT)/GameColors.o \
-		$(SRC_ROOT)/main.o \
-		$(SRC_ROOT)/PointsDisplay.o
+		$(SRC_ROOT)/main.o
  
 INCLUDE=-I$(SRC_ROOT) \
 				-I$(SRC_ROOT)/amigautils \
 				-I$(SRC_ROOT)/animtools \
 				-I$(SRC_ROOT)/entities \
 				-I$(SRC_ROOT)/gfxtools \
+				-I$(SRC_ROOT)/game \
 				-I$(SRC_ROOT)/gameengine \
 				-I$(SRC_ROOT)/lowlevelview \
 				-I$(SRC_ROOT)/
