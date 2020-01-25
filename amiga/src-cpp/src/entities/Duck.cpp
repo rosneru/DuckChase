@@ -52,7 +52,7 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
   //
   // Move the duck on an easy, linear right-to-left route
   //
-  m_XSpeed_pps = -240;
+  m_XSpeed_pps = -340;
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
   if(XPos() + dX < -m_Shape.Width())
@@ -65,7 +65,7 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
   }
 
   // Change the duck image every 2 frames
-  if(m_AnimFrameCnt % 4 == 0)
+  if(m_AnimFrameCnt % 6 == 0)
   {
     m_Shape.NextImage();
     m_AnimFrameCnt = 0;

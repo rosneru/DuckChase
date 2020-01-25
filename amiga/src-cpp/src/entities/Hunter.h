@@ -20,7 +20,7 @@ public:
   ~Hunter();
 
   bool Init();
-  void Update(unsigned long elapsed, unsigned long joyPortState);
+  void Update(unsigned long elapsed, unsigned long portState);
 
   const char* LastError() const;
 
@@ -31,7 +31,10 @@ private:
   IGameView& m_GameView;
 
   ShapeBob m_Shape;
-  AnimSeqBob m_HunterAnimSeq;
+  AnimSeqBob m_HunterRightAnim;
+  AnimSeqBob m_HunterRightShootAnim;
+  AnimSeqBob m_HunterLeftAnim;
+  AnimSeqBob m_HunterLeftShootAnim;
 
   const char* m_pLastError;
   int m_AnimFrameCnt;

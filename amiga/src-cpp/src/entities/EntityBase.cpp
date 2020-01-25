@@ -30,5 +30,10 @@ int EntityBase::YPos() const
 
 int EntityBase::pps2Dist(int pps, long elapsed_ms)
 {
-  return pps * elapsed_ms / 1000;
+  if(elapsed_ms == 0)
+  {
+    elapsed_ms = 40;
+  }
+
+  return pps / (1000 / elapsed_ms);
 }
