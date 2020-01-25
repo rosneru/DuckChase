@@ -25,6 +25,21 @@ ImgLoaderBase::~ImgLoaderBase()
 }
 
 
+int ImgLoaderBase::GetWidth()
+{
+  return m_Width;
+}
+
+int ImgLoaderBase::GetHeight()
+{
+  return m_Height;
+}
+
+int ImgLoaderBase::GetDepth()
+{
+  return m_Depth;
+}
+
 const char* ImgLoaderBase::ErrorMsg()
 {
   return m_pErrorMsg;

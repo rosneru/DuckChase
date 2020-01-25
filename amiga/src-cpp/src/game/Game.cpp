@@ -11,12 +11,15 @@
 
 Game::Game(IGameView& gameView)
   : m_GameView(gameView),
-    m_InfoDisplay(gameView, 1, 5, 5, 3),  // TODO Change constants
+    m_InfoDisplay(gameView, m_GameColors, m_MaxArrows, m_MaxStrain),
+    m_MaxStrain(118),
+    m_MaxArrows(5),
+    m_NumArrowsLeft(m_MaxArrows),
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
     m_Duck(gameView),
     m_Hunter(gameView),
-    m_Arrow(gameView, m_GameColors ,m_Hunter)
+    m_Arrow(gameView, m_GameColors , m_Hunter)
 {
 
 }
@@ -96,8 +99,10 @@ bool Game::Run()
   //
   // Initially render the display
   //
-  m_InfoDisplay.Clear();
-  m_InfoDisplay.UpdateInfo(m_GameView.ViewName());
+  m_InfoDisplay.UpdateFps(0);
+  m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+
+  // At beginning render twice to be on the right (double) buffer again
   m_GameView.Render();
   m_GameView.Render();
 

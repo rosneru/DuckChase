@@ -3,12 +3,13 @@
 
 #include <graphics/gfx.h>
 
+#include "GameColors.h"
+#include "ImgLoaderRawBitMap.h"
 #include "IGameView.h"
+
 /**
- * A bottom 'state bar' for displaying game strikes and fps information
- *
- * To initialize this display the Clear() method should be called after
- * the view is opened.
+ * A bottom 'state bar' for displaying game the number of arrows the 
+ * player has left and fps information
  *
  * @author Uwe Rosner
  * @date 01/08/2019
@@ -16,30 +17,31 @@
 class InfoDisplay
 {
 public:
-  InfoDisplay(IGameView& gameView,
-                short backPen,
-                short strikesPen,
-                short fpsPen,
-                short infoPen);
+  InfoDisplay(IGameView& gameView, 
+              GameColors& gameColors,
+              const size_t& maxArrows,
+              const size_t& maxStrain);
 
   ~InfoDisplay();
 
-  /**
-   * Clears the whole display
-   */
-  void Clear();
-
-
-  void UpdateStrikes(short strikes);
-  void UpdateFps(short fps);
-  void UpdateInfo(const char* pInfo);
+  void UpdateFps(size_t fps);
+  void UpdateArrows(size_t arrowsLeft);
+  void UpdateStrain(size_t newStrain);
 
 private:
   IGameView& m_View;
-  short m_BackPen;
-  short m_StrikesPen;
-  short m_FpsPen;
-  short m_InfoPen;
+  const size_t& m_MaxArrows;
+  const size_t& m_MaxStrain;
+  size_t m_FormerStrain;
+  ULONG* m_StrainSpreadColors;
+
+  ImgLoaderRawBitMap m_ArrowDisabledImg;
+  ImgLoaderRawBitMap m_ArrowEnabledImg;
+
+  LONG m_Left;
+  LONG m_Right;
+  LONG m_Top;
+  LONG m_Bottom;
 };
 
 #endif

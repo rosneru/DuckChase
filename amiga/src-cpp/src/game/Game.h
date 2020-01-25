@@ -30,9 +30,12 @@ public:
   const char* LastError() const;
 
 private:
-
   IGameView& m_GameView;
   InfoDisplay m_InfoDisplay;
+  
+  const size_t m_MaxStrain;
+  const size_t m_MaxArrows;
+  size_t m_NumArrowsLeft;
 
   struct GelsInfo* m_pGelsInfo;
 

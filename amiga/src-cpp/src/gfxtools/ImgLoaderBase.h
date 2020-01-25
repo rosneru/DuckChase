@@ -12,6 +12,10 @@
 class ImgLoaderBase
 {
 public:
+  int GetWidth();
+  int GetHeight();
+  int GetDepth();
+
   const char* ErrorMsg();
 
 protected:
