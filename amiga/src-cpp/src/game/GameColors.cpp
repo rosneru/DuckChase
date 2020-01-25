@@ -7,7 +7,7 @@
  */
 GameColors::ViewColors GameColors::m_sViewColors =
 {
-  0x00200000, // 0x0020 - Load 32 colors, starting from 0x000
+  0x00200000, // 0x0020 - Load 32 colors, 0x000 starting from pen 0
   0xa0a0a0a0, 0xa0a0a0a0, 0xa0a0a0a0,
   0x00000000, 0x00000000, 0x00000000,
   0xf0f0f0f0, 0xf0f0f0f0, 0xf0f0f0f0,
