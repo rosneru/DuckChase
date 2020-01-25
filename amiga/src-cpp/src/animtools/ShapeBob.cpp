@@ -55,7 +55,7 @@ void ShapeBob::createBob()
   newBob.nb_WordWidth = m_pAnimSeq->GetWordWidth(); // Img width in words
   newBob.nb_LineHeight = m_pAnimSeq->GetHeight();   // Img height in lines
   newBob.nb_ImageDepth = m_pAnimSeq->GetDepth();    // Img depth
-  newBob.nb_PlanePick = 7;                          // Planes that get image data // TODO generalize!!
+  newBob.nb_PlanePick = 15; // Planes that get image data // TODO generalize!!
   newBob.nb_PlaneOnOff = 0;              // Don't turn on unused planes
   newBob.nb_BFlags = SAVEBACK | OVERLAY; // Bog flags
   newBob.nb_DBuf = 1;                    // DoubleBuffering.

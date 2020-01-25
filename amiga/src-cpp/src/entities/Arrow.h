@@ -15,11 +15,11 @@
  * @author Uwe Rosner
  * @date 11/08/2019
  */
-class Bullet : public EntityBase
+class Arrow : public EntityBase
 {
 public:
-  Bullet(IGameView& gameView, GameColors& colors, Hunter& hunter);
-  ~Bullet();
+  Arrow(IGameView& gameView, GameColors& colors, Hunter& hunter);
+  ~Arrow();
 
   bool Init();
 
@@ -36,7 +36,7 @@ private:
   Hunter& m_Hunter;
 
   ShapeSprite m_Shape;
-  AnimSeqSprite m_BulletAnimSeq;
+  AnimSeqSprite m_ArrowAnimSeq;
 
   const char* m_pLastError;
 

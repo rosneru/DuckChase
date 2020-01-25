@@ -34,7 +34,7 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/animtools/animtools.h \
 		$(SRC_ROOT)/animtools/animtools_proto.h \
 		$(SRC_ROOT)/entities/EntityBase.h \
-		$(SRC_ROOT)/entities/Bullet.h \
+		$(SRC_ROOT)/entities/Arrow.h \
 		$(SRC_ROOT)/entities/Duck.h \
 		$(SRC_ROOT)/entities/Hunter.h \
 		$(SRC_ROOT)/game/Game.h \
@@ -60,7 +60,7 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/animtools/ShapeSprite.o \
 		$(SRC_ROOT)/animtools/animtools.o \
 		$(SRC_ROOT)/entities/EntityBase.o \
-		$(SRC_ROOT)/entities/Bullet.o \
+		$(SRC_ROOT)/entities/Arrow.o \
 		$(SRC_ROOT)/entities/Duck.o \
 		$(SRC_ROOT)/entities/Hunter.o \
 		$(SRC_ROOT)/game/Game.o \

@@ -8,7 +8,7 @@ Hunter::Hunter(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_Shape(gameView.Depth()),
-    m_HunterAnimSeq(16, 22, 3), // width, height, depth of each anim image
+    m_HunterAnimSeq(25, 27, 4), // width, height, depth of each anim image
     m_pLastError(NULL),
     m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
     m_XSpeed_pps(0),
@@ -27,8 +27,8 @@ bool Hunter::Init()
   //
   // Loading all hunter anim sequences
   //
-  const char* ppFiles[]  = {"gfx/hunter1_hires.raw",
-                            "gfx/hunter2_hires.raw",
+  const char* ppFiles[]  = {"gfx/hunter_right1.raw",
+                            "gfx/hunter_right2.raw",
                             NULL};
 
   if(m_HunterAnimSeq.Load(ppFiles) == false)

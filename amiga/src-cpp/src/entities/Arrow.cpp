@@ -2,16 +2,16 @@
 #include <libraries/lowlevel.h>
 #include <clib/graphics_protos.h>
 
-#include "Bullet.h"
+#include "Arrow.h"
 
 
-Bullet::Bullet(IGameView& gameView, GameColors& colors, Hunter& hunter)
+Arrow::Arrow(IGameView& gameView, GameColors& colors, Hunter& hunter)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_GameColors(colors),
     m_Hunter(hunter),
     m_Shape(),
-    m_BulletAnimSeq(16, 13, 2), // width, height, depth of each anim image
+    m_ArrowAnimSeq(16, 8, 2), // width, height, depth of each anim image
     m_pLastError(NULL),
     m_AnimFrameCnt(1),
     m_XSpeed_pps(0),
@@ -21,33 +21,28 @@ Bullet::Bullet(IGameView& gameView, GameColors& colors, Hunter& hunter)
 }
 
 
-Bullet::~Bullet()
+Arrow::~Arrow()
 {
 
 }
 
 
-bool Bullet::Init()
+bool Arrow::Init()
 {
 
   //
   // Loading all bullet anim sequences
   //
-  const char* ppFiles[]  = {"gfx/bullet1_hires.raw",
-                            "gfx/bullet3_hires.raw",
-                            "gfx/bullet4_hires.raw",
-                            "gfx/bullet5_hires.raw",
-                            "gfx/bullet6_hires.raw",
-                            "gfx/bullet7_hires.raw",
+  const char* ppFiles[]  = {"gfx/arrow_right1.raw",
                             NULL};
 
-  if(m_BulletAnimSeq.Load(ppFiles) == false)
+  if(m_ArrowAnimSeq.Load(ppFiles) == false)
   {
-    m_pLastError = m_BulletAnimSeq.ErrorMsg();
+    m_pLastError = m_ArrowAnimSeq.ErrorMsg();
     return false;
   }
 
-  m_Shape.SetAnimSequence(&m_BulletAnimSeq);
+  m_Shape.SetAnimSequence(&m_ArrowAnimSeq);
 
   // We want the bullet sprite to replace the mouse pointer
   m_Shape.UseMouseSprite();
@@ -69,7 +64,7 @@ bool Bullet::Init()
 }
 
 
-void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
+void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 {
   //
   // When invisible only check if fire button is pressed
@@ -133,17 +128,17 @@ void Bullet::Update(unsigned long elapsed, unsigned long joyPortState)
 }
 
 
-const char* Bullet::LastError() const
+const char* Arrow::LastError() const
 {
   return m_pLastError;
 }
 
-int Bullet::XSpeed_pps()
+int Arrow::XSpeed_pps()
 {
   return m_XSpeed_pps;
 }
 
-int Bullet::YSpeed_pps()
+int Arrow::YSpeed_pps()
 {
   return m_YSpeed_pps;
 }

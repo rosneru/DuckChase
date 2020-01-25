@@ -6,7 +6,7 @@ Duck::Duck(IGameView& gameView)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_Shape(gameView.Depth()),
-    m_DuckAnimSeq(59, 21, 3), // width, height, depth of each anim image
+    m_DuckAnimSeq(59, 21, 4), // width, height, depth of each anim image
     m_AnimFrameCnt(1),
     m_pLastError(NULL),
     m_XSpeed_pps(0),
@@ -25,8 +25,8 @@ bool Duck::Init()
   //
   // Loading all duck anim sequences
   //
-  const char* ppFiles[]  = {"gfx/duck1_hires.raw",
-                            "gfx/duck2_hires.raw",
+  const char* ppFiles[]  = {"gfx/duck1.raw",
+                            "gfx/duck2.raw",
                             NULL};
 
   if(m_DuckAnimSeq.Load(ppFiles) == false)

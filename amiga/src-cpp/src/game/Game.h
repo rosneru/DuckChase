@@ -5,7 +5,7 @@
 
 #include "IGameView.h"
 
-#include "Bullet.h"
+#include "Arrow.h"
 #include "Duck.h"
 #include "Hunter.h"
 #include "Picture.h"
@@ -43,7 +43,7 @@ private:
   Picture m_PicBackground;
   Duck m_Duck;
   Hunter m_Hunter;
-  Bullet m_Bullet;
+  Arrow m_Arrow;
 
   bool gameLoop();
 };

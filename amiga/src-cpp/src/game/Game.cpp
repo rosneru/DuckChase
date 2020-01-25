@@ -16,7 +16,7 @@ Game::Game(IGameView& gameView)
     m_pLastError(NULL),
     m_Duck(gameView),
     m_Hunter(gameView),
-    m_Bullet(gameView, m_GameColors ,m_Hunter)
+    m_Arrow(gameView, m_GameColors ,m_Hunter)
 {
 
 }
@@ -71,18 +71,18 @@ bool Game::Run()
     return false;
   }
 
-  if(m_Bullet.Init() == false)
+  if(m_Arrow.Init() == false)
   {
     // TODO CHECK: Does m_Bullet.LastError still exist outside here?
-    m_pLastError = m_Bullet.LastError();
+    m_pLastError = m_Arrow.LastError();
     return false;
   }
 
   //
   // Load and display the background image
   //
-  if(m_PicBackground.LoadFromRawFile("gfx/background_hires.raw",
-                                     640, 256, 3) == FALSE)
+  if(m_PicBackground.LoadFromRawFile("gfx/background.raw",
+                                     640, 256, 4) == FALSE)
   {
     m_pLastError = "Couldn't load background image\n";
     return false;
@@ -165,7 +165,7 @@ bool Game::gameLoop()
     ULONG portState = ReadJoyPort(1);
     m_Duck.Update(elapsed_ms, portState);
     m_Hunter.Update(elapsed_ms, portState);
-    m_Bullet.Update(elapsed_ms, portState);
+    m_Arrow.Update(elapsed_ms, portState);
 
     //
     // Render the changed scenery
