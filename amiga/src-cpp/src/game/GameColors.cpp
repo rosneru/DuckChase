@@ -55,8 +55,6 @@ GameColors::ArrowSpriteColors GameColors::m_sArrowSpriteColors =
 
 
 GameColors::GameColors()
-  : m_RGB32View(m_sViewColors),
-    m_RGB32ArrowSprite(m_sArrowSpriteColors)
 {
 
 }
@@ -73,12 +71,12 @@ bool GameColors::Load()
   return true;
 }
 
-ULONG* GameColors::GetRGB32View()
+ULONG* GameColors::GetViewColorsLoadRGB32()
 {
-  return m_RGB32View.elem;
+  return m_sViewColors.elem;
 }
 
-ULONG* GameColors::GetRGB32ArrowSprite()
+ULONG* GameColors::GetArrowSpriteColors()
 {
-  return m_RGB32ArrowSprite.elem;
+  return m_sArrowSpriteColors.elem;
 }

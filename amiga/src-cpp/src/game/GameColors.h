@@ -24,7 +24,7 @@ public:
    * Return the ColorArray for the view as Amiga-LoadRGB32-compliant
    * array
    */
-  ULONG* GetRGB32View();
+  ULONG* GetViewColorsLoadRGB32();
 
   /**
    * Return the ColorArray for the arrow sprite.
@@ -35,7 +35,7 @@ public:
    * and no terminating \0 longword. Use it only with SetRGB32.
    * array
    */
-  ULONG* GetRGB32ArrowSprite();
+  ULONG* GetArrowSpriteColors();
 
 
 private:
@@ -48,28 +48,36 @@ private:
   //   3 x 32 = 96..the 32 colors, 
   //   1..Termination
   //
+
+  /**
+   * Type for storing the colors for the view. It is defined to a size
+   * of 98 because: 
+   *   1..Header, 
+   *   3 x 32 = 96.. for the 32 colors, 
+   *   1..Termination
+   */
   struct ViewColors
   { 
     ULONG elem[98];
   };
 
-  // Declaring a static variable to hold the ColorArray data.
-  // See top of the implementation file, there it is defined
-  // and initialized
-  static ViewColors m_sViewColors;
-
-  // Declaring a member variable for the Color array. In the
-  // constructor it is initialized with the static array data.
-  ViewColors m_RGB32View;
-
+  /**
+   * Type for storing the collors for the arrow sprite.
+   */
   struct ArrowSpriteColors
   {
     ULONG elem[9];
   };
 
-  static ArrowSpriteColors m_sArrowSpriteColors;
+  /**
+   * Static variables to hold the view color data
+   */
+  static ViewColors m_sViewColors;
 
-  ArrowSpriteColors m_RGB32ArrowSprite;
+  /**
+   * Static variable to hold the arrow sprite color data
+   */
+  static ArrowSpriteColors m_sArrowSpriteColors;
 };
 
 #endif // GAME_COLORS_H

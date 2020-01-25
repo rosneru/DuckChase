@@ -54,7 +54,7 @@ bool Bullet::Init()
 
   // Set the colors for the sprite in view port
   m_Shape.SetVPortColorsForSprite(m_GameView.ViewPort(),
-                                  m_GameColors.GetRGB32ArrowSprite());
+                                  m_GameColors.GetArrowSpriteColors());
 
   // Sprite must have a ViewPort to be displayed
   m_Shape.SetViewPort(m_GameView.ViewPort());

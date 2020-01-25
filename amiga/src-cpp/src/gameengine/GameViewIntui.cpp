@@ -85,7 +85,7 @@ bool GameViewIntui::Open(GameColors& colors)
     SA_Quiet, TRUE,
     SA_Type, CUSTOMSCREEN,
     SA_Exclusive, TRUE,
-    SA_Colors32, colors.GetRGB32View(),
+    SA_Colors32, colors.GetViewColorsLoadRGB32(),
     SA_BitMap, m_pBitMapArray[0],
     TAG_DONE);
 
