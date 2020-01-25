@@ -37,6 +37,8 @@ public:
    */
   ULONG* GetArrowSpriteColors();
 
+  ULONG* GetStrainSpreadColors();
+
 
 private:
   // It's useful to store the colors at a central place.
@@ -50,8 +52,8 @@ private:
   //
 
   /**
-   * Type for storing the colors for the view. It is defined to a size
-   * of 98 because: 
+   * Type for storing the colors for the view. It is defined as an ULONG
+   * array of size 98 because: 
    *   1..Header, 
    *   3 x 32 = 96.. for the 32 colors, 
    *   1..Termination
@@ -62,11 +64,21 @@ private:
   };
 
   /**
-   * Type for storing the collors for the arrow sprite.
+   * Type for storing the colors for the arrow sprite.
+   * Defined to an ULONG array of size 9.
    */
   struct ArrowSpriteColors
   {
     ULONG elem[9];
+  };
+
+  /**
+   * Type for storing the color gradient of the strain display.
+   * Defined to an ULONG array of size 192.
+   */
+  struct StrainSpreadColors
+  {
+    ULONG elem[192];
   };
 
   /**
@@ -78,6 +90,11 @@ private:
    * Static variable to hold the arrow sprite color data
    */
   static ArrowSpriteColors m_sArrowSpriteColors;
+
+  /**
+   * Static variable to hold the arrow sprite color data
+   */
+  static StrainSpreadColors m_sStrainSpreadColors;
 };
 
 #endif // GAME_COLORS_H
