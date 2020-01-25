@@ -39,7 +39,7 @@ DEPS=$(SRC_ROOT)/amigautils/Picture.h \
 		$(SRC_ROOT)/entities/Hunter.h \
 		$(SRC_ROOT)/game/Game.h \
 		$(SRC_ROOT)/game/GameColors.h \
-		$(SRC_ROOT)/game/PointsDisplay.h \
+		$(SRC_ROOT)/game/InfoDisplay.h \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.h \
 		$(SRC_ROOT)/gameengine/GameViewIntui.h \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.h \
@@ -65,7 +65,7 @@ _OBJ=$(SRC_ROOT)/amigautils/Picture.o \
 		$(SRC_ROOT)/entities/Hunter.o \
 		$(SRC_ROOT)/game/Game.o \
 		$(SRC_ROOT)/game/GameColors.o \
-		$(SRC_ROOT)/game/PointsDisplay.o \
+		$(SRC_ROOT)/game/InfoDisplay.o \
 		$(SRC_ROOT)/gameengine/GameViewGfxLib.o \
 		$(SRC_ROOT)/gameengine/GameViewIntui.o \
 		$(SRC_ROOT)/gameengine/GameViewLowLevel.o \

@@ -5,12 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "PointsDisplay.h"
+#include "InfoDisplay.h"
 
 extern struct GfxBase* GfxBase;
 
 
-PointsDisplay::PointsDisplay(IGameView& gameView,
+InfoDisplay::InfoDisplay(IGameView& gameView,
                              short backPen,
                              short strikesPen,
                              short fpsPen,
@@ -25,12 +25,12 @@ PointsDisplay::PointsDisplay(IGameView& gameView,
 }
 
 
-PointsDisplay::~PointsDisplay()
+InfoDisplay::~InfoDisplay()
 {
 
 }
 
-void PointsDisplay::Clear()
+void InfoDisplay::Clear()
 {
   if(m_View.RastPort() == NULL)
   {
@@ -49,7 +49,7 @@ void PointsDisplay::Clear()
 }
 
 
-void PointsDisplay::UpdateStrikes(short strikes)
+void InfoDisplay::UpdateStrikes(short strikes)
 {
   if(m_View.RastPort() == NULL)
   {
@@ -58,7 +58,7 @@ void PointsDisplay::UpdateStrikes(short strikes)
 }
 
 
-void PointsDisplay::UpdateFps(short fps)
+void InfoDisplay::UpdateFps(short fps)
 {
   char fpsBuf[16];
   sprintf(fpsBuf, "FPS: %d", fps);
@@ -77,7 +77,7 @@ void PointsDisplay::UpdateFps(short fps)
 }
 
 
-void PointsDisplay::UpdateInfo(const char* pInfo)
+void InfoDisplay::UpdateInfo(const char* pInfo)
 {
   if(m_View.RastPort() == NULL)
   {

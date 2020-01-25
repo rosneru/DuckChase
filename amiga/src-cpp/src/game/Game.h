@@ -11,7 +11,7 @@
 #include "Picture.h"
 
 #include "GameColors.h"
-#include "PointsDisplay.h"
+#include "InfoDisplay.h"
 
 /**
  * The main game 'Duck chase'
@@ -32,7 +32,7 @@ public:
 private:
 
   IGameView& m_GameView;
-  PointsDisplay m_PointsDisplay;
+  InfoDisplay m_InfoDisplay;
 
   struct GelsInfo* m_pGelsInfo;
 
@@ -40,7 +40,7 @@ private:
 
   GameColors m_GameColors;
 
-  Picture m_PicBackground;
+  Picture m_BackgroundImage;
   Duck m_Duck;
   Hunter m_Hunter;
   Arrow m_Arrow;

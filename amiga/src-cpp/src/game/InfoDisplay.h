@@ -13,16 +13,16 @@
  * @author Uwe Rosner
  * @date 01/08/2019
  */
-class PointsDisplay
+class InfoDisplay
 {
 public:
-  PointsDisplay(IGameView& gameView,
+  InfoDisplay(IGameView& gameView,
                 short backPen,
                 short strikesPen,
                 short fpsPen,
                 short infoPen);
 
-  ~PointsDisplay();
+  ~InfoDisplay();
 
   /**
    * Clears the whole display

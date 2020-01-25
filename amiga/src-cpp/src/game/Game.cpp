@@ -11,7 +11,7 @@
 
 Game::Game(IGameView& gameView)
   : m_GameView(gameView),
-    m_PointsDisplay(gameView, 1, 5, 5, 3),  // TODO Change constants
+    m_InfoDisplay(gameView, 1, 5, 5, 3),  // TODO Change constants
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
     m_Duck(gameView),
@@ -81,7 +81,7 @@ bool Game::Run()
   //
   // Load and display the background image
   //
-  if(m_PicBackground.LoadFromRawFile("gfx/background.raw",
+  if(m_BackgroundImage.LoadFromRawFile("gfx/background.raw",
                                      640, 256, 4) == FALSE)
   {
     m_pLastError = "Couldn't load background image\n";
@@ -90,14 +90,14 @@ bool Game::Run()
 
   struct RastPort* pRastPort = m_GameView.RastPort();
 
-  BltBitMapRastPort(m_PicBackground.GetBitMap(), 0, 0, pRastPort,
+  BltBitMapRastPort(m_BackgroundImage.GetBitMap(), 0, 0, pRastPort,
                     0, 0, 640, 256, 0xC0);
 
   //
   // Initially render the display
   //
-  m_PointsDisplay.Clear();
-  m_PointsDisplay.UpdateInfo(m_GameView.ViewName());
+  m_InfoDisplay.Clear();
+  m_InfoDisplay.UpdateInfo(m_GameView.ViewName());
   m_GameView.Render();
   m_GameView.Render();
 
@@ -148,7 +148,7 @@ bool Game::gameLoop()
       {
         // Sum the fps of each frame
         long fps = (short)(1000 / elapsed);
-        m_PointsDisplay.UpdateFps(fps);
+        m_InfoDisplay.UpdateFps(fps);
       }
     }
     else if(frameCounter < 1)
