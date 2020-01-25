@@ -18,8 +18,13 @@ public:
   LowlevelViewPort();
   ~LowlevelViewPort();
 
-  bool Create(ULONG sizex, ULONG sizey, ULONG depth, ULONG modeId,
-              ULONG colors, struct BitMap* pBitMap);
+  bool Create(ULONG sizex, 
+              ULONG sizey, 
+              ULONG depth, 
+              ULONG modeId,
+              ULONG colors, 
+              struct BitMap* pBitMap,
+              ULONG* pColorArray = NULL);
 
   void Delete();
 

@@ -3,6 +3,8 @@
 #include <clib/graphics_protos.h>
 #include <graphics/videocontrol.h>
 
+#include <stddef.h>
+
 #include "lowlevelviewport.h"
 
 LowlevelViewPort::LowlevelViewPort()
@@ -21,7 +23,8 @@ bool LowlevelViewPort::Create(ULONG sizex,
                               ULONG depth, 
                               ULONG modeId, 
                               ULONG colors, 
-                              struct BitMap* pBitMap)
+                              struct BitMap* pBitMap,
+                              ULONG* pColorArray)
 {
   m_InitError = IE_None;
 
@@ -32,7 +35,8 @@ bool LowlevelViewPort::Create(ULONG sizex,
     return false;
   }
 
-  m_pViewPort = (struct ViewPort*)AllocVec(sizeof(struct ViewPort), MEMF_CLEAR);
+  m_pViewPort = (struct ViewPort*) AllocVec(sizeof(struct ViewPort), 
+                                            MEMF_CLEAR);
 
   if (m_pViewPort == NULL)
   {
@@ -53,8 +57,9 @@ bool LowlevelViewPort::Create(ULONG sizex,
     return false;
   }
 
-  m_pViewPort->RasInfo =
-    (struct RasInfo*)AllocVec(sizeof(struct RasInfo), MEMF_CLEAR);
+  size_t rasInfoSize = sizeof(struct RasInfo);
+  m_pViewPort->RasInfo = (struct RasInfo*) AllocVec(rasInfoSize, 
+                                                    MEMF_CLEAR);
 
   if (m_pViewPort->RasInfo == NULL)
   {
@@ -86,6 +91,12 @@ bool LowlevelViewPort::Create(ULONG sizex,
                              {TAG_DONE}};
 
   VideoControl(m_pViewPort->ColorMap, vcTags);
+
+  if(pColorArray != NULL)
+  {
+    LoadRGB32(m_pViewPort, pColorArray);
+  }
+
   return true;
 }
 

@@ -125,7 +125,8 @@ bool GameViewLowlevel::Open(GameColors& colors)
                                m_Depth,
                                m_ModeId,
                                m_NumColors,
-                               m_pBitMapArray[0]) == false)
+                               m_pBitMapArray[0],
+                               colors.GetViewColorsLoadRGB32()) == false)
   {
     m_pLastError = (char*)m_LowLevelViewPort.LastError();
     Close();
