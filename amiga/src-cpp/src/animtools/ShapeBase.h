@@ -83,14 +83,6 @@ protected:
   ShapeBase();
 
   bool m_IsDoubleBuffered;
-
-  /**
-   * Returns the distance in pixels which is calculated from the pixel-
-   * per-second value und the elapsed time.
-   */
-  int pps2Dist(int pps, long elapsed_ms);
-
-
 };
 
 #endif
