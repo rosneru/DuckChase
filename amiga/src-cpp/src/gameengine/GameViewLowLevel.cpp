@@ -22,6 +22,7 @@ GameViewLowlevel::GameViewLowlevel(short width,
     m_Height(height),
     m_Depth(depth),
     m_NumColors(numColors),
+    m_IsDoubleBuffered(true),
     m_ModeId(modeId),
     m_pLastError("Initialized sucessfully."),
     m_pOldView(NULL),
@@ -232,6 +233,10 @@ void GameViewLowlevel::Close()
   }
 }
 
+void GameViewLowlevel::DisableDoubleBuf()
+{
+  m_IsDoubleBuffered = false;
+}
 
 short GameViewLowlevel::Width()
 {
@@ -273,14 +278,22 @@ void GameViewLowlevel::Render()
 
   SortGList(&m_RastPort);
   DrawGList(&m_RastPort, m_pViewPort);
-
-  // Double buffering: One BitMap is for the view
-  m_pViewPort->RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  
+  if(m_IsDoubleBuffered)
+  {
+    // Double buffering: One BitMap is for the view
+    m_pViewPort->RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  }
 
   WaitTOF();
 
   MrgCop(m_pView);
   LoadView(m_pView);
+
+  if(!m_IsDoubleBuffered)
+  {
+    return;
+  }
 
   // Double buffering: Toggle the BitMap pointer
   m_FrameToggle ^= 1;

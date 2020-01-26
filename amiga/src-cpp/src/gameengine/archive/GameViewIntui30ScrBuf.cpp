@@ -17,6 +17,7 @@ GameViewIntui30ScrBuf::GameViewIntui30ScrBuf(short viewWidth,
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
+    m_IsDoubleBuffered(true),
     scbuf(),
     dbufport(NULL),
     sigs(0),
@@ -130,6 +131,11 @@ void GameViewIntui30ScrBuf::Close()
     DeleteMsgPort(dbufport);
     dbufport = NULL;
   }
+}
+
+void GameViewIntui30ScrBuf::DisableDoubleBuf()
+{
+  m_IsDoubleBuffered = false;
 }
 
 short GameViewIntui30ScrBuf::Width()

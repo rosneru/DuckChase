@@ -48,6 +48,12 @@ void ShapeBob::createBob()
     return;
   }
 
+  SHORT doubleBuf = 1;
+  if(!m_IsDoubleBuffered)
+  {
+    doubleBuf = 0;
+  }
+
   // Create the bob using the first image
   // Fill the NewBob struct
   NEWBOB newBob;
@@ -58,12 +64,12 @@ void ShapeBob::createBob()
   newBob.nb_PlanePick = 15; // Planes that get image data // TODO generalize!!
   newBob.nb_PlaneOnOff = 0;              // Don't turn on unused planes
   newBob.nb_BFlags = SAVEBACK | OVERLAY; // Bog flags
-  newBob.nb_DBuf = 1;                    // DoubleBuffering.
-  newBob.nb_RasDepth = m_RasterDepth;    // Depth of the raster
-  newBob.nb_X = 0;                       // Initial x position
-  newBob.nb_Y = 0;                       // Initial y position
-  newBob.nb_HitMask = 0;                 // Hit mask
-  newBob.nb_MeMask = 0;                  // Me mask
+  newBob.nb_DBuf = doubleBuf;             // DoubleBuffering.
+  newBob.nb_RasDepth = m_RasterDepth;     // Depth of the raster
+  newBob.nb_X = 0;                        // Initial x position
+  newBob.nb_Y = 0;                        // Initial y position
+  newBob.nb_HitMask = 0;                  // Hit mask
+  newBob.nb_MeMask = 0;                   // Me mask
 
   // Create the Bob
   m_pBob = makeBob(&newBob);

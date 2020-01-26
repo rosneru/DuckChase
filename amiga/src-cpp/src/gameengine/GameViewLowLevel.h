@@ -31,6 +31,8 @@ public:
   bool Open(GameColors& colors);
   void Close();
 
+  void DisableDoubleBuf();
+
   short Width();
   short Height();
   short Depth();
@@ -49,6 +51,7 @@ private:
   short m_Height;
   short m_Depth;
   short m_NumColors;
+  bool m_IsDoubleBuffered;
   ULONG m_ModeId;
   const char* m_pLastError;
 

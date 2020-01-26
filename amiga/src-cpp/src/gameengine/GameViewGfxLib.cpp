@@ -17,6 +17,7 @@ GameViewGfxLib::GameViewGfxLib(short viewWidth,
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
+    m_IsDoubleBuffered(true),
     m_pOldView(NULL),
     m_View(),
     m_pViewPort(NULL),
@@ -320,6 +321,10 @@ void GameViewGfxLib::Close()
   }
 }
 
+void GameViewGfxLib::DisableDoubleBuf()
+{
+  m_IsDoubleBuffered = false;
+}
 
 short GameViewGfxLib::Width()
 {
@@ -362,13 +367,21 @@ void GameViewGfxLib::Render()
   SortGList(&m_RastPort);
   DrawGList(&m_RastPort, m_pViewPort);
 
-  // Double buffering: One BitMap is for the view
-  m_pViewPort->RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  if(m_IsDoubleBuffered)
+  {
+    // Double buffering: One BitMap is for the view
+    m_pViewPort->RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  }
 
   WaitTOF();
 
   MrgCop(&m_View);
   LoadView(&m_View);
+
+  if(!m_IsDoubleBuffered)
+  {
+    return;
+  }
 
   // Double buffering: Toggle the BitMap pointer
   m_FrameToggle ^= 1;

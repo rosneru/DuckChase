@@ -25,6 +25,14 @@ public:
   Game(IGameView& gameView);
   ~Game();
 
+  /**
+   * When this is called before invoking \see Run, the \see IGameView 
+   * and the \see ShapeBob are set to only use single buffering.
+   * 
+   * Intended for testing purposes only.
+   */
+  void DisableDoubleBuf();
+
   bool Run();
 
   const char* LastError() const;

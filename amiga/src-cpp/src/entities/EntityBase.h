@@ -17,6 +17,16 @@ public:
   virtual bool Init() = 0;
 
   /**
+   * Disables the double buffering for the shape of the entity. Must be
+   * set before init.
+   *
+   * NOTE: Not all shape types may be affected, because not all of them
+   * use double buffering at all, e.g. Bobs can be double buffered,
+   * Sprites not.
+   */
+  virtual void DisableDoubleBuf();
+
+  /**
    * Gets the current x-position of the shape which is associated with
    * this entity.
    */
@@ -32,6 +42,7 @@ protected:
   EntityBase(ShapeBase* pShape);
 
   ShapeBase* m_pShape;
+
 
   /**
    * Returns the distance in pixels which is calculated from the pixel-

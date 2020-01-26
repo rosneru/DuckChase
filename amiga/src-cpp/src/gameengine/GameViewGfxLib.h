@@ -23,6 +23,8 @@ public:
   bool Open(GameColors& colors);
   void Close();
 
+  void DisableDoubleBuf();
+
   short Width();
   short Height();
   short Depth();
@@ -41,6 +43,7 @@ private:
   short m_ViewHeight;
   short m_ViewDepth;
   short m_ViewNumColors;
+  bool m_IsDoubleBuffered;
 
   struct View* m_pOldView;
 

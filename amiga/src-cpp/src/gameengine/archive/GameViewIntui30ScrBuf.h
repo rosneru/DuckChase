@@ -35,6 +35,13 @@ public:
   bool Open(GameColors& colors);
   void Close();
 
+  /**
+   * IMPORTANT: This just exists to fulfil the interface. Disabling will
+   * not work, because this view is based on double buffering
+   * completely.
+   */
+  void DisableDoubleBuf();
+
   short Width();
   short Height();
   short Depth();
@@ -55,6 +62,7 @@ private:
   short m_ViewHeight;
   short m_ViewDepth;
   short m_ViewNumColors;
+  bool m_IsDoubleBuffered;
 
   struct MsgPort* dbufport;
 

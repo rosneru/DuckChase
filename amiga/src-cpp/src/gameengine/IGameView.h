@@ -32,6 +32,15 @@ public:
   virtual bool Open(GameColors& colors) = 0;
   virtual void Close() = 0;
 
+  /**
+   * Disbles the double buffering for the game view.
+   *
+   * NOTE: Only intended for testing purposes. In implementations just
+   * the machanism will be disabled, acquiring the buffer memory will be
+   * done just like in double buffer mode.
+   */
+  virtual void DisableDoubleBuf() = 0;
+
   virtual short Width() = 0;
   virtual short Height() = 0;
   virtual short Depth() = 0;

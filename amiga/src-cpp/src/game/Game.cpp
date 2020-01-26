@@ -39,6 +39,15 @@ Game::~Game()
   m_GameView.Close();
 }
 
+void Game::DisableDoubleBuf()
+{
+  m_GameView.DisableDoubleBuf();
+
+  // TODO: Find a better way, hold a list for entities
+  m_Duck.DisableDoubleBuf();
+  m_Hunter.DisableDoubleBuf();
+}
+
 
 bool Game::Run()
 {

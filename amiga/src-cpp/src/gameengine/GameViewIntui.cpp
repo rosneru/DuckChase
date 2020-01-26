@@ -17,6 +17,7 @@ GameViewIntui::GameViewIntui(short viewWidth,
   : m_ViewWidth(viewWidth),
     m_ViewHeight(viewHeight),
     m_ViewDepth(viewDepth),
+    m_IsDoubleBuffered(true),
     m_pScreen(NULL),
     m_pBitMapArray(),
     m_FrameToggle(0),
@@ -119,6 +120,11 @@ void GameViewIntui::Close()
   }
 }
 
+void GameViewIntui::DisableDoubleBuf()
+{
+  m_IsDoubleBuffered = false;
+}
+
 short GameViewIntui::Width()
 {
   return m_ViewWidth;
@@ -169,13 +175,21 @@ void GameViewIntui::Render()
   SortGList(&(m_pScreen->RastPort));
   DrawGList(&(m_pScreen->RastPort), &(m_pScreen->ViewPort));
 
-  // Double buffering: One BitMap is for the view
-  m_pScreen->ViewPort.RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  if(m_IsDoubleBuffered)
+  {
+    // Double buffering: One BitMap is for the view
+    m_pScreen->ViewPort.RasInfo->BitMap = m_pBitMapArray[m_FrameToggle];
+  }
 
   WaitTOF();
 
   MrgCop(ViewAddress());    // TODO Avoid multiple calls
   LoadView(ViewAddress());
+
+  if(!m_IsDoubleBuffered)
+  {
+    return;
+  }
 
   // Double buffering: Toggle the BitMap pointer
   m_FrameToggle ^= 1;

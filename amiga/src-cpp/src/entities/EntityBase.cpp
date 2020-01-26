@@ -8,6 +8,16 @@ EntityBase::EntityBase(ShapeBase* pShape)
 {
 }
 
+void EntityBase::DisableDoubleBuf()
+{
+  if (m_pShape == NULL)
+  {
+    return;
+  }
+
+  m_pShape->DisableDoubleBuf();
+}
+
 int EntityBase::XPos() const
 {
   if (m_pShape == NULL)

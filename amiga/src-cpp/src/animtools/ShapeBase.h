@@ -14,6 +14,17 @@ class AnimSeqBase;
 class ShapeBase
 {
 public:
+
+  /**
+   * Disables the double buffering for this shape. Must be set before
+   * init.
+   *
+   * NOTE: Not all shape types may be affected, because not all of them
+   * use double buffering at all, e.g. Bobs can be double buffered,
+   * Sprites not.
+   */
+  virtual void DisableDoubleBuf();
+
   /**
    * Gets the current y-position of the object.
    */
@@ -69,11 +80,17 @@ public:
   virtual void NextImage() = 0;
 
 protected:
+  ShapeBase();
+
+  bool m_IsDoubleBuffered;
+
   /**
    * Returns the distance in pixels which is calculated from the pixel-
    * per-second value und the elapsed time.
    */
   int pps2Dist(int pps, long elapsed_ms);
+
+
 };
 
 #endif
