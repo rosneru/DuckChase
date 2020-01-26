@@ -16,7 +16,7 @@
 class Hunter : public EntityBase
 {
 public:
-  Hunter(IGameView& gameView);
+  Hunter(IGameView& gameView, bool& isArrowArmed);
   ~Hunter();
 
   bool Init();
@@ -42,6 +42,9 @@ private:
   int m_XSpeed_pps;
   int m_YSpeed_pps;
 
+  bool& m_IsArrowArmed;
+  bool m_IsRunning;
+  unsigned long m_LastDirection;
 };
 
 #endif

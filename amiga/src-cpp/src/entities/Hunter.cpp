@@ -4,7 +4,7 @@
 
 #include "Hunter.h"
 
-Hunter::Hunter(IGameView& gameView)
+Hunter::Hunter(IGameView& gameView, bool& isArrowArmed)
   : EntityBase(&m_Shape),
     m_GameView(gameView),
     m_Shape(gameView.Depth()),
@@ -15,7 +15,10 @@ Hunter::Hunter(IGameView& gameView)
     m_pLastError(NULL),
     m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
     m_XSpeed_pps(0),
-    m_YSpeed_pps(0)
+    m_YSpeed_pps(0),
+    m_IsArrowArmed(isArrowArmed),
+    m_IsRunning(false),
+    m_LastDirection(JPF_JOY_RIGHT)
 {
 
 }
@@ -82,19 +85,25 @@ bool Hunter::Init()
 
 void Hunter::Update(unsigned long elapsed, unsigned long portState)
 {
+  bool hasDirectionChanged = false;
+
+  // Left/right movement
   if((portState & JPF_JOY_RIGHT) != 0)
   {
     m_XSpeed_pps = 200;
-    int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
-    if(m_Shape.XPos() + dX > 640 + m_Shape.Width())
-    {
-      m_Shape.Move(-m_Shape.Width(), m_Shape.YPos());
-    }
-    else
-    {
-      m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
-    }
+
+
+    // int dX = pps2Dist(m_XSpeed_pps, elapsed);
+
+    // if(m_Shape.XPos() + dX > 640 + m_Shape.Width())
+    // {
+    //   m_Shape.Move(-m_Shape.Width(), m_Shape.YPos());
+    // }
+    // else
+    // {
+    //   m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
+    // }
 
   }
   else if((portState & JPF_JOY_LEFT) != 0)
