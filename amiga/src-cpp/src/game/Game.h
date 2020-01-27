@@ -56,6 +56,8 @@ private:
   Hunter m_Hunter;
   Arrow m_Arrow;
 
+  bool m_bArrowIsArmed;
+
   bool gameLoop();
 };
 

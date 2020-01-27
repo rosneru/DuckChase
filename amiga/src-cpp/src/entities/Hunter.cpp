@@ -85,26 +85,10 @@ bool Hunter::Init()
 
 void Hunter::Update(unsigned long elapsed, unsigned long portState)
 {
-  bool hasDirectionChanged = false;
-
   // Left/right movement
   if((portState & JPF_JOY_RIGHT) != 0)
   {
-    m_XSpeed_pps = 200;
-
-
-
-    // int dX = pps2Dist(m_XSpeed_pps, elapsed);
-
-    // if(m_Shape.XPos() + dX > 640 + m_Shape.Width())
-    // {
-    //   m_Shape.Move(-m_Shape.Width(), m_Shape.YPos());
-    // }
-    // else
-    // {
-    //   m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
-    // }
-
+    runRight(elapsed);
   }
   else if((portState & JPF_JOY_LEFT) != 0)
   {
@@ -141,3 +125,60 @@ int Hunter::YSpeed_pps()
 {
   return m_YSpeed_pps;
 }
+
+
+void Hunter::runLeft(unsigned long elapsed)
+{
+
+}
+
+
+void Hunter::runRight(unsigned long elapsed)
+{
+  bool hasDirectionChanged = false;
+  m_XSpeed_pps = 200;
+
+  // Check if direction has changed
+  if(m_LastDirection != JPF_JOY_RIGHT)
+  {
+    hasDirectionChanged = true;
+    m_AnimFrameCnt = 0;
+    m_LastDirection = JPF_JOY_RIGHT;
+
+    m_HunterRightAnim.GetFirstImage();
+    m_Shape.SetAnimSequence(&m_HunterRightAnim);
+  }
+
+  int dX = pps2Dist(m_XSpeed_pps, elapsed);
+
+  if(m_Shape.XPos() + dX > m_GameView.Width() + m_Shape.Width())
+  {
+    m_Shape.Move(-m_Shape.Width(), m_Shape.YPos());
+  }
+  else
+  {
+    m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
+  }
+
+  // Every some frames (or if the direction changed) switch the hunter
+  // image
+  int switchEvery = m_FrameSwitchingRateAt50Fps * 1000 / (elapsed * 50);
+  m_AnimFrameCnt++;
+
+  if (hasDirectionChanged || (m_AnimFrameCnt % switchEvery == 0))
+  {
+    m_AnimFrameCnt = 0;
+    m_Shape.NextImage();
+  }
+}
+
+
+void Hunter::shootArrow()
+{
+}
+
+
+void Hunter::stopping()
+{
+}
+

@@ -42,6 +42,7 @@ protected:
   EntityBase(ShapeBase* pShape);
 
   ShapeBase* m_pShape;
+  unsigned long m_FrameSwitchingRateAt50Fps;
 
 
   /**

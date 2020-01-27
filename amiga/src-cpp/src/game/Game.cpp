@@ -18,8 +18,9 @@ Game::Game(IGameView& gameView)
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
     m_Duck(gameView),
-    m_Hunter(gameView),
-    m_Arrow(gameView, m_GameColors , m_Hunter)
+    m_Hunter(gameView, m_bArrowIsArmed),
+    m_Arrow(gameView, m_GameColors , m_Hunter),
+    m_bArrowIsArmed(false)
 {
 
 }

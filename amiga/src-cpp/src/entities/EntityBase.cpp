@@ -4,7 +4,8 @@
 #include "ShapeBase.h"
 
 EntityBase::EntityBase(ShapeBase* pShape) 
-  : m_pShape(pShape)
+  : m_pShape(pShape),
+    m_FrameSwitchingRateAt50Fps(8)
 {
 }
 

@@ -45,6 +45,12 @@ private:
   bool& m_IsArrowArmed;
   bool m_IsRunning;
   unsigned long m_LastDirection;
+
+  void runLeft(unsigned long elapsed);
+  void runRight(unsigned long elapsed);
+  void shootArrow();
+  void stopping();
+
 };
 
 #endif
