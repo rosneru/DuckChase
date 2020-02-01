@@ -672,7 +672,7 @@ BOOL updateHunter(ULONG portState)
       m_HunterLastDirection = JPF_JOY_LEFT;
     }
 
-    // Move the hunter to right
+    // Move the hunter to left
     if (vSprite->X - hunterDX[gameSpeed] < -hunterImages[0].width)
     {
       vSprite->X = VP_WIDTH + hunterImages[0].width;

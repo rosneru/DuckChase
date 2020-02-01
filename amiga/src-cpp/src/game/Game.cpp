@@ -18,9 +18,10 @@ Game::Game(IGameView& gameView)
     m_pGelsInfo(NULL),
     m_pLastError(NULL),
     m_Duck(gameView),
-    m_Hunter(gameView, m_bArrowIsArmed),
+    m_Hunter(gameView, m_IsArrowLaunching, m_IsArrowLaunchDone),
     m_Arrow(gameView, m_GameColors , m_Hunter),
-    m_bArrowIsArmed(false)
+    m_IsArrowLaunching(false),
+    m_IsArrowLaunchDone(false)
 {
 
 }
