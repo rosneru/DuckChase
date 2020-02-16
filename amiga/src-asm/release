@@ -1,4 +1,4 @@
 Copper.obj: Copper.asm
   ACOM:OMA Copper.asm
-  ACOM:DLink FROM Copper.obj TO Copper LIB ACOM:Libraries/amiga.lib
+  ACOM:DLink FROM Copper.obj TO Copper_oma LIB ACOM:Libraries/amiga.lib
 
