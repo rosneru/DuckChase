@@ -245,7 +245,7 @@ Exit_4:
 ;        move.l  #$8020,$dff096      ;Enable sprites
         lea     _custom,a1
         move.w  #$8020,dmacon(a1)
-        rts;
+        rts
 
 
 ; NOTE: a1 must be loaded with the address of an error text before!
@@ -343,7 +343,7 @@ strErrLoadBgImg     even
 
 
 bgImgName           even
-                    dc.b          '/gfx/raw/background.raw',0
+                    dc.b          'gfx/background.raw',0
 
                     SECTION "dma",data,chip
                     even
