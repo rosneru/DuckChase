@@ -165,6 +165,8 @@ clearview
         lea     _custom,a1
         move.l  #copperlist,cop1lc(a1)
 
+        ; Activate the bitplane DMA
+        move.w  #$8100,dmacon(a1)
 loop:
         move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
         and.l   #$fff00,d0
