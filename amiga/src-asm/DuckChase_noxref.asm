@@ -36,38 +36,20 @@
 *    https://github.com/rosneru
 **
 
+ExecBase:	equ	$4
+_custom		equ	$dff000
+_ciaa		equ	$bfe001
+
+                bra _main
+
         include "dos/dos.i"
+        include "dos/dos_lib.i"
+        include "exec/exec_lib.i"
         include "exec/memory.i"
+        include "graphics/graphics_lib.i"
         include "graphics/GfxBase.i"
         include "hardware/custom.i"
         include "hardware/cia.i"
-
-        XDEF    _SysBase
-        XDEF    _GfxBase
-        XDEF    _DOSBase
-        XDEF    _main
-
-        ;
-        ; Stating the used LVOs
-        ; (coming from amiga.lib / small.lib)
-        ;
-        XREF    _AbsExecBase
-        XREF    _LVOOpenLibrary
-        XREF    _LVOCloseLibrary
-        XREF    _LVOAllocVec
-        XREF    _LVOFreeVec
-        XREF    _LVOLoadView
-        XREF    _LVOWaitTOF
-        XREF    _LVOForbid
-        XREF    _LVOPermit
-        XREF    _LVOOwnBlitter
-        XREF    _LVODisownBlitter
-        XREF    _LVOOpen
-        XREF    _LVOClose
-        XREF    _LVOVPrintf
-        XREF    _LVORead
-        XREF    _custom
-        XREF    _ciaa
 
 
 *======================================================================
@@ -76,7 +58,7 @@
         ;Entry point
 _main:
 
-        movea.l _AbsExecBase,a6
+        movea.l ExecBase,a6
         move.l  a6,_SysBase
 
         ;
@@ -183,6 +165,8 @@ clearview
         lea     _custom,a1
         move.l  #copperlist,cop1lc(a1)
 
+        ; Activate the bitplane DMA
+        move.w  #$8100,dmacon(a1)
 loop:
         move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
         and.l   #$fff00,d0
@@ -204,44 +188,45 @@ loop:
 
 
 Exit:
-        move.l  oldview,d0          ;Restore former view
-        beq     Exit_1              ;But only if there was one
         move.l  _GfxBase,a6         ;Use graphics.library
+        move.l  oldview,d0          ;Restore former view
+        beq     .ex1                ;But only if there was one
         jsr     _LVOWaitTOF(a6)
         jsr     _LVOWaitTOF(a6)
         move.l  oldview,a1
         jsr     _LVOLoadView(a6)
+
+.ex1:
+        ; Start former copper list
         lea.l   _custom,a1
-        move.l  gb_copinit(a6),cop1lc(a1) ;Start former copper list
+        move.l  gb_copinit(a6),cop1lc(a1)
 
-
-Exit_1:
         ; Free memory if it was allocated successfully
         movea.l _SysBase,a6
         move.l  picture,d0
         tst.l   d0
-        beq     Exit_2
+        beq     .ex2
         move.l  d0,a1
         jsr     _LVOFreeVec(a6)
 
-Exit_2:
+.ex2:
         ; Close graphics.library
         movea.l _SysBase,a6
         move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
-        beq     Exit_3
+        beq     .ex3
         move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
-Exit_3:
+.ex3:
         ; Close dos.library
         movea.l _SysBase,a6
         move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
-        beq     Exit_4
+        beq     .ex4
         move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
 
-Exit_4:
+.ex4:
 ;        move.l  #$8020,$dff096      ;Enable sprites
         lea     _custom,a1
         move.w  #$8020,dmacon(a1)
