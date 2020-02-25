@@ -1,4 +1,7 @@
-Copper.obj: Copper.asm
-  ACOM:OMA Copper.asm
-  ACOM:DLink FROM Copper.obj TO Copper_oma LIB ACOM:Libraries/amiga.lib
+obj_release/DuckChase.obj: DuckChase.asm
+  ACOM:OMA DuckChase.asm -o obj_release/DuckChase.obj
+
+
+Link_release:
+  ACOM:DLink FROM obj_release/DuckChase.obj TO DuckChase LIB ACOM:Libraries/amiga.lib
 

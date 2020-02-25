@@ -1,0 +1,6 @@
+delete obj_release/#?
+delete obj_debug/#?
+delete DuckChase
+elete DuckChase_debug
+
+
