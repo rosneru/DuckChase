@@ -10,7 +10,16 @@
 *       O.M.A. assembler 3.0 and its debugger DBug
 *       CubicIDE for coding
 *
-* Build
+* Build using the make scripts
+*
+*   1) Build debug version
+*    ACOM:Make debug
+*
+*   2) Build release version
+*    ACOM:Make release
+*
+*
+* Build manually
 *   1a) Asm
 *    OMA file.asm
 *
@@ -19,18 +28,6 @@
 *
 *   2) Link
 *    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
-*
-* History
-*   26.10.2019 - Changed from 3 to 4 bitplanes and set new colors
-*   05.10.2019 - Changed example from 22.07. to load a picture instead
-*   18.08.2019 - Moving the gray gradient
-*   18.08.2019 - Added a copper gray gradient
-*   17.08.2019 - Added error message output if init fails
-*   17.08.2019 - Dropped lowlevel.library suppurt; added dos.library
-*   22.07.2019 - Modified copper list, displaying three colored blocks
-*   21.07.2019 - Dynamic allocation of chip memory for the view
-*   21.07.2019 - Using lowlevel.library
-*   20.07.2019 - Simplest copperlist
 *
 * Author: Uwe Rosner
 *    https://github.com/rosneru
@@ -64,6 +61,8 @@
         XREF    _LVODisownBlitter
         XREF    _LVOOpen
         XREF    _LVOClose
+        XREF    _LVOIoErr
+        XREF    _LVOPrintFault
         XREF    _LVOVPrintf
         XREF    _LVORead
         XREF    _custom
@@ -115,10 +114,14 @@ _main:
         move.l  #bgImgName,d1       ;Function expects file name in d1..
         move.l  d0,d2               ;..and buf addr in d2
         move.l  #81920,d3           ;..and buf len in d3
-        bsr     Load_file_to_buf
-        move.l  #strErrLoadBgImg,d1 ;The error message if it failed
+        bsr     LoadFileToBuf
         tst.l   d0                  ;If d0 is zero
-        bne     Exit_err            ;the file couldn't be loaded
+
+        move.l  #bgImgName,d2       ;Move file name address to d2 to
+                                    ;also be printed in error message
+        pea     Exit(pc)            ;Load exit address to the stack
+        bra     PrintDosErr         ;Print Dos error and exit
+
         ;
         ; Switch off current copper list without smashing the current
         ; screen. The order of LoadView(0) and 2xWaitTOF() is set by
@@ -261,7 +264,26 @@ Exit_err:
 * Sub
 *======================================================================
 
-; Function Load_file_to_buf
+; Function PrintDosErr
+;   Prints a AmigaDos error message on stdout
+;
+; Parameters
+;   d2: address of file name which was the resaon for the error.
+;       Can be zero.
+;
+;   *Important* Tthe address (label) where the program should continue
+;   afterwards must be loaded onto the stack with 'pea' before calling
+;   this function.
+;
+PrintDosErr:
+        move.l  _DOSBase,a6         ;Use dos.library
+
+        jsr     _LVOIoErr(a6);      ;Get error code of last Dos operation
+        move.l  d0,d1               ;It is needed in d1
+        jmp     _LVOPrintFault(a6)  ;Print error message
+
+
+; Function LoadFileToBuf
 ;   Loads a file into a memory buffer which must have been reserved
 ;   before. Opens the file before and closes it after loading.
 ;
@@ -272,7 +294,7 @@ Exit_err:
 ;
 ; Returns
 ;   d0: zero on success or error code
-Load_file_to_buf:
+LoadFileToBuf:
         movem.l d2-d6/a2-a6,-(sp)
         move.l  d2,d4                       ;Save buf addr for Read
 
@@ -281,7 +303,7 @@ Load_file_to_buf:
         move.l  #MODE_OLDFILE,d2
         jsr     _LVOOpen(a6)
         tst.l   d0
-        beq     Load_file_to_buf_err_open   ;d0 = 0, File not opened
+        beq     .openErr                    ;d0 = 0, File not opened
 
         move.l  d0,d5                       ;Save file handle for Close
 
@@ -289,7 +311,7 @@ Load_file_to_buf:
         move.l  d4,d2                       ;Restore buf addr from d4
         jsr     _LVORead(a6)
         tst.l   d0
-        blt     Load_file_to_buf_err_read   ;d0 < 0; Read error
+        blt     .readErr                    ;d0 < 0; Read error
 
         move.l  d5,d1                       ;Restore file handle from d5
         jsr     _LVOClose(a6)
@@ -298,7 +320,7 @@ Load_file_to_buf:
         sub.l   d0,d0                       ;Success: d0 = 0
         rts
 
-Load_file_to_buf_err_read
+.readErr
         move.l  d5,d1                       ;Restore file handle from d5
         jsr     _LVOClose(a6)
 
@@ -307,7 +329,7 @@ Load_file_to_buf_err_read
         rts
 
 
-Load_file_to_buf_err_open
+.openErr
         movem.l (sp)+,d2-d6/a2-a6
         move.l  #-2,d0                      ;Error: d0 = error code
         rts
@@ -339,12 +361,16 @@ strErrOpenGfx       even
 strErrAllocBgImg    even
                     dc.b          'Can''t allocate memory for background image.',10,0
 
-strErrLoadBgImg     even
-                    dc.b          'Can''t load background image.',10,0
-
 
 bgImgName           even
                     dc.b          'gfx/background.raw',0
+
+duckImg1            even
+                    dc.b          'gfx/duck1.raw',0
+
+duckImg2            even
+                    dc.b          'gfx/duck2.raw',0
+
 
                     SECTION "dma",data,chip
                     even

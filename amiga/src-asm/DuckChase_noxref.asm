@@ -20,17 +20,6 @@
 *   2) Link
 *    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
 *
-* History
-*   26.10.2019 - Changed from 3 to 4 bitplanes and set new colors
-*   05.10.2019 - Changed example from 22.07. to load a picture instead
-*   18.08.2019 - Moving the gray gradient
-*   18.08.2019 - Added a copper gray gradient
-*   17.08.2019 - Added error message output if init fails
-*   17.08.2019 - Dropped lowlevel.library suppurt; added dos.library
-*   22.07.2019 - Modified copper list, displaying three colored blocks
-*   21.07.2019 - Dynamic allocation of chip memory for the view
-*   21.07.2019 - Using lowlevel.library
-*   20.07.2019 - Simplest copperlist
 *
 * Author: Uwe Rosner
 *    https://github.com/rosneru
