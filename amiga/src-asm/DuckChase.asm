@@ -70,6 +70,15 @@
 
 
 *======================================================================
+* Definitions
+*======================================================================
+
+BGIMGPLANESIZE  EQU     640/8*256
+BGIMGNUMPLANES  EQU     4
+BGIMGSIZE       EQU     BGIMGPLANESIZE*BGIMGNUMPLANES
+
+
+*======================================================================
 * Initializations
 *======================================================================
         ;Entry point
@@ -102,11 +111,11 @@ _main:
         ;
         ; Allocate memory for picture
         ;
-        move.l  #81920,d0           ;Size of needed memory
+        move.l  #BGIMGSIZE,d0        ;Size of needed memory
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
-        move.l  #strErrAllocBgImg,d1 ;The error message if it failed
+        move.l  #strErrAllocChipMem,d1 ;The error message if it failed
         move.l  d0,picture          ;Save ptr of allocated memory
         beq     Exit_err            ;No memory has been reserved
 
@@ -115,29 +124,32 @@ _main:
         move.l  d0,d2               ;..and buf addr in d2
         move.l  #81920,d3           ;..and buf len in d3
         bsr     LoadFileToBuf
-        tst.l   d0                  ;If d0 is zero
+        tst.l   d0
+        beq.s   .saveOldView        ;If d0 is zero, loading was ok, continue
 
+        ; Loading of background image failed
         move.l  #bgImgName,d2       ;Move file name address to d2 to
                                     ;also be printed in error message
-        pea     Exit(pc)            ;Load exit address to the stack
-        bra     PrintDosErr         ;Print Dos error and exit
+        bsr     PrintDosErr         ;Print Dos error and exit
+        bra     Exit
 
         ;
         ; Switch off current copper list without smashing the current
         ; screen. The order of LoadView(0) and 2xWaitTOF() is set by
         ; Commodore
         ;
+.saveOldView:
         movea.l _GfxBase,a6             ;Use graphics.library
         move.l  gb_ActiView(a6),oldview ;Save current view
 
-clearview
+.clearView
         sub.l   a1,a1                   ;Clear a1 to display no view
         jsr     _LVOLoadView(a6)
         jsr     _LVOWaitTOF(a6)
         jsr     _LVOWaitTOF(a6)
 
         cmp.l   #0,gb_ActiView(a6)  ; Any other view appeared?
-        bne.s   clearview           ; If so wipe it.
+        bne.s   .clearView          ; If so wipe it.
 
         jsr     _LVOOwnBlitter(a6)
 
@@ -153,7 +165,7 @@ clearview
         ; in the copper list
         ;
         move.l  picture,d0
-        move.l  #20480,d1           ;The size of one bitplane in bytes
+        move.l  #BGIMGPLANESIZE,d1  ;The size of one bitplane in bytes
                                     ;640/8*256 = 20480
 
 
@@ -260,6 +272,7 @@ Exit_err:
         bra     Exit
 
 
+
 *======================================================================
 * Sub
 *======================================================================
@@ -268,19 +281,16 @@ Exit_err:
 ;   Prints a AmigaDos error message on stdout
 ;
 ; Parameters
-;   d2: address of file name which was the resaon for the error.
+;   d2: Address of file name which was the resaon for the error.
 ;       Can be zero.
-;
-;   *Important* Tthe address (label) where the program should continue
-;   afterwards must be loaded onto the stack with 'pea' before calling
-;   this function.
 ;
 PrintDosErr:
         move.l  _DOSBase,a6         ;Use dos.library
 
         jsr     _LVOIoErr(a6);      ;Get error code of last Dos operation
         move.l  d0,d1               ;It is needed in d1
-        jmp     _LVOPrintFault(a6)  ;Print error message
+        jsr     _LVOPrintFault(a6)  ;Print error message
+        rts
 
 
 ; Function LoadFileToBuf
@@ -356,20 +366,19 @@ tmpvar              even
                     ds.l    1
 
 strErrOpenGfx       even
-                    dc.b          'Can''t open graphics.library v39.',10,0
+                    dc.b    'Failed to open graphics.library v39.',10,0
 
-strErrAllocBgImg    even
-                    dc.b          'Can''t allocate memory for background image.',10,0
-
+strErrAllocChipMem  even
+                    dc.b    'Failed to allocate needed amount of chip memory.',10,0
 
 bgImgName           even
-                    dc.b          'gfx/background.raw',0
+                    dc.b    'gfx/background.raw',0
 
 duckImg1            even
-                    dc.b          'gfx/duck1.raw',0
+                    dc.b    'gfx/duck1.raw',0
 
 duckImg2            even
-                    dc.b          'gfx/duck2.raw',0
+                    dc.b    'gfx/duck2.raw',0
 
 
                     SECTION "dma",data,chip
