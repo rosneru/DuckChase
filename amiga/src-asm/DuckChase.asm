@@ -81,7 +81,7 @@ BGIMGSIZE       EQU     BGIMGPLANESIZE*BGIMGNUMPLANES
 * Initializations
 *======================================================================
         ;Entry point
-_main:
+_main
 
         movea.l _AbsExecBase,a6
         move.l  a6,_SysBase
@@ -91,7 +91,10 @@ _main:
         ;
         lea     dosname(pc),a1
         moveq   #36,d0              ;36 needed for VPrintf; gfx.lib will
-                                    ;then make the proper v39 check
+                                    ;then make the proper v39 check. 
+                                    ;So an error for not being able to 
+                                    ;open v39 gfx.lib can be printed 
+                                    ;when started e.g. from 2.04/v36.
 
         jsr     _LVOOpenLibrary(a6)
         move.l  d0,_DOSBase
@@ -100,44 +103,36 @@ _main:
         ;
         ; Open graphics.library
         ;
+.openGfxLib
         lea     gfxname(pc),a1
-        moveq.l #36,d0
+        moveq.l #39,d0
         jsr     _LVOOpenLibrary(a6)
-        move.l  #strErrOpenGfx,d1   ;The error message if it failed
         move.l  d0,_GfxBase
-        beq     Exit_err
-
-        ;
-        ; Allocate memory for picture
-        ;
-        move.l  #BGIMGSIZE,d0       ;Size of needed memory
-        move.l  #MEMF_CHIP,d1       ;It must be Chip memory
-        or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
-        jsr     _LVOAllocVec(a6)
-        move.l  #strErrAllocChipMem,d1 ;The error message if it failed
-        move.l  d0,picture          ;Save ptr of allocated memory
-        beq     Exit_err            ;No memory has been reserved
-
-        ; Load the Background image at reserved memory address
-        move.l  #bgImgName,d1       ;Function expects file name in d1..
-        move.l  d0,d2               ;..and buf addr in d2
-        move.l  #BGIMGSIZE,d3       ;..and buf len in d3
-        bsr     LoadFileToBuf
-        tst.l   d0
-        beq.s   .saveOldView        ;If d0 is zero, loading was ok, continue
-
-        ; Loading of background image failed
-        move.l  #bgImgName,d2       ;Move file name address to d2 to
-                                    ;also be printed in error message
-        bsr     PrintDosErr         ;Print Dos error and exit
+        bne.s   .allLibsOpen
+        
+        ;Failed to open graphics.library
+        move.l  #strErrOpenGfx,d1   ;Error message string for PrintStdOut
+        bsr     PrintStdOut
         bra     Exit
+
+.allLibsOpen
+
+        ;
+        ; Load the background RAW image
+        ;
+        move.l  #BGIMGSIZE,d0       ;Size of image to be loaded
+        move.l  #bgImgName,d1       ;Name of image to be loaded
+        bsr     LoadRawImage
+        tst.l   d0
+        beq     Exit
+        move.l  d0,picture          ;Save pointer to allocated buffer
 
         ;
         ; Switch off current copper list without smashing the current
         ; screen. The order of LoadView(0) and 2xWaitTOF() is set by
         ; Commodore
         ;
-.saveOldView:
+.saveOldView
         movea.l _GfxBase,a6             ;Use graphics.library
         move.l  gb_ActiView(a6),oldview ;Save current view
 
@@ -197,14 +192,14 @@ _main:
         lea     _custom,a1
         move.l  #copperlist,cop1lc(a1)
 
-loop:
+.loop
         move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
         and.l   #$fff00,d0
         cmp.l   #$00003000,d0
-        bne.s   loop
+        bne.s   .loop
 
         btst    #CIAB_GAMEPORT0,_ciaa   ;Mouse button pressed
-        bne     loop
+        bne     .loop
 
 
 *======================================================================
@@ -217,7 +212,7 @@ loop:
         jsr     _LVODisownBlitter(a6)
 
 
-Exit:
+Exit
         move.l  _GfxBase,a6         ;Use graphics.library
         move.l  oldview,d0          ;Restore former view
         beq     .ex1                ;But only if there was one
@@ -226,7 +221,7 @@ Exit:
         move.l  oldview,a1
         jsr     _LVOLoadView(a6)
 
-.ex1:
+.ex1
         ; Start former copper list
         lea.l   _custom,a1
         move.l  gb_copinit(a6),cop1lc(a1)
@@ -239,7 +234,7 @@ Exit:
         move.l  d0,a1
         jsr     _LVOFreeVec(a6)
 
-.ex2:
+.ex2
         ; Close graphics.library
         movea.l _SysBase,a6
         move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
@@ -247,7 +242,7 @@ Exit:
         move.l  d0,a1               ;Closing: LibBase needed in a1
         jsr     _LVOCloseLibrary(a6)
 
-.ex3:
+.ex3
         ; Close dos.library
         movea.l _SysBase,a6
         move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
@@ -256,40 +251,67 @@ Exit:
         jsr     _LVOCloseLibrary(a6)
 
 
-.ex4:
+.ex4
 ;        move.l  #$8020,$dff096      ;Enable sprites
         lea     _custom,a1
         move.w  #$8020,dmacon(a1)
         rts
 
 
-; NOTE: a1 must be loaded with the address of an error text before!
-Exit_err:
-        movea.l _DOSBase,a6
-        move.l  0,d2
-        jsr     _LVOVPrintf(a6)
-        bra     Exit
-
-
 
 *======================================================================
 * Sub
 *======================================================================
-
-; Function PrintDosErr
-;   Prints a AmigaDos error message on stdout
+; Function LoadRawImage
+;   Loads a RAW image file of given size into a buffer of CHIP memory 
+;   which it allocates before. Returns the address off allocated memory.
+;   When finished the allocated memory must be freed using FreeVec.
 ;
 ; Parameters
-;   d2: Address of file name which was the resaon for the error.
-;       Can be zero.
+;   d0: RAW image size in bytes
+;   d1: File name of image file
 ;
-PrintDosErr:
-        move.l  _DOSBase,a6         ;Use dos.library
+; Returns
+;   d0: On success: address of reserved memory. On error: 0.
+LoadRawImage
+        move.l  d0,d3               ;Copy of image size
+        move.l  d1,d4               ;Copy of image name
+        
+        ;
+        ; Allocate memory for picture
+        ;
+                                    ;Size of needed memory is already in d0
+        move.l  #MEMF_CHIP,d1       ;It must be Chip memory
+        or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
+        jsr     _LVOAllocVec(a6)
+        move.l  d0,d5               ;Save ptr of allocated memory
+        bne.s   .load               ;Continue with loading the image
+        
+        move.l  #strErrAllocChipMem,d1 ;The error message as alloc failed
+        bsr     PrintStdOut
+        sub.l   d0,d0               ;Clear d0 to mark that function failed
+        rts                         ;Return with error
 
-        jsr     _LVOIoErr(a6);      ;Get error code of last Dos operation
-        move.l  d0,d1               ;It is needed in d1
-        jsr     _LVOPrintFault(a6)  ;Print error message
-        rts
+.load
+        ; Load the Background image at reserved memory address
+        move.l  d4,d1               ;LoadFileToBuf needs file name in d1
+        move.l  d0,d2               ;..and buf addr in d2
+                                    ;..and buf len/image size in d3, 
+                                    ;which has been done at function start
+        bsr     LoadFileToBuf
+        tst.l   d0
+        bne.s   .loadingFailed      ;If d0 is not zero, loading failed
+        move.l  d5,d0               ;Restore pointer of allocated memory to d0
+        rts                         ;Return with success
+
+        ; Loading of background image failed
+.loadingFailed
+        move.l  d4,d2               ;Move file name address to d2 to also
+                                    ;be printed within PrintDosErr
+                                    
+        bsr     PrintDosErr         ;Print Dos error message
+        sub.l   d0,d0               ;Clear d0 to mark that function failed
+        rts                         ;Return with error
 
 
 ; Function LoadFileToBuf
@@ -343,6 +365,36 @@ LoadFileToBuf:
         move.l  #-2,d0                      ;Error: d0 = error code
         rts
 
+
+
+; Function PrintDosErr
+;   Prints a AmigaDos error message on stdout
+;
+; Parameters
+;   d2: Address of file name which was the resaon for the error.
+;       Can be zero.
+;
+PrintDosErr
+        move.l  _DOSBase,a6         ;Use dos.library
+
+        jsr     _LVOIoErr(a6);      ;Get error code of last Dos operation
+        move.l  d0,d1               ;It is needed in d1
+        jsr     _LVOPrintFault(a6)  ;Print error message
+        rts
+
+
+
+; Function PrintStdOut
+;   Prints a text to stdout
+;
+; Parameters
+;   d1: Address of the string to be printed
+;
+PrintStdOut
+        movea.l _DOSBase,a6
+        move.l  0,d2
+        jsr     _LVOVPrintf(a6)
+        bra     Exit
 
 *======================================================================
 * Data
@@ -426,5 +478,5 @@ plane4              dc.w    bplpt+12,$0000
 ;                    dc.w    dmacon,$8020    ;Enable sprites
                     dc.w    $ffff,$fffe     ;Waiting for impossible position
 
-                END
+        END
 
