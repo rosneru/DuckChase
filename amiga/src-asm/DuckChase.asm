@@ -1,6 +1,5 @@
 **
-* Learning Amiga hardware-direct development in regeards of bobs,
-* sprites and all the gfx stuff.
+* Learning Amiga hardware coding.
 *
 *
 * Development environment
@@ -111,7 +110,7 @@ _main:
         ;
         ; Allocate memory for picture
         ;
-        move.l  #BGIMGSIZE,d0        ;Size of needed memory
+        move.l  #BGIMGSIZE,d0       ;Size of needed memory
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
         jsr     _LVOAllocVec(a6)
@@ -122,7 +121,7 @@ _main:
         ; Load the Background image at reserved memory address
         move.l  #bgImgName,d1       ;Function expects file name in d1..
         move.l  d0,d2               ;..and buf addr in d2
-        move.l  #81920,d3           ;..and buf len in d3
+        move.l  #BGIMGSIZE,d3       ;..and buf len in d3
         bsr     LoadFileToBuf
         tst.l   d0
         beq.s   .saveOldView        ;If d0 is zero, loading was ok, continue
