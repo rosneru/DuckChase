@@ -72,10 +72,17 @@
 * Definitions
 *======================================================================
 
-BGIMGPLANESIZE  EQU     640/8*256
 BGIMGNUMPLANES  EQU     4
+BGIMGPLANESIZE  EQU     640/8*256
 BGIMGSIZE       EQU     BGIMGPLANESIZE*BGIMGNUMPLANES
 
+DUCKWIDTH       EQU     59
+DUCKWORDWIDTH   EQU     4
+DUCKHEIGHT      EQU     21
+DUCKNUMPLANES   EQU     4
+DUCKPLANESIZE   EQU     DUCKWIDTH*DUCKHEIGHT
+DUCKSIZE        EQU     DUCKPLANESIZE*DUCKNUMPLANES
+DUCKBLTSIZE     EQU     (DUCKHEIGHT*64)+DUCKWORDWIDTH
 
 *======================================================================
 * Initializations
@@ -108,14 +115,14 @@ _main
         moveq.l #39,d0
         jsr     _LVOOpenLibrary(a6)
         move.l  d0,_GfxBase
-        bne.s   .allLibsOpen
+        bne.s   .loadImages
         
         ;Failed to open graphics.library
         move.l  #strErrOpenGfx,d1   ;Error message string for PrintStdOut
         bsr     PrintStdOut
         bra     Exit
 
-.allLibsOpen
+.loadImages
 
         ;
         ; Load the background RAW image
@@ -124,15 +131,27 @@ _main
         move.l  #bgImgName,d1       ;Name of image to be loaded
         bsr     LoadRawImage
         tst.l   d0
-        beq     Exit
-        move.l  d0,picture          ;Save pointer to allocated buffer
+        beq     Exit                ;Loading failed as d0 is zero
+        move.l  d0,bgImg            ;Save pointer to allocated buffer
 
+        ;
+        ; Load the RAW image of duck 1
+        ;
+        move.l  #DUCKSIZE,d0        ;Size of duck 1 image
+        move.l  #duckImg1Name,d1    ;Name of duck 1 image file
+        bsr     LoadRawImage
+        tst.l   d0
+        beq     Exit               ;Loading failed as d0 is zero
+        move.l  d0,duckImg1        ;Save pointer to allocated buffer
+
+
+
+.saveOldView
         ;
         ; Switch off current copper list without smashing the current
         ; screen. The order of LoadView(0) and 2xWaitTOF() is set by
         ; Commodore
         ;
-.saveOldView
         movea.l _GfxBase,a6             ;Use graphics.library
         move.l  gb_ActiView(a6),oldview ;Save current view
 
@@ -154,11 +173,11 @@ _main
 * Main
 *======================================================================
         ;
-        ; Load address of allocated memory for the background picture
-        ; and set the bitplane pointers for all (here: three) planes
+        ; Load address of allocated memory for the background bgImg
+        ; and set the bitplane pointers for all four planes in the
         ; in the copper list
         ;
-        move.l  picture,d0
+        move.l  bgImg,d0
         move.l  #BGIMGPLANESIZE,d1  ;The size of one bitplane in bytes
                                     ;640/8*256 = 20480
 
@@ -192,7 +211,21 @@ _main
         lea     _custom,a1
         move.l  #copperlist,cop1lc(a1)
 
-.loop
+        ; Activate the bitplane and blitter DMA
+        move.w  #$8140,dmacon(a1)
+
+
+Blit    ;Blit the duck image
+        move.l  #duckImg1,$dff04c       ;B-PTH
+        move.l  #bgImg,$dff054          ;D-PTH
+        move.l  #$f0f0,$dff062          ;B-MOD
+        move.l  #(640-64)/8,$dff066     ;D-MOD
+        move    #%0000010111001100,$dff040 ;BLTCON0
+        clr     $dff042                 ;BLTCON1
+        move.l  #DUCKBLTSIZE,$dff058    ;BLIZSIZE, also starts blitting
+
+
+.loop   ;Wait until left mouse button pressed
         move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
         and.l   #$fff00,d0
         cmp.l   #$00003000,d0
@@ -226,11 +259,21 @@ Exit
         lea.l   _custom,a1
         move.l  gb_copinit(a6),cop1lc(a1)
 
+        ;
         ; Free memory if it was allocated successfully
-        movea.l _SysBase,a6
-        move.l  picture,d0
+        ;
+        movea.l _SysBase,a6         ;Use exec.library
+
+        move.l  duckImg1,d0
         tst.l   d0
-        beq     .ex2
+        beq     .free1              ;Image data for duck1 was not allocated
+        move.l  d0,a1
+        jsr     _LVOFreeVec(a6)
+
+.free1
+        move.l  bgImg,d0
+        tst.l   d0
+        beq     .ex2                ;Image data for bgImg was not allocated
         move.l  d0,a1
         jsr     _LVOFreeVec(a6)
 
@@ -278,7 +321,7 @@ LoadRawImage
         move.l  d1,d4               ;Copy of image name
         
         ;
-        ; Allocate memory for picture
+        ; Allocate memory for bgImg
         ;
                                     ;Size of needed memory is already in d0
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
@@ -410,10 +453,13 @@ _SysBase            ds.l    1
 
 oldview             ds.l    1
 
-picture             even
+bgImg               even
                     ds.l    1
 
-tmpvar              even
+duckImg1            even
+                    ds.l    1
+
+duckImg2            even
                     ds.l    1
 
 strErrOpenGfx       even
@@ -425,10 +471,10 @@ strErrAllocChipMem  even
 bgImgName           even
                     dc.b    'gfx/background.raw',0
 
-duckImg1            even
+duckImg1Name        even
                     dc.b    'gfx/duck1.raw',0
 
-duckImg2            even
+duckImg2Name        even
                     dc.b    'gfx/duck2.raw',0
 
 
