@@ -214,13 +214,15 @@ _main
         ; Activate the bitplane and blitter DMA
         move.w  #$8140,dmacon(a1)
 
-
 Blit    ;Blit the duck image
-        move.l  #duckImg1,$dff04c       ;B-PTH
-        move.l  #bgImg,$dff054          ;D-PTH
-        move.l  #$f0f0,$dff062          ;B-MOD
+        move.l  #duckImg1,$dff052       ;A-PTL
+        move.l  #bgImg,$dff056          ;D-PTH
+        move.w  #$f0f0,$dff066          ;A-MOD
         move.l  #(640-64)/8,$dff066     ;D-MOD
-        move    #%0000010111001100,$dff040 ;BLTCON0
+
+;        move    #%0000010111001100,$dff040 ;BLTCON0
+        move.l  #$9f0,$dff040           ;BLTCON0
+
         clr     $dff042                 ;BLTCON1
         move.l  #DUCKBLTSIZE,$dff058    ;BLIZSIZE, also starts blitting
 
