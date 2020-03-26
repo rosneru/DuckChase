@@ -20,13 +20,13 @@
 *
 * Build manually
 *   1a) Asm
-*    OMA file.asm
+*    ACOM:OMA file.asm
 *
 *   1b) Asm (debug)
-*    OMA file.asm -c qs
+*    ACOM:OMA file.asm -c qs
 *
 *   2) Link
-*    DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
+*    ACOM:DLink FROM file.o TO file LIB ACOM:Libraries/amiga.lib
 *
 * Author: Uwe Rosner
 *    https://github.com/rosneru
@@ -216,13 +216,13 @@ _main
 Blit    ;Blit the duck image
         move.l  #duckImg1,$dff052       ;A-PTL
         move.l  #bgImg,$dff056          ;D-PTH
-        move.w  #$f0f0,$dff066          ;A-MOD
+        move.w  #$ffff,$dff064          ;A-MOD
         move.l  #(640-64)/8,$dff066     ;D-MOD
 
 ;        move    #%0000010111001100,$dff040 ;BLTCON0
         move.l  #$9f0,$dff040           ;BLTCON0
 
-        clr     $dff042                 ;BLTCON1
+;        clr     $dff042                 ;BLTCON1
         move.l  #DUCKBLTSIZE,$dff058    ;BLIZSIZE, also starts blitting
 
 
