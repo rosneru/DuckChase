@@ -41,7 +41,6 @@
         XDEF    _SysBase
         XDEF    _GfxBase
         XDEF    _DOSBase
-        XDEF    _main
 
         ;
         ; Stating the used LVOs
@@ -86,8 +85,6 @@ DUCKBLTSIZE     EQU     (DUCKHEIGHT*64)+DUCKWORDWIDTH
 *======================================================================
 * Initializations
 *======================================================================
-        ;Entry point
-_main
 
         movea.l _AbsExecBase,a6
         move.l  a6,_SysBase
@@ -136,14 +133,13 @@ _main
         ;
         ; Load the RAW image of duck 1
         ;
+Test
         move.l  #DUCKSIZE,d0        ;Size of duck 1 image
         move.l  #duckImg1Name,d1    ;Name of duck 1 image file
         bsr     LoadRawImage
         tst.l   d0
         beq     Exit               ;Loading failed as d0 is zero
         move.l  d0,duckImg1        ;Save pointer to allocated buffer
-
-
 
 .saveOldView
         ;
@@ -176,7 +172,7 @@ _main
         ; and set the bitplane pointers for all four planes in the
         ; in the copper list
         ;
-        move.l  bgImg,d0
+        move.l  bgImg(pc),d0
         move.l  #BGIMGPLANESIZE,d1  ;The size of one bitplane in bytes
                                     ;640/8*256 = 20480
 
@@ -214,20 +210,31 @@ _main
         move.w  #$8140,dmacon(a1)
 
 Blit    ;Blit the duck image
-        lea     duckImg1(pc),a0
-        lea     bgImg(pc),a1
+        clr.w   $dff042         ; Clear BLTCON1
+        clr.w   $dff064         ; CLear BLTAMOD
 
-        move.l  (a0),$dff052            ;A-PTL
-        move.l  (a1),$dff056            ;D-PTH
-        move.w  #$ffff,$dff064          ;A-MOD
-        move.l  #(640-64)/8,$dff066     ;D-MOD
+        move.w  #$ffff,$dff044  ; BLTAFWM -> Blitter first word mask for source A
+        move.w  #$ffff,$dff046  ; BLTALWM -> Blitter last word mask for source A
 
-;        move    #%0000010111001100,$dff040 ;BLTCON0
-        move.l  #$9f0,$dff040           ;BLTCON0
+	move.w  #%0000100111110000,$DFF040 ; BLTCON0 Enable Minterms Abc, AbC, ABc, ABC, DMA Target D, DMA Source A
+	move.w  #$24,$DFF066               ; BLTDMOD Blitter modulo for destination D
+        move.l  duckImg1(pc),$dff050       ; BLTAPTH Blitter pointer to source A
+        move.l  bgImg(pc),a1
+        add.l   2000,a1                    ; Move it
+        moveq.l	#4,d4                      ; Want to copy 5 bitplanes (cycle runs from 4, 3, 2, 1, 0)
 
-;        clr     $dff042                 ;BLTCON1
-        move.l  #DUCKBLTSIZE,$dff058    ;BLIZSIZE, also starts blitting
+.planeLoop
+        move.l	a1,$dff054                 ; BLTDPTH Blitter pointer to destination D (high 5 bits)
+        add.l	#$5000,a1                  ; Increase a1 pointer about 20480 (the size of one plane 640 x 256)
+        move.w	#DUCKBLTSIZE,$dff058       ; BLTSIZE -> start blitting
 
+.waitBlit: 
+        btst    #6,$dff002                 ; DMACONR -> Test bit 6 - it is set when blitter still working
+        bne.s   .waitBlit
+
+        dbf     d4,.planeLoop              ; If not -1, continue at 'hier' and copy next plane
+
+Main
 
 .loop   ;Wait until left mouse button pressed
         move.l  $dff004,d0              ;Wait for the beam (WaitTOF?)
