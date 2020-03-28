@@ -214,8 +214,11 @@ _main
         move.w  #$8140,dmacon(a1)
 
 Blit    ;Blit the duck image
-        move.l  #duckImg1,$dff052       ;A-PTL
-        move.l  #bgImg,$dff056          ;D-PTH
+        lea     duckImg1(pc),a0
+        lea     bgImg(pc),a1
+
+        move.l  (a0),$dff052            ;A-PTL
+        move.l  (a1),$dff056            ;D-PTH
         move.w  #$ffff,$dff064          ;A-MOD
         move.l  #(640-64)/8,$dff066     ;D-MOD
 
