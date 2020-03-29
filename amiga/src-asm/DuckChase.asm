@@ -216,17 +216,19 @@ Blit    ;Blit the duck image
         move.w  #$ffff,$dff044  ; BLTAFWM -> Blitter first word mask for source A
         move.w  #$ffff,$dff046  ; BLTALWM -> Blitter last word mask for source A
 
-	move.w  #%0000100111110000,$DFF040 ; BLTCON0 Enable Minterms Abc, AbC, ABc, ABC, DMA Target D, DMA Source A
-	move.w  #$24,$DFF066               ; BLTDMOD Blitter modulo for destination D
+        move.w  #%0000100111110000,$DFF040 ; BLTCON0 Enable Minterms Abc, AbC, ABc, ABC, DMA Target D, DMA Source A
+
+;        move.w  #$ffff,$dff064             ; BLTAMOD
+        move.w  #(640-64)/8,$DFF066        ; BLTDMOD Blitter modulo for destination D
         move.l  duckImg1(pc),$dff050       ; BLTAPTH Blitter pointer to source A
-        move.l  bgImg(pc),a1
-        add.l   2000,a1                    ; Move it
-        moveq.l	#4,d4                      ; Want to copy 5 bitplanes (cycle runs from 4, 3, 2, 1, 0)
+        move.l  bgImg(pc),a1               ;
+;        add.l   2000,a1                    ; Move it??
+        moveq.l        #4,d4               ; Want to copy 5 bitplanes (cycle runs from 4, 3, 2, 1, 0)
 
 .planeLoop
-        move.l	a1,$dff054                 ; BLTDPTH Blitter pointer to destination D (high 5 bits)
-        add.l	#$5000,a1                  ; Increase a1 pointer about 20480 (the size of one plane 640 x 256)
-        move.w	#DUCKBLTSIZE,$dff058       ; BLTSIZE -> start blitting
+        move.l        a1,$dff054                 ; BLTDPTH Blitter pointer to destination D (high 5 bits)
+        add.l        #$5000,a1                  ; Increase a1 pointer about 20480 (the size of one plane 640 x 256)
+        move.w        #DUCKBLTSIZE,$dff058       ; BLTSIZE -> start blitting
 
 .waitBlit: 
         btst    #6,$dff002                 ; DMACONR -> Test bit 6 - it is set when blitter still working
