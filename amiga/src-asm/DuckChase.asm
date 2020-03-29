@@ -126,20 +126,17 @@ DUCKBLTSIZE     EQU     (DUCKHEIGHT*64)+DUCKWORDWIDTH
         move.l  #BGIMGSIZE,d0       ;Size of image to be loaded
         move.l  #bgImgName,d1       ;Name of image to be loaded
         bsr     LoadRawImage
-        tst.l   d0
-        beq     Exit                ;Loading failed as d0 is zero
         move.l  d0,bgImg            ;Save pointer to allocated buffer
+        beq     Exit                ;Loading failed as d0 is zero
 
         ;
         ; Load the RAW image of duck 1
         ;
-Test
         move.l  #DUCKSIZE,d0        ;Size of duck 1 image
         move.l  #duckImg1Name,d1    ;Name of duck 1 image file
         bsr     LoadRawImage
-        tst.l   d0
-        beq     Exit               ;Loading failed as d0 is zero
         move.l  d0,duckImg1        ;Save pointer to allocated buffer
+        beq     Exit               ;Loading failed as d0 is zero
 
 .saveOldView
         ;
@@ -211,29 +208,29 @@ Test
 
 Blit    ;Blit the duck image
         clr.w   $dff042         ; Clear BLTCON1
-        clr.w   $dff064         ; CLear BLTAMOD
+        clr.w   $dff064         ; Clear BLTAMOD
 
-        move.w  #$ffff,$dff044  ; BLTAFWM -> Blitter first word mask for source A
-        move.w  #$ffff,$dff046  ; BLTALWM -> Blitter last word mask for source A
+;        move.w  #$ffff,$dff044  ; BLTAFWM -> Blitter first word mask for source A
+;        move.w  #$ffff,$dff046  ; BLTALWM -> Blitter last word mask for source A
 
-        move.w  #%0000100111110000,$DFF040 ; BLTCON0 Enable Minterms Abc, AbC, ABc, ABC, DMA Target D, DMA Source A
+        move.w  #%0000100111110000,$DFF040      ; BLTCON0 Enable Minterms Abc, AbC, ABc, ABC, DMA Target D, DMA Source A
 
-        move.w  #(640-64)/8,$DFF066        ; BLTDMOD Blitter modulo for destination D
-        move.l  duckImg1(pc),$dff050       ; BLTAPTH Blitter pointer to source A
-        move.l  bgImg(pc),a1               ;
-;        add.l   2000,a1                    ; Move it??
-        moveq.l        #4,d4               ; Want to copy 5 bitplanes (cycle runs from 4, 3, 2, 1, 0)
+        move.w  #(640-64)/8,$DFF066     ; BLTDMOD Blitter modulo for destination D
+        move.l  duckImg1(pc),$dff050    ; BLTAPTH Blitter pointer to source A
+        move.l  bgImg(pc),a1            ; Load Background image ptr (to be used as blit destination)
+        add.l   #16040,a1               ; Move the duck to be in front of the hill on bg pic
+        moveq.l #4,d4                   ; Want to copy 5 bitplanes (cycle runs from 4, 3, 2, 1, 0)
 
 .planeLoop
-        move.l        a1,$dff054                 ; BLTDPTH Blitter pointer to destination D (high 5 bits)
-        add.l        #$5000,a1                  ; Increase a1 pointer about 20480 (the size of one plane 640 x 256)
-        move.w        #DUCKBLTSIZE,$dff058       ; BLTSIZE -> start blitting
+        move.l  a1,$dff054              ; BLTDPTH Blitter pointer to destination D (high 5 bits)
+        add.l   #$5000,a1               ; Increase a1 pointer about 20480 (the size of one plane 640 x 256)
+        move.w  #DUCKBLTSIZE,$dff058    ; BLTSIZE -> start blitting
 
 .waitBlit: 
-        btst    #6,$dff002                 ; DMACONR -> Test bit 6 - it is set when blitter still working
+        btst    #6,$dff002              ; DMACONR -> Test bit 6 - it is set when blitter still working
         bne.s   .waitBlit
 
-        dbf     d4,.planeLoop              ; If not -1, continue at 'hier' and copy next plane
+        dbf     d4,.planeLoop           ; If not -1, continue at 'hier' and copy next plane
 
 Main
 
@@ -277,14 +274,12 @@ Exit
         movea.l _SysBase,a6         ;Use exec.library
 
         move.l  duckImg1,d0
-        tst.l   d0
         beq     .free1              ;Image data for duck1 was not allocated
         move.l  d0,a1
         jsr     _LVOFreeVec(a6)
 
 .free1
         move.l  bgImg,d0
-        tst.l   d0
         beq     .ex2                ;Image data for bgImg was not allocated
         move.l  d0,a1
         jsr     _LVOFreeVec(a6)
