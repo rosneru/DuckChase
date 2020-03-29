@@ -218,7 +218,6 @@ Blit    ;Blit the duck image
 
         move.w  #%0000100111110000,$DFF040 ; BLTCON0 Enable Minterms Abc, AbC, ABc, ABC, DMA Target D, DMA Source A
 
-;        move.w  #$ffff,$dff064             ; BLTAMOD
         move.w  #(640-64)/8,$DFF066        ; BLTDMOD Blitter modulo for destination D
         move.l  duckImg1(pc),$dff050       ; BLTAPTH Blitter pointer to source A
         move.l  bgImg(pc),a1               ;
