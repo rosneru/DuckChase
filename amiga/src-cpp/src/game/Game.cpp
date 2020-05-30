@@ -23,11 +23,11 @@ Game::Game(GameViewBase& gameView,
     m_MaxArrows(5),
     m_NumArrowsLeft(m_MaxArrows),
     m_Duck(m_GameView, gameWorld, m_DuckResources),
-    m_Hunter(gameView, 
-              gameWorld,
-              m_HunterResources,
-              m_IsArrowLaunching, 
-              m_IsArrowLaunchDone),
+    // m_Hunter(gameView, 
+    //           gameWorld,
+    //           m_HunterResources,
+    //           m_IsArrowLaunching, 
+    //           m_IsArrowLaunchDone),
     m_IsArrowLaunching(false),
     m_IsArrowLaunchDone(false)
 {
@@ -119,7 +119,8 @@ void Game::Run()
     //
     ULONG portState = ReadJoyPort(1);
 
-    m_Hunter.Update(elapsed_ms, portState);
+    // m_Hunter.Update(elapsed_ms, portState);
+    m_Duck.Update(elapsed_ms, portState);
 
     // for(size_t i = 0; i < m_BrownBarrells.Size(); i++)
     // {

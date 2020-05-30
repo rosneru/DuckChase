@@ -5,16 +5,16 @@
 #include "ResourceGELs.h"
 
 /**
- * Contains all gfx resources needed for a Jumpman
+ * Contains all gfx resources needed for a hunter.
  *
  *
  * @author Uwe Rosner
- * @date 26/05/2020
+ * @date 30/05/2020
  */
-class JumpmanResources : public ResourceGELs
+class HunterResources : public ResourceGELs
 {
 public:
-  JumpmanResources();
+  HunterResources();
 
   WORD* DefaultImage() const;
   short Width() const;

@@ -1,6 +1,6 @@
 #include "HunterResources.h"
 
-JumpmanResources::JumpmanResources()
+HunterResources::HunterResources()
   : m_AnimRunRight("AADevDuck:assets/jumpman_run_right_strip4.ilbm", 4),
     m_AnimRunLeft("AADevDuck:assets/jumpman_run_left_strip4.ilbm", 4),
     m_AnimClimb1("AADevDuck:assets/jumpman_climb1_strip2.ilbm", 2),
@@ -10,48 +10,48 @@ JumpmanResources::JumpmanResources()
   //       throw one exception if not.
 }
 
-WORD* JumpmanResources::DefaultImage() const
+WORD* HunterResources::DefaultImage() const
 {
   return m_AnimRunRight[0];
 }
 
-short JumpmanResources::Width() const
+short HunterResources::Width() const
 {
   return m_AnimRunRight.Width();
 }
 
-short JumpmanResources::WordWidth() const
+short HunterResources::WordWidth() const
 {
   return m_AnimRunRight.WordWidth();
 }
 
-short JumpmanResources::Height() const
+short HunterResources::Height() const
 {
   return m_AnimRunRight.Height();
 }
 
-short JumpmanResources::Depth() const
+short HunterResources::Depth() const
 {
   return m_AnimRunRight.Depth();
 
 }
 
-const AnimSeqGelsBob* JumpmanResources::AnimRunRight() const
+const AnimSeqGelsBob* HunterResources::AnimRunRight() const
 {
   return &m_AnimRunRight;
 }
 
-const AnimSeqGelsBob* JumpmanResources::AnimRunLeft() const
+const AnimSeqGelsBob* HunterResources::AnimRunLeft() const
 {
   return &m_AnimRunLeft;
 }
 
-const AnimSeqGelsBob* JumpmanResources::AnimRunClimb1() const
+const AnimSeqGelsBob* HunterResources::AnimRunClimb1() const
 {
   return &m_AnimClimb1;
 }
 
-const AnimSeqGelsBob* JumpmanResources::AnimRunClimb2() const
+const AnimSeqGelsBob* HunterResources::AnimRunClimb2() const
 {
   return &m_AnimClimb2;
 }

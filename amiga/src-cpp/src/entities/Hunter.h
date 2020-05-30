@@ -21,7 +21,7 @@ class Hunter : public EntityBase
 public:
   Hunter(GameViewBase& gameView, 
           const GameWorld& gameWorld,
-          const JumpmanResources& jumpmanResources,
+          const HunterResources& jumpmanResources,
           bool& isArrowLaunching, 
           bool& isArrowLaunchDone);
 
@@ -32,7 +32,7 @@ public:
 
 private:
   GameViewBase& m_GameView;
-  const JumpmanResources& m_Resources;
+  const HunterResources& m_Resources;
 
   ShapeBob m_Shape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;

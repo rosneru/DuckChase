@@ -58,8 +58,8 @@ private:
   // EntityCollection m_BrownBarrells;
   DuckResources m_DuckResources;
   Duck m_Duck;
-  JumpmanResources m_HunterResources;
-  Hunter m_Hunter;
+  // HunterResources m_HunterResources;
+  // Hunter m_Hunter;
 
   bool m_IsArrowLaunching;
   bool m_IsArrowLaunchDone;

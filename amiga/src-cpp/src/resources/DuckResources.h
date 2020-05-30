@@ -5,11 +5,11 @@
 #include "ResourceGELs.h"
 
 /**
- * Contains all gfx resources needed for a BrownBarrel.
+ * Contains all gfx resources needed for a duck.
  *
  *
  * @author Uwe Rosner
- * @date 26/05/2020
+ * @date 30/05/2020
  */
 class DuckResources : public ResourceGELs
 {
@@ -22,12 +22,12 @@ public:
   short Height() const;
   short Depth() const;
 
-  const AnimSeqGelsBob* AnimHorizontally() const;
+  const AnimSeqGelsBob* AnimFlyLeft() const;
   // const AnimSeqGelsBob* AnimVertically() const;
 
 
 private:
-  const AnimSeqGelsBob m_AnimHorizontally;
+  const AnimSeqGelsBob m_AnimFlyLeft;
   // const AnimSeqGelsBob m_AnimVertically;
 };
 

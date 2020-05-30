@@ -7,7 +7,7 @@
 
 Hunter::Hunter(GameViewBase& gameView, 
                  const GameWorld& gameWorld, 
-                 const JumpmanResources& jumpmanResources,
+                 const HunterResources& jumpmanResources,
                  bool& isArrowLaunching, 
                  bool& isArrowLaunchDone)
   : EntityBase(gameWorld),

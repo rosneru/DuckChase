@@ -37,7 +37,7 @@ private:
   ShapeBob m_Shape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;
 
-  int m_AnimFrameCnt;
+  size_t m_ElapsedSinceLastAnimUpdate;
 };
 
 #endif
