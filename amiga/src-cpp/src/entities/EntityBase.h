@@ -1,7 +1,9 @@
 #ifndef ENTITY_BASE_H
 #define ENTITY_BASE_H
 
-class ShapeBase;
+#include <stddef.h>
+
+#include "GameWorld.h"
 
 /**
  * Represents a shape, an graphical object which can be moved above the
@@ -14,42 +16,51 @@ class ShapeBase;
 class EntityBase
 {
 public:
-  virtual bool Init() = 0;
+  virtual long XSpeed_pps();
+  virtual long YSpeed_pps();
+  
+  virtual bool IsAlive();
 
-  /**
-   * Disables the double buffering for the shape of the entity. Must be
-   * set before init.
-   *
-   * NOTE: Not all shape types may be affected, because not all of them
-   * use double buffering at all, e.g. Bobs can be double buffered,
-   * Sprites not.
-   */
-  virtual void DisableDoubleBuf();
 
-  /**
-   * Gets the current x-position of the shape which is associated with
-   * this entity.
-   */
-  virtual int XPos() const;
-
-  /**
-   * Gets the current y-position of the shape which is associated with
-   * this entity.
-   */
-  virtual int YPos() const;
-
+  virtual void Activate(int x, int y, long xSpeed_pps = 0, long ySpeed_pps = 0) = 0;
 protected:
-  EntityBase(ShapeBase* pShape);
+  const GameWorld& m_GameWorld;
 
-  ShapeBase* m_pShape;
-  unsigned long m_FrameSwitchingRateAt50Fps;
+  enum Actions
+  {
+    MoveHorizontally,
+    MoveDiagonally,
+    MoveVertically,
+    MoveUp,
+    MoveDown,
+    MoveLeft,
+    MoveRight,
+    JumpUp,
+    JumpUpRight,
+    JumpRight,
+    JumpUpLeft,
+    JumpLeft,
+    StandAffront,
+    StandAverted,
+  };
+
+  Actions m_Action;
+
+  long m_XSpeed_pps;
+  long m_YSpeed_pps;
+
+  bool m_bIsAlive;
+
+  size_t m_FrameSwitchingRateAt50Fps;
+
+  EntityBase(const GameWorld& gameWorld);
 
 
   /**
    * Returns the distance in pixels which is calculated from the pixel-
    * per-second value und the elapsed time.
    */
-  int pps2Dist(int pps, long elapsed_ms);
+  long pps2Dist(long pps, long elapsed_ms);
 };
 
 #endif

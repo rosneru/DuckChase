@@ -1,93 +1,61 @@
+
+#include <libraries/lowlevel.h>
 #include <clib/graphics_protos.h>
 
 #include "Duck.h"
 
-Duck::Duck(IGameView& gameView)
-  : EntityBase(&m_Shape),
+Duck::Duck(GameViewBase& gameView,
+           const GameWorld& gameWorld,
+           const DuckResources& duckResources)
+  : EntityBase(gameWorld),
     m_GameView(gameView),
-    m_Shape(gameView.Depth()),
-    m_DuckAnimSeq(59, 21, 4), // width, height, depth of each anim image
-    m_AnimFrameCnt(1),
-    m_pLastError(NULL),
-    m_XSpeed_pps(0),
-    m_YSpeed_pps(0)
+    m_Resources(duckResources),
+    m_Shape(m_GameView.RastPort(), 
+            m_GameView.Depth(),
+            duckResources),
+    m_Animator(m_Shape, duckResources.AnimFlyLeft()),
+    m_ElapsedSinceLastAnimUpdate(0)
 {
-
+  // Move to start position
+  m_Shape.Move(800, 40);
+  m_XSpeed_pps = -160;
 }
+
 
 Duck::~Duck()
 {
 
 }
 
-bool Duck::Init()
+void Duck::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 {
-  //
-  // Loading all duck anim sequences
-  //
-  const char* ppFiles[]  = {"gfx/duck1.raw",
-                            "gfx/duck2.raw",
-                            NULL};
-
-  if(m_DuckAnimSeq.Load(ppFiles) == false)
-  {
-    m_pLastError = m_DuckAnimSeq.ErrorMsg();
-    return false;
-  }
-
-  m_Shape.SetAnimSequence(&m_DuckAnimSeq);
-
-
-  //
-  // Initialize postion of the duck bob and add it to the scene
-  //
-  m_Shape.SetRastPort(m_GameView.RastPort());
-  m_Shape.Move(200, 40);
-
-  return true;
+  m_Shape.Move(x, y);
+  // m_XSpeed_pps = xSpeed_pps;
+  // m_YSpeed_pps = ySpeed_pps;
+  m_bIsAlive = true;
 }
+
 
 void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
 {
-  //
-  // Move the duck on an easy, linear right-to-left route
-  //
-  m_XSpeed_pps = -340;
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
+  int dY = pps2Dist(m_YSpeed_pps, elapsed);
 
-  if(XPos() + dX < -m_Shape.Width())
-  {
-    m_Shape.Move(656, m_Shape.YPos());
-  }
-  else
-  {
-    m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
-  }
+  
+  m_Shape.Move(m_Shape.Left() + dX, m_Shape.Top() + dY);
 
-  // Change the duck image every 2 frames
-  if(m_AnimFrameCnt % 6 == 0)
+
+  if(m_Shape.X() < -m_Shape.Width())
   {
-    m_Shape.NextImage();
-    m_AnimFrameCnt = 0;
+    m_Shape.Move(m_GameView.Width(), m_Shape.Y());
   }
 
-  m_AnimFrameCnt++;
-}
-
-
-const char* Duck::LastError() const
-{
-  return m_pLastError;
-}
-
-
-int Duck::XSpeed_pps()
-{
-  return m_XSpeed_pps;
-}
-
-
-int Duck::YSpeed_pps()
-{
-  return m_YSpeed_pps;
+  // Every some frames (or if the direction changed) switch the duck
+  // image
+  m_ElapsedSinceLastAnimUpdate += elapsed;
+  if (m_ElapsedSinceLastAnimUpdate > 180)
+  {
+    m_ElapsedSinceLastAnimUpdate = 0;
+    m_Animator.NextFrame();
+  }
 }

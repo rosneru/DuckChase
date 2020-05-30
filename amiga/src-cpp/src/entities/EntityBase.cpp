@@ -1,50 +1,78 @@
-#include <exec/types.h>
-
 #include "EntityBase.h"
-#include "ShapeBase.h"
 
-EntityBase::EntityBase(ShapeBase* pShape) 
-  : m_pShape(pShape),
+EntityBase::EntityBase(const GameWorld& gameWorld) 
+  : m_GameWorld(gameWorld),
+    m_XSpeed_pps(0),
+    m_YSpeed_pps(0),
+    m_bIsAlive(false),
     m_FrameSwitchingRateAt50Fps(8)
 {
 }
 
-void EntityBase::DisableDoubleBuf()
+long EntityBase::XSpeed_pps()
 {
-  if (m_pShape == NULL)
-  {
-    return;
-  }
-
-  m_pShape->DisableDoubleBuf();
+  return m_XSpeed_pps;
 }
 
-int EntityBase::XPos() const
-{
-  if (m_pShape == NULL)
-  {
-    return 0;
-  }
 
-  return m_pShape->XPos();
+long EntityBase::YSpeed_pps()
+{
+  return m_YSpeed_pps;
 }
 
-int EntityBase::YPos() const
+
+bool EntityBase::IsAlive()
 {
-  if (m_pShape == NULL)
-  {
-    return 0;
-  }
-  
-  return m_pShape->YPos();
+  return m_bIsAlive;
 }
 
-int EntityBase::pps2Dist(int pps, long elapsed_ms)
+
+long EntityBase::pps2Dist(long pps, long elapsed_ms)
 {
+  bool isNeg = pps < 0;
+
   if(elapsed_ms == 0)
   {
+    // Defaults to '25 fps' if
     elapsed_ms = 40;
   }
 
-  return pps * elapsed_ms / 1000;
+  if(pps == 0)
+  {
+    return 0;
+  }
+
+  if(isNeg)
+  {
+    pps = -pps;
+  }
+
+  // This formula basically is 'pps * elapsed_ms / 1000' but with
+  // enhancement:
+  //   - division by 1000 is replaced by right shift >> 10, which in
+  //     result is a division by 1024
+  //   - Added a correction factor of 2 to minimize errors 
+  long dist = (pps * (elapsed_ms + 2)) >> 10;
+  if(dist == 0)
+  {
+    // Return minimum value if calculation result is 0
+    if(isNeg)
+    {
+      return -1;
+    }
+    else
+    {
+      return 1;
+    }
+    
+  }
+
+  if(isNeg)
+  {
+    return -dist;
+  }
+  else
+  {
+    return dist;
+  }
 }

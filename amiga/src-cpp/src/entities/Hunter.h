@@ -1,10 +1,13 @@
-#ifndef HUNTER_H
-#define HUNTER_H
+#ifndef JUMPMAN_H
+#define JUMPMAN_H
 
-#include "AnimSeqBob.h"
+
+#include "Animator.h"
 #include "EntityBase.h"
-#include "IGameView.h"
+#include "GameViewBase.h"
+#include "HunterResources.h"
 #include "ShapeBob.h"
+
 
 /**
  * The hunter.
@@ -16,43 +19,39 @@
 class Hunter : public EntityBase
 {
 public:
-  Hunter(IGameView& gameView, bool& isArrowLaunching, bool& isArrowLaunchDone);
+  Hunter(GameViewBase& gameView, 
+          const GameWorld& gameWorld,
+          const HunterResources& jumpmanResources,
+          bool& isArrowLaunching, 
+          bool& isArrowLaunchDone);
+
   ~Hunter();
 
-  bool Init();
-  void Update(unsigned long elapsed, unsigned long portState);
-
-  const char* LastError() const;
-
-  int XSpeed_pps();
-  int YSpeed_pps();
+  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  virtual void Update(unsigned long elapsed, unsigned long portState);
 
 private:
-  IGameView& m_GameView;
+  GameViewBase& m_GameView;
+  const HunterResources& m_Resources;
 
   ShapeBob m_Shape;
-  AnimSeqBob m_HunterRightAnim;
-  AnimSeqBob m_HunterRightShootAnim;
-  AnimSeqBob m_HunterLeftAnim;
-  AnimSeqBob m_HunterLeftShootAnim;
+  Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;
 
-  const char* m_pLastError;
-  int m_AnimFrameCnt;
+  size_t m_WidthHalf;
+  size_t m_WidthQuarter;
 
-  int m_XSpeed_pps;
-  int m_YSpeed_pps;
+  size_t m_ElapsedSinceLastAnimUpdate;
 
   bool& m_IsArrowLaunched;
   bool m_IsLaunchingArrow;
   bool m_IsRunning;
   unsigned long m_LastDirection;
 
-  void runLeft(unsigned long elapsed);
-  void runRight(unsigned long elapsed);
-  void launchArrow();
-  void resetHunterActions();
-  void updateAnim(unsigned long elapsed, bool hasDirectionChanged);
+  size_t m_UpClimbingPixelsLeft;
 
+  bool runLeft(unsigned long elapsed);
+  bool runRight(unsigned long elapsed);
+  bool climbLadderUp(unsigned long elapsed);
 };
 
 #endif

@@ -2,263 +2,242 @@
 #include <libraries/lowlevel.h>
 #include <clib/graphics_protos.h>
 
+#include "GameTile.h"
 #include "Hunter.h"
 
-Hunter::Hunter(IGameView& gameView, 
-               bool& isArrowLaunching, 
-               bool& isArrowLaunchDone)
-  : EntityBase(&m_Shape),
+Hunter::Hunter(GameViewBase& gameView, 
+                 const GameWorld& gameWorld, 
+                 const HunterResources& jumpmanResources,
+                 bool& isArrowLaunching, 
+                 bool& isArrowLaunchDone)
+  : EntityBase(gameWorld),
     m_GameView(gameView),
-    m_Shape(gameView.Depth()),
-    m_HunterRightAnim(25, 27, 4), // width, height, depth of each anim image
-    m_HunterRightShootAnim(25, 27, 4),
-    m_HunterLeftAnim(25, 27, 4),
-    m_HunterLeftShootAnim(25, 27, 4),
-    m_pLastError(NULL),
-    m_AnimFrameCnt(1),  // TODO CHECK Why not 0?
-    m_XSpeed_pps(0),
-    m_YSpeed_pps(0),
+    m_Resources(jumpmanResources),
+    m_Shape(gameView.RastPort(), 
+            gameView.Depth(),
+            jumpmanResources),
+    m_Animator(m_Shape, jumpmanResources.AnimRunRight()),
+    m_ElapsedSinceLastAnimUpdate(0),
     m_IsArrowLaunched(isArrowLaunchDone),
     m_IsLaunchingArrow(isArrowLaunching),
     m_IsRunning(false),
-    m_LastDirection(JPF_JOY_RIGHT)
+    m_LastDirection(JPF_JOY_RIGHT),
+    m_UpClimbingPixelsLeft(0)
 {
+  //
+  // Initialize postion of the shape and add it to the scene
+  //
+  m_WidthHalf = m_Shape.Width() / 2;
+  m_WidthQuarter = m_Shape.Width() / 4;
+  m_XSpeed_pps = 30;
+  m_YSpeed_pps = 30;
 
+  m_Shape.SetHotspot(m_WidthHalf, m_Shape.Height());
+
+  // Move Jumpman to its start position
+  const GameTile* pStartTile = m_GameWorld.Tile(100, 210);
+  m_Shape.Move(pStartTile->Left(), pStartTile->PlatformTop() - 1);
 }
+
 
 Hunter::~Hunter()
 {
 
 }
 
-bool Hunter::Init()
+void Hunter::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 {
-  //
-  // Loading all hunter anim sequences
-  //
-  const char* pHunterRightFiles[]  = {"gfx/hunter_right1.raw",
-                                      "gfx/hunter_right2.raw",
-                                      NULL};
-
-  const char* pHunterRightShootFiles[]  = {"gfx/hunter_right_shoot.raw",
-                                           NULL};
-
-  const char* pHunterLeftFiles[]  = {"gfx/hunter_left1.raw",
-                                     "gfx/hunter_left2.raw",
-                                     NULL};
-
-  const char* pHunterLeftShootFiles[]  = {"gfx/hunter_Left_shoot.raw",
-                                          NULL};
-
-  if(m_HunterRightAnim.Load(pHunterRightFiles) == false)
-  {
-    m_pLastError = m_HunterRightAnim.ErrorMsg();
-    return false;
-  }
-
-  if(m_HunterRightShootAnim.Load(pHunterRightShootFiles) == false)
-  {
-    m_pLastError = m_HunterRightShootAnim.ErrorMsg();
-    return false;
-  }
-
-  if(m_HunterLeftAnim.Load(pHunterLeftFiles) == false)
-  {
-    m_pLastError = m_HunterLeftAnim.ErrorMsg();
-    return false;
-  }
-
-  if(m_HunterLeftShootAnim.Load(pHunterLeftShootFiles) == false)
-  {
-    m_pLastError = m_HunterLeftShootAnim.ErrorMsg();
-    return false;
-  }
-
-  // Starting with the right anim
-  m_Shape.SetAnimSequence(&m_HunterRightAnim);
-
-  //
-  // Initialize postion of the duck bob and add it to the scene
-  //
-  m_Shape.SetRastPort(m_GameView.RastPort());
-  m_Shape.Move(20, 216);
-
-  return true;
+  m_Shape.Move(x, y);
+  // m_XSpeed_pps = xSpeed_pps;
+  // m_YSpeed_pps = ySpeed_pps;
+  m_bIsAlive = true;
 }
 
 void Hunter::Update(unsigned long elapsed, unsigned long portState)
 {
+  bool isMoving = false;
+
   // Left/right movement
   if((portState & JPF_JOY_RIGHT) != 0)
   {
     runRight(elapsed);
+    isMoving = true;
   }
   else if((portState & JPF_JOY_LEFT) != 0)
   {
     runLeft(elapsed);
+    isMoving = true;
   }
-  else if((portState & JPF_BTN2) != 0)
+  else if((portState & JPF_JOY_UP) != 0)
   {
-    launchArrow();
+    if(climbLadderUp(elapsed))
+      isMoving = true;
   }
   else
   {
-    resetHunterActions();
+    // resetJumpmanActions();
+  }
+
+  // Every some frames (or if the direction changed) switch the hunter
+  // image
+  m_ElapsedSinceLastAnimUpdate += elapsed;
+  if (m_ElapsedSinceLastAnimUpdate > 80)
+  {
+    m_ElapsedSinceLastAnimUpdate = 0;
+    if(isMoving)
+    {
+      // m_Shape.NextImage();
+      m_Animator.NextFrame();
+    }
+    else
+    {
+      // m_Animator.FirstFrame();
+      m_Animator.FirstFrame();
+    }
   }
 }
 
-
-const char* Hunter::LastError() const
+bool Hunter::runLeft(unsigned long elapsed)
 {
-  return m_pLastError;
-}
+  int shapeOverWidthCorrection = 0;
 
-int Hunter::XSpeed_pps()
-{
-  return m_XSpeed_pps;
-}
-
-int Hunter::YSpeed_pps()
-{
-  return m_YSpeed_pps;
-}
-
-
-void Hunter::runLeft(unsigned long elapsed)
-{
-  bool hasDirectionChanged = false;
-  m_XSpeed_pps = -200;
-
-    // Check if direction has changed
+  // Check if direction has changed
   if(m_LastDirection != JPF_JOY_LEFT)
   {
-    hasDirectionChanged = true;
-    m_AnimFrameCnt = 0;
+    if(m_LastDirection == JPF_JOY_RIGHT)
+    {
+      // As long as Jumpman does not have a hammer, only one half of the
+      // shape width is used for the image. When running to left the
+      // left half is unused. This factor takes this into account for
+      // the first calculation of newX after Jumpans running direction
+      // has changed.
+      shapeOverWidthCorrection = -m_WidthHalf;
+    }
+
+    m_ElapsedSinceLastAnimUpdate = 0;
     m_LastDirection = JPF_JOY_LEFT;
 
-    m_HunterLeftAnim.GetFirstImage();
-    m_Shape.SetAnimSequence(&m_HunterLeftAnim);
+    m_Shape.SetHotspot(m_Shape.Width(), m_Shape.Height());
+
+    m_Animator.SetAnimSeq(m_Resources.AnimRunLeft());
+    m_Animator.FirstFrame();
   }
 
-  int dX = pps2Dist(m_XSpeed_pps, elapsed);
+  int dX = pps2Dist(-m_XSpeed_pps, elapsed);
+  int newX = m_Shape.X() + dX + shapeOverWidthCorrection;
 
-  if(m_Shape.XPos() + dX < -m_Shape.Width())
+  // Getting tile of x-destination position. NOTE: -6 manually adjusted
+  // beacuse of actual shape image appearance
+  const GameTile* pTile = m_GameWorld.Tile(newX - 6, m_Shape.Y());
+  if(pTile->IsBorder())
   {
-    m_Shape.Move(m_GameView.Width() + m_Shape.Width(), m_Shape.YPos());
-  }
-  else
-  {
-    m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
+    return false;
   }
 
-  updateAnim(elapsed, hasDirectionChanged);
+  int newY = pTile->PlatformTop() - 1;
+  m_Shape.Move(newX, newY);
+  return true;
 }
 
 
-void Hunter::runRight(unsigned long elapsed)
+bool Hunter::runRight(unsigned long elapsed)
 {
-  bool hasDirectionChanged = false;
-  m_XSpeed_pps = 200;
+  int shapeOverWidthCorrection = 0;
 
   // Check if direction has changed
   if(m_LastDirection != JPF_JOY_RIGHT)
   {
-    hasDirectionChanged = true;
-    m_AnimFrameCnt = 0;
+    // As long as Jumpman does not have a hammer, only one half of the
+    // shape width is used for the image. When running to right the
+    // right half is unused. This factor takes this into account for
+    // the first calculation of newX after Jumpans running direction
+    // has changed.
+    shapeOverWidthCorrection = m_WidthHalf;
+
+    m_ElapsedSinceLastAnimUpdate = 0;
     m_LastDirection = JPF_JOY_RIGHT;
 
-    m_HunterRightAnim.GetFirstImage();
-    m_Shape.SetAnimSequence(&m_HunterRightAnim);
+    m_Shape.SetHotspot(m_WidthHalf, m_Shape.Height());
+
+    m_Animator.SetAnimSeq(m_Resources.AnimRunRight());
+    m_Animator.FirstFrame();
   }
 
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
+  int newX = m_Shape.X() + dX + shapeOverWidthCorrection;
 
-  if(m_Shape.XPos() + dX > m_GameView.Width() + m_Shape.Width())
+  // Getting tile of x-destination position. NOTE: -4 manually adjusted
+  // beacuse of actual shape image appearance
+  const GameTile* pTile = m_GameWorld.Tile(newX - 4, m_Shape.Y());
+  if(pTile->IsBorder())
   {
-    m_Shape.Move(-m_Shape.Width(), m_Shape.YPos());
-  }
-  else
-  {
-    m_Shape.Move(m_Shape.XPos() + dX, m_Shape.YPos());
+    return false;
   }
 
-  updateAnim(elapsed, hasDirectionChanged);
+  int newY = pTile->PlatformTop() - 1;
+  m_Shape.Move(newX, newY);
+
+
+  return true;
 }
 
 
-void Hunter::launchArrow()
+bool Hunter::climbLadderUp(unsigned long elapsed)
 {
-  if(m_IsLaunchingArrow)
+  if(m_LastDirection != JPF_JOY_UP)
   {
-    return;
+    // Direction has changed; initialize the number of pixels to climb
+    if(m_UpClimbingPixelsLeft == 0)
+    {
+      if(m_GameWorld.CanNumPixelsLadderUp(m_Shape.X() - m_WidthQuarter, // x-center of Jumpman
+                                          m_Shape.Y()))
+      {
+        m_UpClimbingPixelsLeft = m_GameWorld.PixToNextAbovePlatformTop(m_Shape.X(),
+                                                                       m_Shape.Y());
+      }
+      else
+      {
+        return false;
+      }
+      
+    }
+
+    if(m_LastDirection == JPF_JOY_RIGHT)
+    {
+      // Jumpman before was running right and there the anim frame
+      // images only use half of the shape width and are left-aligned.
+      // Now, the climbing images frames also use half of the shape
+      // width but are right-alinged. This factor takes this into
+      // account for the first calculation of newX when Jumpan starts to
+      // climb up a ladder.
+      // shapeOverWidthCorrection = m_WidthHalf;
+      
+      m_Shape.Move(m_Shape.X() - m_WidthHalf, m_Shape.Y());
+      m_Shape.SetHotspot(m_Shape.Width(), m_Shape.Height());
+    }
+ 
+    m_ElapsedSinceLastAnimUpdate = 0;
+    m_LastDirection = JPF_JOY_UP;
+
+    m_Animator.SetAnimSeq(m_Resources.AnimRunClimb1());
+    m_Animator.FirstFrame();
   }
 
-  m_IsLaunchingArrow = true;
-  m_IsRunning = false;
-
-  if(m_LastDirection == JPF_RIGHT)
+  if(m_UpClimbingPixelsLeft < 1)
   {
-    m_HunterRightShootAnim.GetFirstImage();
-    m_Shape.SetAnimSequence(&m_HunterRightShootAnim);
+    return false;
   }
-  else
-  {
-    m_HunterLeftShootAnim.GetFirstImage();
-    m_Shape.SetAnimSequence(&m_HunterLeftShootAnim);
-  }
-
-  m_AnimFrameCnt = 0;
-  m_Shape.NextImage();
-}
-
-
-void Hunter::resetHunterActions()
-{
-  if(!m_IsLaunchingArrow && !m_IsRunning)
-  {
-    return;
-  }
-
-  m_XSpeed_pps = 0;
-
-  if(m_LastDirection == JPF_RIGHT)
-  {
-    m_HunterRightAnim.GetFirstImage();
-    m_Shape.SetAnimSequence(&m_HunterRightAnim);
-  }
-  else
-  {
-    m_HunterLeftAnim.GetFirstImage();
-    m_Shape.SetAnimSequence(&m_HunterLeftAnim);
-  }
-
-  m_AnimFrameCnt = 0;
-  m_Shape.NextImage();
   
-  if(m_IsLaunchingArrow)
+  int dY = pps2Dist(m_YSpeed_pps, elapsed);
+  if(dY > m_UpClimbingPixelsLeft)
   {
-    m_IsLaunchingArrow = false;
-    m_IsArrowLaunched = true;
-    return;
+    m_UpClimbingPixelsLeft = dY;
   }
 
-  if(m_IsRunning)
-  {
-    m_IsRunning = false;
-    return;
-  }
-}
+  int newY = m_Shape.Y() - dY;
+  m_Shape.Move(m_Shape.X(), newY);
 
-void Hunter::updateAnim(unsigned long elapsed, bool hasDirectionChanged)
-{
-  // Every some frames (or if the direction changed) switch the hunter
-  // image
-  int switchEvery = m_FrameSwitchingRateAt50Fps * 1000 / (elapsed * 50);
-  m_AnimFrameCnt++;
+  m_UpClimbingPixelsLeft -= dY;
 
-  if (hasDirectionChanged || (m_AnimFrameCnt % switchEvery == 0))
-  {
-    m_AnimFrameCnt = 0;
-    m_Shape.NextImage();
-  }
+  return true;
 }

@@ -1,10 +1,15 @@
-#ifndef DUCK_H
-#define DUCK_H
+#ifndef BROWN_BARREL_H
+#define BROWN_BARREL_H
 
-#include "AnimSeqBob.h"
+#include "AnimSeqGelsBob.h"
+#include "Animator.h"
+#include "DuckResources.h"
 #include "EntityBase.h"
+#include "GameColors.h"
+#include "GameViewBase.h"
+#include "IlbmBitMap.h"
 #include "ShapeBob.h"
-#include "IGameView.h"
+
 
 /**
  * The duck.
@@ -16,30 +21,23 @@
 class Duck : public EntityBase
 {
 public:
-  Duck(IGameView& gameView);
-  ~Duck();
+  Duck(GameViewBase& gameView, 
+       const GameWorld& gameWorld,
+       const DuckResources& duckResources);
 
-  bool Init();
-  void Update(unsigned long elapsed, unsigned long joyPortState);
+  virtual ~Duck();
 
-  const char* LastError() const;
-
-  int XSpeed_pps();
-  int YSpeed_pps();
+  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  virtual void Update(unsigned long elapsed, unsigned long joyPortState);
 
 private:
-  IGameView& m_GameView;
+  GameViewBase& m_GameView;
+  const DuckResources& m_Resources;
 
   ShapeBob m_Shape;
-  AnimSeqBob m_DuckAnimSeq;
+  Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;
 
-  int m_AnimFrameCnt;
-
-  const char* m_pLastError;
-
-  int m_XSpeed_pps;
-  int m_YSpeed_pps;
-
+  size_t m_ElapsedSinceLastAnimUpdate;
 };
 
 #endif

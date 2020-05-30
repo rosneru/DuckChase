@@ -1,14 +1,18 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "animtools.h"
 
-#include "IGameView.h"
+#include "GameViewBase.h"
+#include "GameWorld.h"
+#include "GelsLayer.h"
+#include "EntityCollection.h"
 
-#include "Arrow.h"
+// #include "BrownBarrelResources.h"
 #include "Duck.h"
+#include "DuckResources.h"
 #include "Hunter.h"
-#include "Picture.h"
+#include "HunterResources.h"
+
 
 #include "GameColors.h"
 #include "InfoDisplay.h"
@@ -22,44 +26,43 @@
 class Game
 {
 public:
-  Game(IGameView& gameView);
-  ~Game();
+  Game(GameViewBase& gameView, 
+       const GameWorld& gameWorld);
+
+  virtual ~Game();
 
   /**
-   * When this is called before invoking \see Run, the \see IGameView 
+   * When this is called before invoking \see Run, the \see GameViewBase 
    * and the \see ShapeBob are set to only use single buffering.
    * 
    * Intended for testing purposes only.
    */
   void DisableDoubleBuf();
 
-  bool Run();
-
-  const char* LastError() const;
+  void Run();
 
 private:
-  IGameView& m_GameView;
+  GameViewBase& m_GameView;
+
   InfoDisplay m_InfoDisplay;
+  size_t m_LastFps;
   
   const size_t m_MaxStrain;
   const size_t m_MaxArrows;
   size_t m_NumArrowsLeft;
 
-  struct GelsInfo* m_pGelsInfo;
-
-  const char* m_pLastError;
 
   GameColors m_GameColors;
 
-  Picture m_BackgroundImage;
+  // BrownBarrelResources m_BrownBarrelResources;
+  // EntityCollection m_BrownBarrells;
+  DuckResources m_DuckResources;
   Duck m_Duck;
-  Hunter m_Hunter;
-  Arrow m_Arrow;
+  // HunterResources m_HunterResources;
+  // Hunter m_Hunter;
 
   bool m_IsArrowLaunching;
   bool m_IsArrowLaunchDone;
-
-  bool gameLoop();
 };
 
 #endif
