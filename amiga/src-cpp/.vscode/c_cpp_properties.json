@@ -7,19 +7,20 @@
                 "/opt/amiga/m68k-amigaos/sys-include/",
                 "/opt/amiga/m68k-amigaos/include/",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/src/animtools",
-                "${workspaceFolder}/src/gameengine",
-                "${workspaceFolder}/src/gfxtools",
-                "${workspaceFolder}/src/lowlevelview",
+                "${workspaceFolder}/src/amigautils",
+                "${workspaceFolder}/src/anim",
                 "${workspaceFolder}/src/entities",
-                "${workspaceFolder}/src/amigautils"
+                "${workspaceFolder}/src/picture",
+                "${workspaceFolder}/src/resources",
+                "${workspaceFolder}/src/shapes",
+                "${workspaceFolder}/src/view"
             ],
             "defines": [
                 "LINUX"
             ],
             "compilerPath": "/opt/amiga/bin/m68k-amigaos-gcc",
             "cStandard": "c99",
-            "cppStandard": "c++17",
+            "cppStandard": "c++98",
             "intelliSenseMode": "clang-x64"
         }
     ],

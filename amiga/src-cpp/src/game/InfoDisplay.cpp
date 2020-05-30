@@ -10,7 +10,7 @@
 extern struct GfxBase* GfxBase;
 
 
-InfoDisplay::InfoDisplay(IGameView& gameView, 
+InfoDisplay::InfoDisplay(GameViewBase& gameView, 
                          GameColors& gameColors,
                          const size_t& maxArrows, 
                          const size_t& maxStrain)
@@ -18,17 +18,12 @@ InfoDisplay::InfoDisplay(IGameView& gameView,
     m_MaxArrows(maxArrows),
     m_MaxStrain(maxStrain),
     m_FormerStrain(0),
-    m_ArrowDisabledImg(16, 8, 4), // width, height, depth of the arrow images
-    m_ArrowEnabledImg(16, 8, 4)
+    m_StrainSpreadColors(gameColors.GetStrainSpreadColors()),
+    //m_ArrowDisabledImg("gfx/arrow_palette2.raw", 16, 8, 4), 
+    //m_ArrowEnabledImg("gfx/arrow_palette3.raw", 16, 8, 4),
+    m_Right(m_View.Width() - 4),
+    m_Bottom(m_View.Height() - 1)
 {
-  m_StrainSpreadColors = gameColors.GetStrainSpreadColors();
-
-  m_ArrowDisabledImg.Load("gfx/arrow_palette2.raw");
-  m_ArrowEnabledImg.Load("gfx/arrow_palette3.raw");
-  
-  m_Right = m_View.Width() - 4;
-
-  m_Bottom = m_View.Height() - 1;
 
 }
 
@@ -39,40 +34,40 @@ InfoDisplay::~InfoDisplay()
 }
 
 
-void InfoDisplay::UpdateArrows(size_t arrowsLeft)
-{
-  if((m_ArrowDisabledImg.GetBitMap() == NULL)
-   ||(m_ArrowEnabledImg.GetBitMap() == NULL) )
-  {
-    return;
-  }
+// void InfoDisplay::UpdateArrows(size_t arrowsLeft)
+// {
+// //  if((m_ArrowDisabledImg.GetBitMap() == NULL)
+// //   ||(m_ArrowEnabledImg.GetBitMap() == NULL))
+// //  {
+// //    return;
+// //  }
 
-  // m_NumArrowsLeft = numArrowsLeft; // TODO Should be done in game!!!
+  // // m_NumArrowsLeft = numArrowsLeft; // TODO Should be done in game!!!
 
-  // Start blitting with an highlighted image for the available arrows
-  struct BitMap* pBitMap = m_ArrowEnabledImg.GetBitMap();
+  // // Start blitting with an highlighted image for the available arrows
+  // struct BitMap* pBitMap = m_ArrowEnabledImg.GetBitMap();
 
-  for(size_t i = 0; i < m_MaxArrows; i++)
-  {
-    if(i >= arrowsLeft)
-    {
-      // Blit the already shot arrows with a non-highlighted image
-      pBitMap = m_ArrowDisabledImg.GetBitMap();
-    }
+  // for(size_t i = 0; i < m_MaxArrows; i++)
+  // {
+    // if(i >= arrowsLeft)
+    // {
+      // // Blit the already shot arrows with a non-highlighted image
+      // pBitMap = m_ArrowDisabledImg.GetBitMap();
+    // }
 
-    BltBitMapRastPort(pBitMap, 
-                      0, 
-                      0, 
-                      m_View.RastPort(),
-                      110 + i * (m_ArrowEnabledImg.GetWidth() + 5),
-                      m_Bottom - m_ArrowEnabledImg.GetHeight() - 1,
-                      m_ArrowEnabledImg.GetWidth(),
-                      m_ArrowEnabledImg.GetHeight(),
-                      0xC0);
+    // BltBitMapRastPort(pBitMap, 
+                      // 0, 
+                      // 0, 
+                      // m_View.RastPort(),
+                      // 110 + i * (m_ArrowEnabledImg.Width() + 5),
+                      // m_Bottom - m_ArrowEnabledImg.Height() - 1,
+                      // m_ArrowEnabledImg.Width(),
+                      // m_ArrowEnabledImg.Height(),
+                      // 0xC0);
 
 
-  }
-}
+  // }
+// }
 
 
 void InfoDisplay::UpdateFps(size_t fps)

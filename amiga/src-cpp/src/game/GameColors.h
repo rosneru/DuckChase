@@ -20,11 +20,7 @@ public:
 
   bool Load();
 
-  /**
-   * Return the ColorArray for the view as Amiga-LoadRGB32-compliant
-   * array
-   */
-  ULONG* GetViewColorsLoadRGB32();
+
 
   /**
    * Return the ColorArray for the arrow sprite.
@@ -35,41 +31,19 @@ public:
    * and no terminating \0 longword. Use it only with SetRGB32.
    * array
    */
-  ULONG* GetArrowSpriteColors();
+  WORD* GetBarrelBrownSpriteColors();
 
   ULONG* GetStrainSpreadColors();
 
 
 private:
-  // It's useful to store the colors at a central place.
-  // This struct is a workaround for C++98 not allowing array 
-  // initialization in the initializer list.
-  //
-  // It is defined to a size of 98 because:
-  //   1..Header, 
-  //   3 x 32 = 96..the 32 colors, 
-  //   1..Termination
-  //
-
-  /**
-   * Type for storing the colors for the view. It is defined as an ULONG
-   * array of size 98 because: 
-   *   1..Header, 
-   *   3 x 32 = 96.. for the 32 colors, 
-   *   1..Termination
-   */
-  struct ViewColors
-  { 
-    ULONG elem[98];
-  };
-
   /**
    * Type for storing the colors for the arrow sprite.
    * Defined to an ULONG array of size 9.
    */
-  struct ArrowSpriteColors
+  struct BarrelBrownSpriteColors
   {
-    ULONG elem[9];
+    WORD elem[3];
   };
 
   /**
@@ -82,14 +56,9 @@ private:
   };
 
   /**
-   * Static variables to hold the view color data
-   */
-  static ViewColors m_sViewColors;
-
-  /**
    * Static variable to hold the arrow sprite color data
    */
-  static ArrowSpriteColors m_sArrowSpriteColors;
+  static BarrelBrownSpriteColors m_sArrowSpriteColors;
 
   /**
    * Static variable to hold the arrow sprite color data
