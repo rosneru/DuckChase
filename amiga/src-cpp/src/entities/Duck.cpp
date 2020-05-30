@@ -17,7 +17,7 @@ Duck::Duck(GameViewBase& gameView,
     m_ElapsedSinceLastAnimUpdate(0)
 {
   // Move to start position
-  m_Shape.Move(200, 40);
+  m_Shape.Move(800, 40);
   m_XSpeed_pps = -160;
 }
 
@@ -35,16 +35,9 @@ void Duck::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
   m_bIsAlive = true;
 }
 
-#include <stdio.h>
 
 void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
 {
-  // if(m_Shape.IsVisible() && m_Shape.IsGone())
-  // {
-  //   m_bIsAlive = false;
-  //   return;
-  // }
-
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
   int dY = pps2Dist(m_YSpeed_pps, elapsed);
 
@@ -60,9 +53,8 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
   // Every some frames (or if the direction changed) switch the duck
   // image
   m_ElapsedSinceLastAnimUpdate += elapsed;
-  if (m_ElapsedSinceLastAnimUpdate > 120)
+  if (m_ElapsedSinceLastAnimUpdate > 180)
   {
-    // printf("m_Shape.X() = %d\n", m_Shape.X());
     m_ElapsedSinceLastAnimUpdate = 0;
     m_Animator.NextFrame();
   }
