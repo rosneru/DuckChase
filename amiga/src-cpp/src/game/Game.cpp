@@ -2,7 +2,7 @@
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
-#include "BrownBarrel.h"
+// #include "BrownBarrel.h"
 #include "IlbmBitMap.h"
 #include "StopWatch.h"
 
@@ -22,34 +22,35 @@ Game::Game(GameViewBase& gameView,
     m_MaxStrain(118),
     m_MaxArrows(5),
     m_NumArrowsLeft(m_MaxArrows),
-    m_Jumpman(gameView, 
+    m_Duck(m_GameView, gameWorld, m_DuckResources),
+    m_Hunter(gameView, 
               gameWorld,
-              m_JumpmanResources,
+              m_HunterResources,
               m_IsArrowLaunching, 
               m_IsArrowLaunchDone),
     m_IsArrowLaunching(false),
     m_IsArrowLaunchDone(false)
 {
 
-  // Create a collection of some brown barrels
-  for(int i = 0; i < MAX_BROWN_BARRELS; i++)
-  {
-    m_BrownBarrells.Push(new BrownBarrel(m_GameView, 
-                                         gameWorld,
-                                         m_BrownBarrelResources));
-  }
+  // // Create a collection of some brown barrels
+  // for(int i = 0; i < MAX_BROWN_BARRELS; i++)
+  // {
+  //   m_BrownBarrells.Push(new BrownBarrel(m_GameView, 
+  //                                        gameWorld,
+  //                                        m_BrownBarrelResources));
+  // }
 }
 
 
 Game::~Game()
 {
-  size_t arraySize = m_BrownBarrells.Size();
-  for(size_t i = 0; i < arraySize; i++)
-  {
-    BrownBarrel* pBrownBarrel = (BrownBarrel*)m_BrownBarrells.Pop();
-    delete pBrownBarrel;
-    pBrownBarrel = NULL;
-  }
+  // size_t arraySize = m_BrownBarrells.Size();
+  // for(size_t i = 0; i < arraySize; i++)
+  // {
+  //   BrownBarrel* pBrownBarrel = (BrownBarrel*)m_BrownBarrells.Pop();
+  //   delete pBrownBarrel;
+  //   pBrownBarrel = NULL;
+  // }
 }
 
 void Game::DisableDoubleBuf()
@@ -118,7 +119,7 @@ void Game::Run()
     //
     ULONG portState = ReadJoyPort(1);
 
-    m_Jumpman.Update(elapsed_ms, portState);
+    m_Hunter.Update(elapsed_ms, portState);
 
     // for(size_t i = 0; i < m_BrownBarrells.Size(); i++)
     // {

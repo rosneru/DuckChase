@@ -2,18 +2,18 @@
 #include <libraries/lowlevel.h>
 #include <clib/graphics_protos.h>
 
-#include "BrownBarrel.h"
+#include "Duck.h"
 
-BrownBarrel::BrownBarrel(GameViewBase& gameView,
+Duck::Duck(GameViewBase& gameView,
                          const GameWorld& gameWorld,
-                         const BrownBarrelResources& brownBarrelResources)
+                         const DuckResources& duckResources)
   : EntityBase(gameWorld),
     m_GameView(gameView),
-    m_Resources(brownBarrelResources),
+    m_Resources(duckResources),
     m_Shape(m_GameView.RastPort(), 
             m_GameView.Depth(),
-            brownBarrelResources),
-    m_Animator(m_Shape, brownBarrelResources.AnimHorizontally()),
+            duckResources),
+    m_Animator(m_Shape, duckResources.AnimHorizontally()),
     m_AnimFrameCnt(1)
 {
   m_Action = EntityBase::MoveVertically;
@@ -23,12 +23,12 @@ BrownBarrel::BrownBarrel(GameViewBase& gameView,
 }
 
 
-BrownBarrel::~BrownBarrel()
+Duck::~Duck()
 {
 
 }
 
-void BrownBarrel::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
+void Duck::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 {
   m_Shape.Move(x, y);
   m_XSpeed_pps = xSpeed_pps;
@@ -37,7 +37,7 @@ void BrownBarrel::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 }
 
 
-void BrownBarrel::Update(unsigned long elapsed, unsigned long joyPortState)
+void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
 {
   if(m_Shape.IsVisible() && m_Shape.IsGone())
   {

@@ -3,7 +3,7 @@
 
 #include "AnimSeqGelsBob.h"
 #include "Animator.h"
-#include "BrownBarrelResources.h"
+#include "DuckResources.h"
 #include "EntityBase.h"
 #include "GameColors.h"
 #include "GameViewBase.h"
@@ -12,27 +12,27 @@
 
 
 /**
- * A brown barrel.
+ * The duck.
  *
  *
  * @author Uwe Rosner
- * @date 29/02/2020
+ * @date 11/08/2019
  */
-class BrownBarrel : public EntityBase
+class Duck : public EntityBase
 {
 public:
-  BrownBarrel(GameViewBase& gameView, 
-              const GameWorld& gameWorld,
-              const BrownBarrelResources& brownBarrelResources);
+  Duck(GameViewBase& gameView, 
+       const GameWorld& gameWorld,
+       const DuckResources& duckResources);
 
-  virtual ~BrownBarrel();
+  virtual ~Duck();
 
   virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
   virtual void Update(unsigned long elapsed, unsigned long joyPortState);
 
 private:
   GameViewBase& m_GameView;
-  const BrownBarrelResources& m_Resources;
+  const DuckResources& m_Resources;
 
   ShapeBob m_Shape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;

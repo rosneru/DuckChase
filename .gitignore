@@ -7,9 +7,17 @@ objects_debug
 *.pro.user
 *.autosave
 *.obj
-*.info
 build-*
 !release/**
+
+# All custom build directories
+build/
+
+#CMake
+CMakeFiles/**
+CMakeFiles/
+CMakeCache.txt
+*.cmake
 
 # gitignore for C++
 # Compiled Object files
@@ -25,13 +33,3 @@ build-*
 *.lai
 *.la
 *.a
-
-# Visual Studio Files
-Debug
-Release
-*.suo
-*.csproj.user
-*.vcxproj.user
-ipch
-*sdf
-.vs

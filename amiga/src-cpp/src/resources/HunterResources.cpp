@@ -1,12 +1,12 @@
-#include "JumpmanResources.h"
+#include "HunterResources.h"
 
 JumpmanResources::JumpmanResources()
-  : m_AnimRunRight("gfx/jumpman_run_right_strip4.ilbm", 4),
-    m_AnimRunLeft("gfx/jumpman_run_left_strip4.ilbm", 4),
-    m_AnimClimb1("gfx/jumpman_climb1_strip2.ilbm", 2),
-    m_AnimClimb2("gfx/jumpman_climb2_strip4.ilbm", 4)
+  : m_AnimRunRight("AADevDuck:assets/jumpman_run_right_strip4.ilbm", 4),
+    m_AnimRunLeft("AADevDuck:assets/jumpman_run_left_strip4.ilbm", 4),
+    m_AnimClimb1("AADevDuck:assets/jumpman_climb1_strip2.ilbm", 2),
+    m_AnimClimb2("AADevDuck:assets/jumpman_climb2_strip4.ilbm", 4)
 {
-  // TODO: Maybe check if all anims have same dimeansions / depth and
+  // TODO: Maybe check if all anims have same dimensions / depth and
   //       throw one exception if not.
 }
 

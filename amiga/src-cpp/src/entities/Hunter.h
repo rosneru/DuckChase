@@ -5,27 +5,27 @@
 #include "Animator.h"
 #include "EntityBase.h"
 #include "GameViewBase.h"
-#include "JumpmanResources.h"
+#include "HunterResources.h"
 #include "ShapeBob.h"
 
 
 /**
- * The Jumpman.
+ * The hunter.
  *
  *
  * @author Uwe Rosner
- * @date 29/02/2020
+ * @date 11/08/2019
  */
-class Jumpman : public EntityBase
+class Hunter : public EntityBase
 {
 public:
-  Jumpman(GameViewBase& gameView, 
+  Hunter(GameViewBase& gameView, 
           const GameWorld& gameWorld,
           const JumpmanResources& jumpmanResources,
           bool& isArrowLaunching, 
           bool& isArrowLaunchDone);
 
-  ~Jumpman();
+  ~Hunter();
 
   virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
   virtual void Update(unsigned long elapsed, unsigned long portState);

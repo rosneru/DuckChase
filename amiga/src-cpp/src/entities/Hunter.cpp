@@ -3,9 +3,9 @@
 #include <clib/graphics_protos.h>
 
 #include "GameTile.h"
-#include "Jumpman.h"
+#include "Hunter.h"
 
-Jumpman::Jumpman(GameViewBase& gameView, 
+Hunter::Hunter(GameViewBase& gameView, 
                  const GameWorld& gameWorld, 
                  const JumpmanResources& jumpmanResources,
                  bool& isArrowLaunching, 
@@ -40,12 +40,12 @@ Jumpman::Jumpman(GameViewBase& gameView,
 }
 
 
-Jumpman::~Jumpman()
+Hunter::~Hunter()
 {
 
 }
 
-void Jumpman::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
+void Hunter::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 {
   m_Shape.Move(x, y);
   // m_XSpeed_pps = xSpeed_pps;
@@ -53,7 +53,7 @@ void Jumpman::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
   m_bIsAlive = true;
 }
 
-void Jumpman::Update(unsigned long elapsed, unsigned long portState)
+void Hunter::Update(unsigned long elapsed, unsigned long portState)
 {
   bool isMoving = false;
 
@@ -97,7 +97,7 @@ void Jumpman::Update(unsigned long elapsed, unsigned long portState)
   }
 }
 
-bool Jumpman::runLeft(unsigned long elapsed)
+bool Hunter::runLeft(unsigned long elapsed)
 {
   int shapeOverWidthCorrection = 0;
 
@@ -140,7 +140,7 @@ bool Jumpman::runLeft(unsigned long elapsed)
 }
 
 
-bool Jumpman::runRight(unsigned long elapsed)
+bool Hunter::runRight(unsigned long elapsed)
 {
   int shapeOverWidthCorrection = 0;
 
@@ -182,7 +182,7 @@ bool Jumpman::runRight(unsigned long elapsed)
 }
 
 
-bool Jumpman::climbLadderUp(unsigned long elapsed)
+bool Hunter::climbLadderUp(unsigned long elapsed)
 {
   if(m_LastDirection != JPF_JOY_UP)
   {

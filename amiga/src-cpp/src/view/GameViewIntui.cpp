@@ -24,7 +24,7 @@ GameViewIntui::GameViewIntui(IlbmBitMap& backgroundPicture)
   };
 
   m_pScreen = OpenScreenTags(NULL,
-    SA_DisplayID, PAL_MONITOR_ID|LORES_KEY,
+    SA_DisplayID, PAL_MONITOR_ID|HIRES_KEY,
     SA_Depth, Depth(),
     SA_Width, Width(),
     SA_Height, Height(),

@@ -7,9 +7,11 @@
 #include "GelsLayer.h"
 #include "EntityCollection.h"
 
-#include "BrownBarrelResources.h"
-#include "Jumpman.h"
-#include "JumpmanResources.h"
+// #include "BrownBarrelResources.h"
+#include "Duck.h"
+#include "DuckResources.h"
+#include "Hunter.h"
+#include "HunterResources.h"
 
 
 #include "GameColors.h"
@@ -52,10 +54,12 @@ private:
 
   GameColors m_GameColors;
 
-  BrownBarrelResources m_BrownBarrelResources;
-  EntityCollection m_BrownBarrells;
-  JumpmanResources m_JumpmanResources;
-  Jumpman m_Jumpman;
+  // BrownBarrelResources m_BrownBarrelResources;
+  // EntityCollection m_BrownBarrells;
+  DuckResources m_DuckResources;
+  Duck m_Duck;
+  JumpmanResources m_HunterResources;
+  Hunter m_Hunter;
 
   bool m_IsArrowLaunching;
   bool m_IsArrowLaunchDone;

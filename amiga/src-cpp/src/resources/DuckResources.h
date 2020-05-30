@@ -11,10 +11,10 @@
  * @author Uwe Rosner
  * @date 26/05/2020
  */
-class BrownBarrelResources : public ResourceGELs
+class DuckResources : public ResourceGELs
 {
 public:
-  BrownBarrelResources();
+  DuckResources();
 
   WORD* DefaultImage() const;
   short Width() const;
