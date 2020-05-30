@@ -22,16 +22,16 @@ public:
   short Height() const;
   short Depth() const;
 
-  const AnimSeqGelsBob* AnimRunRight() const;
-  const AnimSeqGelsBob* AnimRunLeft() const;
-  const AnimSeqGelsBob* AnimRunClimb1() const;
-  const AnimSeqGelsBob* AnimRunClimb2() const;
+  const AnimSeqGelsBob* AnimRightRun() const;
+  const AnimSeqGelsBob* AnimLeftRun() const;
+  const AnimSeqGelsBob* AnimRightShoot() const;
+  const AnimSeqGelsBob* AnimLeftShoot() const;
 
 private:
-  const AnimSeqGelsBob m_AnimRunRight;
-  const AnimSeqGelsBob m_AnimRunLeft;
-  const AnimSeqGelsBob m_AnimClimb1;
-  const AnimSeqGelsBob m_AnimClimb2;
+  const AnimSeqGelsBob m_AnimRightRun;
+  const AnimSeqGelsBob m_AnimRightShoot;
+  const AnimSeqGelsBob m_AnimLeftRun;
+  const AnimSeqGelsBob m_AnimLeftShoot;
 };
 
 #endif

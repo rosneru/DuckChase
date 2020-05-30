@@ -1,10 +1,10 @@
 #include "HunterResources.h"
 
 HunterResources::HunterResources()
-  : m_AnimRunRight("AADevDuck:assets/jumpman_run_right_strip4.ilbm", 4),
-    m_AnimRunLeft("AADevDuck:assets/jumpman_run_left_strip4.ilbm", 4),
-    m_AnimClimb1("AADevDuck:assets/jumpman_climb1_strip2.ilbm", 2),
-    m_AnimClimb2("AADevDuck:assets/jumpman_climb2_strip4.ilbm", 4)
+  : m_AnimRightRun("AADevDuck:assets/hunter_right_run_strip2.iff", 2),
+    m_AnimRightShoot("AADevDuck:assets/hunter_right_shoot_strip1.iff", 1),
+    m_AnimLeftRun("AADevDuck:assets/hunter_left_run_strip2.iff", 2),
+    m_AnimLeftShoot("AADevDuck:assets/hunter_left_shoot_strip1.iff", 1)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
   //       throw one exception if not.
@@ -12,46 +12,45 @@ HunterResources::HunterResources()
 
 WORD* HunterResources::DefaultImage() const
 {
-  return m_AnimRunRight[0];
+  return m_AnimRightRun[0];
 }
 
 short HunterResources::Width() const
 {
-  return m_AnimRunRight.Width();
+  return m_AnimRightRun.Width();
 }
 
 short HunterResources::WordWidth() const
 {
-  return m_AnimRunRight.WordWidth();
+  return m_AnimRightRun.WordWidth();
 }
 
 short HunterResources::Height() const
 {
-  return m_AnimRunRight.Height();
+  return m_AnimRightRun.Height();
 }
 
 short HunterResources::Depth() const
 {
-  return m_AnimRunRight.Depth();
-
+  return m_AnimRightRun.Depth();
 }
 
-const AnimSeqGelsBob* HunterResources::AnimRunRight() const
+const AnimSeqGelsBob* HunterResources::AnimRightRun() const
 {
-  return &m_AnimRunRight;
+  return &m_AnimRightRun;
 }
 
-const AnimSeqGelsBob* HunterResources::AnimRunLeft() const
+const AnimSeqGelsBob* HunterResources::AnimLeftRun() const
 {
-  return &m_AnimRunLeft;
+  return &m_AnimLeftRun;
 }
 
-const AnimSeqGelsBob* HunterResources::AnimRunClimb1() const
+const AnimSeqGelsBob* HunterResources::AnimRightShoot() const
 {
-  return &m_AnimClimb1;
+  return &m_AnimRightShoot;
 }
 
-const AnimSeqGelsBob* HunterResources::AnimRunClimb2() const
+const AnimSeqGelsBob* HunterResources::AnimLeftShoot() const
 {
-  return &m_AnimClimb2;
+  return &m_AnimLeftShoot;
 }
