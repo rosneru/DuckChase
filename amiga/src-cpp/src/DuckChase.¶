@@ -3,19 +3,21 @@ Settings (Start)
 C/C++ Environment
 "StormC:include"
 0
-"animtools/"
-0
 "amigautils/"
+0
+"anim/"
 0
 "entities/"
 0
-"gameengine/"
-0
-"lowlevelview/"
-0
-"gfxtools/"
-0
 "game/"
+0
+"picture/"
+0
+"resources/"
+0
+"shapes/"
+0
+"view/"
 0
 Includepath (End)
 0 "" 80
@@ -47,7 +49,7 @@ GCC Options (1)
 0
 Defines (End)
 1 0 0 1 0
-3 0 0 0 1 1 0
+3 0 0 1 1 1 0
 0 2 1 0 0
 0 0 1 0 1 0 0
 0 0 0 0
@@ -98,14 +100,6 @@ Section
 0 1 1 0
 4
 File
-1 "amigautils/Picture.cpp"
-"amigautils/Picture.cpp"
-"amigautils/Picture.h"
-Storm Shell Project (Dependencies)
-"objects_debug/Picture.o" "objects_debug/Picture.debug"
-""
-1 1
-File
 1 "amigautils/StopWatch.cpp"
 "amigautils/StopWatch.cpp"
 "amigautils/StopWatch.h"
@@ -114,97 +108,70 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "animtools/AnimSeqBase.cpp"
-"animtools/AnimSeqBase.cpp"
-"animtools/AnimSeqBase.h"
+1 "anim/AnimSeqBase.cpp"
+"anim/AnimSeqBase.cpp"
+"anim/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/AnimSeqBase.o" "objects_debug/AnimSeqBase.debug"
 ""
 1 1
 File
-1 "animtools/AnimSeqBob.cpp"
-"animtools/AnimSeqBob.cpp"
-"animtools/AnimSeqBob.h"
-"animtools/AnimSeqBase.h"
-"gfxtools/ImgLoaderBase.h"
+1 "anim/AnimSeqExtSprite.cpp"
+"anim/AnimSeqExtSprite.cpp"
+"anim/AnimSeqExtSprite.h"
+"anim/AnimSeqBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/AnimSeqBob.o" "objects_debug/AnimSeqBob.debug"
+"objects_debug/AnimSeqExtSprite.o" "objects_debug/AnimSeqExtSprite.debug"
 ""
 1 1
 File
-1 "animtools/AnimSeqSprite.cpp"
-"animtools/AnimSeqSprite.cpp"
-"animtools/AnimSeqSprite.h"
-"animtools/AnimSeqBase.h"
-"gfxtools/ImgLoaderBase.h"
+1 "anim/AnimSeqGels.cpp"
+"anim/AnimSeqGels.cpp"
+"picture/PictureBase.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/AnimSeqSprite.o" "objects_debug/AnimSeqSprite.debug"
+"objects_debug/AnimSeqGels.o" "objects_debug/AnimSeqGels.debug"
 ""
 1 1
 File
-1 "animtools/animtools.cpp"
-"animtools/animtools.cpp"
-"animtools/animtools.h"
-"animtools/animtools_proto.h"
+1 "anim/AnimSeqGelsBob.cpp"
+"anim/AnimSeqGelsBob.cpp"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"anim/AnimSeqGelsBob.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/animtools.o" "objects_debug/animtools.debug"
+"objects_debug/AnimSeqGelsBob.o" "objects_debug/AnimSeqGelsBob.debug"
 ""
 1 1
 File
-1 "animtools/ShapeBase.cpp"
-"animtools/ShapeBase.cpp"
-"animtools/ShapeBase.h"
+1 "anim/AnimSeqGelsVSprite.cpp"
+"anim/AnimSeqGelsVSprite.cpp"
+"picture/PictureBase.h"
+"anim/AnimSeqGelsVSprite.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/ShapeBase.o" "objects_debug/ShapeBase.debug"
-""
-1 1
-File
-1 "animtools/ShapeBob.cpp"
-"animtools/ShapeBob.cpp"
-"animtools/ShapeBob.h"
-"animtools/AnimSeqBob.h"
-"animtools/AnimSeqBase.h"
-"animtools/animtools.h"
-"animtools/ShapeBase.h"
-"animtools/animtools_proto.h"
-Storm Shell Project (Dependencies)
-"objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
-""
-1 1
-File
-1 "animtools/ShapeSprite.cpp"
-"animtools/ShapeSprite.cpp"
-"animtools/ShapeSprite.h"
-"animtools/AnimSeqSprite.h"
-"animtools/AnimSeqBase.h"
-"animtools/ShapeBase.h"
-"animtools/animtools.h"
-"animtools/animtools_proto.h"
-Storm Shell Project (Dependencies)
-"objects_debug/ShapeSprite.o" "objects_debug/ShapeSprite.debug"
-""
-1 1
-File
-1 "entities/Bullet.cpp"
-"entities/Bullet.cpp"
-"entities/Bullet.h"
-"entities/EntityBase.h"
-"entities/Hunter.h"
-"animtools/AnimSeqBase.h"
-"animtools/animtools.h"
-"animtools/ShapeBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/Bullet.o" "objects_debug/Bullet.debug"
+"objects_debug/AnimSeqGelsVSprite.o" "objects_debug/AnimSeqGelsVSprite.debug"
 ""
 1 1
 File
 1 "entities/Duck.cpp"
 "entities/Duck.cpp"
 "entities/Duck.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceGELs.h"
+"resources/ResourceBase.h"
 "entities/EntityBase.h"
-"animtools/AnimSeqBase.h"
-"animtools/animtools.h"
-"animtools/ShapeBase.h"
+"game/GameTile.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"shapes/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Duck.o" "objects_debug/Duck.debug"
 ""
@@ -213,8 +180,19 @@ File
 1 "entities/EntityBase.cpp"
 "entities/EntityBase.cpp"
 "entities/EntityBase.h"
+"game/GameTile.h"
 Storm Shell Project (Dependencies)
 "objects_debug/EntityBase.o" "objects_debug/EntityBase.debug"
+""
+1 1
+File
+1 "entities/EntityCollection.cpp"
+"entities/EntityCollection.cpp"
+"entities/EntityCollection.h"
+"entities/EntityBase.h"
+"game/GameTile.h"
+Storm Shell Project (Dependencies)
+"objects_debug/EntityCollection.o" "objects_debug/EntityCollection.debug"
 ""
 1 1
 File
@@ -222,9 +200,13 @@ File
 "entities/Hunter.cpp"
 "entities/Hunter.h"
 "entities/EntityBase.h"
-"animtools/AnimSeqBase.h"
-"animtools/animtools.h"
-"animtools/ShapeBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceGELs.h"
+"resources/ResourceBase.h"
+"shapes/ShapeBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Hunter.o" "objects_debug/Hunter.debug"
 ""
@@ -232,13 +214,18 @@ Storm Shell Project (Dependencies)
 File
 1 "game/Game.cpp"
 "game/Game.cpp"
-"animtools/animtools.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
 "game/Game.h"
-"animtools/AnimSeqBase.h"
+"game/GameWorld.h"
+"game/GameTile.h"
 "entities/EntityBase.h"
-"entities/Hunter.h"
-"animtools/ShapeBase.h"
-"game/PointsDisplay.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceGELs.h"
+"resources/ResourceBase.h"
+"shapes/ShapeBase.h"
+"game/InfoDisplay.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -252,105 +239,231 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "game/PointsDisplay.cpp"
-"game/PointsDisplay.cpp"
-"game/PointsDisplay.h"
+1 "game/GameTile.cpp"
+"game/GameTile.cpp"
+"game/GameTile.h"
 Storm Shell Project (Dependencies)
-"objects_debug/PointsDisplay.o" "objects_debug/PointsDisplay.debug"
+"objects_debug/GameTile.o" "objects_debug/GameTile.debug"
 ""
 1 1
 File
-1 "gameengine/GameViewGfxLib.cpp"
-"gameengine/GameViewGfxLib.cpp"
-"gameengine/GameViewGfxLib.h"
-"gameengine/IGameView.h"
+1 "game/GameWorld.cpp"
+"game/GameWorld.cpp"
+"game/GameWorld.h"
+"game/GameTile.h"
 Storm Shell Project (Dependencies)
-"objects_debug/GameViewGfxLib.o" "objects_debug/GameViewGfxLib.debug"
+"objects_debug/GameWorld.o" "objects_debug/GameWorld.debug"
 ""
 1 1
 File
-1 "gameengine/GameViewIntui.cpp"
-"gameengine/GameViewIntui.cpp"
-"gameengine/GameViewIntui.h"
-"gameengine/IGameView.h"
+1 "game/InfoDisplay.cpp"
+"game/InfoDisplay.cpp"
+"game/InfoDisplay.h"
+"game/GameColors.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/GameViewIntui.o" "objects_debug/GameViewIntui.debug"
-""
-1 1
-File
-1 "gameengine/GameViewLowLevel.cpp"
-"gameengine/GameViewLowLevel.cpp"
-"gameengine/GameViewLowlevel.h"
-"gameengine/IGameView.h"
-Storm Shell Project (Dependencies)
-"objects_debug/GameViewLowLevel.o" "objects_debug/GameViewLowLevel.debug"
-""
-1 1
-File
-1 "gfxtools/ImgLoaderBase.cpp"
-"gfxtools/ImgLoaderBase.cpp"
-"gfxtools/ImgLoaderBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/ImgLoaderBase.o" "objects_debug/ImgLoaderBase.debug"
-""
-1 1
-File
-1 "gfxtools/ImgLoaderRawBitMap.cpp"
-"gfxtools/ImgLoaderRawBitMap.cpp"
-"gfxtools/ImgLoaderRawBitMap.h"
-"gfxtools/ImgLoaderBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/ImgLoaderRawBitMap.o" "objects_debug/ImgLoaderRawBitMap.debug"
-""
-1 1
-File
-1 "gfxtools/ImgLoaderRawPure.cpp"
-"gfxtools/ImgLoaderRawPure.cpp"
-"gfxtools/ImgLoaderRawPure.h"
-"gfxtools/ImgLoaderBase.h"
-Storm Shell Project (Dependencies)
-"objects_debug/ImgLoaderRawPure.o" "objects_debug/ImgLoaderRawPure.debug"
-""
-1 1
-File
-1 "lowlevelview/lowlevelview.cpp"
-"lowlevelview/lowlevelview.cpp"
-"lowlevelview/lowlevelview.h"
-Storm Shell Project (Dependencies)
-"objects_debug/lowlevelview.o" "objects_debug/lowlevelview.debug"
-""
-1 1
-File
-1 "lowlevelview/lowlevelviewport.cpp"
-"lowlevelview/lowlevelviewport.cpp"
-"lowlevelview/lowlevelviewport.h"
-Storm Shell Project (Dependencies)
-"objects_debug/lowlevelviewport.o" "objects_debug/lowlevelviewport.debug"
+"objects_debug/InfoDisplay.o" "objects_debug/InfoDisplay.debug"
 ""
 1 1
 File
 1 "main.cpp"
 "main.cpp"
-"animtools/AnimSeqBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"game/GameWorld.h"
+"game/GameTile.h"
 "entities/EntityBase.h"
-"entities/Hunter.h"
-"animtools/ShapeBase.h"
-"game/PointsDisplay.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceGELs.h"
+"resources/ResourceBase.h"
+"shapes/ShapeBase.h"
+"game/InfoDisplay.h"
+"view/lowlevelview.h"
+"view/lowlevelviewport.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
+""
+1 1
+File
+1 "picture/BitMapPictureBase.cpp"
+"picture/BitMapPictureBase.cpp"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/BitMapPictureBase.o" "objects_debug/BitMapPictureBase.debug"
+""
+1 1
+File
+1 "picture/IlbmBitMap.cpp"
+"picture/IlbmBitMap.cpp"
+"picture/IlbmBitMap.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/IlbmBitMap.o" "objects_debug/IlbmBitMap.debug"
+""
+1 1
+File
+1 "picture/ImageDataPicture.cpp"
+"picture/ImageDataPicture.cpp"
+"picture/ImageDataPicture.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ImageDataPicture.o" "objects_debug/ImageDataPicture.debug"
+""
+1 1
+File
+1 "picture/PictureBase.cpp"
+"picture/PictureBase.cpp"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/PictureBase.o" "objects_debug/PictureBase.debug"
+""
+1 1
+File
+1 "picture/RawBitMap.cpp"
+"picture/RawBitMap.cpp"
+"picture/RawBitMap.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/RawBitMap.o" "objects_debug/RawBitMap.debug"
+""
+1 1
+File
+1 "resources/DuckResources.cpp"
+"resources/DuckResources.cpp"
+"resources/DuckResources.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceGELs.h"
+"resources/ResourceBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/DuckResources.o" "objects_debug/DuckResources.debug"
+""
+1 1
+File
+1 "resources/HunterResources.cpp"
+"resources/HunterResources.cpp"
+"resources/HunterResources.h"
+"anim/AnimSeqGels.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceGELs.h"
+"resources/ResourceBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/HunterResources.o" "objects_debug/HunterResources.debug"
+""
+1 1
+File
+1 "shapes/GelsLayer.cpp"
+"shapes/GelsLayer.cpp"
+"shapes/GelsLayer.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GelsLayer.o" "objects_debug/GelsLayer.debug"
+""
+1 1
+File
+1 "shapes/ShapeBase.cpp"
+"shapes/ShapeBase.cpp"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"shapes/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeBase.o" "objects_debug/ShapeBase.debug"
+""
+1 1
+File
+1 "shapes/ShapeBob.cpp"
+"shapes/ShapeBob.cpp"
+"shapes/ShapeBob.h"
+"anim/AnimSeqBase.h"
+"shapes/ShapeBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
+""
+1 1
+File
+1 "shapes/ShapeExtSprite.cpp"
+"shapes/ShapeExtSprite.cpp"
+"shapes/ShapeExtSprite.h"
+"anim/AnimSeqBase.h"
+"shapes/ShapeBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeExtSprite.o" "objects_debug/ShapeExtSprite.debug"
+""
+1 1
+File
+1 "shapes/ShapeVSprite.cpp"
+"shapes/ShapeVSprite.cpp"
+"shapes/ShapeVSprite.h"
+"anim/AnimSeqBase.h"
+"shapes/ShapeBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ShapeVSprite.o" "objects_debug/ShapeVSprite.debug"
+""
+1 1
+File
+1 "view/GameViewBase.cpp"
+"view/GameViewBase.cpp"
+"view/GameViewBase.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameViewBase.o" "objects_debug/GameViewBase.debug"
+""
+1 1
+File
+1 "view/GameViewIntui.cpp"
+"view/GameViewIntui.cpp"
+"view/GameViewIntui.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"view/GameViewBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameViewIntui.o" "objects_debug/GameViewIntui.debug"
+""
+1 1
+File
+1 "view/GameViewLowLevel.cpp"
+"view/GameViewLowLevel.cpp"
+"view/GameViewLowLevel.h"
+"view/lowlevelview.h"
+"view/lowlevelviewport.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"view/GameViewBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameViewLowLevel.o" "objects_debug/GameViewLowLevel.debug"
+""
+1 1
+File
+1 "view/lowlevelview.cpp"
+"view/lowlevelview.cpp"
+"view/lowlevelview.h"
+Storm Shell Project (Dependencies)
+"objects_debug/lowlevelview.o" "objects_debug/lowlevelview.debug"
+""
+1 1
+File
+1 "view/lowlevelviewport.cpp"
+"view/lowlevelviewport.cpp"
+"view/lowlevelviewport.h"
+Storm Shell Project (Dependencies)
+"objects_debug/lowlevelviewport.o" "objects_debug/lowlevelviewport.debug"
 ""
 1 1
 Section
 2 1 95
 0 1 1 0
 2
-File
-2 "amigautils/Picture.h"
-"amigautils/Picture.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
 File
 2 "amigautils/StopWatch.h"
 "amigautils/StopWatch.h"
@@ -359,64 +472,43 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "animtools/AnimSeqBase.h"
-"animtools/AnimSeqBase.h"
+2 "anim/Animator.h"
+"anim/Animator.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "animtools/AnimSeqBob.h"
-"animtools/AnimSeqBob.h"
+2 "anim/AnimSeqBase.h"
+"anim/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "animtools/AnimSeqSprite.h"
-"animtools/AnimSeqSprite.h"
+2 "anim/AnimSeqExtSprite.h"
+"anim/AnimSeqExtSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "animtools/animtools.h"
-"animtools/animtools.h"
+2 "anim/AnimSeqGels.h"
+"anim/AnimSeqGels.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "animtools/animtools_proto.h"
-"animtools/animtools_proto.h"
+2 "anim/AnimSeqGelsBob.h"
+"anim/AnimSeqGelsBob.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "animtools/ShapeBase.h"
-"animtools/ShapeBase.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "animtools/ShapeBob.h"
-"animtools/ShapeBob.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "animtools/ShapeSprite.h"
-"animtools/ShapeSprite.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "entities/Bullet.h"
-"entities/Bullet.h"
+2 "anim/AnimSeqGelsVSprite.h"
+"anim/AnimSeqGelsVSprite.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -431,6 +523,13 @@ Storm Shell Project (Dependencies)
 File
 2 "entities/EntityBase.h"
 "entities/EntityBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "entities/EntityCollection.h"
+"entities/EntityCollection.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -457,71 +556,162 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "game/PointsDisplay.h"
-"game/PointsDisplay.h"
+2 "game/GameTile.h"
+"game/GameTile.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gameengine/GameViewGfxLib.h"
-"gameengine/GameViewGfxLib.h"
+2 "game/GameWorld.h"
+"game/GameWorld.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gameengine/GameViewIntui.h"
-"gameengine/GameViewIntui.h"
+2 "game/InfoDisplay.h"
+"game/InfoDisplay.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gameengine/GameViewLowLevel.h"
-"gameengine/GameViewLowLevel.h"
+2 "picture/BitMapPictureBase.h"
+"picture/BitMapPictureBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gameengine/IGameView.h"
-"gameengine/IGameView.h"
+2 "picture/IlbmBitMap.h"
+"picture/IlbmBitMap.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gfxtools/ImgLoaderBase.h"
-"gfxtools/ImgLoaderBase.h"
+2 "picture/ImageDataPicture.h"
+"picture/ImageDataPicture.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gfxtools/ImgLoaderRawBitMap.h"
-"gfxtools/ImgLoaderRawBitMap.h"
+2 "picture/PictureBase.h"
+"picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "gfxtools/ImgLoaderRawPure.h"
-"gfxtools/ImgLoaderRawPure.h"
+2 "picture/RawBitMap.h"
+"picture/RawBitMap.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "lowlevelview/lowlevelview.h"
-"lowlevelview/lowlevelview.h"
+2 "resources/DuckResources.h"
+"resources/DuckResources.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "lowlevelview/lowlevelviewport.h"
-"lowlevelview/lowlevelviewport.h"
+2 "resources/HunterResources.h"
+"resources/HunterResources.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "resources/ResourceBase.h"
+"resources/ResourceBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "resources/ResourceExtSprite.h"
+"resources/ResourceExtSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "resources/ResourceGELs.h"
+"resources/ResourceGELs.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "shapes/GelsLayer.h"
+"shapes/GelsLayer.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "shapes/ShapeBase.h"
+"shapes/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "shapes/ShapeBob.h"
+"shapes/ShapeBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "shapes/ShapeExtSprite.h"
+"shapes/ShapeExtSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "shapes/ShapeVSprite.h"
+"shapes/ShapeVSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "view/GameViewBase.h"
+"view/GameViewBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "view/GameViewIntui.h"
+"view/GameViewIntui.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "view/GameViewLowLevel.h"
+"view/GameViewLowLevel.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "view/lowlevelview.h"
+"view/lowlevelview.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "view/lowlevelviewport.h"
+"view/lowlevelviewport.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -532,6 +722,7 @@ Section
 7
 File
 10 "DuckChase"
+"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
