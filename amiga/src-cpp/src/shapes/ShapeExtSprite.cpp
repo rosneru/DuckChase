@@ -54,8 +54,8 @@ ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
 
   // AABoing: Relatively safe way to replace the mouse pointer (sprite
   // 0) with the arrow sprite
-  int spriteNumberInUse = 0;
-  m_pCurrentSprite->es_SimpleSprite.num = spriteNumberInUse;
+  m_SpriteNumber = 0;
+  m_pCurrentSprite->es_SimpleSprite.num = m_SpriteNumber;
 }
 
 
