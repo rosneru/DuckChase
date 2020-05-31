@@ -18,7 +18,7 @@ Duck::Duck(GameViewBase& gameView,
 {
   // Move to start position
   m_Shape.Move(800, 40);
-  m_XSpeed_pps = -160;
+  m_XSpeed_pps = -200;
 }
 
 

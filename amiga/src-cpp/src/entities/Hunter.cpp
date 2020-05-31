@@ -69,7 +69,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
   // Every some frames (or if the direction changed) switch the hunter
   // image
   m_ElapsedSinceLastAnimUpdate += elapsed;
-  if (m_ElapsedSinceLastAnimUpdate > 80)
+  if (m_ElapsedSinceLastAnimUpdate > 140)
   {
     m_ElapsedSinceLastAnimUpdate = 0;
     if(isMoving)
@@ -87,13 +87,34 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
 
 bool Hunter::runLeft(unsigned long elapsed)
 {
+  m_XSpeed_pps = -140;
 
+    // Check if direction has changed
+  if(m_LastDirection != JPF_JOY_LEFT)
+  {
+    m_ElapsedSinceLastAnimUpdate = 0;
+    m_LastDirection = JPF_JOY_LEFT;
+
+    m_Animator.SetAnimSeq(m_Resources.AnimLeftRun());
+    m_Animator.FirstFrame();
+  }
+
+  int dX = pps2Dist(m_XSpeed_pps, elapsed);
+
+  if(m_Shape.X() + dX < -m_Shape.Width())
+  {
+    m_Shape.Move(m_GameView.Width() + m_Shape.Width(), m_Shape.Y());
+  }
+  else
+  {
+    m_Shape.Move(m_Shape.X() + dX, m_Shape.Y());
+  }
 }
 
 
 bool Hunter::runRight(unsigned long elapsed)
 {
-  m_XSpeed_pps = 200;
+  m_XSpeed_pps = 140;
 
   // Check if direction has changed
   if(m_LastDirection != JPF_JOY_RIGHT)
