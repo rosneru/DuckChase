@@ -46,6 +46,8 @@ public:
   //
   int Left() const;
   int Top() const;
+  int Right() const;
+  int Bottom() const;
   void SetInvisible();
   void SetVisible();
   bool IsVisible() const;

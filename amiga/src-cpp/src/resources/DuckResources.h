@@ -1,5 +1,5 @@
-#ifndef BROWN_BARREL_RESOURCES_H
-#define BROWN_BARREL_RESOURCES_H
+#ifndef DUCK_RESOURCES_H
+#define DUCK_RESOURCES_H
 
 #include "AnimSeqGelsBob.h"
 #include "ResourceGELs.h"

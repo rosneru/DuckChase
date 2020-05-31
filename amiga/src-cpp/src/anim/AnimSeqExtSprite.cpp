@@ -22,6 +22,11 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   // Load the src image file into a bitmap
   IlbmBitMap srcIlbmBitMap(pFileName, true, false);
 
+  m_Width = srcIlbmBitMap.Width() / numFrames;
+  m_WordWidth = ((m_Width + 15) & -16) >> 4;
+  m_Height = srcIlbmBitMap.Height();
+  m_Depth = srcIlbmBitMap.Depth();
+
   // Copy the first depth colors from source image
   ULONG* pSrcImgColors = srcIlbmBitMap.GetColors32();
   if(pSrcImgColors != NULL)
@@ -117,6 +122,12 @@ AnimSeqExtSprite::~AnimSeqExtSprite()
     FreeVec(m_ppFrames);
     m_ppFrames = NULL;
   }
+
+  if(m_pColors32 != NULL)
+  {
+    FreeVec(m_pColors32);
+    m_pColors32 = NULL;
+  }
 }
 
 
@@ -130,7 +141,7 @@ ExtSprite* AnimSeqExtSprite::operator[](size_t index) const
   return m_ppFrames[index];
 }
 
-ULONG* AnimSeqExtSprite::GetColors32()
+ULONG* AnimSeqExtSprite::GetColors32() const
 {
   return m_pColors32;
 }

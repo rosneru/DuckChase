@@ -30,13 +30,13 @@ short ShapeBase::Height() const
 }
 
 
-int ShapeBase::X()
+int ShapeBase::X() const
 {
   return Left() + m_HotspotX;
 }
 
 
-int ShapeBase::Y()
+int ShapeBase::Y() const
 {
   return Top() + m_HotspotY;
 }

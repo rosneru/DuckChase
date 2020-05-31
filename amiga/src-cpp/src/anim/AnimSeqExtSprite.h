@@ -8,10 +8,9 @@
 class ImgLoaderImageData;
 
 /**
- * Anim sequence of ExtSprite images. Uses \see ImgLoaderRawBitMap to
- * load the anim images. The methods \see GetFirstImage and \see
- * GetNextImage allow to control the animation. They return the
- * according image which can be  shown by the Sprite shape.
+ * Holds an anim sequence of ExtSprite images. On creation the supplied
+ * ilbm picture is loaded and split horizontally in as many frames as
+ * requested.
  *
  * @author Uwe Rosner
  * @date 19/01/2020
@@ -28,7 +27,7 @@ public:
 
   ExtSprite* operator[](size_t index) const;
 
-  ULONG* GetColors32();
+  ULONG* GetColors32() const;
 
 
 private:

@@ -8,6 +8,8 @@
 #include "EntityCollection.h"
 
 // #include "BrownBarrelResources.h"
+#include "Arrow.h"
+#include "ArrowResources.h"
 #include "Duck.h"
 #include "DuckResources.h"
 #include "Hunter.h"
@@ -56,6 +58,8 @@ private:
 
   // BrownBarrelResources m_BrownBarrelResources;
   // EntityCollection m_BrownBarrells;
+  ArrowResources m_ArrowResources;
+  Arrow m_Arrow;
   DuckResources m_DuckResources;
   Duck m_Duck;
   HunterResources m_HunterResources;

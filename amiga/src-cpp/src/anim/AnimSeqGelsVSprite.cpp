@@ -1,4 +1,4 @@
-
+#include "IlbmBitMap.h"
 #include "ImageDataPicture.h"
 #include "AnimSeqGelsVSprite.h"
 
@@ -10,11 +10,13 @@ AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
     throw "AnimSeqGelsVSprite: No file name provided.";
   }
 
+  // Load the src file into a bitmap
+  IlbmBitMap imgLoaderSrc(pFileName, false, false);
 
-  m_pImgLoaderSrc = new ImageDataPicture(pFileName,
-                                         m_Width * numFrames, 
-                                         m_Height, 
-                                         m_Depth);
+  m_Width = imgLoaderSrc.Width() / numFrames;
+  m_WordWidth = ((m_Width + 15) & -16) >> 4;
+  m_Height = imgLoaderSrc.Height();
+  m_Depth = imgLoaderSrc.Depth();
 
   // Create a dynamic array for all images according to the number of
   // files
@@ -25,8 +27,8 @@ AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
   }
 
   // How many words must the pointer be increased to point to the next
-  // Image data file?
-  size_t wordIncrease = m_Height * 2; // RKRM, p. 625: Size of a VSprite = Height * 2 *words*
+  // Image data frame? ==> RKRM, p. 625: Size of a VSprite = Height * 2 *words*
+  size_t wordIncrease = m_Height * 2; 
 
   for(size_t i = 0; i < numFrames; i++)
   {

@@ -113,6 +113,15 @@ int ShapeExtSprite::Top() const
   return pSpr->y;
 }
 
+int ShapeExtSprite::Right() const
+{
+  return ((struct SimpleSprite*)m_pCurrentSprite)->x + m_Width;
+}
+
+int ShapeExtSprite::Bottom() const
+{
+  return ((struct SimpleSprite*)m_pCurrentSprite)->x + m_Height;
+}
 
 void ShapeExtSprite::SetInvisible()
 {

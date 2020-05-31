@@ -39,14 +39,14 @@ public:
    * hotspot. By default hotspot (0, 0) this is the left edge of the 
    * shape.
    */
-  int X();
+  int X() const;
 
   /**
    * Returns the shape y-position on the screen relative to its
    * hotspot. By default hotspot (0, 0) this is the left edge of the 
    * shape.
    */
-  int Y();
+  int Y() const;
 
   /**
    * Set the hostpot inside the shape. Actually can even be outside the

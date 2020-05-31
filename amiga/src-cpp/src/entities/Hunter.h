@@ -1,5 +1,5 @@
-#ifndef JUMPMAN_H
-#define JUMPMAN_H
+#ifndef HUNTER_H
+#define HUNTER_H
 
 
 #include "Animator.h"

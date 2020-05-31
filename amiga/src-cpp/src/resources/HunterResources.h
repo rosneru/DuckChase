@@ -1,5 +1,5 @@
-#ifndef JUMPMAN_RESOURCES_H
-#define JUMPMAN_RESOURCES_H
+#ifndef Hunter_RESOURCES_H
+#define Hunter_RESOURCES_H
 
 #include "AnimSeqGelsBob.h"
 #include "ResourceGELs.h"

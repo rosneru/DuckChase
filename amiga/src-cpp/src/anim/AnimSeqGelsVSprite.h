@@ -8,10 +8,11 @@
 class ImageDataPicture;
 
 /**
- * Class of a anim sequence for VSprites of the Amiga GELs system. Uses
- * \see ImageDataPicture to load the anim images. The methods \see
- * GetFirstImage and \see GetNextImage allow to control the animation.
- * They return the according image which can be shown by shape.
+ * Holds an anim sequence of ImgageData images as needed for a VSprite
+ * in GELs animation system. On creation the supplied ilbm picture is
+ * loaded and split horizontally in as many frames as requested.
+ * 
+ * NOTE: Not tested since RAII refactoring.
  *
  * @author Uwe Rosner
  * @date 19/01/2020

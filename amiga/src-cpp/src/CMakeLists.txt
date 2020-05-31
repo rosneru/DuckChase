@@ -22,6 +22,7 @@ add_executable (DuckChase
                 anim/AnimSeqGels.cpp
                 anim/AnimSeqGelsBob.cpp
                 anim/AnimSeqGelsVSprite.cpp
+                entities/Arrow.cpp
                 entities/Duck.cpp
                 entities/EntityBase.cpp
                 entities/EntityCollection.cpp
@@ -37,6 +38,7 @@ add_executable (DuckChase
                 picture/IlbmBitMap.cpp
                 picture/ImageDataPicture.cpp
                 picture/RawBitMap.cpp
+                resources/ArrowResources.cpp
                 resources/DuckResources.cpp
                 resources/HunterResources.cpp
                 shapes/GelsLayer.cpp

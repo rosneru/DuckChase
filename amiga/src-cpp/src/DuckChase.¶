@@ -160,6 +160,22 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "entities/Arrow.cpp"
+"entities/Arrow.cpp"
+"entities/Arrow.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceExtSprite.h"
+"resources/ResourceBase.h"
+"entities/EntityBase.h"
+"game/GameTile.h"
+"picture/BitMapPictureBase.h"
+"picture/PictureBase.h"
+"shapes/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/Arrow.o" "objects_debug/Arrow.debug"
+""
+1 1
+File
 1 "entities/Duck.cpp"
 "entities/Duck.cpp"
 "entities/Duck.h"
@@ -226,6 +242,7 @@ File
 "resources/ResourceBase.h"
 "shapes/ShapeBase.h"
 "game/InfoDisplay.h"
+"resources/ResourceExtSprite.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -282,6 +299,7 @@ File
 "game/InfoDisplay.h"
 "view/lowlevelview.h"
 "view/lowlevelviewport.h"
+"resources/ResourceExtSprite.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -330,6 +348,17 @@ File
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/RawBitMap.o" "objects_debug/RawBitMap.debug"
+""
+1 1
+File
+1 "resources/ArrowResources.cpp"
+"resources/ArrowResources.cpp"
+"resources/ArrowResources.h"
+"anim/AnimSeqBase.h"
+"resources/ResourceExtSprite.h"
+"resources/ResourceBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/ArrowResources.o" "objects_debug/ArrowResources.debug"
 ""
 1 1
 File
@@ -514,6 +543,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "entities/Arrow.h"
+"entities/Arrow.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "entities/Duck.h"
 "entities/Duck.h"
 Storm Shell Project (Dependencies)
@@ -607,6 +643,13 @@ Storm Shell Project (Dependencies)
 File
 2 "picture/RawBitMap.h"
 "picture/RawBitMap.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "resources/ArrowResources.h"
+"resources/ArrowResources.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
