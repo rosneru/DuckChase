@@ -130,7 +130,7 @@ bool Hunter::runRight(unsigned long elapsed)
 
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
 
-  if(m_Shape.X() + dX > m_GameView.Width() + m_Shape.Width())
+  if(m_Shape.X() + dX > m_GameView.Width())
   {
     m_Shape.Move(-m_Shape.Width(), m_Shape.Y());
   }

@@ -12,27 +12,27 @@
 class GameTile
 {
 public:
-  GameTile(unsigned long properties, 
-           size_t row, 
-           size_t column, 
-           size_t tileWidth,
-           size_t tileHeight);
+  GameTile(long properties, 
+           long row, 
+           long column, 
+           long tileWidth,
+           long tileHeight);
 
   /**
    * Returns the table row of this tile
    */
-  size_t Row() const;
+  long Row() const;
 
   /**
    * Returns the table column of this tile
    */
-  size_t Column() const;
+  long Column() const;
 
   /**
    * Top-position of the platform in pixel. Measured from top of the
    * GameWorld.
    */
-  unsigned long PlatformTop() const;
+  long PlatformTop() const;
 
   /**
    * Number of pixels from the top of the tile that can't be visited
@@ -42,12 +42,12 @@ public:
    * 
    * Defaults to 0.
    */
-  unsigned long PlatformHeightLimit() const;
+  long PlatformHeightLimit() const;
 
-  unsigned long Left() const;
-  unsigned long Right() const;
-  unsigned long Top() const;
-  unsigned long Bottom() const;
+  long Left() const;
+  long Right() const;
+  long Top() const;
+  long Bottom() const;
 
   bool IsBorder() const;
   bool IsEmpty() const;
@@ -60,16 +60,16 @@ public:
 
 
 private:
-  size_t m_Row;
-  size_t m_Column;
+  long m_Row;
+  long m_Column;
 
-  unsigned long m_Left;
-  unsigned long m_Right;
-  unsigned long m_Top;
-  unsigned long m_Bottom;
+  long m_Left;
+  long m_Right;
+  long m_Top;
+  long m_Bottom;
 
-  unsigned long m_PlatformTop;
-  unsigned long m_PlatformHeightLimit;
+  long m_PlatformTop;
+  long m_PlatformHeightLimit;
   bool m_bIsBorder;
   bool m_bIsEmpty;
   bool m_bIsPlatformLeftSlope;

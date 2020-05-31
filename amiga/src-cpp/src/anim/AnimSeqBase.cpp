@@ -16,27 +16,27 @@ AnimSeqBase::~AnimSeqBase()
 
 }
 
-size_t AnimSeqBase::Width() const
+int AnimSeqBase::Width() const
 {
   return m_Width;
 }
 
-size_t AnimSeqBase::WordWidth() const
+int AnimSeqBase::WordWidth() const
 {
   return m_WordWidth;
 }
 
-size_t AnimSeqBase::Height() const
+int AnimSeqBase::Height() const
 {
   return m_Height;
 }
 
-size_t AnimSeqBase::Depth() const
+int AnimSeqBase::Depth() const
 {
   return m_Depth;
 }
 
-size_t AnimSeqBase::NumFrames() const
+int AnimSeqBase::NumFrames() const
 {
   return m_NumFrames;
 }

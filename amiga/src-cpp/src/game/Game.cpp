@@ -8,7 +8,7 @@
 
 #include "Game.h"
 
-#define MAX_ARROWS 3
+#define MAX_ARROWS 1
 
 
 Game::Game(GameViewBase& gameView, 
@@ -37,9 +37,16 @@ Game::Game(GameViewBase& gameView,
   {
     // First arrow (sprite) should steel mouse pointer;
     // NOTE: This should not be here, find a better place.
-    bool steelMouse = (i == 0);
+    bool stealMouse = (i == 0);
 
-    m_Arrows.Push(new Arrow(m_GameView, gameWorld, m_ArrowRes, steelMouse));
+    try
+    {
+      m_Arrows.Push(new Arrow(m_GameView, gameWorld, m_ArrowRes, stealMouse));
+    }
+    catch(const char* pMsg)
+    {
+    }
+    
   }
 }
 

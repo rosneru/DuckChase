@@ -1,11 +1,11 @@
 #include "GameTile.h"
 
 
-GameTile::GameTile(unsigned long properties, 
-                   size_t row, 
-                   size_t column,
-                   const size_t tileWidth,
-                   const size_t tileHeight)
+GameTile::GameTile(long properties, 
+                   long row, 
+                   long column,
+                   const long tileWidth,
+                   const long tileHeight)
   : m_Row(row),
     m_Column(column),
     m_Left(column * tileWidth),
@@ -26,42 +26,42 @@ GameTile::GameTile(unsigned long properties,
 
 }
 
-size_t GameTile::Row() const
+long GameTile::Row() const
 {
   return m_Row;
 }
 
-size_t GameTile::Column() const
+long GameTile::Column() const
 {
   return m_Column;
 }
 
-unsigned long GameTile::PlatformTop() const
+long GameTile::PlatformTop() const
 {
   return m_PlatformTop;
 }
 
-unsigned long GameTile::PlatformHeightLimit() const
+long GameTile::PlatformHeightLimit() const
 {
   return m_PlatformHeightLimit;
 }
 
-unsigned long GameTile::Left() const
+long GameTile::Left() const
 {
   return m_Left;
 }
 
-unsigned long GameTile::Right() const
+long GameTile::Right() const
 {
   return m_Right;
 }
 
-unsigned long GameTile::Top() const
+long GameTile::Top() const
 {
   return m_Top;
 }
 
-unsigned long GameTile::Bottom() const
+long GameTile::Bottom() const
 {
   return m_Bottom;
 }

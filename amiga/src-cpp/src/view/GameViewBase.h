@@ -44,10 +44,10 @@ public:
    */
   void DisableDoubleBuf();
 
-  ULONG Width();
-  ULONG WordWidth();
-  ULONG Height();
-  ULONG Depth();
+  long Width();
+  long WordWidth();
+  long Height();
+  long Depth();
 
   void SetPlayfieldBorders(long top, long left, long bottom, long right);
 

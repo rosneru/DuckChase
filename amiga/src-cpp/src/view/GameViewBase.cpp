@@ -95,23 +95,23 @@ IlbmBitMap& GameViewBase::BackgroundPicture()
   return m_BackgroundPicture;
 }
 
-ULONG GameViewBase::Width()
+long GameViewBase::Width()
 {
   return m_BackgroundPicture.Width();
 }
 
-ULONG GameViewBase::WordWidth()
+long GameViewBase::WordWidth()
 {
   return m_BackgroundPicture.WordWidth();
 }
 
-ULONG GameViewBase::Height()
+long GameViewBase::Height()
 {
   return m_BackgroundPicture.Height();
 }
 
 
-ULONG GameViewBase::Depth()
+long GameViewBase::Depth()
 {
   return m_BackgroundPicture.Depth();
 }

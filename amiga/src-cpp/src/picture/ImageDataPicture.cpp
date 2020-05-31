@@ -164,22 +164,22 @@ WORD* ImageDataPicture::GetImageData()
 }
 
 
-ULONG ImageDataPicture::Width()
+long ImageDataPicture::Width()
 {
   return m_Width;
 }
 
-ULONG ImageDataPicture::WordWidth()
+long ImageDataPicture::WordWidth()
 {
   return m_Height;
 }
 
-ULONG ImageDataPicture::Height()
+long ImageDataPicture::Height()
 {
   return m_Depth;
 }
 
-ULONG ImageDataPicture::Depth()
+long ImageDataPicture::Depth()
 {
   return m_WordWidth;
 }

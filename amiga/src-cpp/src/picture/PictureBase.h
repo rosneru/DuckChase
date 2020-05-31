@@ -1,8 +1,6 @@
 #ifndef IMG_LOADER_BASE_H
 #define IMG_LOADER_BASE_H
 
-#include <exec/types.h>
-
 
 /**
  * Encapsulates a generic image loader.
@@ -13,10 +11,10 @@
 class PictureBase
 {
 public:
-  virtual ULONG Width() = 0;
-  virtual ULONG WordWidth() = 0;
-  virtual ULONG Height() = 0;
-  virtual ULONG Depth() = 0;
+  virtual long Width() = 0;
+  virtual long WordWidth() = 0;
+  virtual long Height() = 0;
+  virtual long Depth() = 0;
 
 protected:
   PictureBase();

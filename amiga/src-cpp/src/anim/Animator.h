@@ -71,7 +71,7 @@ class Animator
 private:
   S& m_Shape;
   T* m_pAnimSeq;
-  size_t m_CurrentFrameId;
+  long m_CurrentFrameId;
   bool m_bAnimateBackward;
 
   void setNextAnimFrameId(size_t animStartImageIdx)

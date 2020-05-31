@@ -14,15 +14,15 @@
 class BitMapPictureBase : public PictureBase
 {
 public:
-  ULONG Width();
-  ULONG WordWidth();
-  ULONG Height();
-  ULONG Depth();
+  long Width();
+  long WordWidth();
+  long Height();
+  long Depth();
   ULONG* GetColors32();
 
   struct BitMap* GetBitMap();
 
-  int GetBitMapPixelColorNum(ULONG row, ULONG column);
+  int GetBitMapPixelColorNum(long row, long column);
 
 protected:
   BitMapPictureBase();

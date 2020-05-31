@@ -51,7 +51,7 @@ protected:
 
   bool m_bIsAlive;
 
-  size_t m_FrameSwitchingRateAt50Fps;
+  int m_FrameSwitchingRateAt50Fps;
 
   EntityBase(const GameWorld& gameWorld);
 

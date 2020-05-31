@@ -13,18 +13,18 @@
 class AnimSeqBase
 {
 public:
-  size_t Width() const;
-  size_t WordWidth() const;
-  size_t Height() const;
-  size_t Depth() const;
+  int Width() const;
+  int WordWidth() const;
+  int Height() const;
+  int Depth() const;
 
-  size_t NumFrames() const;
+  int NumFrames() const;
 
 protected:
-  size_t m_Width;
-  size_t m_WordWidth;
-  size_t m_Height;
-  size_t m_Depth;
+  int m_Width;
+  int m_WordWidth;
+  int m_Height;
+  int m_Depth;
 
   size_t m_NumFrames;
 

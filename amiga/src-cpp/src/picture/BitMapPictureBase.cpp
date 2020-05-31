@@ -32,7 +32,7 @@ struct BitMap* BitMapPictureBase::GetBitMap()
 }
 
 
-ULONG BitMapPictureBase::Width()
+long BitMapPictureBase::Width()
 {
   if(m_pBitMap == 0)
   {
@@ -42,7 +42,7 @@ ULONG BitMapPictureBase::Width()
   return GetBitMapAttr(m_pBitMap, BMA_WIDTH);
 }
 
-ULONG BitMapPictureBase::WordWidth()
+long BitMapPictureBase::WordWidth()
 {
   if(m_pBitMap == 0)
   {
@@ -52,7 +52,7 @@ ULONG BitMapPictureBase::WordWidth()
   return ((Width() + 15) & -16) >> 4;
 }
 
-ULONG BitMapPictureBase::Height()
+long BitMapPictureBase::Height()
 {
   if(m_pBitMap == 0)
   {
@@ -62,7 +62,7 @@ ULONG BitMapPictureBase::Height()
   return GetBitMapAttr(m_pBitMap, BMA_HEIGHT);
 }
 
-ULONG BitMapPictureBase::Depth()
+long BitMapPictureBase::Depth()
 {
   if(m_pBitMap == 0)
   {
@@ -81,7 +81,7 @@ ULONG* BitMapPictureBase::GetColors32()
 
 
 // TODO: Experimental. Probably not working for Interleaved or RTG BitMaps.
-int BitMapPictureBase::GetBitMapPixelColorNum(ULONG row, ULONG column)
+int BitMapPictureBase::GetBitMapPixelColorNum(long row, long column)
 {
   if(m_pBitMap == NULL)
   {

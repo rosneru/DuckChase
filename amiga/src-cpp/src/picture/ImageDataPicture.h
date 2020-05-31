@@ -40,10 +40,10 @@ public:
 
 
   WORD* GetImageData();
-  ULONG Width();
-  ULONG WordWidth();
-  ULONG Height();
-  ULONG Depth();
+  long Width();
+  long WordWidth();
+  long Height();
+  long Depth();
 
 private:
   BPTR m_FileHandle;
