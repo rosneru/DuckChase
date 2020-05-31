@@ -6,12 +6,14 @@
 
 Arrow::Arrow(GameViewBase& gameView,
              const GameWorld& gameWorld,
-             const ArrowResources& arrowResources)
+             const ArrowResources& arrowResources,
+             bool stealMouse)
   : EntityBase(gameWorld),
     m_GameView(gameView),
     m_Resources(arrowResources),
     m_Shape(m_GameView.ViewPort(), 
-            arrowResources),
+            arrowResources,
+            stealMouse),
     m_Animator(m_Shape, arrowResources.AnimRightUpward()),
     m_ElapsedSinceLastAnimUpdate(0)
 {

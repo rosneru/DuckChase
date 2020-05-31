@@ -23,7 +23,8 @@ class Arrow : public EntityBase
 public:
   Arrow(GameViewBase& gameView, 
         const GameWorld& gameWorld,
-        const ArrowResources& arrowResources);
+        const ArrowResources& arrowResources,
+        bool stealMouse = false);
 
   virtual ~Arrow();
 

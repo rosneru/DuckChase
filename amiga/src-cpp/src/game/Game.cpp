@@ -8,7 +8,7 @@
 
 #include "Game.h"
 
-#define MAX_BROWN_BARRELS 6
+#define MAX_ARROWS 3
 
 
 Game::Game(GameViewBase& gameView, 
@@ -22,36 +22,37 @@ Game::Game(GameViewBase& gameView,
     m_MaxStrain(118),
     m_MaxArrows(5),
     m_NumArrowsLeft(m_MaxArrows),
-    m_Arrow(m_GameView, gameWorld, m_ArrowResources),
-    m_Duck(m_GameView, gameWorld, m_DuckResources),
+    m_Duck(m_GameView, gameWorld, m_DuckRes),
     m_Hunter(gameView, 
               gameWorld,
-              m_HunterResources,
+              m_HunterRes,
               m_IsArrowLaunching, 
               m_IsArrowLaunchDone),
     m_IsArrowLaunching(false),
     m_IsArrowLaunchDone(false)
 {
 
-  // // Create a collection of some brown barrels
-  // for(int i = 0; i < MAX_BROWN_BARRELS; i++)
-  // {
-  //   m_BrownBarrells.Push(new BrownBarrel(m_GameView, 
-  //                                        gameWorld,
-  //                                        m_BrownBarrelResources));
-  // }
+  // Create a collection of some arrows
+  for(int i = 0; i < MAX_ARROWS; i++)
+  {
+    // First arrow (sprite) should steel mouse pointer;
+    // NOTE: This should not be here, find a better place.
+    bool steelMouse = (i == 0);
+
+    m_Arrows.Push(new Arrow(m_GameView, gameWorld, m_ArrowRes, steelMouse));
+  }
 }
 
 
 Game::~Game()
 {
-  // size_t arraySize = m_BrownBarrells.Size();
-  // for(size_t i = 0; i < arraySize; i++)
-  // {
-  //   BrownBarrel* pBrownBarrel = (BrownBarrel*)m_BrownBarrells.Pop();
-  //   delete pBrownBarrel;
-  //   pBrownBarrel = NULL;
-  // }
+  size_t numArrows = m_Arrows.Size();
+  for(size_t i = 0; i < numArrows; i++)
+  {
+    Arrow* pArrow = (Arrow*)m_Arrows.Pop();
+    delete pArrow;
+    pArrow = NULL;
+  }
 }
 
 void Game::DisableDoubleBuf()
@@ -79,8 +80,8 @@ void Game::Run()
   // AABoing: set task priority to 30 so that beam-synchronized stuff
   // will happen reliably. It is NOT SAFE to call intuition with this
   // high task priority.
-  // UWORD oldTaskPriority = 65535;
-  // oldTaskPriority = SetTaskPri(FindTask(0), 30);
+  UWORD oldTaskPriority = 65535;
+  oldTaskPriority = SetTaskPri(FindTask(0), 30);
 
   short frameCounter = -2;
   long elapsed_ms = 0;
@@ -123,14 +124,14 @@ void Game::Run()
     m_Hunter.Update(elapsed_ms, portState);
     m_Duck.Update(elapsed_ms, portState);
 
-    // for(size_t i = 0; i < m_BrownBarrells.Size(); i++)
-    // {
-    //   BrownBarrel* pBrownBarrel = (BrownBarrel*)m_BrownBarrells[i];
-    //   if(pBrownBarrel->IsAlive())
-    //   {
-    //     pBrownBarrel->Update(elapsed_ms, portState);
-    //   }
-    // }
+    for(size_t i = 0; i < m_Arrows.Size(); i++)
+    {
+      Arrow* pArrow = (Arrow*)m_Arrows[i];
+      if(pArrow->IsAlive())
+      {
+        pArrow->Update(elapsed_ms, portState);
+      }
+    }
 
     // if(elapsedSinceLastBarrel_ms >= 40)
     // {
@@ -160,10 +161,10 @@ void Game::Run()
   }
   while (bContinue);
 
-  // if(oldTaskPriority != 65535)
-  // {
-  //   SetTaskPri(FindTask(0), oldTaskPriority);
-  // }
+  if(oldTaskPriority != 65535)
+  {
+    SetTaskPri(FindTask(0), oldTaskPriority);
+  }
 
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);

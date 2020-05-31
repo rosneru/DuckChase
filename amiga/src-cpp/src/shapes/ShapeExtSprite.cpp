@@ -10,12 +10,14 @@
 #include <stdio.h>
 
 ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
-                               const ResourceExtSprite& gfxResources)
+                               const ResourceExtSprite& gfxResources,
+                               bool stealMouse)
   : ShapeBase(gfxResources),
     m_pViewPort(pViewPort),
     m_pEmptySprite(NULL),
     m_pCurrentSprite(NULL),
-    m_SpriteNumberGot(-1)
+    m_SpriteNumberGot(-1),
+    m_SpriteNumber(-1)
 {
   // Allocate the empty sprite data (for setting sprite invisible)
   struct BitMap* pEmptyBitMap = AllocBitMap(m_Width,
@@ -43,6 +45,17 @@ ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
   {
     throw "ShapeVSprite: No hardware sprite available.";
   }
+
+  if(stealMouse == false)
+  {
+    m_SpriteNumber = m_SpriteNumberGot;
+    return;
+  }
+
+  // AABoing: Relatively safe way to replace the mouse pointer (sprite
+  // 0) with the arrow sprite
+  int spriteNumberInUse = 0;
+  m_pCurrentSprite->es_SimpleSprite.num = spriteNumberInUse;
 }
 
 
@@ -81,7 +94,7 @@ void ShapeExtSprite::SetVPortColorsForSprite(struct ViewPort* pViewPort,
   }
 
   // Which pens to set depends on the used sprite number
-  size_t startPen = 16 + ((m_SpriteNumberGot & 0x06) << 1);
+  size_t startPen = 16 + ((m_SpriteNumber & 0x06) << 1);
 
   // 'Or' the start pen into the first item of color table
   *pColors |= startPen;
