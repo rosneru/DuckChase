@@ -121,9 +121,7 @@ void ShapeExtSprite::SetInvisible()
     return;
   }
 
-  struct ExtSprite* pOldSprite = m_pCurrentSprite;
-  m_pCurrentSprite = m_pEmptySprite;
-  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_END);
+  ChangeExtSprite(m_pViewPort, m_pCurrentSprite, m_pEmptySprite, TAG_END);
 }
 
 
@@ -135,10 +133,7 @@ void ShapeExtSprite::SetVisible()
     return;
   }
 
-  struct ExtSprite* pOldSprite = m_pCurrentSprite;
-  // TODO redo!
-  // m_pCurrentSprite = m_pAnimSeq->GetCurrentImage();
-  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_END);
+  ChangeExtSprite(m_pViewPort, m_pEmptySprite, m_pCurrentSprite, TAG_END);
 }
 
 

@@ -206,7 +206,7 @@ void ShapeBob::SetInvisible()
     return;
   }
 
-  // RemBob(m_pBob);
+  RemBob(m_pBob);
   m_bIsVisible = false;
 }
 

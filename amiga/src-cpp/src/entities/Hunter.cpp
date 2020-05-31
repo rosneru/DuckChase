@@ -109,6 +109,8 @@ bool Hunter::runLeft(unsigned long elapsed)
   {
     m_Shape.Move(m_Shape.X() + dX, m_Shape.Y());
   }
+
+  return true;
 }
 
 
@@ -136,7 +138,6 @@ bool Hunter::runRight(unsigned long elapsed)
   {
     m_Shape.Move(m_Shape.X() + dX, m_Shape.Y());
   }
-
 
   return true;
 }
