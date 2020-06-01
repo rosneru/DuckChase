@@ -8,7 +8,7 @@
 #include "AnimSeqBitMap.h"
 #include "IlbmBitmap.h"
 
-AnimSeqBitMap::AnimSeqBitMap(const char* pFileName, 
+AnimSeqBitmap::AnimSeqBitmap(const char* pFileName, 
                                    size_t numFrames)
   : m_ppFrames(NULL)
 {
@@ -70,7 +70,7 @@ AnimSeqBitMap::AnimSeqBitMap(const char* pFileName,
   m_NumFrames = numFrames;
 }
 
-AnimSeqBitMap::~AnimSeqBitMap()
+AnimSeqBitmap::~AnimSeqBitmap()
 {
   if (m_ppFrames != NULL)
   {
@@ -89,7 +89,7 @@ AnimSeqBitMap::~AnimSeqBitMap()
 }
 
 
-BitMap* AnimSeqBitMap::operator[](size_t index) const
+BitMap* AnimSeqBitmap::operator[](size_t index) const
 {
   if(index >= m_NumFrames)
   {

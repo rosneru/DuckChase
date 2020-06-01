@@ -14,15 +14,15 @@
  * @author Uwe Rosner
  * @date 01/06/2020
  */
-class AnimSeqBitMap : public AnimSeqBase
+class AnimSeqBitmap : public AnimSeqBase
 {
 public: 
   /**
    * Load an anim strip from an ilbm image. The image file is split into
    * numFrames horizontally to create the anim strip.
    */
-  AnimSeqBitMap(const char* pFileName, size_t numFrames);
-  virtual ~AnimSeqBitMap();
+  AnimSeqBitmap(const char* pFileName, size_t numFrames);
+  virtual ~AnimSeqBitmap();
 
   BitMap* operator[](size_t index) const;
 
