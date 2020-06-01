@@ -43,7 +43,7 @@ private:
   size_t m_ElapsedSinceLastAnimUpdate;
 
   bool& m_IsArrowLaunched;
-  bool m_IsLaunchingArrow;
+  bool& m_IsLaunchingArrow;
   bool m_IsRunning;
   unsigned long m_LastDirection;
 

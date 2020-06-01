@@ -33,7 +33,7 @@ InfoDisplay::~InfoDisplay()
 }
 
 
-void InfoDisplay::UpdateArrows(size_t arrowsLeft)
+void InfoDisplay::UpdateArrows(size_t numArrowsLeft)
 {
 
 
@@ -42,7 +42,7 @@ void InfoDisplay::UpdateArrows(size_t arrowsLeft)
 
   for(size_t i = 0; i < m_MaxArrows; i++)
   {
-    if(i >= arrowsLeft)
+    if(i >= numArrowsLeft)
     {
       // Blit the already shot arrows with a non-highlighted image
       pBitMap = m_ArrowImages[1];
@@ -86,7 +86,7 @@ void InfoDisplay::UpdateFps(size_t fps)
 }
 
 
-void InfoDisplay::UpdateStrain(size_t newStrain)
+void InfoDisplay::UpdateStrain(size_t newStrain, bool isForSecondBuffer)
 {
   if(newStrain > m_MaxStrain)
   {
@@ -110,7 +110,7 @@ void InfoDisplay::UpdateStrain(size_t newStrain)
     0x00000000,
   };
 
-  if(newStrain %2 == 0)
+  if(newStrain % 2 == 0)
   {
     int idx = 3 * newStrain / 2;
     m_StrainColor[1] = m_StrainSpreadColors[idx];
@@ -127,5 +127,9 @@ void InfoDisplay::UpdateStrain(size_t newStrain)
            400 + newStrain,
            247 + 5);
 
-  m_FormerStrain = newStrain;
+  if(isForSecondBuffer)
+  {
+    m_FormerStrain = newStrain;
+  }
+
 }

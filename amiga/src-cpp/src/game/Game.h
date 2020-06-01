@@ -52,8 +52,11 @@ private:
   size_t m_LastFps;
   
   const size_t m_MaxStrain;
+  size_t m_Strain;
+  bool m_StrainMustUpdateSecondBuffer;
   const size_t m_MaxArrows;
   size_t m_NumArrowsLeft;
+  bool m_ArrowsMustUpdateSecondBuffer;
 
 
   GameColors m_GameColors;

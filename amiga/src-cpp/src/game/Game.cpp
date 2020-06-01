@@ -8,8 +8,6 @@
 
 #include "Game.h"
 
-#define MAX_ARROWS 1
-
 
 Game::Game(GameViewBase& gameView, 
            const GameWorld& gameWorld)
@@ -22,8 +20,11 @@ Game::Game(GameViewBase& gameView,
     m_IsArrowLaunchDone(false),
     m_LastFps(16),
     m_MaxStrain(118),
-    m_MaxArrows(5),
+    m_Strain(0),
+    m_StrainMustUpdateSecondBuffer(false),
+    m_MaxArrows(3),
     m_NumArrowsLeft(m_MaxArrows),
+    m_ArrowsMustUpdateSecondBuffer(false),
     m_Arrow(m_GameView, gameWorld, m_ArrowRes, true),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
     m_Hunter(gameView, 
@@ -115,10 +116,59 @@ void Game::Run()
     m_Duck.Update(elapsed_ms, portState);
     m_Hunter.Update(elapsed_ms, portState);
 
-    // Render the changed scenery
+    //
+    // Check if hunter is currently arming an arrow and update the info
+    // display accordingly
+    //
+    if(m_IsArrowLaunching)
+    {
+      m_Strain += 4;
+      m_InfoDisplay.UpdateStrain(m_Strain, false);
+
+      // Strain must be updated in 2nd screen buffer after switched
+      m_StrainMustUpdateSecondBuffer = true;
+    }
+    else if(m_IsArrowLaunchDone)
+    {
+      m_NumArrowsLeft--;
+      m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+
+      // Arrows must be updated in 2nd screen buffer after switched
+      m_ArrowsMustUpdateSecondBuffer = true;
+
+      m_Strain = 0;
+      m_InfoDisplay.UpdateStrain(m_Strain, false);
+
+      // Strain must be updated in 2nd screen buffer after switched
+      m_StrainMustUpdateSecondBuffer = true;
+
+      m_IsArrowLaunchDone = false;
+    }
+
+    //
+    // Render the entities and switch screen buffers
+    //
     m_GameView.Render();
 
+    //
+    // Update changed strain and/or arrows on InfoDisplay for 2nd screen
+    // buffer too (if necessary)
+    //
+    if(m_StrainMustUpdateSecondBuffer)
+    {
+      m_InfoDisplay.UpdateStrain(m_Strain, true);
+      m_StrainMustUpdateSecondBuffer = false;
+    }
+
+    if(m_ArrowsMustUpdateSecondBuffer)
+    {
+      m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+      m_ArrowsMustUpdateSecondBuffer = false;
+    }
+
+    //
     // Check if exit key ESC has been pressed
+    //
     ULONG key = GetKey();
     if((key & 0xff) == 0x45)
     {

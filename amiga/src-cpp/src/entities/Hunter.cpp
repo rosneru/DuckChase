@@ -73,12 +73,10 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
     m_ElapsedSinceLastAnimUpdate = 0;
     if(isMoving)
     {
-      // m_Shape.NextImage();
       m_Animator.NextFrame();
     }
     else
     {
-      // m_Animator.FirstFrame();
       m_Animator.FirstFrame();
     }
   }

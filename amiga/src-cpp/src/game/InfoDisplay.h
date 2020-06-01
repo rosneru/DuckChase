@@ -26,8 +26,12 @@ public:
   ~InfoDisplay();
 
   void UpdateFps(size_t fps);
-  void UpdateArrows(size_t arrowsLeft);
-  void UpdateStrain(size_t newStrain);
+  void UpdateArrows(size_t numArrowsLeft);
+
+  /**
+   * Updates the strain value
+   */
+  void UpdateStrain(size_t newStrain, bool isForSecondBuffer);
 
 private:
   GameViewBase& m_View;
