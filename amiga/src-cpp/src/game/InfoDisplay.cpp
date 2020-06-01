@@ -19,8 +19,7 @@ InfoDisplay::InfoDisplay(GameViewBase& gameView,
     m_MaxStrain(maxStrain),
     m_FormerStrain(0),
     m_StrainSpreadColors(gameColors.GetStrainSpreadColors()),
-    //m_ArrowDisabledImg("gfx/arrow_palette2.raw", 16, 8, 4), 
-    //m_ArrowEnabledImg("gfx/arrow_palette3.raw", 16, 8, 4),
+    m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.iff", 2),
     m_Right(m_View.Width() - 4),
     m_Bottom(m_View.Height() - 1)
 {
@@ -34,40 +33,34 @@ InfoDisplay::~InfoDisplay()
 }
 
 
-// void InfoDisplay::UpdateArrows(size_t arrowsLeft)
-// {
-// //  if((m_ArrowDisabledImg.GetBitMap() == NULL)
-// //   ||(m_ArrowEnabledImg.GetBitMap() == NULL))
-// //  {
-// //    return;
-// //  }
-
-  // // m_NumArrowsLeft = numArrowsLeft; // TODO Should be done in game!!!
-
-  // // Start blitting with an highlighted image for the available arrows
-  // struct BitMap* pBitMap = m_ArrowEnabledImg.GetBitMap();
-
-  // for(size_t i = 0; i < m_MaxArrows; i++)
-  // {
-    // if(i >= arrowsLeft)
-    // {
-      // // Blit the already shot arrows with a non-highlighted image
-      // pBitMap = m_ArrowDisabledImg.GetBitMap();
-    // }
-
-    // BltBitMapRastPort(pBitMap, 
-                      // 0, 
-                      // 0, 
-                      // m_View.RastPort(),
-                      // 110 + i * (m_ArrowEnabledImg.Width() + 5),
-                      // m_Bottom - m_ArrowEnabledImg.Height() - 1,
-                      // m_ArrowEnabledImg.Width(),
-                      // m_ArrowEnabledImg.Height(),
-                      // 0xC0);
+void InfoDisplay::UpdateArrows(size_t arrowsLeft)
+{
 
 
-  // }
-// }
+  // Start blitting with an highlighted image for the available arrows
+  struct BitMap* pBitMap = m_ArrowImages[0];
+
+  for(size_t i = 0; i < m_MaxArrows; i++)
+  {
+    if(i >= arrowsLeft)
+    {
+      // Blit the already shot arrows with a non-highlighted image
+      pBitMap = m_ArrowImages[1];
+    }
+
+    BltBitMapRastPort(pBitMap, 
+                      0, 
+                      0, 
+                      m_View.RastPort(),
+                      110 + i * (m_ArrowImages.Width() + 5),
+                      m_Bottom - m_ArrowImages.Height() - 1,
+                      m_ArrowImages.Width(),
+                      m_ArrowImages.Height(),
+                      0xC0);
+
+
+  }
+}
 
 
 void InfoDisplay::UpdateFps(size_t fps)

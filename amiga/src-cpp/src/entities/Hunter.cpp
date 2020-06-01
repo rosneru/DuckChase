@@ -58,8 +58,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
   }
   else if((portState & JPF_BTN2) != 0)
   {
-    if(launchArrow())
-      isMoving = true;
+    launchArrow();
   }
   else
   {
@@ -142,10 +141,26 @@ bool Hunter::runRight(unsigned long elapsed)
   return true;
 }
 
-
-bool Hunter::launchArrow()
+#include <stdio.h>
+void Hunter::launchArrow()
 {
 
+  if(m_IsLaunchingArrow)
+  {
+    return;
+  }
 
-  return true;
+  m_IsLaunchingArrow = true;
+  m_IsRunning = false;
+
+  if(m_LastDirection == JPF_RIGHT)
+  {
+    m_Animator.SetAnimSeq(m_Resources.AnimRightShoot());
+    m_Animator.FirstFrame();
+  }
+  else
+  {
+    m_Animator.SetAnimSeq(m_Resources.AnimLeftShoot());
+    m_Animator.FirstFrame();
+  }
 }

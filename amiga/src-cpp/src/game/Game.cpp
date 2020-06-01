@@ -18,6 +18,8 @@ Game::Game(GameViewBase& gameView,
                   m_GameColors, 
                   m_MaxArrows, 
                   m_MaxStrain),
+    m_IsArrowLaunching(false),
+    m_IsArrowLaunchDone(false),
     m_LastFps(16),
     m_MaxStrain(118),
     m_MaxArrows(5),
@@ -28,11 +30,13 @@ Game::Game(GameViewBase& gameView,
               gameWorld,
               m_HunterRes,
               m_IsArrowLaunching, 
-              m_IsArrowLaunchDone),
-    m_IsArrowLaunching(false),
-    m_IsArrowLaunchDone(false)
+              m_IsArrowLaunchDone)
 {
-
+  // Initialize the info display with the available arrows
+  // (on both screen buffers)
+  m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+  m_GameView.Render();
+  m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
 }
 
 

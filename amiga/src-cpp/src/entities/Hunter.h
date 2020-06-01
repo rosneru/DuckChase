@@ -51,7 +51,7 @@ private:
 
   bool runLeft(unsigned long elapsed);
   bool runRight(unsigned long elapsed);
-  bool launchArrow();
+  void launchArrow();
   void resetHunterActions();
 };
 

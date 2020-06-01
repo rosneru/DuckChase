@@ -46,6 +46,9 @@ private:
   GameViewBase& m_GameView;
 
   InfoDisplay m_InfoDisplay;
+  
+  bool m_IsArrowLaunching;
+  bool m_IsArrowLaunchDone;
   size_t m_LastFps;
   
   const size_t m_MaxStrain;
@@ -64,8 +67,6 @@ private:
   HunterResources m_HunterRes;
   Hunter m_Hunter;
 
-  bool m_IsArrowLaunching;
-  bool m_IsArrowLaunchDone;
 };
 
 #endif

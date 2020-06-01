@@ -3,9 +3,10 @@
 
 #include <graphics/gfx.h>
 
+#include "AnimSeqBitmap.h"
 #include "GameColors.h"
 #include "GameViewBase.h"
-#include "RawBitMap.h"
+
 
 /**
  * A bottom 'state bar' for displaying game the number of arrows the 
@@ -25,7 +26,7 @@ public:
   ~InfoDisplay();
 
   void UpdateFps(size_t fps);
-  // void UpdateArrows(size_t arrowsLeft);
+  void UpdateArrows(size_t arrowsLeft);
   void UpdateStrain(size_t newStrain);
 
 private:
@@ -34,6 +35,8 @@ private:
   const size_t& m_MaxStrain;
   size_t m_FormerStrain;
   ULONG* m_StrainSpreadColors;
+
+  AnimSeqBitmap m_ArrowImages;
 
   //RawBitMap m_ArrowDisabledImg;
   //RawBitMap m_ArrowEnabledImg;
