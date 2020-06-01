@@ -18,7 +18,7 @@ public:
   int Height() const;
   int Depth() const;
 
-  int NumFrames() const;
+  size_t NumFrames() const;
 
 protected:
   int m_Width;

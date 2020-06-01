@@ -36,7 +36,7 @@ int AnimSeqBase::Depth() const
   return m_Depth;
 }
 
-int AnimSeqBase::NumFrames() const
+size_t AnimSeqBase::NumFrames() const
 {
   return m_NumFrames;
 }
