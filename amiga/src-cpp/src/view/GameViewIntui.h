@@ -6,7 +6,7 @@
 #include <graphics/view.h>
 #include <intuition/screens.h>
 
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "GameViewBase.h"
 
 /**
@@ -20,7 +20,7 @@
 class GameViewIntui : public GameViewBase
 {
 public:
-  GameViewIntui(IlbmBitMap& backgroundPicture);
+  GameViewIntui(IlbmBitmap& backgroundPicture);
   virtual ~GameViewIntui();
 
   virtual struct RastPort* RastPort();

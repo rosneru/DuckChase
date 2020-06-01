@@ -1,16 +1,16 @@
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 
-#include "BitMapPictureBase.h"
+#include "BitmapPictureBase.h"
 
 
-BitMapPictureBase::BitMapPictureBase()
+BitmapPictureBase::BitmapPictureBase()
   : m_pBitMap(NULL),
     m_pColors32(NULL)
 {
 }
 
-BitMapPictureBase::~BitMapPictureBase()
+BitmapPictureBase::~BitmapPictureBase()
 {
   if(m_pBitMap != NULL)
   {
@@ -26,13 +26,13 @@ BitMapPictureBase::~BitMapPictureBase()
 }
 
 
-struct BitMap* BitMapPictureBase::GetBitMap()
+struct BitMap* BitmapPictureBase::GetBitMap()
 {
   return m_pBitMap;
 }
 
 
-long BitMapPictureBase::Width()
+long BitmapPictureBase::Width()
 {
   if(m_pBitMap == 0)
   {
@@ -42,7 +42,7 @@ long BitMapPictureBase::Width()
   return GetBitMapAttr(m_pBitMap, BMA_WIDTH);
 }
 
-long BitMapPictureBase::WordWidth()
+long BitmapPictureBase::WordWidth()
 {
   if(m_pBitMap == 0)
   {
@@ -52,7 +52,7 @@ long BitMapPictureBase::WordWidth()
   return ((Width() + 15) & -16) >> 4;
 }
 
-long BitMapPictureBase::Height()
+long BitmapPictureBase::Height()
 {
   if(m_pBitMap == 0)
   {
@@ -62,7 +62,7 @@ long BitMapPictureBase::Height()
   return GetBitMapAttr(m_pBitMap, BMA_HEIGHT);
 }
 
-long BitMapPictureBase::Depth()
+long BitmapPictureBase::Depth()
 {
   if(m_pBitMap == 0)
   {
@@ -74,14 +74,14 @@ long BitMapPictureBase::Depth()
 
 
 
-ULONG* BitMapPictureBase::GetColors32()
+ULONG* BitmapPictureBase::GetColors32()
 {
   return m_pColors32;
 }
 
 
 // TODO: Experimental. Probably not working for Interleaved or RTG BitMaps.
-int BitMapPictureBase::GetBitMapPixelColorNum(long row, long column)
+int BitmapPictureBase::GetBitMapPixelColorNum(long row, long column)
 {
   if(m_pBitMap == NULL)
   {

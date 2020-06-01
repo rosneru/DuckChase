@@ -1,4 +1,4 @@
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "ImageDataPicture.h"
 #include "AnimSeqGelsBob.h"
 
@@ -10,7 +10,7 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
   }
 
   // Load the src file into a bitmap
-  IlbmBitMap imgLoaderSrc(pFileName, false, false);
+  IlbmBitmap imgLoaderSrc(pFileName, false, false);
 
   m_Width = imgLoaderSrc.Width() / numFrames;
   m_WordWidth = ((m_Width + 15) & -16) >> 4;

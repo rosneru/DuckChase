@@ -6,7 +6,7 @@
 
 #include "lowlevelview.h"
 #include "lowlevelviewport.h"
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "GameViewBase.h"
 
 /**
@@ -20,7 +20,7 @@
 class GameViewLowlevel : public GameViewBase
 {
 public:
-  GameViewLowlevel(IlbmBitMap& backgroundPicture,
+  GameViewLowlevel(IlbmBitmap& backgroundPicture,
                    ULONG modeId);
 
   virtual ~GameViewLowlevel();

@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include "AnimSeqBase.h"
 
-class ImgLoaderImageData;
-
 /**
  * Holds an anim sequence of ExtSprite images. On creation the supplied
  * ilbm picture is loaded and split horizontally in as many frames as

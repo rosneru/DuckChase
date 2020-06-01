@@ -4,7 +4,7 @@
 #include <dos/dos.h>
 #include <graphics/gfx.h>
 
-#include "BitMapPictureBase.h"
+#include "BitmapPictureBase.h"
 
 
 /**
@@ -15,7 +15,7 @@
  * @author Uwe Rosner
  * @date 04/04/2020
  */
-class RawBitMap : public BitMapPictureBase
+class RawBitMap : public BitmapPictureBase
 {
 public: 
   /**

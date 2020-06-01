@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "AnimSeqExtSprite.h"
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 
 AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName, 
                                    size_t numFrames)
@@ -16,27 +16,27 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
 {
   if (pFileName == NULL)
   {
-    throw "AnimSeqExtSprite No file name provided.";
+    throw "AnimSeqExtSprite: No file name provided.";
   }
 
   // Load the src image file into a bitmap
-  IlbmBitMap srcIlbmBitMap(pFileName, true, false);
+  IlbmBitmap srcIlbmBitmap(pFileName, true, false);
 
-  m_Width = srcIlbmBitMap.Width() / numFrames;
+  m_Width = srcIlbmBitmap.Width() / numFrames;
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
-  m_Height = srcIlbmBitMap.Height();
-  m_Depth = srcIlbmBitMap.Depth();
+  m_Height = srcIlbmBitmap.Height();
+  m_Depth = srcIlbmBitmap.Depth();
 
   // Copy the first depth colors from source image
-  ULONG* pSrcImgColors = srcIlbmBitMap.GetColors32();
+  ULONG* pSrcImgColors = srcIlbmBitmap.GetColors32();
   if(pSrcImgColors != NULL)
   {
-    size_t numColors = 1L << srcIlbmBitMap.Depth();
+    size_t numColors = 1L << srcIlbmBitmap.Depth();
     size_t colArrSize = ((2 + 3 * numColors) * sizeof(ULONG));
     m_pColors32 = (ULONG*) AllocVec(colArrSize, MEMF_ANY);
     if(m_pColors32 == NULL)
     {
-      throw "AnimSeqExtSprite Failed to alloc memory for colors.";
+      throw "AnimSeqExtSprite: Failed to alloc memory for colors.";
     }
 
     // Copy starting part of the src color map to dest
@@ -54,14 +54,14 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   m_ppFrames = (struct ExtSprite**)AllocVec(arraySize, MEMF_ANY);
   if (m_ppFrames == NULL)
   {
-    throw "AnimSeqExtSprite Failed to allocate array memory.";
+    throw "AnimSeqExtSprite: Failed to allocate array memory.";
   }
 
   // Create a destination BitMap to blit each destination frame image into
-  size_t frameWidth = srcIlbmBitMap.Width() / numFrames;
+  size_t frameWidth = srcIlbmBitmap.Width() / numFrames;
   m_pFrameBitMap = AllocBitMap(frameWidth,
-                               srcIlbmBitMap.Height(),
-                               srcIlbmBitMap.Depth(),
+                               srcIlbmBitmap.Height(),
+                               srcIlbmBitmap.Depth(),
                                BMF_CLEAR,
                                NULL);
 
@@ -71,14 +71,14 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   {
 
     size_t xStart = i * frameWidth;
-    BltBitMap(srcIlbmBitMap.GetBitMap(),
+    BltBitMap(srcIlbmBitmap.GetBitMap(),
               xStart,
               0,
               m_pFrameBitMap,
               0,
               0,
               frameWidth,
-              srcIlbmBitMap.Height(),
+              srcIlbmBitmap.Height(),
               0Xc0,
               0xff,
               NULL);

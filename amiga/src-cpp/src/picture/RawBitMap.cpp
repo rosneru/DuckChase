@@ -15,7 +15,7 @@ RawBitMap::RawBitMap(const char* pFileName,
                      ULONG width, 
                      ULONG height, 
                      ULONG depth)
-  : BitMapPictureBase(),
+  : BitmapPictureBase(),
     m_FileHandle(0)
 {
   if (pFileName == NULL)

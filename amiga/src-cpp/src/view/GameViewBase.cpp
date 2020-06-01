@@ -4,7 +4,7 @@
 #include "clib/graphics_protos.h"
 #include "GameViewBase.h"
 
-GameViewBase::GameViewBase(IlbmBitMap& backgroundPicture)
+GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
   : m_BackgroundPicture(backgroundPicture),
     m_pBitMapArray(),
     m_BorderTop(0),
@@ -90,7 +90,7 @@ GameViewBase::~GameViewBase()
   }
 }
 
-IlbmBitMap& GameViewBase::BackgroundPicture()
+IlbmBitmap& GameViewBase::BackgroundPicture()
 {
   return m_BackgroundPicture;
 }

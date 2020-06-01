@@ -7,7 +7,7 @@
 #include "EntityBase.h"
 #include "GameColors.h"
 #include "GameViewBase.h"
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "ShapeBob.h"
 
 

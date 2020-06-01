@@ -18,6 +18,7 @@ add_executable (DuckChase
                 amigautils/StopWatch.cpp
                 anim/Animator.h
                 anim/AnimSeqBase.cpp
+                anim/AnimSeqBitmap.cpp
                 anim/AnimSeqExtSprite.cpp
                 anim/AnimSeqGels.cpp
                 anim/AnimSeqGelsBob.cpp
@@ -33,11 +34,11 @@ add_executable (DuckChase
                 game/GameWorld.cpp
                 game/InfoDisplay.cpp
                 main.cpp
-                picture/BitMapPictureBase.cpp
+                picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp
-                picture/IlbmBitMap.cpp
+                picture/IlbmBitmap.cpp
                 picture/ImageDataPicture.cpp
-                picture/RawBitMap.cpp
+                picture/RawBitmap.cpp
                 resources/ArrowResources.cpp
                 resources/DuckResources.cpp
                 resources/HunterResources.cpp

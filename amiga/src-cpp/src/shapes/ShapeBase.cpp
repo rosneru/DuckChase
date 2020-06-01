@@ -1,4 +1,4 @@
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "ShapeBase.h"
 
 ShapeBase::ShapeBase(const ResourceBase& gfxResources)
@@ -53,7 +53,7 @@ void ShapeBase::DisableDoubleBuf()
   m_IsDoubleBuffered = false;
 }
 
-int ShapeBase::BottomToPlatformDistance(IlbmBitMap& picture, 
+int ShapeBase::BottomToPlatformDistance(IlbmBitmap& picture, 
                                         int dY, 
                                         int searchedColorNum,
                                         BottomDistanceMeasMode mode)

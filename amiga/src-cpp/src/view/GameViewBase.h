@@ -5,7 +5,7 @@
 #include <graphics/gfx.h>
 #include <graphics/view.h>
 
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 
 /**
  * Represents the base class for all supported GameViews.
@@ -33,7 +33,7 @@ public:
   /**
    * Returns the background picture associated with this game view.
    */
-  IlbmBitMap& BackgroundPicture();
+  IlbmBitmap& BackgroundPicture();
 
   /**
    * Disbles the double buffering for the game view.
@@ -69,7 +69,7 @@ public:
 
 
 protected:
-  IlbmBitMap& m_BackgroundPicture;
+  IlbmBitmap& m_BackgroundPicture;
   struct BitMap* m_pBitMapArray[2];
 
   short m_BorderTop;
@@ -84,7 +84,7 @@ protected:
   struct MsgPort* m_pDBufMsgReadyToWriteOldBM;
   struct MsgPort* m_pDBufMsgNewBitMapDisplayed;
 
-  GameViewBase(IlbmBitMap& backgroundPicture);
+  GameViewBase(IlbmBitmap& backgroundPicture);
   virtual ~GameViewBase();
 };
 

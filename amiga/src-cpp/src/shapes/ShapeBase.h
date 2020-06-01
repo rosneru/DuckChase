@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "ResourceBase.h"
 
 /**
@@ -138,7 +138,7 @@ public:
    * Returns -1 if given color is not found withing dY pixels below the 
    * shape.
    */
-  int BottomToPlatformDistance(IlbmBitMap& picture, 
+  int BottomToPlatformDistance(IlbmBitmap& picture, 
                                int dY, 
                                int searchedColorNum,
                                BottomDistanceMeasMode mode);

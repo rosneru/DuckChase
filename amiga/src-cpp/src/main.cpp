@@ -16,7 +16,7 @@ int main(void)
   try
   {
     // Load the background image
-    IlbmBitMap backgroundPicture("AADevDuck:assets/background.iff", true, false);
+    IlbmBitmap backgroundPicture("AADevDuck:assets/background.iff", true, false);
 
     // Create and open a game view
     // GameViewLowlevel gameView(backgroundPicture, PAL_MONITOR_ID|LORES_KEY);

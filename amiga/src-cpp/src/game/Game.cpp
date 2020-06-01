@@ -3,7 +3,7 @@
 #include <libraries/lowlevel.h>
 
 // #include "BrownBarrel.h"
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 #include "StopWatch.h"
 
 #include "Game.h"

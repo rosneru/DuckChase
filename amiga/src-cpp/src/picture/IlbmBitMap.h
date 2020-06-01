@@ -6,7 +6,7 @@
 #include <graphics/gfx.h>
 #include <libraries/iffparse.h>
 
-#include "BitMapPictureBase.h"
+#include "BitmapPictureBase.h"
 
 
 //  IFF types we may encounter
@@ -25,13 +25,12 @@
 
 /**
  * Class for loading a iff ilbm image file into a Bitmap using the 
- * iffparse.library. Also code of newiff from Commodore  is heavily 
- * used.
+ * iffparse.library. Code of newiff from Commodore is heavily used.
  *
  * @author Uwe Rosner
  * @date 04/04/2020
  */
-class IlbmBitMap : public BitMapPictureBase
+class IlbmBitmap : public BitmapPictureBase
 {
 public: 
   /**
@@ -41,11 +40,11 @@ public:
    *
    * @returns On success: true, on failure: false
    */
-  IlbmBitMap(const char* pFileName,
+  IlbmBitmap(const char* pFileName,
              bool bLoadColors,
              bool bLoadDisplayMode);
 
-  virtual ~IlbmBitMap();
+  virtual ~IlbmBitmap();
 
 
 

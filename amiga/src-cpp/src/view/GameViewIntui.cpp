@@ -11,7 +11,7 @@
 extern struct GfxBase* GfxBase;
 
 
-GameViewIntui::GameViewIntui(IlbmBitMap& backgroundPicture)
+GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
   : GameViewBase(backgroundPicture),
     m_pScreen(NULL),
     m_pDBufInfo(NULL)

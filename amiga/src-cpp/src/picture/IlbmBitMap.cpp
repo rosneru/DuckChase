@@ -6,32 +6,32 @@
 #include <exec/memory.h>
 #include <graphics/gfxbase.h>
 
-#include "IlbmBitMap.h"
+#include "IlbmBitmap.h"
 
 extern struct GfxBase* GfxBase;
 
 
-IlbmBitMap::IlbmBitMap(const char* pFileName,
+IlbmBitmap::IlbmBitmap(const char* pFileName,
                        bool bLoadColors,
                        bool bLoadDisplayMode)
-  : BitMapPictureBase(),
+  : BitmapPictureBase(),
     m_pIffHandle()
 {
   if (pFileName == NULL)
   {
-    throw "IlbmBitMap: No file name provided.";
+    throw "IlbmBitmap: No file name provided.";
   }
 
   m_pIffHandle = AllocIFF();
   if(m_pIffHandle == NULL)
   {
-    throw "IlbmBitMap: Failed to AllocIFF.";
+    throw "IlbmBitmap: Failed to AllocIFF.";
   }
 
   m_pIffHandle->iff_Stream = Open(pFileName, MODE_OLDFILE);
   if (m_pIffHandle->iff_Stream == 0)
   {
-    throw "IlbmBitMap: Failed to open file.";
+    throw "IlbmBitmap: Failed to open file.";
   }
 
   InitIFFasDOS(m_pIffHandle);
@@ -39,7 +39,7 @@ IlbmBitMap::IlbmBitMap(const char* pFileName,
   LONG iffErr;
   if((iffErr = OpenIFF(m_pIffHandle, IFFF_READ)) != 0)
   {
-    throw "IlbmBitMap: OpenIFF returned error.";
+    throw "IlbmBitmap: OpenIFF returned error.";
   }
 
   // Define which chunks to load
@@ -61,20 +61,20 @@ IlbmBitMap::IlbmBitMap(const char* pFileName,
   iffErr = ParseIFF(m_pIffHandle, IFFPARSE_SCAN);
   if(iffErr != 0)
   {
-    throw "IlbmBitMap: Error in ParseIFF.";
+    throw "IlbmBitmap: Error in ParseIFF.";
   }
 
   // Load the BitMap header
   StoredProperty* pStoredProp = FindProp(m_pIffHandle, ID_ILBM, ID_BMHD);
   if(pStoredProp == NULL)
   {
-    throw "IlbmBitMap: No BitMap header found in ilbm picture.";
+    throw "IlbmBitmap: No BitMap header found in ilbm picture.";
   }
 
   BitMapHeader* pBitMapHeader = (BitMapHeader*)pStoredProp->sp_Data;
   if(pBitMapHeader == NULL)
   {
-    throw "IlbmBitMap: Bitmap header of ilbm picture is empty.";
+    throw "IlbmBitmap: Bitmap header of ilbm picture is empty.";
   }
 
   // Allocate the BitMap
@@ -86,7 +86,7 @@ IlbmBitMap::IlbmBitMap(const char* pFileName,
 
   if (m_pBitMap == NULL)
   {
-      throw "IlbmBitMap: Failed to AllocBitMap.";
+      throw "IlbmBitmap: Failed to AllocBitMap.";
   }
 
   bool isCompressed = false;
@@ -111,7 +111,7 @@ IlbmBitMap::IlbmBitMap(const char* pFileName,
     {
       if(loadColors(pStoredProp) == false)
       {
-        throw "IlbmBitMap: Error while loading the colors from ilbm cmap.";
+        throw "IlbmBitmap: Error while loading the colors from ilbm cmap.";
       }
     }
   }
@@ -119,7 +119,7 @@ IlbmBitMap::IlbmBitMap(const char* pFileName,
   if(decodeIlbmBody(isCompressed,
                     pBitMapHeader->bmh_Masking) == false)
   {
-    throw "IlbmBitMap: Error while decoding the ilbm body.";
+    throw "IlbmBitmap: Error while decoding the ilbm body.";
   }
 
   Close(m_pIffHandle->iff_Stream);
@@ -129,7 +129,7 @@ IlbmBitMap::IlbmBitMap(const char* pFileName,
   m_pIffHandle = NULL;
 }
 
-IlbmBitMap::~IlbmBitMap()
+IlbmBitmap::~IlbmBitmap()
 {
   if(m_pIffHandle != NULL)
   {
@@ -144,7 +144,7 @@ IlbmBitMap::~IlbmBitMap()
 
 
 
-bool IlbmBitMap::loadColors(struct StoredProperty* pCmapProp)
+bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
 {
   if(m_pColors32 != NULL)
   {
@@ -240,7 +240,7 @@ bool IlbmBitMap::loadColors(struct StoredProperty* pCmapProp)
 #define MaxSrcPlanes (25)
 
 
-bool IlbmBitMap::decodeIlbmBody(bool isCompressed,
+bool IlbmBitmap::decodeIlbmBody(bool isCompressed,
                                 UBYTE masking,
                                 BYTE* mask)
 {
@@ -392,7 +392,7 @@ bool IlbmBitMap::decodeIlbmBody(bool isCompressed,
 
 
 
-bool IlbmBitMap::unpackRow(BYTE** ppSource,
+bool IlbmBitmap::unpackRow(BYTE** ppSource,
                               BYTE** ppDest,
                               WORD srcBytes,
                               WORD dstBytes)
@@ -445,7 +445,7 @@ bool IlbmBitMap::unpackRow(BYTE** ppSource,
 }
 
 
-LONG IlbmBitMap::currentChunkIs(struct IFFHandle* pIffHandle,
+LONG IlbmBitmap::currentChunkIs(struct IFFHandle* pIffHandle,
                                          LONG type,
                                          LONG id)
 {

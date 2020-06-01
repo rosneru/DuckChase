@@ -120,7 +120,7 @@ File
 "anim/AnimSeqExtSprite.cpp"
 "anim/AnimSeqExtSprite.h"
 "anim/AnimSeqBase.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/AnimSeqExtSprite.o" "objects_debug/AnimSeqExtSprite.debug"
@@ -139,7 +139,7 @@ Storm Shell Project (Dependencies)
 File
 1 "anim/AnimSeqGelsBob.cpp"
 "anim/AnimSeqGelsBob.cpp"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "anim/AnimSeqGelsBob.h"
 "anim/AnimSeqGels.h"
@@ -168,7 +168,7 @@ File
 "resources/ResourceBase.h"
 "entities/EntityBase.h"
 "game/GameTile.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "shapes/ShapeBase.h"
 Storm Shell Project (Dependencies)
@@ -185,7 +185,7 @@ File
 "resources/ResourceBase.h"
 "entities/EntityBase.h"
 "game/GameTile.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "shapes/ShapeBase.h"
 Storm Shell Project (Dependencies)
@@ -216,7 +216,7 @@ File
 "entities/Hunter.cpp"
 "entities/Hunter.h"
 "entities/EntityBase.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "anim/AnimSeqGels.h"
 "anim/AnimSeqBase.h"
@@ -230,7 +230,7 @@ Storm Shell Project (Dependencies)
 File
 1 "game/Game.cpp"
 "game/Game.cpp"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "game/Game.h"
 "game/GameWorld.h"
@@ -277,7 +277,7 @@ File
 "game/InfoDisplay.cpp"
 "game/InfoDisplay.h"
 "game/GameColors.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/InfoDisplay.o" "objects_debug/InfoDisplay.debug"
@@ -286,7 +286,7 @@ Storm Shell Project (Dependencies)
 File
 1 "main.cpp"
 "main.cpp"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "game/GameWorld.h"
 "game/GameTile.h"
@@ -305,22 +305,22 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "picture/BitMapPictureBase.cpp"
-"picture/BitMapPictureBase.cpp"
-"picture/BitMapPictureBase.h"
+1 "picture/BitmapPictureBase.cpp"
+"picture/BitmapPictureBase.cpp"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/BitMapPictureBase.o" "objects_debug/BitMapPictureBase.debug"
+"objects_debug/BitmapPictureBase.o" "objects_debug/BitmapPictureBase.debug"
 ""
 1 1
 File
-1 "picture/IlbmBitMap.cpp"
-"picture/IlbmBitMap.cpp"
-"picture/IlbmBitMap.h"
-"picture/BitMapPictureBase.h"
+1 "picture/IlbmBitmap.cpp"
+"picture/IlbmBitmap.cpp"
+"picture/IlbmBitmap.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"objects_debug/IlbmBitMap.o" "objects_debug/IlbmBitMap.debug"
+"objects_debug/IlbmBitmap.o" "objects_debug/IlbmBitmap.debug"
 ""
 1 1
 File
@@ -344,7 +344,7 @@ File
 1 "picture/RawBitMap.cpp"
 "picture/RawBitMap.cpp"
 "picture/RawBitMap.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/RawBitMap.o" "objects_debug/RawBitMap.debug"
@@ -396,7 +396,7 @@ Storm Shell Project (Dependencies)
 File
 1 "shapes/ShapeBase.cpp"
 "shapes/ShapeBase.cpp"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "shapes/ShapeBase.h"
 Storm Shell Project (Dependencies)
@@ -409,7 +409,7 @@ File
 "shapes/ShapeBob.h"
 "anim/AnimSeqBase.h"
 "shapes/ShapeBase.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
@@ -421,7 +421,7 @@ File
 "shapes/ShapeExtSprite.h"
 "anim/AnimSeqBase.h"
 "shapes/ShapeBase.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeExtSprite.o" "objects_debug/ShapeExtSprite.debug"
@@ -433,7 +433,7 @@ File
 "shapes/ShapeVSprite.h"
 "anim/AnimSeqBase.h"
 "shapes/ShapeBase.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeVSprite.o" "objects_debug/ShapeVSprite.debug"
@@ -443,7 +443,7 @@ File
 1 "view/GameViewBase.cpp"
 "view/GameViewBase.cpp"
 "view/GameViewBase.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/GameViewBase.o" "objects_debug/GameViewBase.debug"
@@ -453,7 +453,7 @@ File
 1 "view/GameViewIntui.cpp"
 "view/GameViewIntui.cpp"
 "view/GameViewIntui.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "view/GameViewBase.h"
 Storm Shell Project (Dependencies)
@@ -466,7 +466,7 @@ File
 "view/GameViewLowLevel.h"
 "view/lowlevelview.h"
 "view/lowlevelviewport.h"
-"picture/BitMapPictureBase.h"
+"picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "view/GameViewBase.h"
 Storm Shell Project (Dependencies)
@@ -613,15 +613,15 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "picture/BitMapPictureBase.h"
-"picture/BitMapPictureBase.h"
+2 "picture/BitmapPictureBase.h"
+"picture/BitmapPictureBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "picture/IlbmBitMap.h"
-"picture/IlbmBitMap.h"
+2 "picture/IlbmBitmap.h"
+"picture/IlbmBitmap.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
