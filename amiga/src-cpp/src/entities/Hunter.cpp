@@ -62,7 +62,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
   }
   else
   {
-    // resetJumpmanActions();
+    resetHunterActions();
   }
 
   // Every some frames (or if the direction changed) switch the hunter
@@ -141,7 +141,6 @@ bool Hunter::runRight(unsigned long elapsed)
   return true;
 }
 
-#include <stdio.h>
 void Hunter::launchArrow()
 {
 
@@ -162,5 +161,39 @@ void Hunter::launchArrow()
   {
     m_Animator.SetAnimSeq(m_Resources.AnimLeftShoot());
     m_Animator.FirstFrame();
+  }
+}
+
+void Hunter::resetHunterActions()
+{
+  if(!m_IsLaunchingArrow && !m_IsRunning)
+  {
+    return;
+  }
+
+  m_XSpeed_pps = 0;
+
+  if(m_LastDirection == JPF_RIGHT)
+  {
+    m_Animator.SetAnimSeq(m_Resources.AnimRightRun());
+    m_Animator.FirstFrame();
+  }
+  else
+  {
+    m_Animator.SetAnimSeq(m_Resources.AnimLeftRun());
+    m_Animator.FirstFrame();
+  }
+  
+  if(m_IsLaunchingArrow)
+  {
+    m_IsLaunchingArrow = false;
+    m_IsArrowLaunched = true;
+    return;
+  }
+
+  if(m_IsRunning)
+  {
+    m_IsRunning = false;
+    return;
   }
 }
