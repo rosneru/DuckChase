@@ -56,8 +56,9 @@ private:
   GameColors m_GameColors;
 
 
-  EntityCollection m_Arrows;
+  // EntityCollection m_Arrows;
   ArrowResources m_ArrowRes;
+  Arrow m_Arrow;
   DuckResources m_DuckRes;
   Duck m_Duck;
   HunterResources m_HunterRes;

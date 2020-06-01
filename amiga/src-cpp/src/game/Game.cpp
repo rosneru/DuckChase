@@ -22,6 +22,7 @@ Game::Game(GameViewBase& gameView,
     m_MaxStrain(118),
     m_MaxArrows(5),
     m_NumArrowsLeft(m_MaxArrows),
+    m_Arrow(m_GameView, gameWorld, m_ArrowRes, true),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
     m_Hunter(gameView, 
               gameWorld,
@@ -32,34 +33,12 @@ Game::Game(GameViewBase& gameView,
     m_IsArrowLaunchDone(false)
 {
 
-  // Create a collection of some arrows
-  for(int i = 0; i < MAX_ARROWS; i++)
-  {
-    // First arrow (sprite) should steel mouse pointer;
-    // NOTE: This should not be here, find a better place.
-    bool stealMouse = (i == 0);
-
-    try
-    {
-      m_Arrows.Push(new Arrow(m_GameView, gameWorld, m_ArrowRes, stealMouse));
-    }
-    catch(const char* pMsg)
-    {
-    }
-    
-  }
 }
 
 
 Game::~Game()
 {
-  size_t numArrows = m_Arrows.Size();
-  for(size_t i = 0; i < numArrows; i++)
-  {
-    Arrow* pArrow = (Arrow*)m_Arrows.Pop();
-    delete pArrow;
-    pArrow = NULL;
-  }
+
 }
 
 void Game::DisableDoubleBuf()
@@ -128,32 +107,9 @@ void Game::Run()
     //
     ULONG portState = ReadJoyPort(1);
 
-    m_Hunter.Update(elapsed_ms, portState);
+    m_Arrow.Update(elapsed_ms, portState);
     m_Duck.Update(elapsed_ms, portState);
-
-    for(size_t i = 0; i < m_Arrows.Size(); i++)
-    {
-      Arrow* pArrow = (Arrow*)m_Arrows[i];
-      if(pArrow->IsAlive())
-      {
-        pArrow->Update(elapsed_ms, portState);
-      }
-    }
-
-    // if(elapsedSinceLastBarrel_ms >= 40)
-    // {
-    //   for(size_t i = 0; i < m_BrownBarrells.Size(); i++)
-    //   {
-    //     BrownBarrel* pBrownBarrel = (BrownBarrel*)m_BrownBarrells[i];
-
-    //     if(!pBrownBarrel->IsAlive())
-    //     {
-    //       elapsedSinceLastBarrel_ms = 0;
-    //       pBrownBarrel->Activate(20, 10, 80, 80);
-    //       break;
-    //     }
-    //   }
-    // }
+    m_Hunter.Update(elapsed_ms, portState);
 
     // Render the changed scenery
     m_GameView.Render();
