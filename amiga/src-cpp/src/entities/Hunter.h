@@ -2,6 +2,7 @@
 #define HUNTER_H
 
 
+#include "Arrow.h"
 #include "Animator.h"
 #include "EntityBase.h"
 #include "GameViewBase.h"
@@ -22,12 +23,14 @@ public:
   Hunter(GameViewBase& gameView, 
           const GameWorld& gameWorld,
           const HunterResources& jumpmanResources,
-          bool& isArrowLaunching, 
-          bool& isArrowLaunchDone);
+          Arrow& arrow,
+          bool& isLaunchingArrow, 
+          bool& isArrowLaunched);
 
   ~Hunter();
 
   virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  void Deactivate();
   virtual void Update(unsigned long elapsed, unsigned long portState);
 
 private:
@@ -42,8 +45,10 @@ private:
 
   size_t m_ElapsedSinceLastAnimUpdate;
 
+  Arrow& m_Arrow;
   bool& m_IsArrowLaunched;
   bool& m_IsLaunchingArrow;
+  
   bool m_IsRunning;
   unsigned long m_LastDirection;
 

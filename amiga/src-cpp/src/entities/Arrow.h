@@ -24,16 +24,20 @@ public:
   Arrow(GameViewBase& gameView, 
         const GameWorld& gameWorld,
         const ArrowResources& arrowResources,
+        size_t& strain,
         bool stealMouse = false);
 
   virtual ~Arrow();
 
   virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  void Deactivate();
   virtual void Update(unsigned long elapsed, unsigned long joyPortState);
 
 private:
   GameViewBase& m_GameView;
   const ArrowResources& m_Resources;
+
+  size_t& m_Strain;
 
   ShapeExtSprite m_Shape;
   Animator<ShapeExtSprite, const AnimSeqExtSprite> m_Animator;

@@ -7,10 +7,12 @@
 Arrow::Arrow(GameViewBase& gameView,
              const GameWorld& gameWorld,
              const ArrowResources& arrowResources,
+             size_t& strain,
              bool stealMouse)
   : EntityBase(gameWorld),
     m_GameView(gameView),
     m_Resources(arrowResources),
+    m_Strain(strain),
     m_Shape(m_GameView.ViewPort(), 
             arrowResources,
             stealMouse),
@@ -20,7 +22,7 @@ Arrow::Arrow(GameViewBase& gameView,
   m_Shape.SetVPortColorsForSprite(gameView.ViewPort(), 
                                   m_Resources.AnimRightUpward()->GetColors32());
   // Move to start position
-  m_Shape.Move(180, 140);
+  m_Shape.Move(-m_Shape.Width(), -m_Shape.Height());
   m_XSpeed_pps = -200;
 }
 
@@ -33,14 +35,42 @@ Arrow::~Arrow()
 void Arrow::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 {
   m_Shape.Move(x, y);
-  // m_XSpeed_pps = xSpeed_pps;
-  // m_YSpeed_pps = ySpeed_pps;
+
+  if(xSpeed_pps >= 0)
+  {
+    m_Animator.SetAnimSeq(m_Resources.AnimRightUpward());
+    m_XSpeed_pps = 3 * m_Strain;
+  }
+  else
+  {
+    m_Animator.SetAnimSeq(m_Resources.AnimLeftUpward());
+    m_XSpeed_pps = -3 * m_Strain;
+  }
+  
+
   m_bIsAlive = true;
 }
 
+void Arrow::Deactivate()
+{
+  m_bIsAlive = false;
+  m_Shape.SetInvisible();
+}
 
 void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 {
+  if(!m_bIsAlive)
+  {
+    return;
+  }
+
+  if(m_Shape.IsGone())
+  {
+    m_Shape.SetInvisible();
+    m_bIsAlive = false;  
+    return;
+  }
+
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
   int dY = pps2Dist(m_YSpeed_pps, elapsed);
 

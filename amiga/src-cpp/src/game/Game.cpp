@@ -25,14 +25,17 @@ Game::Game(GameViewBase& gameView,
     m_MaxArrows(3),
     m_NumArrowsLeft(m_MaxArrows),
     m_ArrowsMustUpdateSecondBuffer(false),
-    m_Arrow(m_GameView, gameWorld, m_ArrowRes, true),
+    m_Arrow(m_GameView, gameWorld, m_ArrowRes, m_Strain, true),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
     m_Hunter(gameView, 
               gameWorld,
               m_HunterRes,
+              m_Arrow,
               m_IsArrowLaunching, 
               m_IsArrowLaunchDone)
 {
+  m_Arrow.Deactivate();
+
   // Initialize the info display with the available arrows
   // (on both screen buffers)
   m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);

@@ -27,8 +27,9 @@ public:
 
   virtual ~Duck();
 
-  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
-  virtual void Update(unsigned long elapsed, unsigned long joyPortState);
+  void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  void Deactivate();
+  void Update(unsigned long elapsed, unsigned long joyPortState);
 
 private:
   GameViewBase& m_GameView;

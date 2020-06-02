@@ -8,8 +8,9 @@
 Hunter::Hunter(GameViewBase& gameView, 
                  const GameWorld& gameWorld, 
                  const HunterResources& jumpmanResources,
-                 bool& isArrowLaunching, 
-                 bool& isArrowLaunchDone)
+                 Arrow& arrow,
+                 bool& isLaunchingArrow, 
+                 bool& isArrowLaunched)
   : EntityBase(gameWorld),
     m_GameView(gameView),
     m_Resources(jumpmanResources),
@@ -18,8 +19,9 @@ Hunter::Hunter(GameViewBase& gameView,
             jumpmanResources),
     m_Animator(m_Shape, jumpmanResources.AnimRightRun()),
     m_ElapsedSinceLastAnimUpdate(0),
-    m_IsArrowLaunched(isArrowLaunchDone),
-    m_IsLaunchingArrow(isArrowLaunching),
+    m_Arrow(arrow),
+    m_IsArrowLaunched(isArrowLaunched),
+    m_IsLaunchingArrow(isLaunchingArrow),
     m_IsRunning(false),
     m_LastDirection(JPF_JOY_RIGHT),
     m_UpClimbingPixelsLeft(0)
@@ -40,6 +42,14 @@ void Hunter::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
   // m_YSpeed_pps = ySpeed_pps;
   m_bIsAlive = true;
 }
+
+
+void Hunter::Deactivate()
+{
+  m_bIsAlive = false;
+  m_Shape.SetInvisible();
+}
+
 
 void Hunter::Update(unsigned long elapsed, unsigned long portState)
 {
@@ -141,7 +151,6 @@ bool Hunter::runRight(unsigned long elapsed)
 
 void Hunter::launchArrow()
 {
-
   if(m_IsLaunchingArrow)
   {
     return;
@@ -186,6 +195,24 @@ void Hunter::resetHunterActions()
   {
     m_IsLaunchingArrow = false;
     m_IsArrowLaunched = true;
+
+    if(m_Arrow.IsAlive())
+    {
+      // Arrow is already launched
+      return;
+    }
+
+    if(m_LastDirection == JPF_RIGHT)
+    {
+      // Start the arrow in right direction
+      m_Arrow.Activate(m_Shape.X(), m_Shape.Y(), 1, 0);
+    }
+    else
+    {
+      // Start the arrow in left direction
+      m_Arrow.Activate(m_Shape.X(), m_Shape.Y(), -1, 0);
+    }
+
     return;
   }
 

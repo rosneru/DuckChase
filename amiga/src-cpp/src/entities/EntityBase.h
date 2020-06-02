@@ -21,8 +21,9 @@ public:
   
   virtual bool IsAlive();
 
+  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps) = 0;
+  virtual void Deactivate() = 0;
 
-  virtual void Activate(int x, int y, long xSpeed_pps = 0, long ySpeed_pps = 0) = 0;
 protected:
   const GameWorld& m_GameWorld;
 

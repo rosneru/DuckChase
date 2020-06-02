@@ -36,6 +36,13 @@ void Duck::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
 }
 
 
+void Duck::Deactivate()
+{
+  m_bIsAlive = false;
+  m_Shape.SetInvisible();
+}
+
+
 void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
 {
   int dX = pps2Dist(m_XSpeed_pps, elapsed);
