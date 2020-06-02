@@ -6,6 +6,7 @@
 
 BitmapPictureBase::BitmapPictureBase()
   : m_pBitMap(NULL),
+    m_pBitMapMask(NULL),
     m_pColors32(NULL)
 {
 }
@@ -23,12 +24,56 @@ BitmapPictureBase::~BitmapPictureBase()
     FreeVec(m_pColors32);
     m_pColors32 = NULL;
   }
+
+  if(m_pBitMapMask != NULL)
+  {
+    FreeBitMap(m_pBitMapMask);
+    m_pBitMapMask = NULL;
+  }
 }
 
 
 struct BitMap* BitmapPictureBase::GetBitMap()
 {
   return m_pBitMap;
+}
+
+
+struct BitMap* BitmapPictureBase::CreateBitMapMask()
+{
+  if(m_pBitMap == NULL)
+  {
+    return NULL;
+  }
+
+  if(m_pBitMapMask == NULL)
+  {
+    // Create the mask
+    m_pBitMapMask = AllocBitMap(Width(), Width(), 1, BMF_CLEAR, NULL);
+    if(m_pBitMapMask == NULL)
+    {
+      return NULL;
+    }
+
+    PLANEPTR pMask = m_pBitMapMask->Planes[0];
+
+    // TODO: Works this for chunky BitMaps
+    int numBytes = m_pBitMap->BytesPerRow * m_pBitMap->Rows;
+    for (int i = 0; i < numBytes; i++)
+    {
+      UBYTE maskByte = 0;
+
+      for (int j = 0; j < m_pBitMap->Depth; j++)
+      {
+        UBYTE *plane = m_pBitMap->Planes[j];
+        maskByte |= plane[i];
+      }
+
+      pMask[i] = maskByte;
+    }
+  }
+
+  return m_pBitMapMask;
 }
 
 

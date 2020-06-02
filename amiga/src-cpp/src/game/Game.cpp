@@ -178,8 +178,15 @@ void Game::Run()
       // ESC pressed, quit the game
       bContinue = false;
     }
+
+    if(m_NumArrowsLeft == 0 && !m_Arrow.IsAlive())
+    {
+      bContinue = false;
+    }
   }
   while (bContinue);
+
+  displayWinner();
 
   if(oldTaskPriority != 65535)
   {
@@ -188,4 +195,62 @@ void Game::Run()
 
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
+}
+
+void Game::displayWinner()
+{
+  char const* pWinnerDuckImagePath = "AADevDuck:assets/winner_duck_comic.iff";
+  char const* pWinnerHunterImagePath = "AADevDuck:assets/winner_hunter_comic.iff";
+
+  const char* pImagePath;
+  if(m_Duck.IsAlive())
+  {
+    pImagePath = pWinnerDuckImagePath;
+  }
+  else
+  {
+    pImagePath = pWinnerHunterImagePath;
+  }
+  
+  IlbmBitmap winnerPicture(pImagePath, false, false);
+  struct BitMap* pMask = winnerPicture.CreateBitMapMask();
+  if(pMask == NULL)
+  {
+    return;
+  }
+
+  // Blit the selected 'duck wins' image on the screen
+  int x = (m_GameView.Width() - winnerPicture.Width()) / 2;
+  int y = (m_GameView.Height() - winnerPicture.Height()) / 2;
+
+  // Blit the winner pic into both screen buffers
+  for(size_t i = 0; i < 2; i++)
+  {
+    BltMaskBitMapRastPort(winnerPicture.GetBitMap(),
+                          0,
+                          0,
+                          m_GameView.RastPort(),
+                          x,
+                          y,
+                          winnerPicture.Width(),
+                          winnerPicture.Height(),
+                          0xe0,
+                          pMask->Planes[0]);
+
+    WaitBlit();
+    m_GameView.Render();
+  }
+
+  bool bContinue = true;
+  do
+  {
+    WaitTOF();
+
+    ULONG key = GetKey();
+    if ((key & 0x00ff) == 0x45) // RAW code ESC key
+    {
+      bContinue = FALSE;
+    }
+
+  } while (bContinue);
 }

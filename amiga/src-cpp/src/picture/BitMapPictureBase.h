@@ -21,6 +21,7 @@ public:
   ULONG* GetColors32();
 
   struct BitMap* GetBitMap();
+  struct BitMap *CreateBitMapMask();
 
   int GetBitMapPixelColorNum(long row, long column);
 
@@ -29,6 +30,7 @@ protected:
   virtual ~BitmapPictureBase();
   
   struct BitMap* m_pBitMap;
+  struct BitMap* m_pBitMapMask;
   ULONG* m_pColors32;
   
 };

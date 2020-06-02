@@ -4,7 +4,7 @@ EntityBase::EntityBase(const GameWorld& gameWorld)
   : m_GameWorld(gameWorld),
     m_XSpeed_pps(0),
     m_YSpeed_pps(0),
-    m_bIsAlive(false),
+    m_bIsAlive(true),
     m_FrameSwitchingRateAt50Fps(8)
 {
 }
