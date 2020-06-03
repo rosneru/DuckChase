@@ -2,8 +2,8 @@
 
 EntityBase::EntityBase(const GameWorld& gameWorld) 
   : m_GameWorld(gameWorld),
-    m_XSpeed_pps(0),
-    m_YSpeed_pps(0),
+    m_XSpeed(0),
+    m_YSpeed(0),
     m_bIsAlive(true),
     m_FrameSwitchingRateAt50Fps(8)
 {
@@ -11,13 +11,13 @@ EntityBase::EntityBase(const GameWorld& gameWorld)
 
 long EntityBase::XSpeed_pps()
 {
-  return m_XSpeed_pps;
+  return m_XSpeed;
 }
 
 
 long EntityBase::YSpeed_pps()
 {
-  return m_YSpeed_pps;
+  return m_YSpeed;
 }
 
 

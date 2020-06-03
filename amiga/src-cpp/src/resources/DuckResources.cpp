@@ -4,7 +4,7 @@ DuckResources::DuckResources()
   : m_AnimFlyLeft("AADevDuck:assets/duck_left_flying_strip2.iff", 2)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
-  //       throw one exception if not.
+  //       throw an exception if not.
 }
 
 WORD* DuckResources::DefaultImage() const

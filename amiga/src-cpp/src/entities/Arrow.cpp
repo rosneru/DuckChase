@@ -23,7 +23,7 @@ Arrow::Arrow(GameViewBase& gameView,
                                   m_Resources.AnimRightUpward()->GetColors32());
   // Move to start position
   m_Shape.Move(-m_Shape.Width(), -m_Shape.Height());
-  m_XSpeed_pps = -200;
+  m_XSpeed = -200;
 }
 
 
@@ -39,12 +39,14 @@ void Arrow::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
   if(xSpeed_pps >= 0)
   {
     m_Animator.SetAnimSeq(m_Resources.AnimRightUpward());
-    m_XSpeed_pps = 3 * m_Strain;
+    m_XSpeed = 3 * m_Strain;
+    m_YSpeed = -2 * m_Strain;
   }
   else
   {
     m_Animator.SetAnimSeq(m_Resources.AnimLeftUpward());
-    m_XSpeed_pps = -3 * m_Strain;
+    m_XSpeed = -3 * m_Strain;
+    m_YSpeed = -2 * m_Strain;
   }
   
 
@@ -71,8 +73,8 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
     return;
   }
 
-  int dX = pps2Dist(m_XSpeed_pps, elapsed);
-  int dY = pps2Dist(m_YSpeed_pps, elapsed);
+  int dX = pps2Dist(m_XSpeed, elapsed);
+  int dY = pps2Dist(m_YSpeed, elapsed);
 
   
   m_Shape.Move(m_Shape.Left() + dX, m_Shape.Top() + dY);

@@ -7,7 +7,7 @@ HunterResources::HunterResources()
     m_AnimLeftShoot("AADevDuck:assets/hunter_left_shoot_strip1.iff", 1)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
-  //       throw one exception if not.
+  //       throw an exception if not.
 }
 
 WORD* HunterResources::DefaultImage() const

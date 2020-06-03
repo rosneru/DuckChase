@@ -47,8 +47,10 @@ protected:
 
   Actions m_Action;
 
-  long m_XSpeed_pps;
-  long m_YSpeed_pps;
+  long m_XSpeed;
+  long m_XSpeedInitial;
+  long m_YSpeed;
+  long m_YSpeedInitial;
 
   bool m_bIsAlive;
 

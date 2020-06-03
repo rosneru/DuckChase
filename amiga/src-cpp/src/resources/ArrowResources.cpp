@@ -1,11 +1,11 @@
 #include "ArrowResources.h"
 
 ArrowResources::ArrowResources()
-  : m_AnimRightUpward("AADevDuck:assets/arrow_right_strip2.iff", 2),
-    m_AnimLeftUpward("AADevDuck:assets/arrow_left_strip2.iff", 2)
+  : m_AnimRightUpward("AADevDuck:assets/arrow_right_strip5.iff", 5),
+    m_AnimLeftUpward("AADevDuck:assets/arrow_left_strip5.iff", 5)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
-  //       throw one exception if not.
+  //       throw an exception if not.
 }
 
 ExtSprite* ArrowResources::DefaultImage() const

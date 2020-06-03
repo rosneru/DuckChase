@@ -18,7 +18,7 @@ Duck::Duck(GameViewBase& gameView,
 {
   // Move to start position
   m_Shape.Move(800, 40);
-  m_XSpeed_pps = -200;
+  m_XSpeed = -200;
 }
 
 
@@ -45,8 +45,8 @@ void Duck::Deactivate()
 
 void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
 {
-  int dX = pps2Dist(m_XSpeed_pps, elapsed);
-  int dY = pps2Dist(m_YSpeed_pps, elapsed);
+  int dX = pps2Dist(m_XSpeed, elapsed);
+  int dY = pps2Dist(m_YSpeed, elapsed);
 
   
   m_Shape.Move(m_Shape.Left() + dX, m_Shape.Top() + dY);

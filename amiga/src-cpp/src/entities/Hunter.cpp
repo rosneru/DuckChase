@@ -94,7 +94,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
 
 bool Hunter::runLeft(unsigned long elapsed)
 {
-  m_XSpeed_pps = -140;
+  m_XSpeed = -140;
 
     // Check if direction has changed
   if(m_LastDirection != JPF_JOY_LEFT)
@@ -106,7 +106,7 @@ bool Hunter::runLeft(unsigned long elapsed)
     m_Animator.FirstFrame();
   }
 
-  int dX = pps2Dist(m_XSpeed_pps, elapsed);
+  int dX = pps2Dist(m_XSpeed, elapsed);
 
   if(m_Shape.X() + dX < -m_Shape.Width())
   {
@@ -123,7 +123,7 @@ bool Hunter::runLeft(unsigned long elapsed)
 
 bool Hunter::runRight(unsigned long elapsed)
 {
-  m_XSpeed_pps = 140;
+  m_XSpeed = 140;
 
   // Check if direction has changed
   if(m_LastDirection != JPF_JOY_RIGHT)
@@ -135,7 +135,7 @@ bool Hunter::runRight(unsigned long elapsed)
     m_Animator.FirstFrame();
   }
 
-  int dX = pps2Dist(m_XSpeed_pps, elapsed);
+  int dX = pps2Dist(m_XSpeed, elapsed);
 
   if(m_Shape.X() + dX > m_GameView.Width())
   {
@@ -178,7 +178,7 @@ void Hunter::resetHunterActions()
     return;
   }
 
-  m_XSpeed_pps = 0;
+  m_XSpeed = 0;
 
   if(m_LastDirection == JPF_RIGHT)
   {
