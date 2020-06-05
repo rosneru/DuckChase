@@ -70,11 +70,11 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
   //
   // These constants a and b are now calculated
   m_A = 2; // tan(60°)
-  m_B = (20 >> 16) / (m_YSpeed * m_YSpeed); // 20 = g / (2 * cos^2(60°)) 
+  m_B = (20 << 16) / (m_YSpeed * m_YSpeed); // 20 = g / (2 * cos^2(60°)) 
                                             //    = 10 / (2 * 0.25) 
                                             //    = 10 / (2 * 1 / 4)
 
-  // NOTE: (20 >> 16) is done to multiply 20 by 65536 before it is
+  // NOTE: (20 << 16) is done to multiply 20 by 65536 before it is
   // divided by the big square result. So its avoided that the integer
   // result is cut to zero when it should't. This is undone inUpdate()
   // when m_B is actually used.
