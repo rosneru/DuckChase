@@ -6,7 +6,7 @@
 #include <exec/memory.h>
 #include <graphics/gfxbase.h>
 
-#include "RawBitMap.h"
+#include "RawBitmap.h"
 
 extern struct GfxBase* GfxBase;
 
