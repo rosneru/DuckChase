@@ -17,7 +17,6 @@ Arrow::Arrow(GameViewBase& gameView,
             arrowResources,
             stealMouse),
     m_Animator(m_Shape, arrowResources.AnimRightUpward()),
-    m_ElapsedSinceLastAnimUpdate(0),
     m_X0(0),
     m_Y0(0)
 {
@@ -43,15 +42,17 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
   {
     m_Animator.SetAnimSeq(m_Resources.AnimRightUpward());
     m_XSpeed = 3 * m_Strain;
-    m_YSpeed = m_Strain;
+    m_YSpeed = m_Strain + 20;
   }
   else
   {
     m_Animator.SetAnimSeq(m_Resources.AnimLeftUpward());
     m_XSpeed = -3 * m_Strain;
-    m_YSpeed = m_Strain;
+    m_YSpeed = m_Strain + 20;
   } 
 
+  // Select frame of sinking arrow which currently is at index 1
+  m_Animator.IndexedFrame(1);
   m_Shape.Move(x, y);
   m_bIsAlive = true;
 
@@ -69,9 +70,14 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
   //
   // These constants a and b are now calculated
   m_A = 2; // tan(60°)
-  m_B = 20 / (m_YSpeed * m_YSpeed); // 20 = g / (2 * cos^2(60°)) 
-                                    //    = 10 / (2 * 0.25) 
-                                    //    = 10 / (2 * 1 / 4)
+  m_B = (20 >> 16) / (m_YSpeed * m_YSpeed); // 20 = g / (2 * cos^2(60°)) 
+                                            //    = 10 / (2 * 0.25) 
+                                            //    = 10 / (2 * 1 / 4)
+
+  // NOTE: (20 >> 16) is done to multiply 20 by 65536 before it is
+  // divided by the big square result. So its avoided that the integer
+  // result is cut to zero when it should't. This is undone inUpdate()
+  // when m_B is actually used.
 }
 
 void Arrow::Deactivate()
@@ -115,16 +121,16 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
   // simplified to:
   //   y = a * x + b * x^2
   //
-  int y = m_A * xAbs - m_B * xAbs * xAbs;
+  int y = m_A * xAbs - ((m_B * xAbs * xAbs) >> 16); // >> 16: undone the correction; see Activate().
+  int newY = m_Y0 - y;
 
-  m_Shape.Move(m_Shape.Left() + dX, m_Y0 + y);
+  if(!m_bIsSinking && (newY < m_Shape.Top()))
+  {
+    m_bIsSinking = true;
 
-  // // Every some frames (or if the direction changed) switch the duck
-  // // image
-  // m_ElapsedSinceLastAnimUpdate += elapsed;
-  // if (m_ElapsedSinceLastAnimUpdate > 180)
-  // {
-  //   m_ElapsedSinceLastAnimUpdate = 0;
-  //   m_Animator.NextFrame();
-  // }
+    // Select frame of sinking arrow which currently is at index 3
+    m_Animator.IndexedFrame(3);
+  }
+
+  m_Shape.Move(m_Shape.Left() + dX, newY);
 }

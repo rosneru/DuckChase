@@ -17,10 +17,7 @@ class Animator
     }
 
 
-    ~Animator()
-    {
-
-    }
+    ~Animator() { }
 
 
     void FirstFrame()
@@ -51,6 +48,17 @@ class Animator
       m_Shape.SetImage((*m_pAnimSeq)[m_CurrentFrameId]);
     }
 
+    void IndexedFrame(size_t index)
+    {
+      if(index >= m_pAnimSeq->NumFrames())
+      {
+        return;
+      }
+
+      m_CurrentFrameId = index;
+      m_Shape.SetImage((*m_pAnimSeq)[m_CurrentFrameId]);
+    }
+
 
     void SetAnimSeq(T* pAnimSeq)
     {
@@ -61,12 +69,6 @@ class Animator
     {
       m_bAnimateBackward = bEnabled;
     }
-
-    // const T operator[](size_t index) const
-    // {
-    //   return *(m_pData + index);
-    // }
-
 
 private:
   S& m_Shape;
@@ -108,9 +110,6 @@ private:
       }
     }
   }
-
-
 };
 
 #endif
-
