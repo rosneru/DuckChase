@@ -21,11 +21,11 @@ class Hunter : public EntityBase
 {
 public:
   Hunter(GameViewBase& gameView, 
-          const GameWorld& gameWorld,
-          const HunterResources& jumpmanResources,
-          Arrow& arrow,
-          bool& isLaunchingArrow, 
-          bool& isArrowLaunched);
+         const GameWorld& gameWorld,
+         const HunterResources& jumpmanResources,
+         Arrow& arrow,
+         bool& isLaunchingArrow, 
+         bool& isArrowLaunched);
 
   ~Hunter();
 

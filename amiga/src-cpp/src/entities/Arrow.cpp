@@ -21,9 +21,7 @@ Arrow::Arrow(GameViewBase& gameView,
 {
   m_Shape.SetVPortColorsForSprite(gameView.ViewPort(), 
                                   m_Resources.AnimRightUpward()->GetColors32());
-  // Move to start position
-  m_Shape.Move(-m_Shape.Width(), -m_Shape.Height());
-  m_XSpeed = -200;
+  m_Shape.SetInvisible();
 }
 
 
