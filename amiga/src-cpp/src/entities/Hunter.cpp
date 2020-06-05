@@ -35,11 +35,9 @@ Hunter::~Hunter()
 
 }
 
-void Hunter::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
+void Hunter::Activate(int x, int y, long xSpeed, long ySpeed)
 {
   m_Shape.Move(x, y);
-  // m_XSpeed_pps = xSpeed_pps;
-  // m_YSpeed_pps = ySpeed_pps;
   m_bIsAlive = true;
 }
 
@@ -204,12 +202,14 @@ void Hunter::resetHunterActions()
 
     if(m_LastDirection == JPF_RIGHT)
     {
-      // Start the arrow in right direction
+      // Start the arrow in right direction. Use speed fieds only to
+      // give the direction to the arrow.
       m_Arrow.Activate(m_Shape.X(), m_Shape.Y(), 1, 0);
     }
     else
     {
-      // Start the arrow in left direction
+      // Start the arrow in left direction. Use speed fieds only to
+      // give the direction to the arrow.
       m_Arrow.Activate(m_Shape.X(), m_Shape.Y(), -1, 0);
     }
 

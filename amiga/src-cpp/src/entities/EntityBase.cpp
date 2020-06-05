@@ -9,13 +9,13 @@ EntityBase::EntityBase(const GameWorld& gameWorld)
 {
 }
 
-long EntityBase::XSpeed_pps()
+long EntityBase::XSpeed()
 {
   return m_XSpeed;
 }
 
 
-long EntityBase::YSpeed_pps()
+long EntityBase::YSpeed()
 {
   return m_YSpeed;
 }

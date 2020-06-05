@@ -25,8 +25,6 @@ AnimSeqBitmap::AnimSeqBitmap(const char* pFileName,
   m_Height = srcIlbmBitmap.Height();
   m_Depth = srcIlbmBitmap.Depth();
 
-
-
   // Create a dynamic array for all frames
   size_t arraySize = numFrames * sizeof(struct BitMap*);
   m_ppFrames = (struct BitMap**)AllocVec(arraySize, MEMF_ANY);

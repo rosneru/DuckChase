@@ -29,8 +29,9 @@ public:
 
   virtual ~Arrow();
 
-  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  virtual void Activate(int x, int y, long xSpeed, long ySpeed);
   void Deactivate();
+
   virtual void Update(unsigned long elapsed, unsigned long joyPortState);
 
 private:
@@ -43,6 +44,11 @@ private:
   Animator<ShapeExtSprite, const AnimSeqExtSprite> m_Animator;
 
   size_t m_ElapsedSinceLastAnimUpdate;
+
+  int m_X0;
+  int m_Y0;
+  int m_A;
+  int m_B;
 };
 
 #endif

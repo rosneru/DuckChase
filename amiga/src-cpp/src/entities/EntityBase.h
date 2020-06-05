@@ -16,13 +16,36 @@
 class EntityBase
 {
 public:
-  virtual long XSpeed_pps();
-  virtual long YSpeed_pps();
+  /**
+   * Returns the objects current speed in x-direction in pixel per second.
+   */
+  virtual long XSpeed();
+
+  /**
+   * Returns the objects current speed in y-direction in pixel per second.
+   */
+  virtual long YSpeed();
   
+  /**
+   * Returns if the object is still alive.
+   */
   virtual bool IsAlive();
 
-  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps) = 0;
+  /**
+   * Activate the object at given position with given speed. Speed unit
+   * is pixel per second.
+   */
+  virtual void Activate(int x, int y, long xSpeed, long ySpeed) = 0;
+
+  /**
+   * Deactivate the object.
+   */
   virtual void Deactivate() = 0;
+
+  /**
+   * Update the object.
+   */
+  virtual void Update(unsigned long elapsed, unsigned long joyPortState) = 0;
 
 protected:
   const GameWorld& m_GameWorld;

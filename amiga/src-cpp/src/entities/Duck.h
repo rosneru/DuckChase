@@ -27,8 +27,9 @@ public:
 
   virtual ~Duck();
 
-  void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  void Activate(int x, int y, long xSpeed, long ySpeed);
   void Deactivate();
+  
   void Update(unsigned long elapsed, unsigned long joyPortState);
 
 private:

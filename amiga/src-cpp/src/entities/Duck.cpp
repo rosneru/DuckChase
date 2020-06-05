@@ -27,11 +27,9 @@ Duck::~Duck()
 
 }
 
-void Duck::Activate(int x, int y, long xSpeed_pps, long ySpeed_pps)
+void Duck::Activate(int x, int y, long xSpeed, long ySpeed)
 {
   m_Shape.Move(x, y);
-  // m_XSpeed_pps = xSpeed_pps;
-  // m_YSpeed_pps = ySpeed_pps;
   m_bIsAlive = true;
 }
 

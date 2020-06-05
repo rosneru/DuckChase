@@ -29,8 +29,9 @@ public:
 
   ~Hunter();
 
-  virtual void Activate(int x, int y, long xSpeed_pps, long ySpeed_pps);
+  virtual void Activate(int x, int y, long xSpeed, long ySpeed);
   void Deactivate();
+
   virtual void Update(unsigned long elapsed, unsigned long portState);
 
 private:
