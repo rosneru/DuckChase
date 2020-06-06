@@ -149,7 +149,7 @@ bool Hunter::runRight(unsigned long elapsed)
 
 void Hunter::launchArrow()
 {
-  if(m_IsLaunchingArrow)
+  if(m_IsLaunchingArrow || m_Arrow.IsAlive())
   {
     return;
   }
