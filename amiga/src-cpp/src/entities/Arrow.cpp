@@ -7,12 +7,16 @@
 Arrow::Arrow(GameViewBase& gameView,
              const GameWorld& gameWorld,
              const ArrowResources& arrowResources,
+             Duck& duck,
              size_t& strain,
+             bool& strike,
              bool stealMouse)
   : EntityBase(gameWorld),
     m_GameView(gameView),
     m_Resources(arrowResources),
+    m_Duck(duck),
     m_Strain(strain),
+    m_Strike(strike),
     m_Shape(m_GameView.ViewPort(), 
             arrowResources,
             stealMouse),
@@ -29,6 +33,11 @@ Arrow::Arrow(GameViewBase& gameView,
 Arrow::~Arrow()
 {
 
+}
+
+ShapeBase& Arrow::Shape()
+{
+  return m_Shape;
 }
 
 void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
@@ -87,7 +96,7 @@ void Arrow::Deactivate()
   m_Shape.SetInvisible();
 }
 
-#include <stdio.h>
+
 void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 {
   if(!m_bIsAlive)
@@ -135,4 +144,9 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
   }
 
   m_Shape.Move(m_Shape.Left() + dX, newY);
+
+  if(m_Shape.Intersects(m_Duck.Shape()))
+  {
+    m_Strike = true;
+  }
 }

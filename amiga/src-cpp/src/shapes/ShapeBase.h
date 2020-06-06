@@ -119,6 +119,12 @@ public:
    */
   virtual void DisableDoubleBuf();
 
+  /**
+   * Returns true if this object intersects / collides with the other
+   * object.
+   */
+  bool Intersects(ShapeBase& other) const;
+
 
   enum BottomDistanceMeasMode
   {

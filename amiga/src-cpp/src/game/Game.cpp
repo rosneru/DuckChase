@@ -18,6 +18,7 @@ Game::Game(GameViewBase& gameView,
                   m_MaxStrain),
     m_IsArrowLaunching(false),
     m_IsArrowLaunchDone(false),
+    m_Strike(false),
     m_LastFps(16),
     m_MaxStrain(118),
     m_Strain(0),
@@ -25,8 +26,8 @@ Game::Game(GameViewBase& gameView,
     m_MaxArrows(3),
     m_NumArrowsLeft(m_MaxArrows),
     m_ArrowsMustUpdateSecondBuffer(false),
-    m_Arrow(m_GameView, gameWorld, m_ArrowRes, m_Strain, true),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
+    m_Arrow(m_GameView, gameWorld, m_ArrowRes, m_Duck, m_Strain, m_Strike, true),
     m_Hunter(gameView, 
               gameWorld,
               m_HunterRes,
@@ -115,8 +116,8 @@ void Game::Run()
     //
     ULONG portState = ReadJoyPort(1);
 
-    m_Arrow.Update(elapsed_ms, portState);
     m_Duck.Update(elapsed_ms, portState);
+    m_Arrow.Update(elapsed_ms, portState);
     m_Hunter.Update(elapsed_ms, portState);
 
     //
@@ -183,6 +184,11 @@ void Game::Run()
     {
       bContinue = false;
     }
+
+    if(m_Strike)
+    {
+      bContinue = false;
+    }
   }
   while (bContinue);
 
@@ -203,13 +209,13 @@ void Game::displayWinner()
   char const* pWinnerHunterImagePath = "AADevDuck:assets/winner_hunter_comic.iff";
 
   const char* pImagePath;
-  if(m_Duck.IsAlive())
+  if(m_Strike)
   {
-    pImagePath = pWinnerDuckImagePath;
+    pImagePath = pWinnerHunterImagePath;
   }
   else
   {
-    pImagePath = pWinnerHunterImagePath;
+    pImagePath = pWinnerDuckImagePath;
   }
   
   IlbmBitmap winnerPicture(pImagePath, false, false);

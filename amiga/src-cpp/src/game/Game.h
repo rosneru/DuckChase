@@ -49,6 +49,7 @@ private:
   
   bool m_IsArrowLaunching;
   bool m_IsArrowLaunchDone;
+  bool m_Strike;
   size_t m_LastFps;
   
   const size_t m_MaxStrain;
@@ -63,10 +64,10 @@ private:
 
 
   // EntityCollection m_Arrows;
-  ArrowResources m_ArrowRes;
-  Arrow m_Arrow;
   DuckResources m_DuckRes;
   Duck m_Duck;
+  ArrowResources m_ArrowRes;
+  Arrow m_Arrow;
   HunterResources m_HunterRes;
   Hunter m_Hunter;
 

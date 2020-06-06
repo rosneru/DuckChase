@@ -29,6 +29,8 @@ public:
 
   ~Hunter();
 
+  ShapeBase& Shape();
+
   virtual void Activate(int x, int y, long xSpeed, long ySpeed);
   void Deactivate();
 

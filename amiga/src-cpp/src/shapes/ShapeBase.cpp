@@ -53,6 +53,22 @@ void ShapeBase::DisableDoubleBuf()
   m_IsDoubleBuffered = false;
 }
 
+bool ShapeBase::Intersects(ShapeBase &other) const
+{
+  if(Left() < other.Right() && 
+     Right() > other.Left() && 
+     Top() < other.Bottom() && 
+     Bottom() > other.Top())
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+  
+}
+
 int ShapeBase::BottomToPlatformDistance(IlbmBitmap& picture, 
                                         int dY, 
                                         int searchedColorNum,

@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "GameWorld.h"
+#include "ShapeBase.h"
 
 /**
  * Represents a shape, an graphical object which can be moved above the
@@ -46,6 +47,8 @@ public:
    * Update the object.
    */
   virtual void Update(unsigned long elapsed, unsigned long joyPortState) = 0;
+
+  virtual ShapeBase& Shape() = 0;
 
 protected:
   const GameWorld& m_GameWorld;

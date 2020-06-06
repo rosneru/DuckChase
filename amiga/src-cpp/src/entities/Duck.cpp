@@ -27,6 +27,13 @@ Duck::~Duck()
 
 }
 
+
+ShapeBase& Duck::Shape()
+{
+  return m_Shape;
+}
+
+
 void Duck::Activate(int x, int y, long xSpeed, long ySpeed)
 {
   m_Shape.Move(x, y);

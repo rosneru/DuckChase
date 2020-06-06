@@ -27,6 +27,8 @@ public:
 
   virtual ~Duck();
 
+  ShapeBase& Shape();
+
   void Activate(int x, int y, long xSpeed, long ySpeed);
   void Deactivate();
   
