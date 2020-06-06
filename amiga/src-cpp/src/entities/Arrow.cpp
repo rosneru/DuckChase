@@ -42,19 +42,20 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
   {
     m_Animator.SetAnimSeq(m_Resources.AnimRightUpward());
     m_XSpeed = 3 * m_Strain;
-    m_YSpeed = m_Strain + 20;
   }
   else
   {
     m_Animator.SetAnimSeq(m_Resources.AnimLeftUpward());
     m_XSpeed = -3 * m_Strain;
-    m_YSpeed = m_Strain + 20;
   } 
 
-  // Select frame of sinking arrow which currently is at index 1
+  m_YSpeed = m_Strain / 3 + 40;
+
+  // Select frame of upward arrow which currently is at index 1
   m_Animator.IndexedFrame(1);
   m_Shape.Move(x, y);
   m_bIsAlive = true;
+  m_Action = MoveUp;
 
   // Calculate constants for arrow parabel
   // Formula for y-position of arrow is
@@ -63,7 +64,7 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
   // with:
   //  beta is defined to 60°, so
   //    tan(beta) is approximated to 2. (tan(60°) = 1.73)
-  //    cos^2(beta) is 0.25 / division by 4 / right-shift by to bits
+  //    cos^2(beta) is 0.25 or 1 / 4
   //
   // So, by pre-calculating the constants a and b it can be written as:
   //   y = a * x + b * x^2
@@ -76,7 +77,7 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
 
   // NOTE: (20 << 16) is done to multiply 20 by 65536 before it is
   // divided by the big square result. So its avoided that the integer
-  // result is cut to zero when it should't. This is undone inUpdate()
+  // result is cut to zero when it should't. This is undone in Update()
   // when m_B is actually used.
 }
 
@@ -86,6 +87,7 @@ void Arrow::Deactivate()
   m_Shape.SetInvisible();
 }
 
+#include <stdio.h>
 void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 {
   if(!m_bIsAlive)
@@ -121,12 +123,12 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
   // simplified to:
   //   y = a * x + b * x^2
   //
-  int y = m_A * xAbs - ((m_B * xAbs * xAbs) >> 16); // >> 16: undone the correction; see Activate().
+  int y = m_A * xAbs - ((m_B * xAbs * xAbs) >> 16); // >> 16: undo the correction from Activate()
   int newY = m_Y0 - y;
 
-  if(!m_bIsSinking && (newY < m_Shape.Top()))
+  if((m_Action == MoveUp) && (newY > m_Shape.Top()))
   {
-    m_bIsSinking = true;
+    m_Action = MoveDown;
 
     // Select frame of sinking arrow which currently is at index 3
     m_Animator.IndexedFrame(3);

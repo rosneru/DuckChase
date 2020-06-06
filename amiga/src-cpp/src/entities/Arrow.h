@@ -43,7 +43,6 @@ private:
   ShapeExtSprite m_Shape;
   Animator<ShapeExtSprite, const AnimSeqExtSprite> m_Animator;
 
-  bool m_bIsSinking;
   int m_X0;
   int m_Y0;
   int m_A;
