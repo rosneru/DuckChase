@@ -4,7 +4,6 @@
 
 // #include "BrownBarrel.h"
 #include "IlbmBitmap.h"
-#include "StopWatch.h"
 
 #include "Game.h"
 
@@ -16,6 +15,7 @@ Game::Game(GameViewBase& gameView,
                   m_GameColors, 
                   m_MaxArrows, 
                   m_MaxStrain),
+    m_StopWatch(),
     m_IsArrowLaunching(false),
     m_IsArrowLaunchDone(false),
     m_Strike(false),
@@ -61,8 +61,7 @@ void Game::DisableDoubleBuf()
 
 void Game::Run()
 {
-  StopWatch stopWatch;
-  stopWatch.Start();
+  m_StopWatch.Start();
 
   SetJoyPortAttrs(1,
                   SJA_Type, SJA_TYPE_AUTOSENSE,
@@ -92,7 +91,7 @@ void Game::Run()
     if(frameCounter > 16)
     {
       frameCounter = 1;
-      elapsed_ms = stopWatch.Pick(false) >> 4;
+      elapsed_ms = m_StopWatch.Pick(false) >> 4;
       elapsedSinceLastBarrel_ms += elapsed_ms;
       if(elapsed_ms > 0)
       {

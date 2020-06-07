@@ -13,7 +13,7 @@
 #include "DuckResources.h"
 #include "Hunter.h"
 #include "HunterResources.h"
-
+#include "StopWatch.h"
 
 #include "GameColors.h"
 #include "InfoDisplay.h"
@@ -46,6 +46,7 @@ private:
   GameViewBase& m_GameView;
 
   InfoDisplay m_InfoDisplay;
+  StopWatch m_StopWatch;
   
   bool m_IsArrowLaunching;
   bool m_IsArrowLaunchDone;
