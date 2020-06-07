@@ -16,8 +16,8 @@ Game::Game(GameViewBase& gameView,
                   m_MaxArrows, 
                   m_MaxStrain),
     m_StopWatch(),
-    m_IsArrowLaunching(false),
-    m_IsArrowLaunchDone(false),
+    m_IsArrowFlightPrepared(false),
+    m_IsArrowFlightFinished(false),
     m_Strike(false),
     m_LastFps(16),
     m_MaxStrain(118),
@@ -27,13 +27,19 @@ Game::Game(GameViewBase& gameView,
     m_NumArrowsLeft(m_MaxArrows),
     m_ArrowsMustUpdateSecondBuffer(false),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
-    m_Arrow(m_GameView, gameWorld, m_ArrowRes, m_Duck, m_Strain, m_Strike, true),
+    m_Arrow(m_GameView, 
+            gameWorld, 
+            m_ArrowRes, 
+            m_Duck, 
+            m_Strain, 
+            m_IsArrowFlightFinished, 
+            m_Strike, 
+            true),
     m_Hunter(gameView, 
               gameWorld,
               m_HunterRes,
               m_Arrow,
-              m_IsArrowLaunching, 
-              m_IsArrowLaunchDone)
+              m_IsArrowFlightPrepared)
 {
   m_Arrow.Deactivate();
 
@@ -138,7 +144,7 @@ void Game::gameLoop()
     // Check if hunter is currently arming an arrow and update the info
     // display accordingly
     //
-    if(m_IsArrowLaunching)
+    if(m_IsArrowFlightPrepared)
     {
       m_Strain += 4;
       m_InfoDisplay.UpdateStrain(m_Strain, false);
@@ -146,7 +152,7 @@ void Game::gameLoop()
       // Strain must be updated in 2nd screen buffer after switched
       m_StrainMustUpdateSecondBuffer = true;
     }
-    else if(m_IsArrowLaunchDone)
+    else if(m_IsArrowFlightFinished)
     {
       m_NumArrowsLeft--;
       m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
@@ -154,14 +160,17 @@ void Game::gameLoop()
       // Arrows must be updated in 2nd screen buffer after switched
       m_ArrowsMustUpdateSecondBuffer = true;
 
+      m_IsArrowFlightFinished = false;
+    }
+    else if(m_Arrow.IsAlive())
+    {
       m_Strain = 0;
       m_InfoDisplay.UpdateStrain(m_Strain, false);
 
       // Strain must be updated in 2nd screen buffer after switched
-      m_StrainMustUpdateSecondBuffer = true;
-
-      m_IsArrowLaunchDone = false;
+      m_StrainMustUpdateSecondBuffer = true;      
     }
+    
 
     //
     // Render the entities and switch screen buffers

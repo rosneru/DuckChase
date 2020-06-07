@@ -78,7 +78,7 @@ protected:
   long m_YSpeed;
   long m_YSpeedInitial;
 
-  bool m_bIsAlive;
+  bool m_IsAlive;
 
   int m_FrameSwitchingRateAt50Fps;
 

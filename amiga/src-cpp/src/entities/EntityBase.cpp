@@ -4,7 +4,7 @@ EntityBase::EntityBase(const GameWorld& gameWorld)
   : m_GameWorld(gameWorld),
     m_XSpeed(0),
     m_YSpeed(0),
-    m_bIsAlive(true),
+    m_IsAlive(true),
     m_FrameSwitchingRateAt50Fps(8)
 {
 }
@@ -23,7 +23,7 @@ long EntityBase::YSpeed()
 
 bool EntityBase::IsAlive()
 {
-  return m_bIsAlive;
+  return m_IsAlive;
 }
 
 

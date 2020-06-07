@@ -37,13 +37,13 @@ ShapeBase& Duck::Shape()
 void Duck::Activate(int x, int y, long xSpeed, long ySpeed)
 {
   m_Shape.Move(x, y);
-  m_bIsAlive = true;
+  m_IsAlive = true;
 }
 
 
 void Duck::Deactivate()
 {
-  m_bIsAlive = false;
+  m_IsAlive = false;
   m_Shape.SetInvisible();
 }
 

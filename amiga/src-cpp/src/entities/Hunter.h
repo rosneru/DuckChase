@@ -24,8 +24,7 @@ public:
          const GameWorld& gameWorld,
          const HunterResources& jumpmanResources,
          Arrow& arrow,
-         bool& isLaunchingArrow, 
-         bool& isArrowLaunched);
+         bool& isArrowFlightStarted);
 
   ~Hunter();
 
@@ -49,8 +48,7 @@ private:
   size_t m_ElapsedSinceLastAnimUpdate;
 
   Arrow& m_Arrow;
-  bool& m_IsArrowLaunched;
-  bool& m_IsLaunchingArrow;
+  bool& m_IsArrowFlightPrepared;
   
   bool m_IsRunning;
   unsigned long m_LastDirection;
@@ -59,7 +57,7 @@ private:
 
   bool runLeft(unsigned long elapsed);
   bool runRight(unsigned long elapsed);
-  void launchArrow();
+  void prepareArrowLaunch();
   void resetHunterActions();
 };
 

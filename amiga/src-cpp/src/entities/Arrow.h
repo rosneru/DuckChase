@@ -27,7 +27,8 @@ public:
         const ArrowResources& arrowResources,
         Duck& duck,
         size_t& strain,
-        bool& strike,
+        bool& isArrowFlightFinished,
+        bool& isStrike,
         bool stealMouse = false);
 
   virtual ~Arrow();
@@ -46,7 +47,8 @@ private:
 
   Duck& m_Duck;
   size_t& m_Strain;
-  bool& m_Strike;
+  bool& m_IsArrowFlightFinished;
+  bool& m_IsStrike;
 
   ShapeExtSprite m_Shape;
   Animator<ShapeExtSprite, const AnimSeqExtSprite> m_Animator;

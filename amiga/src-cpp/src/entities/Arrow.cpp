@@ -8,15 +8,17 @@ Arrow::Arrow(GameViewBase& gameView,
              const GameWorld& gameWorld,
              const ArrowResources& arrowResources,
              Duck& duck,
-             size_t& strain,
+             size_t& isStrain,
+             bool& isArrowFlightFinished,
              bool& strike,
              bool stealMouse)
   : EntityBase(gameWorld),
     m_GameView(gameView),
     m_Resources(arrowResources),
     m_Duck(duck),
-    m_Strain(strain),
-    m_Strike(strike),
+    m_Strain(isStrain),
+    m_IsArrowFlightFinished(isArrowFlightFinished),
+    m_IsStrike(strike),
     m_Shape(m_GameView.ViewPort(), 
             arrowResources,
             stealMouse),
@@ -63,7 +65,7 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
   // Select frame of upward arrow which currently is at index 1
   m_Animator.IndexedFrame(1);
   m_Shape.Move(x, y);
-  m_bIsAlive = true;
+  m_IsAlive = true;
   m_Action = MoveUp;
 
   // Calculate constants for arrow parabel
@@ -92,14 +94,14 @@ void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
 
 void Arrow::Deactivate()
 {
-  m_bIsAlive = false;
+  m_IsAlive = false;
   m_Shape.SetInvisible();
 }
 
 
 void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 {
-  if(!m_bIsAlive)
+  if(!m_IsAlive)
   {
     return;
   }
@@ -107,7 +109,8 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
   if(m_Shape.IsGone())
   {
     m_Shape.SetInvisible();
-    m_bIsAlive = false;  
+    m_IsAlive = false;  
+    m_IsArrowFlightFinished = true;
     return;
   }
 
@@ -147,6 +150,6 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 
   if(m_Shape.Intersects(m_Duck.Shape()))
   {
-    m_Strike = true;
+    m_IsStrike = true;
   }
 }

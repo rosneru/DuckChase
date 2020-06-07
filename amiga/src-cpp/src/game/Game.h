@@ -48,8 +48,8 @@ private:
   InfoDisplay m_InfoDisplay;
   StopWatch m_StopWatch;
   
-  bool m_IsArrowLaunching;
-  bool m_IsArrowLaunchDone;
+  bool m_IsArrowFlightPrepared;
+  bool m_IsArrowFlightFinished;
   bool m_Strike;
   size_t m_LastFps;
   

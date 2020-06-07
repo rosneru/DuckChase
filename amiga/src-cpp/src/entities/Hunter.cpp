@@ -9,8 +9,7 @@ Hunter::Hunter(GameViewBase& gameView,
                  const GameWorld& gameWorld, 
                  const HunterResources& jumpmanResources,
                  Arrow& arrow,
-                 bool& isLaunchingArrow, 
-                 bool& isArrowLaunched)
+                 bool& isArrowFlightPrepared)
   : EntityBase(gameWorld),
     m_GameView(gameView),
     m_Resources(jumpmanResources),
@@ -20,8 +19,7 @@ Hunter::Hunter(GameViewBase& gameView,
     m_Animator(m_Shape, jumpmanResources.AnimRightRun()),
     m_ElapsedSinceLastAnimUpdate(0),
     m_Arrow(arrow),
-    m_IsArrowLaunched(isArrowLaunched),
-    m_IsLaunchingArrow(isLaunchingArrow),
+    m_IsArrowFlightPrepared(isArrowFlightPrepared),
     m_IsRunning(false),
     m_LastDirection(JPF_JOY_RIGHT),
     m_UpClimbingPixelsLeft(0)
@@ -45,13 +43,13 @@ ShapeBase& Hunter::Shape()
 void Hunter::Activate(int x, int y, long xSpeed, long ySpeed)
 {
   m_Shape.Move(x, y);
-  m_bIsAlive = true;
+  m_IsAlive = true;
 }
 
 
 void Hunter::Deactivate()
 {
-  m_bIsAlive = false;
+  m_IsAlive = false;
   m_Shape.SetInvisible();
 }
 
@@ -73,7 +71,7 @@ void Hunter::Update(unsigned long elapsed, unsigned long portState)
   }
   else if((portState & JPF_BTN2) != 0)
   {
-    launchArrow();
+    prepareArrowLaunch();
   }
   else
   {
@@ -154,14 +152,14 @@ bool Hunter::runRight(unsigned long elapsed)
   return true;
 }
 
-void Hunter::launchArrow()
+void Hunter::prepareArrowLaunch()
 {
-  if(m_IsLaunchingArrow || m_Arrow.IsAlive())
+  if(m_IsArrowFlightPrepared || m_Arrow.IsAlive())
   {
     return;
   }
 
-  m_IsLaunchingArrow = true;
+  m_IsArrowFlightPrepared = true;
   m_IsRunning = false;
 
   if(m_LastDirection == JPF_RIGHT)
@@ -178,7 +176,7 @@ void Hunter::launchArrow()
 
 void Hunter::resetHunterActions()
 {
-  if(!m_IsLaunchingArrow && !m_IsRunning)
+  if(!m_IsArrowFlightPrepared && !m_IsRunning)
   {
     return;
   }
@@ -196,10 +194,9 @@ void Hunter::resetHunterActions()
     m_Animator.FirstFrame();
   }
   
-  if(m_IsLaunchingArrow)
+  if(m_IsArrowFlightPrepared)
   {
-    m_IsLaunchingArrow = false;
-    m_IsArrowLaunched = true;
+    m_IsArrowFlightPrepared = false;
 
     if(m_Arrow.IsAlive())
     {
