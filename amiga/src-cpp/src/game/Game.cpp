@@ -77,6 +77,21 @@ void Game::Run()
   UWORD oldTaskPriority = 65535;
   oldTaskPriority = SetTaskPri(FindTask(0), 30);
 
+  gameLoop();
+
+  displayWinner();
+
+  if(oldTaskPriority != 65535)
+  {
+    SetTaskPri(FindTask(0), oldTaskPriority);
+  }
+
+  SystemControl(SCON_TakeOverSys, FALSE,
+                TAG_END);
+}
+
+void Game::gameLoop()
+{
   short frameCounter = -2;
   long elapsed_ms = 0;
   long elapsedSinceLastBarrel_ms = 40;
@@ -190,16 +205,6 @@ void Game::Run()
     }
   }
   while (bContinue);
-
-  displayWinner();
-
-  if(oldTaskPriority != 65535)
-  {
-    SetTaskPri(FindTask(0), oldTaskPriority);
-  }
-
-  SystemControl(SCON_TakeOverSys, FALSE,
-                TAG_END);
 }
 
 void Game::displayWinner()

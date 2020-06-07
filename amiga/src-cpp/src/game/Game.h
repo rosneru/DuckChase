@@ -72,6 +72,7 @@ private:
   HunterResources m_HunterRes;
   Hunter m_Hunter;
 
+  void gameLoop();
   void displayWinner();
 };
 
