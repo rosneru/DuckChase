@@ -228,7 +228,7 @@ void ShapeBob::SetVisible()
     return;
   }
 
-  // AddBob(m_pBob, m_pRastPort);
+  AddBob(m_pBob, m_pRastPort);
   m_bIsVisible = true;
 }
 

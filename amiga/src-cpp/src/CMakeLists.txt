@@ -33,6 +33,7 @@ add_executable (DuckChase
                 game/GameTile.cpp
                 game/GameWorld.cpp
                 game/InfoDisplay.cpp
+                game/Level01.cpp
                 main.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp

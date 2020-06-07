@@ -1,14 +1,11 @@
-#include <clib/exec_protos.h>
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
-// #include "BrownBarrel.h"
 #include "IlbmBitmap.h"
+#include "Level01.h"
 
-#include "Game.h"
 
-
-Game::Game(GameViewBase& gameView, 
+Level01::Level01(GameViewBase& gameView, 
            const GameWorld& gameWorld)
   : m_GameView(gameView),
     m_InfoDisplay(gameView, 
@@ -18,7 +15,7 @@ Game::Game(GameViewBase& gameView,
     m_StopWatch(),
     m_IsArrowFlightPrepared(false),
     m_IsArrowFlightFinished(false),
-    m_Strike(false),
+    m_IsStrike(false),
     m_LastFps(16),
     m_MaxStrain(118),
     m_Strain(0),
@@ -33,7 +30,7 @@ Game::Game(GameViewBase& gameView,
             m_Duck, 
             m_Strain, 
             m_IsArrowFlightFinished, 
-            m_Strike, 
+            m_IsStrike, 
             true),
     m_Hunter(gameView, 
               gameWorld,
@@ -51,12 +48,12 @@ Game::Game(GameViewBase& gameView,
 }
 
 
-Game::~Game()
+Level01::~Level01()
 {
 
 }
 
-void Game::DisableDoubleBuf()
+void Level01::DisableDoubleBuf()
 {
 //   m_GameView.DisableDoubleBuf();
 
@@ -65,38 +62,18 @@ void Game::DisableDoubleBuf()
 }
 
 
-void Game::Run()
+void Level01::Run()
 {
   m_StopWatch.Start();
 
-  SetJoyPortAttrs(1,
-                  SJA_Type, SJA_TYPE_AUTOSENSE,
-                  TAG_END);
 
-  SystemControl(SCON_TakeOverSys, TRUE,
-                TAG_END);
-
-
-  // AABoing: set task priority to 30 so that beam-synchronized stuff
-  // will happen reliably. It is NOT SAFE to call intuition with this
-  // high task priority.
-  UWORD oldTaskPriority = 65535;
-  oldTaskPriority = SetTaskPri(FindTask(0), 30);
 
   gameLoop();
-
   displayWinner();
 
-  if(oldTaskPriority != 65535)
-  {
-    SetTaskPri(FindTask(0), oldTaskPriority);
-  }
-
-  SystemControl(SCON_TakeOverSys, FALSE,
-                TAG_END);
 }
 
-void Game::gameLoop()
+void Level01::gameLoop()
 {
   short frameCounter = -2;
   long elapsed_ms = 0;
@@ -208,7 +185,7 @@ void Game::gameLoop()
       bContinue = false;
     }
 
-    if(m_Strike)
+    if(m_IsStrike)
     {
       bContinue = false;
     }
@@ -216,13 +193,13 @@ void Game::gameLoop()
   while (bContinue);
 }
 
-void Game::displayWinner()
+void Level01::displayWinner()
 {
   char const* pWinnerDuckImagePath = "AADevDuck:assets/winner_duck_comic.iff";
   char const* pWinnerHunterImagePath = "AADevDuck:assets/winner_hunter_comic.iff";
 
   const char* pImagePath;
-  if(m_Strike)
+  if(m_IsStrike)
   {
     pImagePath = pWinnerHunterImagePath;
   }
@@ -259,17 +236,4 @@ void Game::displayWinner()
     WaitBlit();
     m_GameView.Render();
   }
-
-  bool bContinue = true;
-  do
-  {
-    WaitTOF();
-
-    ULONG key = GetKey();
-    if ((key & 0x00ff) == 0x45) // RAW code ESC key
-    {
-      bContinue = FALSE;
-    }
-
-  } while (bContinue);
 }

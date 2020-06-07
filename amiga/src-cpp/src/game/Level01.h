@@ -1,5 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef LEVEL_01_H
+#define LEVEL_01_H
 
 
 #include "GameViewBase.h"
@@ -19,18 +19,17 @@
 #include "InfoDisplay.h"
 
 /**
- * The main game 'Duck chase'
+ * The first level of 'Duck chase'
  *
  * @author Uwe Rosner
  * @date 01/08/2019
  */
-class Game
+class Level01
 {
 public:
-  Game(GameViewBase& gameView, 
-       const GameWorld& gameWorld);
+  Level01(GameViewBase& gameView, const GameWorld& gameWorld);
 
-  virtual ~Game();
+  virtual ~Level01();
 
   /**
    * When this is called before invoking \see Run, the \see GameViewBase 
@@ -50,7 +49,7 @@ private:
   
   bool m_IsArrowFlightPrepared;
   bool m_IsArrowFlightFinished;
-  bool m_Strike;
+  bool m_IsStrike;
   size_t m_LastFps;
   
   const size_t m_MaxStrain;
@@ -60,9 +59,7 @@ private:
   size_t m_NumArrowsLeft;
   bool m_ArrowsMustUpdateSecondBuffer;
 
-
   GameColors m_GameColors;
-
 
   // EntityCollection m_Arrows;
   DuckResources m_DuckRes;

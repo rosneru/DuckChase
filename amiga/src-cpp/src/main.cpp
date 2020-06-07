@@ -10,6 +10,7 @@
 #include "GameWorld.h"
 #include "GelsLayer.h"
 
+bool askContinue();
 
 int main(void)
 {
