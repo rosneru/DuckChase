@@ -22,6 +22,7 @@ private:
   const GameWorld& m_GameWorld;
 
   bool askContinue();
+  void clearInfoLine();
 };
 
 #endif

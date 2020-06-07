@@ -1,4 +1,5 @@
 #include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
@@ -31,13 +32,13 @@ void Game::Run()
   bool bContinue = false;
   do
   {
-    m_GameView.SwitchToFirstBuf();
+    // m_GameView.SwitchToFirstBuf();
 
-    Level01* pLevel01 = new Level01(m_GameView, m_GameWorld);
-    pLevel01->Run();
+    // Level01* pLevel01 = new Level01(m_GameView, m_GameWorld);
+    // pLevel01->Run();
     
-    m_GameView.SwitchToFirstBuf();
-    delete pLevel01;
+    // m_GameView.SwitchToFirstBuf();
+    // delete pLevel01;
 
     bContinue = askContinue();
   } 
@@ -56,9 +57,11 @@ void Game::Run()
 
 bool Game::askContinue()
 {
+  clearInfoLine();
   do
   {
     WaitTOF();
+
 
     ULONG key = GetKey();
     if ((key & 0x00ff) == 0x45) // RAW code ESC key
@@ -75,4 +78,66 @@ bool Game::askContinue()
   } 
   while (true);
 
+}
+
+void Game::clearInfoLine()
+{
+  int numScreenBuffers = 2;
+
+  int rectObjectWidth = 18;
+  int rectObjectHeight = 8;
+
+  int lineWidth = 6;  // Number of vertical lines of the moving rect
+  int rectWidth = (numScreenBuffers * lineWidth);
+  
+  int viewLeftBorder = 2;
+  int viewRightBorder = m_GameView.Width() - 2 - rectWidth;
+  
+  int rectTop = 245;
+  int rectBottom = rectTop + rectObjectHeight;
+
+  
+  for (int left = viewRightBorder; left >= viewLeftBorder; left -= lineWidth)
+  {
+    SetAPen(m_GameView.RastPort(), 14);
+    RectFill(m_GameView.RastPort(), 
+             left, 
+             rectTop, 
+             left + rectWidth, 
+             rectBottom);
+
+    if(left + rectObjectWidth + rectWidth < viewRightBorder)
+    {
+      SetAPen(m_GameView.RastPort(), 0);
+      RectFill(m_GameView.RastPort(), 
+               left + rectObjectWidth + 1, 
+               rectTop, 
+               left + rectObjectWidth + 1 + rectWidth, 
+               rectBottom);
+    }
+
+    m_GameView.Render();
+  }
+
+  for (int left = viewLeftBorder; left < viewRightBorder; left += lineWidth)
+  {
+    SetAPen(m_GameView.RastPort(), 14);
+    RectFill(m_GameView.RastPort(), 
+             left, 
+             rectTop, 
+             left + rectWidth, 
+             rectBottom);
+
+    if(left - 3 - rectObjectWidth > viewLeftBorder)
+    {
+      SetAPen(m_GameView.RastPort(), 0);
+      RectFill(m_GameView.RastPort(), 
+               left - rectObjectWidth - 1, 
+               rectTop, 
+               left - rectObjectWidth - 1 + rectWidth, 
+               rectBottom);
+    }
+
+    m_GameView.Render();
+  }
 }
