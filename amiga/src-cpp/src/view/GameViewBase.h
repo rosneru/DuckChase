@@ -56,6 +56,15 @@ public:
   long BorderRight();
   long BorderBottom();
 
+
+  /**
+   * Render a multi buffer screen until the first buffer is displayed
+   * again.
+   */
+  void SwitchToFirstBuf();
+
+  bool IsFirstBufDisplayed() const;
+
   //
   // The following methods must be implemented by inheriting classes.
   //

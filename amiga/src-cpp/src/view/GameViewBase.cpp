@@ -142,6 +142,18 @@ void GameViewBase::DisableDoubleBuf()
   m_IsDoubleBuffered = false;
 }
 
+void GameViewBase::SwitchToFirstBuf()
+{
+  while(m_CurrentBuf != 0)
+  {
+    Render();
+  }
+}
+
+bool GameViewBase::IsFirstBufDisplayed() const
+{
+  return m_CurrentBuf == 0;
+}
 
 void GameViewBase::SetPlayfieldBorders(long top, 
                                        long left, 
