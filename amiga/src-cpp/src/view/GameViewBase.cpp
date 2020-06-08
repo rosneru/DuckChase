@@ -13,9 +13,10 @@ GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
     m_BorderRight(backgroundPicture.Width() - 1),
     m_IsDoubleBuffered(true),
     m_bDBufSafeToChange(true),
-    m_CurrentBuf(0),
-    m_pDBufMsgReadyToWriteOldBM(NULL),
-    m_pDBufMsgNewBitMapDisplayed(NULL)
+    m_bDBufSafeToWrite(true),
+    m_CurrentBuf(1),
+    m_pSafeMessage(NULL),
+    m_pDispMessage(NULL)
 {
   //
   // Create and initialize two BitMaps for double buffering
@@ -57,10 +58,10 @@ GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
   //
   // Create double buffering related objects
   //
-  m_pDBufMsgReadyToWriteOldBM = CreateMsgPort();
-  m_pDBufMsgNewBitMapDisplayed = CreateMsgPort();
+  m_pSafeMessage = CreateMsgPort();
+  m_pDispMessage = CreateMsgPort();
 
-  if(m_pDBufMsgReadyToWriteOldBM == NULL || m_pDBufMsgNewBitMapDisplayed == NULL )
+  if(m_pSafeMessage == NULL || m_pDispMessage == NULL )
   {
     throw "GameViewBase failed to create MsgPort.";
   }
@@ -69,14 +70,14 @@ GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
 
 GameViewBase::~GameViewBase()
 {
-  if(m_pDBufMsgReadyToWriteOldBM != NULL)
+  if(m_pSafeMessage != NULL)
   {
-    DeleteMsgPort(m_pDBufMsgReadyToWriteOldBM);
+    DeleteMsgPort(m_pSafeMessage);
   }
 
-  if(m_pDBufMsgNewBitMapDisplayed != NULL)
+  if(m_pDispMessage != NULL)
   {
-    DeleteMsgPort(m_pDBufMsgNewBitMapDisplayed);
+    DeleteMsgPort(m_pDispMessage);
   }
 
   //  Free the double buffer BitMaps

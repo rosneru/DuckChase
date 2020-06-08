@@ -48,8 +48,19 @@ GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
     throw "GameViewIntui failed to AllocDBufInfo.";
   }
 
-  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pDBufMsgReadyToWriteOldBM;
-  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDBufMsgNewBitMapDisplayed;
+  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafeMessage;
+  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispMessage;
+
+  // Now wait until rendering is allowed
+  if(!m_bDBufSafeToWrite)
+  {
+    while (!GetMsg(m_pSafeMessage)) // As long as no dbi_SafeMessage..
+    {
+      Wait(1l << (m_pSafeMessage->mp_SigBit));  // ..wait for it
+    }
+  }
+
+  m_bDBufSafeToWrite = true;
 }
 
 
@@ -61,9 +72,17 @@ GameViewIntui::~GameViewIntui()
   // DBufInfo.
   if (!m_bDBufSafeToChange)
   {
-    while (!GetMsg(m_pDBufMsgNewBitMapDisplayed)) 
+    while (!GetMsg(m_pDispMessage)) 
     {
-      Wait(1l << (m_pDBufMsgNewBitMapDisplayed->mp_SigBit));
+      Wait(1l << (m_pDispMessage->mp_SigBit));
+    }
+  }
+
+  if (!m_bDBufSafeToWrite)
+  {
+    while (!GetMsg(m_pSafeMessage)) 
+    {
+      Wait(1l << (m_pSafeMessage->mp_SigBit));
     }
   }
 
@@ -120,12 +139,14 @@ void GameViewIntui::Render()
   //
   if (!m_bDBufSafeToChange)
   {
-    while (!GetMsg(m_pDBufMsgNewBitMapDisplayed)) 
+    while (!GetMsg(m_pDispMessage)) 
     {
-      Wait(1l << (m_pDBufMsgNewBitMapDisplayed->mp_SigBit));
+      Wait(1l << (m_pDispMessage->mp_SigBit));
     }
   }
   
+  m_bDBufSafeToChange = false;
+
   // Be sure rendering has finished
   WaitBlit();
   
@@ -133,19 +154,24 @@ void GameViewIntui::Render()
   ChangeVPBitMap(&m_pScreen->ViewPort, m_pBitMapArray[m_CurrentBuf], m_pDBufInfo);
   
   m_bDBufSafeToChange = false;
-
+  m_bDBufSafeToWrite = false;
   
   // Toggle current buffer
   m_CurrentBuf ^= 1;
 
-  // Switch the BitMap to be used for drawing
+  // // Switch the BitMap to be used for drawing
   m_pScreen->RastPort.BitMap = m_pBitMapArray[m_CurrentBuf];
 
-  // Wait until drawing is allowed
-  while (!GetMsg(m_pDBufMsgReadyToWriteOldBM)) 
+  // Now wait until rendering is allowed
+  if(!m_bDBufSafeToWrite)
   {
-    Wait(1l << (m_pDBufMsgReadyToWriteOldBM->mp_SigBit));
+    while (!GetMsg(m_pSafeMessage)) // As long as no dbi_SafeMessage..
+    {
+      Wait(1l << (m_pSafeMessage->mp_SigBit));  // ..wait for it
+    }
   }
+
+  m_bDBufSafeToWrite = true;
 }
 
 const char* GameViewIntui::ViewName() const

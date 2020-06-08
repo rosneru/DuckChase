@@ -89,9 +89,18 @@ protected:
   // Double buffering
   bool m_IsDoubleBuffered;
   bool m_bDBufSafeToChange;
+  bool m_bDBufSafeToWrite;
   int m_CurrentBuf;
-  struct MsgPort* m_pDBufMsgReadyToWriteOldBM;
-  struct MsgPort* m_pDBufMsgNewBitMapDisplayed;
+
+  /**
+   * Replied to when safe to write to old BitMap
+   */
+  struct MsgPort* m_pSafeMessage;
+
+  /**
+   * Replied to when new BitMap has been displayed at least once
+   */
+  struct MsgPort* m_pDispMessage;
 
   GameViewBase(IlbmBitmap& backgroundPicture);
   virtual ~GameViewBase();

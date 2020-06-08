@@ -74,8 +74,8 @@ GameViewLowlevel::GameViewLowlevel(IlbmBitmap& backgroundPicture,
     throw "GameViewLowlevel failed to AllocDBufInfo.";
   }
 
-  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pDBufMsgReadyToWriteOldBM;
-  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDBufMsgNewBitMapDisplayed;
+  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafeMessage;
+  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispMessage;
 }
 
 
@@ -87,9 +87,9 @@ GameViewLowlevel::~GameViewLowlevel()
   // DBufInfo.
   if (!m_bDBufSafeToChange)
   {
-    while (!GetMsg(m_pDBufMsgNewBitMapDisplayed)) 
+    while (!GetMsg(m_pDispMessage)) 
     {
-      Wait(1l << (m_pDBufMsgNewBitMapDisplayed->mp_SigBit));
+      Wait(1l << (m_pDispMessage->mp_SigBit));
     }
   }
 
@@ -149,9 +149,9 @@ void GameViewLowlevel::Render()
   //
   if (m_bDBufSafeToChange == false)
   {
-    while (!GetMsg(m_pDBufMsgNewBitMapDisplayed)) 
+    while (!GetMsg(m_pDispMessage)) 
     {
-      Wait(1l << (m_pDBufMsgNewBitMapDisplayed->mp_SigBit));
+      Wait(1l << (m_pDispMessage->mp_SigBit));
     }
   }
   
@@ -172,9 +172,9 @@ void GameViewLowlevel::Render()
   m_RastPort.BitMap = m_pBitMapArray[m_CurrentBuf];
 
   // Wait until drawing is allowed
-  while (!GetMsg(m_pDBufMsgReadyToWriteOldBM)) 
+  while (!GetMsg(m_pSafeMessage)) 
   {
-    Wait(1l << (m_pDBufMsgReadyToWriteOldBM->mp_SigBit));
+    Wait(1l << (m_pSafeMessage->mp_SigBit));
   }
 }
 
