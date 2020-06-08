@@ -105,8 +105,6 @@ ShapeBob::ShapeBob(struct RastPort* pRastPort,
 
 ShapeBob::~ShapeBob()
 {
-  SetInvisible();
-  
   if (m_pBob != NULL)
   {
     if(m_pBob->DBuffer != NULL)

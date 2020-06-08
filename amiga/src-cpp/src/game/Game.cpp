@@ -34,11 +34,11 @@ void Game::Run()
   {
     // m_GameView.SwitchToFirstBuf();
 
-    // Level01* pLevel01 = new Level01(m_GameView, m_GameWorld);
-    // pLevel01->Run();
+    Level01* pLevel01 = new Level01(m_GameView, m_GameWorld);
+    pLevel01->Run();
     
     // m_GameView.SwitchToFirstBuf();
-    // delete pLevel01;
+    delete pLevel01;
 
     bContinue = askContinue();
   } 

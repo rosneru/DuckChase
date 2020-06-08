@@ -42,6 +42,7 @@ Level01::Level01(GameViewBase& gameView,
 
   // Initialize the info display with the available arrows
   // (on both screen buffers)
+  m_GameView.Render();
   m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
   m_GameView.Render();
   m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
@@ -71,6 +72,14 @@ void Level01::Run()
   gameLoop();
   displayWinner();
 
+  // Remove all shapes
+  m_Arrow.Deactivate();
+  m_Hunter.Deactivate();
+  m_Duck.Deactivate();
+
+  // Render twice to reflect this in double-buffer
+  m_GameView.Render();
+  m_GameView.Render();
 }
 
 void Level01::gameLoop()

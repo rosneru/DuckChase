@@ -61,8 +61,6 @@ ShapeVSprite::ShapeVSprite(struct RastPort* pRastPort,
 
 ShapeVSprite::~ShapeVSprite()
 {
-  SetInvisible();
-
   if(m_pSprite != NULL)
   {
     if(m_pSprite->BorderLine != NULL)
