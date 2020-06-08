@@ -82,7 +82,8 @@ ShapeBob::ShapeBob(struct RastPort* pRastPort,
   m_pBob->After = NULL;
   m_pBob->BobComp = NULL;
 
-  if(m_IsDoubleBuffered)
+  bool isDoubleBuffered = true;
+  if(isDoubleBuffered)
   {
     m_pBob->DBuffer = (struct DBufPacket *) AllocVec(sizeof(struct DBufPacket), 
                                                      MEMF_CLEAR);

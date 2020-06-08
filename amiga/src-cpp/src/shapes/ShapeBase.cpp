@@ -2,8 +2,7 @@
 #include "ShapeBase.h"
 
 ShapeBase::ShapeBase(const ResourceBase& gfxResources)
-  : m_IsDoubleBuffered(true),
-    m_Width(gfxResources.Width()),
+  : m_Width(gfxResources.Width()),
     m_WordWidth(gfxResources.WordWidth()),
     m_Height(gfxResources.Height()),
     m_Depth(gfxResources.Depth()),
@@ -45,12 +44,6 @@ void ShapeBase::SetHotspot(int hotspotX, int hotspotY)
 {
   m_HotspotX = hotspotX;
   m_HotspotY = hotspotY;
-}
-
-
-void ShapeBase::DisableDoubleBuf()
-{
-  m_IsDoubleBuffered = false;
 }
 
 bool ShapeBase::Intersects(ShapeBase &other) const

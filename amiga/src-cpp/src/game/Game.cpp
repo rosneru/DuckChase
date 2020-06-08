@@ -29,6 +29,8 @@ void Game::Run()
   UWORD oldTaskPriority = 65535;
   oldTaskPriority = SetTaskPri(FindTask(0), 30);
 
+  m_GameView.Render();
+
   bool bContinue = false;
   do
   {

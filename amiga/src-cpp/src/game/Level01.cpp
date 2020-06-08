@@ -41,9 +41,9 @@ Level01::Level01(GameViewBase& gameView,
   m_Arrow.Deactivate();
 
   // Initialize the info display with the available arrows
-  // (on both screen buffers)
-  m_GameView.Render();
   m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+
+  // Do it also in the 2nd screen buffer
   m_GameView.Render();
   m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
 }

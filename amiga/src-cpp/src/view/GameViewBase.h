@@ -35,14 +35,6 @@ public:
    */
   IlbmBitmap& BackgroundPicture();
 
-  /**
-   * Disbles the double buffering for the game view.
-   *
-   * NOTE: Only intended for testing purposes. In implementations just
-   * the machanism will be disabled, acquiring the buffer memory will be
-   * done just like in double buffer mode.
-   */
-  void DisableDoubleBuf();
 
   long Width();
   long WordWidth();
@@ -56,14 +48,6 @@ public:
   long BorderRight();
   long BorderBottom();
 
-
-  /**
-   * Render a multi buffer screen until the first buffer is displayed
-   * again.
-   */
-  void SwitchToFirstBuf();
-
-  bool IsFirstBufDisplayed() const;
 
   //
   // The following methods must be implemented by inheriting classes.
@@ -87,7 +71,6 @@ protected:
   short m_BorderRight;
 
   // Double buffering
-  bool m_IsDoubleBuffered;
   bool m_bDBufSafeToChange;
   bool m_bDBufSafeToWrite;
   int m_CurrentBuf;

@@ -110,16 +110,6 @@ public:
 
 
   /**
-   * Disables the double buffering for this shape. Must be set before
-   * init.
-   *
-   * NOTE: Not all shape types may be affected, because not all of them
-   * use double buffering at all, e.g. Bobs can be double buffered,
-   * Sprites not.
-   */
-  virtual void DisableDoubleBuf();
-
-  /**
    * Returns true if this object intersects / collides with the other
    * object.
    */
@@ -157,7 +147,6 @@ protected:
    */
   virtual void move(int x, int y) = 0;
 
-  bool m_IsDoubleBuffered;
   short m_Width;
   short m_WordWidth;
   short m_Height;
