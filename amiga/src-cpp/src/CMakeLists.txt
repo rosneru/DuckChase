@@ -44,6 +44,7 @@ add_executable (DuckChase
                 resources/DuckResources.cpp
                 resources/HunterResources.cpp
                 shapes/GelsLayer.cpp
+                shapes/Rect.cpp
                 shapes/ShapeBase.cpp
                 shapes/ShapeBob.cpp
                 shapes/ShapeExtSprite.cpp
