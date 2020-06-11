@@ -49,7 +49,7 @@ struct BitMap* BitmapPictureBase::CreateBitMapMask()
   if(m_pBitMapMask == NULL)
   {
     // Create the mask
-    m_pBitMapMask = AllocBitMap(Width(), Width(), 1, BMF_CLEAR, NULL);
+    m_pBitMapMask = AllocBitMap(Width(), Height(), 1, BMF_CLEAR, NULL);
     if(m_pBitMapMask == NULL)
     {
       return NULL;
@@ -57,7 +57,7 @@ struct BitMap* BitmapPictureBase::CreateBitMapMask()
 
     PLANEPTR pMask = m_pBitMapMask->Planes[0];
 
-    // TODO: Works this for chunky BitMaps
+    // TODO: Does this work for chunky BitMaps
     int numBytes = m_pBitMap->BytesPerRow * m_pBitMap->Rows;
     for (int i = 0; i < numBytes; i++)
     {
