@@ -1,4 +1,5 @@
 #include "clib/exec_protos.h"
+#include "clib/graphics_protos.h"
 #include "exec/memory.h"
 
 #include "IlbmBitmap.h"
@@ -14,12 +15,12 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
   }
 
   // Load the src file into a bitmap
-  IlbmBitmap imgLoaderSrc(pFileName, false, false);
+  IlbmBitmap srcIlbmBitmap(pFileName, false, false);
 
-  m_Width = imgLoaderSrc.Width() / numFrames;
+  m_Width = srcIlbmBitmap.Width() / numFrames;
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
-  m_Height = imgLoaderSrc.Height();
-  m_Depth = imgLoaderSrc.Depth();
+  m_Height = srcIlbmBitmap.Height();
+  m_Depth = srcIlbmBitmap.Depth();
 
   // Create a dynamic array for all frames
   m_ppFrames = (ImageDataPicture**)new ImageDataPicture*[numFrames];
@@ -28,23 +29,39 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
     throw "AnimSeqGelsBob: Failed to allocate array memory.";
   }
 
-  // Create the shadow mask array
-  m_ppShadowMasks = (UBYTE**) AllocVec(numFrames * sizeof(UBYTE**), 
-                                       MEMF_ANY); // TODO MEMF_CHIP for Blitter use
-  if (m_ppShadowMasks == NULL)
-  {
-    throw "AnimSeqGelsBob: Failed to allocate shadow mask array memory.";
-  }
+  // Create a destination BitMap to blit each destination frame image into
+  size_t frameWidth = srcIlbmBitmap.Width() / numFrames;
+  m_pFrameBitMap = AllocBitMap(frameWidth,
+                               srcIlbmBitmap.Height(),
+                               srcIlbmBitmap.Depth(),
+                               BMF_CLEAR,
+                               NULL);
 
-  // Load all files by copying a area of src bitmap
+  // Create all frames by copying an area of src bitmap
   for(size_t i = 0; i < numFrames; i++)
   {
-    ImageDataPicture* pImg = new ImageDataPicture(imgLoaderSrc.GetBitMap(), 
-                                                  i * m_Width, numFrames);
 
+    size_t xStart = i * frameWidth;
+    BltBitMap(srcIlbmBitmap.GetBitMap(),
+              xStart,
+              0,
+              m_pFrameBitMap,
+              0,
+              0,
+              frameWidth,
+              srcIlbmBitmap.Height(),
+              0Xc0,
+              0xff,
+              NULL);
+    
+    ImageDataPicture* pImg = new ImageDataPicture(m_pFrameBitMap, 0, 1);
+    
     m_ppFrames[i] = pImg;
-    // m_ppShadowMasks[i] = createShadowMask
+    m_ppShadowMasks[i] = createShadowMask(m_pFrameBitMap);
   }
+
+  FreeBitMap(m_pFrameBitMap);
+  m_pFrameBitMap = NULL;
 }
 
 

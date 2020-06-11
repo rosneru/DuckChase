@@ -2,6 +2,7 @@
 #define ANIM_SEQ_GELS_H
 
 #include <stdlib.h>
+#include <graphics/gfx.h>
 
 #include "AnimSeqBase.h"
 
@@ -26,6 +27,7 @@ public:
   WORD* operator[](size_t index) const;
 
 protected:
+  struct BitMap* m_pFrameBitMap;
   ImageDataPicture** m_ppFrames;
 };
 

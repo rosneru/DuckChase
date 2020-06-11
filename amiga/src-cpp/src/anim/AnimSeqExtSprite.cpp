@@ -28,7 +28,7 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   m_Height = srcIlbmBitmap.Height();
   m_Depth = srcIlbmBitmap.Depth();
 
-  // Copy the first depth colors from source image
+  // Copy the first n colors from source image (with n = depth)
   ULONG* pSrcImgColors = srcIlbmBitmap.GetColors32();
   if(pSrcImgColors != NULL)
   {
@@ -67,7 +67,6 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
                                NULL);
 
   // Create all frames by copying an area of src bitmap
-  struct ExtSprite* pSpriteImage = NULL;
   for(size_t i = 0; i < numFrames; i++)
   {
 
@@ -84,9 +83,9 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
               0xff,
               NULL);
 
-    pSpriteImage = AllocSpriteData(m_pFrameBitMap, 
-                                   SPRITEA_Width, frameWidth, 
-                                   TAG_DONE);
+    struct ExtSprite* pSpriteImage = AllocSpriteData(m_pFrameBitMap, 
+                                                     SPRITEA_Width, frameWidth, 
+                                                     TAG_DONE);
 
     if (pSpriteImage == NULL)
     {
@@ -99,8 +98,6 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
 
   FreeBitMap(m_pFrameBitMap);
   m_pFrameBitMap = NULL;
-
-  m_NumFrames = numFrames;
 }
 
 AnimSeqExtSprite::~AnimSeqExtSprite()

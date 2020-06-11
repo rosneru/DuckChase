@@ -1,4 +1,5 @@
 #include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
 #include <exec/memory.h>
 
 #include <stdio.h>
@@ -10,6 +11,7 @@
 
 AnimSeqGels::AnimSeqGels(size_t numFrames)
   : AnimSeqBase(numFrames),
+    m_pFrameBitMap(NULL),
     m_ppFrames(NULL)
 {
 }
@@ -30,6 +32,12 @@ AnimSeqGels::~AnimSeqGels()
 
     delete[] m_ppFrames;
     m_ppFrames = NULL;
+  }
+
+  if(m_pFrameBitMap != NULL)
+  {
+    FreeBitMap(m_pFrameBitMap);
+    m_pFrameBitMap = NULL;
   }
 }
 

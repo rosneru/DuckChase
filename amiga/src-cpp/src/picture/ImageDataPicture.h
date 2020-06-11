@@ -26,12 +26,19 @@ public:
                    ULONG depth);
 
   /**
-   * Creating raw image from a given BitMap, starting with xStart in src
-   * BitMap and the width as set in constructor.
+   * Creating ImageData from a given BitMap picture.
+   */
+  ImageDataPicture(struct BitMap* pSrcBitmap);
+
+  /**
+   * Creating ImageData from a given BitMap picturep. ImageData width is
+   * width of srcBitMap divided by numFrames. ImagedData is composed by 
+   * blitting the slice of width starting from xStart from src BitMap.
    */
   ImageDataPicture(struct BitMap* pSrcBitmap, 
                    ULONG xStart, 
                    ULONG numFrames);
+
 
   ImageDataPicture(WORD* pExternalImageData);
 
