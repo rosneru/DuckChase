@@ -23,6 +23,7 @@ add_executable (DuckChase
                 anim/AnimSeqGels.cpp
                 anim/AnimSeqGelsBob.cpp
                 anim/AnimSeqGelsVSprite.cpp
+                anim/ShadowMask.cpp
                 entities/Arrow.cpp
                 entities/Duck.cpp
                 entities/EntityBase.cpp

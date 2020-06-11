@@ -57,7 +57,7 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
     ImageDataPicture* pImg = new ImageDataPicture(m_pFrameBitMap, 0, 1);
     
     m_ppFrames[i] = pImg;
-    m_ppShadowMasks[i] = createShadowMask(m_pFrameBitMap);
+    m_ppShadowMasks[i] = new ShadowMask(m_pFrameBitMap);
   }
 
   FreeBitMap(m_pFrameBitMap);

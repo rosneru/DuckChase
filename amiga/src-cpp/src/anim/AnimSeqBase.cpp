@@ -10,8 +10,8 @@ AnimSeqBase::AnimSeqBase(size_t numFrames)
     m_ppShadowMasks(NULL)
 {
   // Create the shadow mask array
-  m_ppShadowMasks = (UBYTE**) AllocVec(numFrames * sizeof(UBYTE**), 
-                                       MEMF_ANY|MEMF_CLEAR);
+  m_ppShadowMasks = (ShadowMask**) AllocVec(numFrames * sizeof(ShadowMask**), 
+                                            MEMF_ANY|MEMF_CLEAR);
   if (m_ppShadowMasks == NULL)
   {
     throw "AnimSeqBase: Failed to allocate memory for shadow mask array.";
@@ -26,7 +26,7 @@ AnimSeqBase::~AnimSeqBase()
     {
       if(m_ppShadowMasks[i] != NULL)
       {
-        FreeVec(m_ppShadowMasks[i]);
+        delete m_ppShadowMasks[i];
         m_ppShadowMasks[i] = NULL;
       }
     }
@@ -58,7 +58,7 @@ size_t AnimSeqBase::NumFrames() const
   return m_NumFrames;
 }
 
-const UBYTE* AnimSeqBase::ShadowMask(size_t index) const
+const ShadowMask* AnimSeqBase::Mask(size_t index) const
 {
   if((index >= m_NumFrames) || (m_ppShadowMasks == NULL))
   {
@@ -66,26 +66,4 @@ const UBYTE* AnimSeqBase::ShadowMask(size_t index) const
   }
 
   return m_ppShadowMasks[index];
-}
-
-UBYTE* AnimSeqBase::createShadowMask(const struct BitMap* pImage)
-{
-  // TODO: Does this work for chunky BitMaps?
-  size_t numBytes = pImage->BytesPerRow * pImage->Rows;
-  UBYTE* pMask = (UBYTE*)AllocVec(numBytes, MEMF_CLEAR|MEMF_ANY); // TODO MEMF_CHIP for Blitter use
-
-  for (size_t i = 0; i < numBytes; i++)
-  {
-    UBYTE maskByte = 0;
-
-    for (size_t j = 0; j < pImage->Depth; j++)
-    {
-      UBYTE *plane = pImage->Planes[j];
-      maskByte |= plane[i];
-    }
-
-    pMask[i] = maskByte;
-  }
-
-  return pMask;
 }

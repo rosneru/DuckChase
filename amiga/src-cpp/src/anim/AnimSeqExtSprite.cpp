@@ -93,7 +93,7 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
     }
 
     m_ppFrames[i] = pSpriteImage;
-    m_ppShadowMasks[i] = createShadowMask(m_pFrameBitMap);
+    m_ppShadowMasks[i] = new ShadowMask(m_pFrameBitMap);
   }
 
   FreeBitMap(m_pFrameBitMap);

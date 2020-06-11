@@ -4,6 +4,8 @@
 #include <exec/types.h>
 #include <graphics/gfx.h>
 
+#include <ShadowMask.h>
+
 /**
  * Encapsulates a generic anim sequence for shapes.
  *
@@ -20,10 +22,7 @@ public:
 
   size_t NumFrames() const;
 
-  /**
-   * Returns the shadow mask of the indexed image
-   */
-  const UBYTE* ShadowMask(size_t index) const;
+  const ShadowMask* Mask(size_t index) const;
 
 protected:
   int m_Width;
@@ -33,12 +32,11 @@ protected:
 
   size_t m_NumFrames;
 
-  UBYTE** m_ppShadowMasks;
+  ShadowMask** m_ppShadowMasks;
 
   AnimSeqBase(size_t numFrames);
   virtual ~AnimSeqBase();
-
-  UBYTE* createShadowMask(const struct BitMap* pImage);
 };
 
 #endif
+
