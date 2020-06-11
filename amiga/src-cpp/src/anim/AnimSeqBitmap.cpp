@@ -10,7 +10,8 @@
 
 AnimSeqBitmap::AnimSeqBitmap(const char* pFileName, 
                                    size_t numFrames)
-  : m_ppFrames(NULL)
+  : AnimSeqBase(numFrames),
+    m_ppFrames(NULL)
 {
   if (pFileName == NULL)
   {
@@ -64,8 +65,6 @@ AnimSeqBitmap::AnimSeqBitmap(const char* pFileName,
 
     m_ppFrames[i] = pFrameBitMap;
   }
-
-  m_NumFrames = numFrames;
 }
 
 AnimSeqBitmap::~AnimSeqBitmap()

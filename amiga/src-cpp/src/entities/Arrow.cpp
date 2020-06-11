@@ -150,6 +150,11 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 
   if(m_Shape.Intersects(m_Duck.Shape()))
   {
+    // Also calculate the duck's collsion rect
+    m_Duck.Shape().Intersects(m_Shape);
+
+    
+
     m_IsStrike = true;
   }
 }

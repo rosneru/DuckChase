@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "IlbmBitmap.h"
+#include "Rect.h"
 #include "ResourceBase.h"
 
 /**
@@ -111,9 +112,11 @@ public:
 
   /**
    * Returns true if this object intersects / collides with the other
-   * object.
+   * object. In collision case it calculates the collision rect.
    */
-  bool Intersects(ShapeBase& other) const;
+  bool Intersects(ShapeBase& other);
+
+  const Rect& CollisionRect() const;
 
 
   enum BottomDistanceMeasMode
@@ -153,9 +156,9 @@ protected:
   short m_Depth;
 
 private:
-
   int m_HotspotX;
   int m_HotspotY;
+  Rect m_CollisionRect;
 };
 
 #endif

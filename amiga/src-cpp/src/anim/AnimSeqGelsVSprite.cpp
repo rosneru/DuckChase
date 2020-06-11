@@ -3,7 +3,8 @@
 #include "AnimSeqGelsVSprite.h"
 
 AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
-  : m_pImgLoaderSrc(NULL)
+  : AnimSeqGels(numFrames),
+    m_pImgLoaderSrc(NULL)
 {
   if (pFileName == NULL)
   {
@@ -41,8 +42,6 @@ AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
 
     m_ppFrames[i] = pImg;
   }
-
-  m_NumFrames = numFrames;
 }
 
 

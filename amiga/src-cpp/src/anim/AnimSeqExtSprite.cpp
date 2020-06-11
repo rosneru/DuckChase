@@ -10,7 +10,8 @@
 
 AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName, 
                                    size_t numFrames)
-  : m_pFrameBitMap(NULL),
+  : AnimSeqBase(numFrames),
+    m_pFrameBitMap(NULL),
     m_ppFrames(NULL),
     m_pColors32(NULL)
 {
@@ -54,7 +55,7 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   m_ppFrames = (struct ExtSprite**)AllocVec(arraySize, MEMF_ANY);
   if (m_ppFrames == NULL)
   {
-    throw "AnimSeqExtSprite: Failed to allocate array memory.";
+    throw "AnimSeqExtSprite: Failed to allocate frame array memory.";
   }
 
   // Create a destination BitMap to blit each destination frame image into
@@ -93,6 +94,7 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
     }
 
     m_ppFrames[i] = pSpriteImage;
+    m_ppShadowMasks[i] = createShadowMask(m_pFrameBitMap);
   }
 
   FreeBitMap(m_pFrameBitMap);
@@ -145,3 +147,4 @@ ULONG* AnimSeqExtSprite::GetColors32() const
 {
   return m_pColors32;
 }
+

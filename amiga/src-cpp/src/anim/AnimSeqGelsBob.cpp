@@ -1,8 +1,12 @@
+#include "clib/exec_protos.h"
+#include "exec/memory.h"
+
 #include "IlbmBitmap.h"
 #include "ImageDataPicture.h"
 #include "AnimSeqGelsBob.h"
 
 AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
+  : AnimSeqGels(numFrames)
 {
   if (pFileName == NULL)
   {
@@ -17,12 +21,19 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
   m_Height = imgLoaderSrc.Height();
   m_Depth = imgLoaderSrc.Depth();
 
-  // Create a dynamic array for all images according to the number of
-  // files
+  // Create a dynamic array for all frames
   m_ppFrames = (ImageDataPicture**)new ImageDataPicture*[numFrames];
   if (m_ppFrames == NULL)
   {
     throw "AnimSeqGelsBob: Failed to allocate array memory.";
+  }
+
+  // Create the shadow mask array
+  m_ppShadowMasks = (UBYTE**) AllocVec(numFrames * sizeof(UBYTE**), 
+                                       MEMF_ANY); // TODO MEMF_CHIP for Blitter use
+  if (m_ppShadowMasks == NULL)
+  {
+    throw "AnimSeqGelsBob: Failed to allocate shadow mask array memory.";
   }
 
   // Load all files by copying a area of src bitmap
@@ -32,9 +43,8 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
                                                   i * m_Width, numFrames);
 
     m_ppFrames[i] = pImg;
+    // m_ppShadowMasks[i] = createShadowMask
   }
-
-  m_NumFrames = numFrames;
 }
 
 

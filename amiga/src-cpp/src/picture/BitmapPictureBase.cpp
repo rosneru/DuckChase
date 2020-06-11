@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 
@@ -57,13 +59,13 @@ struct BitMap* BitmapPictureBase::CreateBitMapMask()
 
     PLANEPTR pMask = m_pBitMapMask->Planes[0];
 
-    // TODO: Does this work for chunky BitMaps
-    int numBytes = m_pBitMap->BytesPerRow * m_pBitMap->Rows;
-    for (int i = 0; i < numBytes; i++)
+    // TODO: Does this work for chunky BitMaps?
+    size_t numBytes = m_pBitMap->BytesPerRow * m_pBitMap->Rows;
+    for (size_t i = 0; i < numBytes; i++)
     {
       UBYTE maskByte = 0;
 
-      for (int j = 0; j < m_pBitMap->Depth; j++)
+      for (size_t j = 0; j < m_pBitMap->Depth; j++)
       {
         UBYTE *plane = m_pBitMap->Planes[j];
         maskByte |= plane[i];

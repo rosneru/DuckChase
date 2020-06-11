@@ -28,6 +28,7 @@ public:
   ULONG* GetColors32() const;
 
 
+
 private:
   struct BitMap* m_pFrameBitMap;
   struct ExtSprite** m_ppFrames;

@@ -20,7 +20,7 @@ class ImageDataPicture;
 class AnimSeqGels : public AnimSeqBase
 {
 public: 
-  AnimSeqGels();
+  AnimSeqGels(size_t numFrames);
   virtual ~AnimSeqGels();
 
   WORD* operator[](size_t index) const;

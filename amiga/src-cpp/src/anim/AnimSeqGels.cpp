@@ -8,8 +8,9 @@
 #include "AnimSeqGels.h"
 
 
-AnimSeqGels::AnimSeqGels()
-  : m_ppFrames(NULL)
+AnimSeqGels::AnimSeqGels(size_t numFrames)
+  : AnimSeqBase(numFrames),
+    m_ppFrames(NULL)
 {
 }
 

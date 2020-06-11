@@ -2,7 +2,7 @@
 #define ANIM_SEQ_BASE_H
 
 #include <exec/types.h>
-
+#include <graphics/gfx.h>
 
 /**
  * Encapsulates a generic anim sequence for shapes.
@@ -20,6 +20,11 @@ public:
 
   size_t NumFrames() const;
 
+  /**
+   * Returns the shadow mask of the indexed image
+   */
+  const UBYTE* ShadowMask(size_t index) const;
+
 protected:
   int m_Width;
   int m_WordWidth;
@@ -28,8 +33,12 @@ protected:
 
   size_t m_NumFrames;
 
-  AnimSeqBase();
+  UBYTE** m_ppShadowMasks;
+
+  AnimSeqBase(size_t numFrames);
   virtual ~AnimSeqBase();
+
+  UBYTE* createShadowMask(const struct BitMap* pImage);
 };
 
 #endif
