@@ -30,6 +30,9 @@ AnimSeqBase::~AnimSeqBase()
         m_ppShadowMasks[i] = NULL;
       }
     }
+
+    FreeVec(m_ppShadowMasks);
+    m_ppShadowMasks = NULL;
   }
 }
 

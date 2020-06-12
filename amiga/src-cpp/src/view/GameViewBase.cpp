@@ -47,8 +47,8 @@ GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
               m_pBitMapArray[i],
               0,
               0,
-              m_BackgroundPicture.Width(),
-              m_BackgroundPicture.Height(),
+              m_BackgroundPicture.Width() - 1,
+              m_BackgroundPicture.Height() - 1,
               0xC0,
               0xFF,
               NULL);
