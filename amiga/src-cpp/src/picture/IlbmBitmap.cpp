@@ -15,7 +15,7 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
                        bool bLoadColors,
                        bool bLoadDisplayMode)
   : BitmapPictureBase(),
-    m_pIffHandle()
+    m_pIffHandle(NULL)
 {
   if (pFileName == NULL)
   {
@@ -126,6 +126,7 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
   m_pIffHandle->iff_Stream = 0;
 
   CloseIFF(m_pIffHandle);
+  FreeIFF(m_pIffHandle);
   m_pIffHandle = NULL;
 }
 
@@ -139,6 +140,9 @@ IlbmBitmap::~IlbmBitmap()
     }
 
     CloseIFF(m_pIffHandle);
+    FreeIFF(m_pIffHandle);
+    m_pIffHandle = NULL;
+
   }
 }
 
