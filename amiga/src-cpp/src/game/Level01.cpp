@@ -30,8 +30,7 @@ Level01::Level01(GameViewBase& gameView,
             m_Duck, 
             m_Strain, 
             m_IsArrowFlightFinished, 
-            m_IsStrike, 
-            true),
+            m_IsStrike),
     m_Hunter(gameView, 
               gameWorld,
               m_HunterRes,
@@ -46,6 +45,11 @@ Level01::Level01(GameViewBase& gameView,
   // Do it also in the 2nd screen buffer
   m_GameView.Render();
   m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+
+  // *Must* be done after all sprites are allocated. Intuition then
+  // re-adjustes everything (maybe also reduces gfx bandwitht) to ensure
+  // that the sprites can be displayed.
+  RemakeDisplay();
 }
 
 
@@ -56,10 +60,7 @@ Level01::~Level01()
 
 void Level01::DisableDoubleBuf()
 {
-//   m_GameView.DisableDoubleBuf();
 
-//   // TODO: Find a better way, hold a list for entities
-//   m_Jumpman.DisableDoubleBuf();
 }
 
 

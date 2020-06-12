@@ -28,8 +28,7 @@ public:
         Duck& duck,
         size_t& strain,
         bool& isArrowFlightFinished,
-        bool& isStrike,
-        bool stealMouse = false);
+        bool& isStrike);
 
   virtual ~Arrow();
   

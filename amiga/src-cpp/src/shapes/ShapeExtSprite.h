@@ -29,8 +29,7 @@ class ShapeExtSprite : public ShapeBase
 {
 public:
   ShapeExtSprite(struct ViewPort* pViewPort,
-                 const ResourceExtSprite& gfxResources,
-                 bool stealMouse = false);
+                 const ResourceExtSprite& gfxResources);
 
   virtual ~ShapeExtSprite();
 
@@ -60,7 +59,6 @@ private:
   struct ExtSprite* m_pEmptySprite;
   struct ExtSprite* m_pCurrentSprite;
   int m_SpriteNumberGot; // Allocated sprite number
-  int m_SpriteNumber; // Really used sprite number (could be '0', stolen from pointer)
 
   void move(int x, int y);
 };

@@ -33,6 +33,8 @@ public:
 
 private:
   struct Screen* m_pScreen;
+  struct BitMap* m_pEmptyBitmap;
+  void* m_pEmptyPointer;
   struct Window* m_pWindow;
   struct DBufInfo* m_pDBufInfo;
 };

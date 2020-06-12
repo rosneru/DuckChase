@@ -117,6 +117,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "anim/AnimSeqBitmap.cpp"
+"anim/AnimSeqBitmap.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/AnimSeqBitmap.o" "objects_debug/AnimSeqBitmap.debug"
 ""
@@ -168,6 +169,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "anim/ShadowMask.cpp"
+"anim/ShadowMask.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/ShadowMask.o" "objects_debug/ShadowMask.debug"
 ""
@@ -186,6 +188,7 @@ File
 "entities/Duck.h"
 "anim/AnimSeqGels.h"
 "resources/ResourceGELs.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Arrow.o" "objects_debug/Arrow.debug"
 ""
@@ -243,6 +246,7 @@ File
 "entities/Arrow.h"
 "resources/ResourceExtSprite.h"
 "entities/Duck.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Hunter.o" "objects_debug/Hunter.debug"
 ""
@@ -319,6 +323,7 @@ File
 "anim/AnimSeqGels.h"
 "resources/ResourceGELs.h"
 "game/InfoDisplay.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Level01.o" "objects_debug/Level01.debug"
 ""
@@ -427,6 +432,7 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "shapes/Rect.cpp"
+"shapes/Rect.cpp"
 Storm Shell Project (Dependencies)
 "objects_debug/Rect.o" "objects_debug/Rect.debug"
 ""
@@ -461,6 +467,7 @@ File
 "shapes/ShapeBase.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeExtSprite.o" "objects_debug/ShapeExtSprite.debug"
 ""
@@ -554,6 +561,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "anim/AnimSeqBitmap.h"
+"anim/AnimSeqBitmap.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -588,6 +596,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "anim/ShadowMask.h"
+"anim/ShadowMask.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -755,6 +764,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "shapes/Rect.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -828,6 +838,7 @@ Section
 7
 File
 10 "DuckChase"
+"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""

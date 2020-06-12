@@ -5,6 +5,7 @@
 #include <graphics/gfxbase.h>
 #include <graphics/modeid.h>
 #include <graphics/videocontrol.h>
+#include <intuition/pointerclass.h>
 
 #include "GameViewIntui.h"
 
@@ -14,6 +15,8 @@ extern struct GfxBase* GfxBase;
 GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
   : GameViewBase(backgroundPicture),
     m_pScreen(NULL),
+    m_pEmptyBitmap(NULL),
+    m_pEmptyPointer(NULL),
     m_pWindow(NULL),
     m_pDBufInfo(NULL)
 {
@@ -43,11 +46,31 @@ GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
     throw "GameViewIntui failed to open screen.";
   }
 
+  m_pEmptyBitmap = AllocBitMap(16, 16, 2, BMF_CLEAR, NULL);
+  if(m_pEmptyBitmap == NULL)
+  {
+    throw "GameViewIntui failed to allocate empty pointer BitMap.";
+  }
+
+  m_pEmptyPointer = NewObject( NULL, "pointerclass",
+    POINTERA_BitMap, m_pEmptyBitmap,
+    POINTERA_XOffset, -6,
+    POINTERA_WordWidth, 1,
+    POINTERA_XResolution, POINTERXRESN_HIRES,
+    POINTERA_YResolution, POINTERYRESN_HIGH,
+    TAG_DONE );
+
+  if(m_pEmptyPointer == NULL)
+  {
+    throw "GameViewIntui failed to allocate empty pointer object.";
+  }
+
   m_pWindow = OpenWindowTags(NULL,
     WA_Activate, TRUE,
     WA_Borderless, TRUE,
     WA_Backdrop, TRUE,
     WA_CustomScreen, m_pScreen,
+    WA_Pointer, m_pEmptyPointer,
     TAG_DONE);
 
   if(m_pWindow == NULL)
@@ -110,6 +133,18 @@ GameViewIntui::~GameViewIntui()
   {
     CloseWindow(m_pWindow);
     m_pWindow = NULL;
+  }
+
+  if(m_pEmptyPointer != NULL)
+  {
+    DisposeObject(m_pEmptyPointer);
+    m_pEmptyPointer = NULL;
+  }
+
+  if(m_pEmptyBitmap != NULL)
+  {
+    FreeBitMap(m_pEmptyBitmap);
+    m_pEmptyBitmap = NULL;
   }
 
   if(m_pScreen != NULL)
