@@ -118,6 +118,10 @@ Storm Shell Project (Dependencies)
 File
 1 "anim/AnimSeqBitmap.cpp"
 "anim/AnimSeqBitmap.cpp"
+"anim/AnimSeqBitmap.h"
+"anim/AnimSeqBase.h"
+"picture/BitmapPictureBase.h"
+"picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/AnimSeqBitmap.o" "objects_debug/AnimSeqBitmap.debug"
 ""
@@ -170,6 +174,7 @@ Storm Shell Project (Dependencies)
 File
 1 "anim/ShadowMask.cpp"
 "anim/ShadowMask.cpp"
+"anim/ShadowMask.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShadowMask.o" "objects_debug/ShadowMask.debug"
 ""
@@ -205,6 +210,7 @@ File
 "game/GameTile.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Duck.o" "objects_debug/Duck.debug"
 ""
@@ -216,6 +222,7 @@ File
 "game/GameTile.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/EntityBase.o" "objects_debug/EntityBase.debug"
 ""
@@ -228,6 +235,7 @@ File
 "game/GameTile.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/EntityCollection.o" "objects_debug/EntityCollection.debug"
 ""
@@ -267,6 +275,7 @@ File
 "resources/ResourceExtSprite.h"
 "game/Level01.h"
 "entities/Duck.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -433,6 +442,7 @@ Storm Shell Project (Dependencies)
 File
 1 "shapes/Rect.cpp"
 "shapes/Rect.cpp"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Rect.o" "objects_debug/Rect.debug"
 ""
@@ -443,6 +453,7 @@ File
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "shapes/ShapeBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeBase.o" "objects_debug/ShapeBase.debug"
 ""
@@ -455,6 +466,7 @@ File
 "shapes/ShapeBase.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
 ""
@@ -480,6 +492,7 @@ File
 "shapes/ShapeBase.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
+"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeVSprite.o" "objects_debug/ShapeVSprite.debug"
 ""
