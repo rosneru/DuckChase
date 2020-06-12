@@ -167,6 +167,12 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "anim/ShadowMask.cpp"
+Storm Shell Project (Dependencies)
+"objects_debug/ShadowMask.o" "objects_debug/ShadowMask.debug"
+""
+1 1
+File
 1 "entities/Arrow.cpp"
 "entities/Arrow.cpp"
 "entities/Arrow.h"
@@ -420,6 +426,12 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "shapes/Rect.cpp"
+Storm Shell Project (Dependencies)
+"objects_debug/Rect.o" "objects_debug/Rect.debug"
+""
+1 1
+File
 1 "shapes/ShapeBase.cpp"
 "shapes/ShapeBase.cpp"
 "picture/BitmapPictureBase.h"
@@ -570,6 +582,12 @@ Storm Shell Project (Dependencies)
 File
 2 "anim/AnimSeqGelsVSprite.h"
 "anim/AnimSeqGelsVSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "anim/ShadowMask.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -736,6 +754,12 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "shapes/ShapeBase.h"
 "shapes/ShapeBase.h"
 Storm Shell Project (Dependencies)
@@ -804,7 +828,6 @@ Section
 7
 File
 10 "DuckChase"
-"DuckChase"
 Storm Shell Project (Dependencies)
 "" ""
 ""
