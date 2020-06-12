@@ -33,6 +33,7 @@ public:
 
 private:
   struct Screen* m_pScreen;
+  struct Window* m_pWindow;
   struct DBufInfo* m_pDBufInfo;
 };
 

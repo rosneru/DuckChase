@@ -14,6 +14,7 @@ extern struct GfxBase* GfxBase;
 GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
   : GameViewBase(backgroundPicture),
     m_pScreen(NULL),
+    m_pWindow(NULL),
     m_pDBufInfo(NULL)
 {
   // Additional setting for the screen to use hires sprites
@@ -30,17 +31,30 @@ GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
     SA_Height, Height(),
     SA_ShowTitle, FALSE,
     SA_VideoControl, vcTags,
+    SA_Interleaved, TRUE,
     SA_Quiet, TRUE,
     SA_Type, CUSTOMSCREEN,
     SA_Exclusive, TRUE,
     SA_Colors32, m_BackgroundPicture.GetColors32(),
-    SA_BitMap, m_pBitMapArray[0],
     TAG_DONE);
 
   if(m_pScreen == NULL)
   {
     throw "GameViewIntui failed to open screen.";
   }
+
+  m_pWindow = OpenWindowTags(NULL,
+    WA_Activate, TRUE,
+    WA_Borderless, TRUE,
+    WA_Backdrop, TRUE,
+    WA_CustomScreen, m_pScreen,
+    TAG_DONE);
+
+  if(m_pWindow == NULL)
+  {
+    throw "GameViewIntui failed to open window.";
+  }
+
 
   m_pDBufInfo = AllocDBufInfo(&(m_pScreen->ViewPort));
   if(m_pDBufInfo == NULL)
@@ -90,6 +104,12 @@ GameViewIntui::~GameViewIntui()
   {
     FreeDBufInfo(m_pDBufInfo);
     m_pDBufInfo = NULL;
+  }
+
+  if(m_pWindow != NULL)
+  {
+    CloseWindow(m_pWindow);
+    m_pWindow = NULL;
   }
 
   if(m_pScreen != NULL)
