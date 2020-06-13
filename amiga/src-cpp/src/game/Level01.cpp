@@ -205,8 +205,8 @@ void Level01::gameLoop()
 
 void Level01::displayWinner()
 {
-  char const* pWinnerDuckImagePath = "AADevDuck:assets/winner_duck_comic.iff";
-  char const* pWinnerHunterImagePath = "AADevDuck:assets/winner_hunter_comic.iff";
+  char const* pWinnerDuckImagePath = "AADevDuck:assets/winner_duck_comic.ilbm";
+  char const* pWinnerHunterImagePath = "AADevDuck:assets/winner_hunter_comic.ilbm";
 
   const char* pImagePath;
   if(m_IsStrike)

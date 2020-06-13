@@ -1,7 +1,7 @@
 #include "DuckResources.h"
 
 DuckResources::DuckResources()
-  : m_AnimFlyLeft("AADevDuck:assets/duck_left_flying_strip2.iff", 2)
+  : m_AnimFlyLeft("AADevDuck:assets/duck_left_flying_strip2.ilbm", 2)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
   //       throw an exception if not.

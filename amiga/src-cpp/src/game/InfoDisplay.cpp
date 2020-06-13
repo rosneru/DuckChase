@@ -19,7 +19,7 @@ InfoDisplay::InfoDisplay(GameViewBase& gameView,
     m_MaxStrain(maxStrain),
     m_FormerStrain(0),
     m_StrainSpreadColors(gameColors.GetStrainSpreadColors()),
-    m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.iff", 2),
+    m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.ilbm", 2),
     m_Right(m_View.Width() - 4),
     m_Bottom(m_View.Height() - 1)
 {
