@@ -13,7 +13,7 @@ LowlevelViewPort::LowlevelViewPort(ULONG sizex,
                                    ULONG modeId,
                                    ULONG colors,
                                    struct BitMap* pBitMap,
-                                   ULONG* pColorArray)
+                                   const ULONG* pColorArray)
   : m_pViewPort(NULL),
     m_pViewPortExtra(NULL)
 {

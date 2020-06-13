@@ -21,7 +21,7 @@ public:
                    ULONG modeId,
                    ULONG colors, 
                    struct BitMap* pBitMap,
-                   ULONG* pColorArray = NULL);
+                   const ULONG* pColorArray = NULL);
 
   virtual ~LowlevelViewPort();
 

@@ -18,7 +18,7 @@ public:
   long WordWidth();
   long Height();
   long Depth();
-  ULONG* GetColors32();
+  const ULONG* GetColors32();
 
   struct BitMap* GetBitMap();
   struct BitMap *CreateBitMapMask();

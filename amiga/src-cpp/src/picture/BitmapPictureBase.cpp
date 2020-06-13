@@ -121,7 +121,7 @@ long BitmapPictureBase::Depth()
 
 
 
-ULONG* BitmapPictureBase::GetColors32()
+const ULONG* BitmapPictureBase::GetColors32()
 {
   return m_pColors32;
 }
