@@ -24,9 +24,9 @@ Hunter::Hunter(GameViewBase& gameView,
     m_LastDirection(JPF_JOY_RIGHT),
     m_UpClimbingPixelsLeft(0)
 {
-  m_Shape.Move(20, 196);
+  m_Shape.Move(20, 198);
 }
-
+ 
 
 Hunter::~Hunter()
 {
