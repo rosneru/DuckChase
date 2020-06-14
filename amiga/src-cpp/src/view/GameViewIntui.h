@@ -11,7 +11,7 @@
 
 /**
  * Represents an view for games using the Intuition interface of
- * Amiga OS3.0+. It uses a intuition screen with two (double buffering)
+ * Amiga OS3.1+. It uses a intuition screen with two (double buffering)
  * custom bitmaps which are set up manually.
  *
  * @author Uwe Rosner
@@ -21,7 +21,7 @@ class GameViewIntui : public GameViewBase
 {
 public:
   /**
-   * Opens a game view (screen and transparent window) in a Intuition
+   * Opens a game view (screen and transparent window) in an Intuition
    * compatible way.
    *
    * @param backgroundPicture This picture will be displayed as soon as

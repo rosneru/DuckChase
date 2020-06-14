@@ -94,6 +94,33 @@ GameViewBase::~GameViewBase()
 }
 
 
+void GameViewBase::BlitPicture(const IlbmBitmap& picture, 
+                               ULONG left, 
+                               ULONG top)
+{
+
+}
+
+void GameViewBase::BlitPictureCentered(const IlbmBitmap& picture)
+{
+
+}
+
+void GameViewBase::BlitMaskedPicture(const IlbmBitmap& picture, 
+                                     ULONG left, 
+                                     ULONG top)
+{
+
+}
+
+void GameViewBase::BlitMaskedPictureCentered(const IlbmBitmap& picture)
+{
+
+}
+
+
+
+
 long GameViewBase::Width() const
 {
   return m_Width;

@@ -35,13 +35,13 @@ BitmapPictureBase::~BitmapPictureBase()
 }
 
 
-struct BitMap* BitmapPictureBase::GetBitMap()
+const struct BitMap* BitmapPictureBase::GetBitMap() const
 {
   return m_pBitMap;
 }
 
 
-struct BitMap* BitmapPictureBase::CreateBitMapMask()
+const struct BitMap* BitmapPictureBase::CreateBitMapMask()
 {
   if(m_pBitMap == NULL)
   {
@@ -79,7 +79,7 @@ struct BitMap* BitmapPictureBase::CreateBitMapMask()
 }
 
 
-long BitmapPictureBase::Width()
+long BitmapPictureBase::Width() const
 {
   if(m_pBitMap == 0)
   {
@@ -89,7 +89,7 @@ long BitmapPictureBase::Width()
   return GetBitMapAttr(m_pBitMap, BMA_WIDTH);
 }
 
-long BitmapPictureBase::WordWidth()
+long BitmapPictureBase::WordWidth() const
 {
   if(m_pBitMap == 0)
   {
@@ -99,7 +99,7 @@ long BitmapPictureBase::WordWidth()
   return ((Width() + 15) & -16) >> 4;
 }
 
-long BitmapPictureBase::Height()
+long BitmapPictureBase::Height() const
 {
   if(m_pBitMap == 0)
   {
@@ -109,7 +109,7 @@ long BitmapPictureBase::Height()
   return GetBitMapAttr(m_pBitMap, BMA_HEIGHT);
 }
 
-long BitmapPictureBase::Depth()
+long BitmapPictureBase::Depth() const
 {
   if(m_pBitMap == 0)
   {
@@ -128,7 +128,7 @@ const ULONG* BitmapPictureBase::GetColors32()
 
 
 // TODO: Experimental. Probably not working for Interleaved or RTG BitMaps.
-int BitmapPictureBase::GetBitMapPixelColorNum(long row, long column)
+int BitmapPictureBase::GetBitMapPixelColorNum(long row, long column) const
 {
   if(m_pBitMap == NULL)
   {

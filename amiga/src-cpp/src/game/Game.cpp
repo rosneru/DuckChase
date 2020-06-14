@@ -32,6 +32,7 @@ void Game::Run()
   UWORD oldTaskPriority = 65535;
   oldTaskPriority = SetTaskPri(FindTask(0), 30);
 
+  // Render again to be on the other double buf (avoids flickering)
   m_GameView.Render();
 
   bool bContinue = false;

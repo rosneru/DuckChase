@@ -164,22 +164,22 @@ WORD* ImageDataPicture::GetImageData()
 }
 
 
-long ImageDataPicture::Width()
+long ImageDataPicture::Width() const
 {
   return m_Width;
 }
 
-long ImageDataPicture::WordWidth()
+long ImageDataPicture::WordWidth() const
 {
   return m_Height;
 }
 
-long ImageDataPicture::Height()
+long ImageDataPicture::Height() const
 {
   return m_Depth;
 }
 
-long ImageDataPicture::Depth()
+long ImageDataPicture::Depth() const
 {
   return m_WordWidth;
 }

@@ -30,12 +30,17 @@
 class GameViewBase
 {
 public:
+  void BlitPicture(const IlbmBitmap& picture, ULONG left, ULONG top);
+  void BlitPictureCentered(const IlbmBitmap& picture);
+  void BlitMaskedPicture(const IlbmBitmap& picture, ULONG left, ULONG top);
+  void BlitMaskedPictureCentered(const IlbmBitmap& picture);
+
+  void SetPlayfieldBorders(long top, long left, long bottom, long right);
+
   long Width() const;
   long WordWidth() const;
   long Height() const;
   long Depth() const;
-
-  void SetPlayfieldBorders(long top, long left, long bottom, long right);
 
   long BorderTop() const;
   long BorderLeft() const;

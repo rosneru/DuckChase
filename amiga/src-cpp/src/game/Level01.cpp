@@ -217,7 +217,7 @@ void Level01::displayWinner()
   }
   
   IlbmBitmap winnerPicture(pImagePath, false, false);
-  struct BitMap* pMask = winnerPicture.CreateBitMapMask();
+  const struct BitMap* pMask = winnerPicture.CreateBitMapMask();
   if(pMask == NULL)
   {
     return;

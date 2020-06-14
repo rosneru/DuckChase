@@ -14,16 +14,16 @@
 class BitmapPictureBase : public PictureBase
 {
 public:
-  long Width();
-  long WordWidth();
-  long Height();
-  long Depth();
+  long Width() const;
+  long WordWidth() const;
+  long Height() const;
+  long Depth() const;
   const ULONG* GetColors32();
 
-  struct BitMap* GetBitMap();
-  struct BitMap *CreateBitMapMask();
+  const struct BitMap* GetBitMap() const;
+  const struct BitMap* CreateBitMapMask();
 
-  int GetBitMapPixelColorNum(long row, long column);
+  int GetBitMapPixelColorNum(long row, long column) const;
 
 protected:
   BitmapPictureBase();

@@ -47,10 +47,10 @@ public:
 
 
   WORD* GetImageData();
-  long Width();
-  long WordWidth();
-  long Height();
-  long Depth();
+  long Width() const;
+  long WordWidth() const;
+  long Height() const;
+  long Depth() const;
 
 private:
   BPTR m_FileHandle;
