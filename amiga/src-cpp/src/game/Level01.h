@@ -3,6 +3,7 @@
 
 
 #include "GameViewBase.h"
+#include "GameVars.h"
 #include "GameWorld.h"
 #include "GelsLayer.h"
 #include "EntityCollection.h"
@@ -27,7 +28,11 @@
 class Level01
 {
 public:
-  Level01(GameViewBase& gameView, const GameWorld& gameWorld);
+  Level01(GameViewBase& gameView, 
+          InfoDisplay& infoDisplay,
+          GameVars& gameVars,
+          const GameWorld& gameWorld,
+          StopWatch& stopWatch);
 
   virtual ~Level01();
 
@@ -43,23 +48,18 @@ public:
 
 private:
   GameViewBase& m_GameView;
-
-  InfoDisplay m_InfoDisplay;
-  StopWatch m_StopWatch;
+  InfoDisplay& m_InfoDisplay;
+  GameVars& m_GameVars;
+  StopWatch& m_StopWatch;
   
   bool m_IsArrowFlightPrepared;
   bool m_IsArrowFlightFinished;
   bool m_IsStrike;
   size_t m_LastFps;
   
-  const size_t m_MaxStrain;
   size_t m_Strain;
   bool m_StrainMustUpdateSecondBuffer;
-  const size_t m_MaxArrows;
-  size_t m_NumArrowsLeft;
   bool m_ArrowsMustUpdateSecondBuffer;
-
-  GameColors m_GameColors;
 
   // EntityCollection m_Arrows;
   DuckResources m_DuckRes;

@@ -6,22 +6,20 @@
 
 
 Level01::Level01(GameViewBase& gameView, 
-           const GameWorld& gameWorld)
+                 InfoDisplay& infoDisplay,
+                 GameVars& gameVars,
+                 const GameWorld& gameWorld,
+                 StopWatch& stopWatch)
   : m_GameView(gameView),
-    m_InfoDisplay(gameView, 
-                  m_GameColors, 
-                  m_MaxArrows, 
-                  m_MaxStrain),
-    m_StopWatch(),
+    m_InfoDisplay(infoDisplay),
+    m_GameVars(gameVars),
+    m_StopWatch(stopWatch),
     m_IsArrowFlightPrepared(false),
     m_IsArrowFlightFinished(false),
     m_IsStrike(false),
     m_LastFps(16),
-    m_MaxStrain(118),
     m_Strain(0),
     m_StrainMustUpdateSecondBuffer(false),
-    m_MaxArrows(3),
-    m_NumArrowsLeft(m_MaxArrows),
     m_ArrowsMustUpdateSecondBuffer(false),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
     m_Arrow(m_GameView, 
@@ -40,11 +38,11 @@ Level01::Level01(GameViewBase& gameView,
   m_Arrow.Deactivate();
 
   // Initialize the info display with the available arrows
-  m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+  m_InfoDisplay.UpdateArrows();
 
   // Do it also in the 2nd screen buffer
   m_GameView.Render();
-  m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+  m_InfoDisplay.UpdateArrows();
 
   // *Must* be done after all sprites are allocated. Intuition then
   // re-adjustes everything (maybe also reduces gfx bandwitht) to ensure
@@ -141,8 +139,8 @@ void Level01::gameLoop()
     }
     else if(m_IsArrowFlightFinished)
     {
-      m_NumArrowsLeft--;
-      m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+      m_GameVars.DecreaseNumArrows();
+      m_InfoDisplay.UpdateArrows();
 
       // Arrows must be updated in 2nd screen buffer after switched
       m_ArrowsMustUpdateSecondBuffer = true;
@@ -176,7 +174,7 @@ void Level01::gameLoop()
 
     if(m_ArrowsMustUpdateSecondBuffer)
     {
-      m_InfoDisplay.UpdateArrows(m_NumArrowsLeft);
+      m_InfoDisplay.UpdateArrows();
       m_ArrowsMustUpdateSecondBuffer = false;
     }
 
@@ -190,7 +188,7 @@ void Level01::gameLoop()
       bContinue = false;
     }
 
-    if(m_NumArrowsLeft == 0 && !m_Arrow.IsAlive())
+    if(m_GameVars.NumArrows() == 0 && !m_Arrow.IsAlive())
     {
       bContinue = false;
     }

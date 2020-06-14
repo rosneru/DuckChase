@@ -5,6 +5,7 @@
 
 #include "AnimSeqBitmap.h"
 #include "GameColors.h"
+#include "GameVars.h"
 #include "GameViewBase.h"
 
 
@@ -19,14 +20,13 @@ class InfoDisplay
 {
 public:
   InfoDisplay(GameViewBase& gameView, 
-              GameColors& gameColors,
-              const size_t& maxArrows,
-              const size_t& maxStrain);
+              const GameColors& gameColors,
+              GameVars& gameVars);
 
   ~InfoDisplay();
 
   void UpdateFps(size_t fps);
-  void UpdateArrows(size_t numArrowsLeft);
+  void UpdateArrows();
 
   /**
    * Updates the strain value
@@ -35,8 +35,8 @@ public:
 
 private:
   GameViewBase& m_View;
-  const size_t& m_MaxArrows;
-  const size_t& m_MaxStrain;
+  GameVars& m_GameVars;
+
   size_t m_FormerStrain;
   ULONG* m_StrainSpreadColors;
 

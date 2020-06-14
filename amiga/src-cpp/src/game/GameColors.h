@@ -31,9 +31,9 @@ public:
    * and no terminating \0 longword. Use it only with SetRGB32.
    * array
    */
-  WORD* GetBarrelBrownSpriteColors();
+  WORD* GetBarrelBrownSpriteColors() const;
 
-  ULONG* GetStrainSpreadColors();
+  ULONG* GetStrainSpreadColors() const;
 
 
 private:

@@ -32,6 +32,7 @@ add_executable (DuckChase
                 game/Game.cpp
                 game/GameColors.cpp
                 game/GameTile.cpp
+                game/GameVars.cpp
                 game/GameWorld.cpp
                 game/InfoDisplay.cpp
                 game/Level01.cpp

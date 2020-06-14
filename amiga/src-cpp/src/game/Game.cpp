@@ -8,7 +8,10 @@
 
 Game::Game(GameViewBase& gameView, const GameWorld& gameWorld)
   : m_GameView(gameView),
-    m_GameWorld(gameWorld)
+    m_GameWorld(gameWorld),
+    m_InfoDisplay(gameView, 
+                  m_GameColors, 
+                  m_GameVars)
 {
 
 }
@@ -34,7 +37,11 @@ void Game::Run()
   bool bContinue = false;
   do
   {
-    Level01* pLevel01 = new Level01(m_GameView, m_GameWorld);
+    Level01* pLevel01 = new Level01(m_GameView, 
+                                    m_InfoDisplay, 
+                                    m_GameVars, 
+                                    m_GameWorld, 
+                                    m_StopWatch);
     pLevel01->Run();
     delete pLevel01;
 

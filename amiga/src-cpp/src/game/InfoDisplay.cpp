@@ -11,12 +11,10 @@ extern struct GfxBase* GfxBase;
 
 
 InfoDisplay::InfoDisplay(GameViewBase& gameView, 
-                         GameColors& gameColors,
-                         const size_t& maxArrows, 
-                         const size_t& maxStrain)
+                         const GameColors& gameColors,
+                         GameVars& gameVars)
   : m_View(gameView),
-    m_MaxArrows(maxArrows),
-    m_MaxStrain(maxStrain),
+    m_GameVars(gameVars),
     m_FormerStrain(0),
     m_StrainSpreadColors(gameColors.GetStrainSpreadColors()),
     m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.ilbm", 2),
@@ -33,16 +31,16 @@ InfoDisplay::~InfoDisplay()
 }
 
 
-void InfoDisplay::UpdateArrows(size_t numArrowsLeft)
+void InfoDisplay::UpdateArrows()
 {
 
 
   // Start blitting with an highlighted image for the available arrows
   struct BitMap* pBitMap = m_ArrowImages[0];
 
-  for(size_t i = 0; i < m_MaxArrows; i++)
+  for(size_t i = 0; i < m_GameVars.MaxArrows(); i++)
   {
-    if(i >= numArrowsLeft)
+    if(i >= m_GameVars.NumArrows())
     {
       // Blit the already shot arrows with a non-highlighted image
       pBitMap = m_ArrowImages[1];
@@ -88,9 +86,9 @@ void InfoDisplay::UpdateFps(size_t fps)
 
 void InfoDisplay::UpdateStrain(size_t newStrain, bool isForSecondBuffer)
 {
-  if(newStrain > m_MaxStrain)
+  if(newStrain > m_GameVars.MaxStrain())
   {
-    newStrain = m_MaxStrain;
+    newStrain = m_GameVars.MaxStrain();
   }
 
   if(newStrain == 0)

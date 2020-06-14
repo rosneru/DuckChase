@@ -97,12 +97,12 @@ bool GameColors::Load()
 }
 
 
-WORD* GameColors::GetBarrelBrownSpriteColors()
+WORD* GameColors::GetBarrelBrownSpriteColors() const
 {
   return m_sArrowSpriteColors.elem;
 }
 
-ULONG* GameColors::GetStrainSpreadColors()
+ULONG* GameColors::GetStrainSpreadColors() const
 {
   return m_sStrainSpreadColors.elem;
 }

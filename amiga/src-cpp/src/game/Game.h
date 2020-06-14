@@ -2,7 +2,11 @@
 #define GAME_H
 
 #include "GameViewBase.h"
+#include "GameColors.h"
+#include "GameVars.h"
 #include "GameWorld.h"
+#include "InfoDisplay.h"
+#include "StopWatch.h"
 
 /**
  * The game itself. Wraps together the separate levels.
@@ -20,6 +24,10 @@ public:
 private:
   GameViewBase& m_GameView;
   const GameWorld& m_GameWorld;
+  GameVars m_GameVars;
+  InfoDisplay m_InfoDisplay;
+  StopWatch m_StopWatch;
+  const GameColors m_GameColors;
 
   bool askContinue();
   void clearInfoLine();
