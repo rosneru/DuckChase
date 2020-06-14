@@ -30,23 +30,17 @@
 class GameViewBase
 {
 public:
-  /**
-   * Returns the background picture associated with this game view.
-   */
-  IlbmBitmap& BackgroundPicture();
-
-
-  long Width();
-  long WordWidth();
-  long Height();
-  long Depth();
+  long Width() const;
+  long WordWidth() const;
+  long Height() const;
+  long Depth() const;
 
   void SetPlayfieldBorders(long top, long left, long bottom, long right);
 
-  long BorderTop();
-  long BorderLeft();
-  long BorderRight();
-  long BorderBottom();
+  long BorderTop() const;
+  long BorderLeft() const;
+  long BorderRight() const;
+  long BorderBottom() const;
 
 
   //
@@ -62,7 +56,6 @@ public:
 
 
 protected:
-  IlbmBitmap& m_BackgroundPicture;
   struct BitMap* m_pBitMapArray[2];
 
   short m_BorderTop;
@@ -87,6 +80,12 @@ protected:
 
   GameViewBase(IlbmBitmap& backgroundPicture);
   virtual ~GameViewBase();
+
+private:
+  ULONG m_Width;
+  ULONG m_WordWidth;
+  ULONG m_Height;
+  ULONG m_Depth;
 };
 
 #endif

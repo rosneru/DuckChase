@@ -20,6 +20,15 @@
 class GameViewIntui : public GameViewBase
 {
 public:
+  /**
+   * Opens a game view (screen and transparent window) in a Intuition
+   * compatible way.
+   *
+   * @param backgroundPicture This picture will be displayed as soon as
+   * the view is opened. The view dimensions and the color palette are
+   * taken from the picture.
+   *
+   */
   GameViewIntui(IlbmBitmap& backgroundPicture);
   virtual ~GameViewIntui();
 

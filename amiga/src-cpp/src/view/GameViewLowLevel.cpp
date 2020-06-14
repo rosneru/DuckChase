@@ -27,7 +27,7 @@ GameViewLowlevel::GameViewLowlevel(IlbmBitmap& backgroundPicture,
                        modeId,
                        1L << Depth(), // TODO - Ensure min 32 colors?
                        m_pBitMapArray[m_CurrentBuf],
-                       m_BackgroundPicture.GetColors32()),
+                       backgroundPicture.GetColors32()),
     m_RastPort(),
     m_pOldView(NULL),
     m_pDBufInfo(NULL)

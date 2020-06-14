@@ -5,8 +5,7 @@
 #include "GameViewBase.h"
 
 GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
-  : m_BackgroundPicture(backgroundPicture),
-    m_pBitMapArray(),
+  : m_pBitMapArray(),
     m_BorderTop(0),
     m_BorderLeft(0),
     m_BorderBottom(backgroundPicture.Height() - 1),
@@ -15,16 +14,20 @@ GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
     m_bDBufSafeToWrite(true),
     m_CurrentBuf(1),
     m_pSafeMessage(NULL),
-    m_pDispMessage(NULL)
+    m_pDispMessage(NULL),
+    m_Width(backgroundPicture.Width()),
+    m_WordWidth(backgroundPicture.WordWidth()),
+    m_Height(backgroundPicture.Height()),
+    m_Depth(backgroundPicture.Depth())
 {
   //
   // Create and initialize two BitMaps for double buffering
   //
   for(size_t i = 0; i < 2; i++)
   {
-    m_pBitMapArray[i] = AllocBitMap(m_BackgroundPicture.Width(), 
-                                    m_BackgroundPicture.Height(),
-                                    m_BackgroundPicture.Depth(),
+    m_pBitMapArray[i] = AllocBitMap(backgroundPicture.Width(), 
+                                    backgroundPicture.Height(),
+                                    backgroundPicture.Depth(),
                                     BMF_STANDARD | BMF_INTERLEAVED | BMF_CLEAR,
                                     NULL);
 
@@ -41,14 +44,14 @@ GameViewBase::GameViewBase(IlbmBitmap& backgroundPicture)
     WaitBlit();
 
     // Blit the background image into the BitMaps
-    BltBitMap(m_BackgroundPicture.GetBitMap(),
+    BltBitMap(backgroundPicture.GetBitMap(),
               0,
               0,
               m_pBitMapArray[i],
               0,
               0,
-              m_BackgroundPicture.Width() - 1,
-              m_BackgroundPicture.Height() - 1,
+              backgroundPicture.Width() - 1,
+              backgroundPicture.Height() - 1,
               0xC0,
               0xFF,
               NULL);
@@ -90,49 +93,45 @@ GameViewBase::~GameViewBase()
   }
 }
 
-IlbmBitmap& GameViewBase::BackgroundPicture()
+
+long GameViewBase::Width() const
 {
-  return m_BackgroundPicture;
+  return m_Width;
 }
 
-long GameViewBase::Width()
+long GameViewBase::WordWidth() const
 {
-  return m_BackgroundPicture.Width();
+  return m_WordWidth;
 }
 
-long GameViewBase::WordWidth()
+long GameViewBase::Height() const
 {
-  return m_BackgroundPicture.WordWidth();
-}
-
-long GameViewBase::Height()
-{
-  return m_BackgroundPicture.Height();
+  return m_Height;
 }
 
 
-long GameViewBase::Depth()
+long GameViewBase::Depth() const
 {
-  return m_BackgroundPicture.Depth();
+  return m_Depth;
 }
 
 
-long GameViewBase::BorderTop()
+long GameViewBase::BorderTop() const
 {
   return m_BorderTop;
 }
 
-long GameViewBase::BorderLeft()
+long GameViewBase::BorderLeft() const
 {
   return m_BorderLeft;
 }
 
-long GameViewBase::BorderBottom()
+long GameViewBase::BorderBottom() const
 {
   return m_BorderBottom;
 }
 
-long GameViewBase::BorderRight()
+long GameViewBase::BorderRight() const
 {
   return m_BorderRight;
 }

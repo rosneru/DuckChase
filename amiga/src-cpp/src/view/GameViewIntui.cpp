@@ -39,7 +39,7 @@ GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
     SA_Quiet, TRUE,
     SA_Type, CUSTOMSCREEN,
     SA_Exclusive, TRUE,
-    SA_Colors32, m_BackgroundPicture.GetColors32(),
+    SA_Colors32, backgroundPicture.GetColors32(),
     TAG_DONE);
 
   if(m_pScreen == NULL)
