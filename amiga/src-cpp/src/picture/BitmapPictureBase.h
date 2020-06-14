@@ -21,6 +21,10 @@ public:
   const ULONG* GetColors32();
 
   const struct BitMap* GetBitMap() const;
+
+  /**
+   * FIXME: Isn't this already done on ilbm loading..?
+   */
   const struct BitMap* CreateBitMapMask();
 
   int GetBitMapPixelColorNum(long row, long column) const;

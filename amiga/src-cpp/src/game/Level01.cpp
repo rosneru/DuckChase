@@ -216,32 +216,7 @@ void Level01::displayWinner()
     pImagePath = pWinnerDuckImagePath;
   }
   
+  // Display the winner picture
   IlbmBitmap winnerPicture(pImagePath, false, false);
-  const struct BitMap* pMask = winnerPicture.CreateBitMapMask();
-  if(pMask == NULL)
-  {
-    return;
-  }
-
-  // Blit the selected 'duck wins' image on the screen
-  int x = (m_GameView.Width() - winnerPicture.Width()) / 2;
-  int y = (m_GameView.Height() - winnerPicture.Height()) / 2;
-
-  // Blit the winner pic into both screen buffers
-  for(size_t i = 0; i < 2; i++)
-  {
-    BltMaskBitMapRastPort(winnerPicture.GetBitMap(),
-                          0,
-                          0,
-                          m_GameView.RastPort(),
-                          x,
-                          y,
-                          winnerPicture.Width(),
-                          winnerPicture.Height(),
-                          0xe0,
-                          pMask->Planes[0]);
-
-    WaitBlit();
-    m_GameView.Render();
-  }
+  m_GameView.BlitPictureMasked(winnerPicture);
 }
