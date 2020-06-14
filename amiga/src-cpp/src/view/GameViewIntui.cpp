@@ -20,10 +20,11 @@ GameViewIntui::GameViewIntui(IlbmBitmap& backgroundPicture)
     m_pWindow(NULL),
     m_pDBufInfo(NULL)
 {
-  // Additional setting for the screen to use hires sprites
+  // Additional setting for the screen
   struct TagItem vcTags[] =
   {
-    {VTAG_SPRITERESN_SET, SPRITERESN_70NS},
+    {VTAG_SPRITERESN_SET, SPRITERESN_70NS}, // use HiRes sprites
+    {VC_IntermediateCLUpdate, FALSE},       // speeds up LoadRGB(), SetRGB(), ScrollVPort(), and ChangeVPBitMap()
     {TAG_DONE}
   };
 
