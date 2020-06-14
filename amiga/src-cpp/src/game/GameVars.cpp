@@ -2,7 +2,8 @@
 
 GameVars::GameVars()
   : m_MaxStrain(118),
-    m_MaxArrows(3)
+    m_MaxArrows(3),
+    m_NumArrows(m_MaxArrows)
 {
 
 }

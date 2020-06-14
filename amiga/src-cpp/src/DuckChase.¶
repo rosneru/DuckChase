@@ -276,6 +276,7 @@ File
 "game/Level01.h"
 "entities/Duck.h"
 "shapes/Rect.h"
+"game/GameVars.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
 ""
@@ -297,6 +298,14 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "game/GameVars.cpp"
+"game/GameVars.cpp"
+"game/GameVars.h"
+Storm Shell Project (Dependencies)
+"objects_debug/GameVars.o" "objects_debug/GameVars.debug"
+""
+1 1
+File
 1 "game/GameWorld.cpp"
 "game/GameWorld.cpp"
 "game/GameWorld.h"
@@ -313,6 +322,7 @@ File
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
 "anim/AnimSeqBase.h"
+"game/GameVars.h"
 Storm Shell Project (Dependencies)
 "objects_debug/InfoDisplay.o" "objects_debug/InfoDisplay.debug"
 ""
@@ -333,6 +343,7 @@ File
 "resources/ResourceGELs.h"
 "game/InfoDisplay.h"
 "shapes/Rect.h"
+"game/GameVars.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Level01.o" "objects_debug/Level01.debug"
 ""
@@ -346,6 +357,10 @@ File
 "game/GameTile.h"
 "view/lowlevelview.h"
 "view/lowlevelviewport.h"
+"game/GameColors.h"
+"game/GameVars.h"
+"game/InfoDisplay.h"
+"anim/AnimSeqBase.h"
 Storm Shell Project (Dependencies)
 "objects_debug/main.o" "objects_debug/main.debug"
 ""
@@ -666,6 +681,13 @@ Storm Shell Project (Dependencies)
 File
 2 "game/GameTile.h"
 "game/GameTile.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "game/GameVars.h"
+"game/GameVars.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
