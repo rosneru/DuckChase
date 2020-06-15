@@ -18,10 +18,12 @@ void ShapeBase::Move(int x, int y)
   move(x - m_HotspotX, y - m_HotspotY);
 }
 
+
 short ShapeBase::Width() const
 {
   return m_Width;
 }
+
 
 short ShapeBase::Height() const
 {
@@ -40,25 +42,25 @@ int ShapeBase::Y() const
   return Top() + m_HotspotY;
 }
 
+
 void ShapeBase::SetHotspot(int hotspotX, int hotspotY)
 {
   m_HotspotX = hotspotX;
   m_HotspotY = hotspotY;
 }
 
-bool ShapeBase::Intersects(ShapeBase &other)
+
+bool ShapeBase::Intersects(const ShapeBase &other)
 {
   if(Left() < other.Right() && 
      Right() > other.Left() && 
      Top() < other.Bottom() && 
      Bottom() > other.Top())
   {
-
-
-    m_CollisionRect.Set(other.Left() > Left() ? other.Left()-Left() : 0, 
-                        other.Right() < Right() ? other.Right()-Left() : Width()-1, 
-                        other.Top() > Top() ? other.Top()-Top() : 0, 
-                        other.Bottom() < Bottom() ? other.Bottom()-Top() : Height()-1);
+    m_IntersRect.Set(other.Left() > Left() ? other.Left()-Left() : 0, 
+                     other.Right() < Right() ? other.Right()-Left() : Width()-1, 
+                     other.Top() > Top() ? other.Top()-Top() : 0, 
+                     other.Bottom() < Bottom() ? other.Bottom()-Top() : Height()-1);
 
     return true;
   }
@@ -68,10 +70,12 @@ bool ShapeBase::Intersects(ShapeBase &other)
   }
 }
 
-const Rect& ShapeBase::CollisionRect() const
+
+const Rect& ShapeBase::IntersectRect() const
 {
-  return m_CollisionRect;
+  return m_IntersRect;
 }
+
 
 int ShapeBase::BottomToPlatformDistance(IlbmBitmap& picture, 
                                         int dY, 

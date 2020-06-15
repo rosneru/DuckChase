@@ -114,9 +114,9 @@ public:
    * Returns true if this object intersects / collides with the other
    * object. In collision case it calculates the collision rect.
    */
-  bool Intersects(ShapeBase& other);
+  bool Intersects(const ShapeBase& other);
 
-  const Rect& CollisionRect() const;
+  const Rect& IntersectRect() const;
 
 
   enum BottomDistanceMeasMode
@@ -158,7 +158,7 @@ protected:
 private:
   int m_HotspotX;
   int m_HotspotY;
-  Rect m_CollisionRect;
+  Rect m_IntersRect;
 };
 
 #endif

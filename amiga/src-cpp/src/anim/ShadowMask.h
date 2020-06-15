@@ -3,6 +3,14 @@
 
 #include <graphics/gfx.h>
 
+#include "Rect.h"
+
+/**
+ * Represent the shadow / collision mask of a BitMap picture.
+ *
+ * @author Uwe Rosner
+ * @date 11/06/2020
+ */
 class ShadowMask
 {
 public:
@@ -10,9 +18,15 @@ public:
   virtual ~ShadowMask();
 
   /**
-   * Returns the shadow mask of the indexed image
+   * Returns true if non-zero pixels of this mask are overlapping
+   * (colliding) with non-zero pixels of the other mask. 
+   *
+   * Only the overlapping area is checked which are the given relative 
+   * to the object rectangles.
    */
-  const UBYTE* Mask(size_t index) const;
+  bool IsCollision(const ShadowMask* pOther, 
+                   const Rect& thisRect,
+                   const Rect& otherRect) const;
 private:
   UBYTE* m_pMask;
 

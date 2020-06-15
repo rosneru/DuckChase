@@ -1,6 +1,12 @@
 #ifndef RECT_H
 #define RECT_H
 
+/**
+ * Represents a simple, geometric rectangle.
+ *
+ * @author Uwe Rosner
+ * @date 10/06/2020
+ */
 class Rect
 {
 public:

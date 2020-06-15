@@ -33,13 +33,6 @@ Hunter::~Hunter()
 
 }
 
-
-ShapeBase& Hunter::Shape()
-{
-  return m_Shape;
-}
-
-
 void Hunter::Activate(int x, int y, long xSpeed, long ySpeed)
 {
   m_Shape.Move(x, y);

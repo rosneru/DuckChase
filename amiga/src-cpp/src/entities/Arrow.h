@@ -31,8 +31,6 @@ public:
         bool& isStrike);
 
   virtual ~Arrow();
-  
-  ShapeBase& Shape();
 
   virtual void Activate(int x, int y, long xSpeed, long ySpeed);
   void Deactivate();

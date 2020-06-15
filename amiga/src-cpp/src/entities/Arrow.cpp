@@ -35,10 +35,6 @@ Arrow::~Arrow()
 
 }
 
-ShapeBase& Arrow::Shape()
-{
-  return m_Shape;
-}
 
 void Arrow::Activate(int x, int y, long xSpeed, long ySpeed)
 {
@@ -146,13 +142,8 @@ void Arrow::Update(unsigned long elapsed, unsigned long joyPortState)
 
   m_Shape.Move(m_Shape.Left() + dX, newY);
 
-  if(m_Shape.Intersects(m_Duck.Shape()))
+  if(isCollision(m_Duck))
   {
-    // Also calculate the duck's collsion rect
-    m_Duck.Shape().Intersects(m_Shape);
-
-    // m_Animator.
-
     m_IsStrike = true;
   }
 }

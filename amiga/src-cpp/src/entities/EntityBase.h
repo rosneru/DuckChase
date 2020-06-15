@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "GameWorld.h"
+#include "ShadowMask.h"
 #include "ShapeBase.h"
 
 /**
@@ -48,8 +49,6 @@ public:
    */
   virtual void Update(unsigned long elapsed, unsigned long joyPortState) = 0;
 
-  virtual ShapeBase& Shape() = 0;
-
 protected:
   const GameWorld& m_GameWorld;
 
@@ -83,6 +82,8 @@ protected:
   int m_FrameSwitchingRateAt50Fps;
 
   EntityBase(const GameWorld& gameWorld);
+
+  bool isCollision(const EntityBase& other) const;
 
 
   /**

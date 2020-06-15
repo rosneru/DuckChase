@@ -26,6 +26,22 @@ bool EntityBase::IsAlive()
   return m_IsAlive;
 }
 
+bool EntityBase::isCollision(const EntityBase& other) const
+{
+  // if(m_Shape.Intersects(m_Duck.Shape()))
+  // {
+  //   // Also calculate the duck's collsion rect
+  //   m_Duck.Shape().Intersects(m_Shape);
+
+  //   if(Mask()->IsCollision(m_Duck.Mask(),
+  //                          m_Shape.IntersectRect(),
+  //                          m_Duck.Shape().IntersectRect()))
+  //   {
+  //     m_IsStrike = true;
+  //   }
+  // }
+}
+
 
 long EntityBase::pps2Dist(long pps, long elapsed_ms)
 {

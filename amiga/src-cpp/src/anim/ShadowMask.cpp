@@ -34,7 +34,13 @@ ShadowMask::~ShadowMask()
   if(m_pMask != NULL)
   {
     FreeVec(m_pMask);
+    m_pMask = NULL;
   }
+}
 
-  m_pMask = NULL;
+bool ShadowMask::IsCollision(const ShadowMask* pOther, 
+                             const Rect& thisRect,
+                             const Rect& otherRect) const
+{
+  return false;
 }
