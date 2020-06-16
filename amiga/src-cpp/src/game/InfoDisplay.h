@@ -7,6 +7,7 @@
 #include "GameColors.h"
 #include "GameVars.h"
 #include "GameViewBase.h"
+#include "IlbmBitmap.h"
 
 
 /**
@@ -36,6 +37,7 @@ public:
 private:
   GameViewBase& m_View;
   GameVars& m_GameVars;
+  IlbmBitmap m_BackgroundPicture;
 
   size_t m_FormerStrain;
   ULONG* m_StrainSpreadColors;

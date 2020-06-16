@@ -6,6 +6,7 @@
 #include "GameVars.h"
 #include "GameWorld.h"
 #include "GelsLayer.h"
+#include "IlbmBitmap.h"
 #include "EntityCollection.h"
 
 #include "Arrow.h"
@@ -51,6 +52,8 @@ private:
   InfoDisplay& m_InfoDisplay;
   GameVars& m_GameVars;
   StopWatch& m_StopWatch;
+
+  IlbmBitmap m_BackgroundPicture;
   
   bool m_IsArrowFlightPrepared;
   bool m_IsArrowFlightFinished;

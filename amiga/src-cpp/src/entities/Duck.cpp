@@ -18,7 +18,7 @@ Duck::Duck(GameViewBase& gameView,
 {
   // Move to start position
   m_Shape.Move(800, 40);
-  m_XSpeed = -200;
+  m_XSpeed = -270;
 }
 
 
@@ -59,7 +59,7 @@ void Duck::Update(unsigned long elapsed, unsigned long joyPortState)
   // Every some frames (or if the direction changed) switch the duck
   // image
   m_ElapsedSinceLastAnimUpdate += elapsed;
-  if (m_ElapsedSinceLastAnimUpdate > 180)
+  if (m_ElapsedSinceLastAnimUpdate > 200)
   {
     m_ElapsedSinceLastAnimUpdate = 0;
     m_Animator.NextFrame();

@@ -17,11 +17,13 @@ int main(void)
   try
   {
     // Load the background image
-    IlbmBitmap backgroundPicture("AADevDuck:assets/title.ilbm", true, false);
+    IlbmBitmap paletteImg("AADevDuck:assets/blank_fullsize_Screen.ilbm", 
+                          true, 
+                          false);
 
     // Create and open a game view
     // GameViewLowlevel gameView(backgroundPicture, PAL_MONITOR_ID|LORES_KEY);
-    GameViewIntui gameView(backgroundPicture);
+    GameViewIntui gameView(paletteImg);
 
     // In this game the playfield does not fill the whole screen
     gameView.SetPlayfieldBorders(0, 40, 255, 280);

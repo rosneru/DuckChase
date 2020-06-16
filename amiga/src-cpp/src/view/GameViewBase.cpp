@@ -58,7 +58,7 @@ GameViewBase::GameViewBase(IlbmBitmap& picture)
   }
 
   //
-  // Create double buffering related objects
+  // Create the MsgPorts needed for double buffering
   //
   m_pSafeMessage = CreateMsgPort();
   m_pDispMessage = CreateMsgPort();
