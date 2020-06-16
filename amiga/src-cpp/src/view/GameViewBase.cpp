@@ -50,8 +50,8 @@ GameViewBase::GameViewBase(IlbmBitmap& picture)
               m_pBitMapArray[i],
               0,
               0,
-              picture.Width() - 1,
-              picture.Height() - 1,
+              picture.Width(),
+              picture.Height(),
               0xC0,
               0xFF,
               NULL);
@@ -107,8 +107,8 @@ void GameViewBase::BlitPicture(const IlbmBitmap& picture,
           RastPort(),
           left,
           top,
-          picture.Width() - 1,
-          picture.Height() - 1,
+          picture.Width(),
+          picture.Height(),
           0xC0);
 
     WaitBlit();

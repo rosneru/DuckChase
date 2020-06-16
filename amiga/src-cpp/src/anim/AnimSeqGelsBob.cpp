@@ -48,8 +48,8 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
               m_pFrameBitMap,
               0,
               0,
-              frameWidth - 1,
-              srcIlbmBitmap.Height() - 1,
+              frameWidth,
+              srcIlbmBitmap.Height(),
               0Xc0,
               0xff,
               NULL);
