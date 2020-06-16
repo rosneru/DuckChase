@@ -11,7 +11,7 @@ Arrow::Arrow(GameViewBase& gameView,
              size_t& isStrain,
              bool& isArrowFlightFinished,
              bool& strike)
-  : EntityBase(gameWorld, m_ArrowShape),
+  : EntityBase(gameWorld, m_ArrowShape, m_Animator.CurrentShadowMask()),
     m_GameView(gameView),
     m_Resources(arrowResources),
     m_Duck(duck),

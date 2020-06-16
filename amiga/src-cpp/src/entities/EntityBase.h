@@ -19,19 +19,24 @@ class EntityBase
 {
 public:
   /**
+   * Returns a const reference to this entity's shape
+   */
+  ShapeBase& Shape() const;
+
+  /**
    * Returns the objects current speed in x-direction in pixel per second.
    */
-  virtual long XSpeed();
+  virtual long XSpeed() const;
 
   /**
    * Returns the objects current speed in y-direction in pixel per second.
    */
-  virtual long YSpeed();
+  virtual long YSpeed() const;
   
   /**
    * Returns if the object is still alive.
    */
-  virtual bool IsAlive();
+  virtual bool IsAlive() const;
 
   /**
    * Activate the object at given position with given speed. Speed unit
@@ -52,6 +57,10 @@ public:
 protected:
   const GameWorld& m_GameWorld;
   ShapeBase& m_Shape;
+  const ShadowMask*& m_pCurrentShadowMask;/// A reference to the shadow
+                                          /// mask of the animation 
+                                          /// frame currently displayed 
+                                          /// in the entity's shape.
 
   enum Actions
   {
@@ -82,9 +91,11 @@ protected:
 
   int m_FrameSwitchingRateAt50Fps;
 
-  EntityBase(const GameWorld& gameWorld, ShapeBase& shape);
+  EntityBase(const GameWorld& gameWorld, 
+             ShapeBase& shape, 
+             const ShadowMask*& currentMask);
 
-  bool isCollision(const EntityBase& other) const;
+  bool isCollision(EntityBase& other) const;
 
 
   /**

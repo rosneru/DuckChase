@@ -1,8 +1,11 @@
 #include "EntityBase.h"
 
-EntityBase::EntityBase(const GameWorld& gameWorld, ShapeBase& shape) 
+EntityBase::EntityBase(const GameWorld& gameWorld, 
+                       ShapeBase& shape,
+                       const ShadowMask*& currentMask) 
   : m_GameWorld(gameWorld),
     m_Shape(shape),
+    m_pCurrentShadowMask(currentMask),
     m_XSpeed(0),
     m_YSpeed(0),
     m_IsAlive(true),
@@ -10,37 +13,46 @@ EntityBase::EntityBase(const GameWorld& gameWorld, ShapeBase& shape)
 {
 }
 
-long EntityBase::XSpeed()
+ShapeBase& EntityBase::Shape() const
+{
+  return m_Shape;
+}
+
+
+long EntityBase::XSpeed() const
 {
   return m_XSpeed;
 }
 
 
-long EntityBase::YSpeed()
+long EntityBase::YSpeed() const
 {
   return m_YSpeed;
 }
 
 
-bool EntityBase::IsAlive()
+bool EntityBase::IsAlive() const
 {
   return m_IsAlive;
 }
 
-bool EntityBase::isCollision(const EntityBase& other) const
+bool EntityBase::isCollision(EntityBase& other) const
 {
-  // if(m_Shape.Intersects(m_Duck.Shape()))
-  // {
-  //   // Also calculate the duck's collsion rect
-  //   m_Duck.Shape().Intersects(m_Shape);
+  if(m_Shape.Intersects(other.Shape()))
+  {
+    // Also calculate the other shapes intersection/collsion rect
+    other.Shape().Intersects(m_Shape);
 
-  //   if(Mask()->IsCollision(m_Duck.Mask(),
-  //                          m_Shape.IntersectRect(),
-  //                          m_Duck.Shape().IntersectRect()))
-  //   {
-  //     m_IsStrike = true;
-  //   }
-  // }
+    if(m_pCurrentShadowMask->IsCollision(other.m_pCurrentShadowMask,
+                                         m_Shape.IntersectRect(),
+                                         other.Shape().IntersectRect()))
+    {
+      return true;
+    }
+
+  }
+
+  return false;
 }
 
 

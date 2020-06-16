@@ -1,6 +1,7 @@
 #ifndef ANIMATOR_H
 #define ANIMATOR_H
 
+#include "ShadowMask.h"
 
 template <class S, class T>
 class Animator 
@@ -10,15 +11,21 @@ class Animator
       : m_Shape(shape),
         m_pAnimSeq(pAnimSeq),
         m_CurrentFrameId(0),
+        m_pCurrentShadowMask(pAnimSeq->Mask(m_CurrentFrameId)),
         m_bAnimateBackward(false)
 
     {
       FirstFrame();
     }
 
-
     ~Animator() { }
 
+
+    const ShadowMask *& CurrentShadowMask()
+    {
+      return m_pCurrentShadowMask;
+    }
+    
 
     void FirstFrame()
     {
@@ -31,8 +38,7 @@ class Animator
       m_CurrentFrameId = 0;
 
       m_Shape.SetImage((*m_pAnimSeq)[m_CurrentFrameId]);
-
-      // WORD* pFirstImage = m_pAnimSeq->NumFrames();
+      m_pCurrentShadowMask = m_pAnimSeq->Mask(m_CurrentFrameId);
     }
 
     void NextFrame(size_t animStartImageIdx = 0)
@@ -46,6 +52,7 @@ class Animator
       setNextAnimFrameId(animStartImageIdx);
 
       m_Shape.SetImage((*m_pAnimSeq)[m_CurrentFrameId]);
+      m_pCurrentShadowMask = m_pAnimSeq->Mask(m_CurrentFrameId);
     }
 
     void IndexedFrame(size_t index)
@@ -57,6 +64,7 @@ class Animator
 
       m_CurrentFrameId = index;
       m_Shape.SetImage((*m_pAnimSeq)[m_CurrentFrameId]);
+      m_pCurrentShadowMask = m_pAnimSeq->Mask(m_CurrentFrameId);
     }
 
 
@@ -74,6 +82,7 @@ private:
   S& m_Shape;
   T* m_pAnimSeq;
   size_t m_CurrentFrameId;
+  const ShadowMask* m_pCurrentShadowMask;
   bool m_bAnimateBackward;
 
   void setNextAnimFrameId(size_t animStartImageIdx)

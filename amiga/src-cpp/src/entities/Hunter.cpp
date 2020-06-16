@@ -10,7 +10,7 @@ Hunter::Hunter(GameViewBase& gameView,
                const HunterResources& jumpmanResources,
                Arrow& arrow,
                bool& isArrowFlightPrepared)
-  : EntityBase(gameWorld, m_HunterShape),
+  : EntityBase(gameWorld, m_HunterShape, m_Animator.CurrentShadowMask()),
     m_GameView(gameView),
     m_Resources(jumpmanResources),
     m_HunterShape(gameView.RastPort(), 

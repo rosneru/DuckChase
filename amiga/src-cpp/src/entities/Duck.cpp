@@ -7,7 +7,7 @@
 Duck::Duck(GameViewBase& gameView,
            const GameWorld& gameWorld,
            const DuckResources& duckResources)
-  : EntityBase(gameWorld, m_DuckShape),
+  : EntityBase(gameWorld, m_DuckShape, m_Animator.CurrentShadowMask()),
     m_GameView(gameView),
     m_Resources(duckResources),
     m_DuckShape(m_GameView.RastPort(), 
