@@ -37,7 +37,7 @@ private:
   GameViewBase& m_GameView;
   const HunterResources& m_Resources;
 
-  ShapeBob m_Shape;
+  ShapeBob m_HunterShape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;
 
   size_t m_WidthHalf;

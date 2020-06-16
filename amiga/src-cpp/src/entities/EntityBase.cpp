@@ -1,7 +1,8 @@
 #include "EntityBase.h"
 
-EntityBase::EntityBase(const GameWorld& gameWorld) 
+EntityBase::EntityBase(const GameWorld& gameWorld, ShapeBase& shape) 
   : m_GameWorld(gameWorld),
+    m_Shape(shape),
     m_XSpeed(0),
     m_YSpeed(0),
     m_IsAlive(true),

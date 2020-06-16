@@ -11,21 +11,21 @@ Arrow::Arrow(GameViewBase& gameView,
              size_t& isStrain,
              bool& isArrowFlightFinished,
              bool& strike)
-  : EntityBase(gameWorld),
+  : EntityBase(gameWorld, m_ArrowShape),
     m_GameView(gameView),
     m_Resources(arrowResources),
     m_Duck(duck),
     m_Strain(isStrain),
     m_IsArrowFlightFinished(isArrowFlightFinished),
     m_IsStrike(strike),
-    m_Shape(m_GameView.ViewPort(), 
+    m_ArrowShape(m_GameView.ViewPort(), 
             arrowResources),
-    m_Animator(m_Shape, arrowResources.AnimRightUpward()),
+    m_Animator(m_ArrowShape, arrowResources.AnimRightUpward()),
     m_X0(0),
     m_Y0(0)
 {
-  m_Shape.SetVPortColorsForSprite(gameView.ViewPort(), 
-                                  m_Resources.AnimRightUpward()->GetColors32());
+  m_ArrowShape.SetVPortColorsForSprite(gameView.ViewPort(), 
+                                       m_Resources.AnimRightUpward()->GetColors32());
   m_Shape.SetInvisible();
 }
 

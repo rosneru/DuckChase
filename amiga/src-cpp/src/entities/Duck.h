@@ -36,7 +36,7 @@ private:
   GameViewBase& m_GameView;
   const DuckResources& m_Resources;
 
-  ShapeBob m_Shape;
+  ShapeBob m_DuckShape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;
 
   size_t m_ElapsedSinceLastAnimUpdate;

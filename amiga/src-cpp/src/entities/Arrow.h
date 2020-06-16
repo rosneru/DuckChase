@@ -47,7 +47,7 @@ private:
   bool& m_IsArrowFlightFinished;
   bool& m_IsStrike;
 
-  ShapeExtSprite m_Shape;
+  ShapeExtSprite m_ArrowShape;
   Animator<ShapeExtSprite, const AnimSeqExtSprite> m_Animator;
 
   int m_X0;

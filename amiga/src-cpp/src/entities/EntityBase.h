@@ -51,6 +51,7 @@ public:
 
 protected:
   const GameWorld& m_GameWorld;
+  ShapeBase& m_Shape;
 
   enum Actions
   {
@@ -81,7 +82,7 @@ protected:
 
   int m_FrameSwitchingRateAt50Fps;
 
-  EntityBase(const GameWorld& gameWorld);
+  EntityBase(const GameWorld& gameWorld, ShapeBase& shape);
 
   bool isCollision(const EntityBase& other) const;
 

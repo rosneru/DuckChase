@@ -6,17 +6,17 @@
 #include "Hunter.h"
 
 Hunter::Hunter(GameViewBase& gameView, 
-                 const GameWorld& gameWorld, 
-                 const HunterResources& jumpmanResources,
-                 Arrow& arrow,
-                 bool& isArrowFlightPrepared)
-  : EntityBase(gameWorld),
+               const GameWorld& gameWorld, 
+               const HunterResources& jumpmanResources,
+               Arrow& arrow,
+               bool& isArrowFlightPrepared)
+  : EntityBase(gameWorld, m_HunterShape),
     m_GameView(gameView),
     m_Resources(jumpmanResources),
-    m_Shape(gameView.RastPort(), 
+    m_HunterShape(gameView.RastPort(), 
             gameView.Depth(),
             jumpmanResources),
-    m_Animator(m_Shape, jumpmanResources.AnimRightRun()),
+    m_Animator(m_HunterShape, jumpmanResources.AnimRightRun()),
     m_ElapsedSinceLastAnimUpdate(0),
     m_Arrow(arrow),
     m_IsArrowFlightPrepared(isArrowFlightPrepared),

@@ -7,13 +7,13 @@
 Duck::Duck(GameViewBase& gameView,
            const GameWorld& gameWorld,
            const DuckResources& duckResources)
-  : EntityBase(gameWorld),
+  : EntityBase(gameWorld, m_DuckShape),
     m_GameView(gameView),
     m_Resources(duckResources),
-    m_Shape(m_GameView.RastPort(), 
+    m_DuckShape(m_GameView.RastPort(), 
             m_GameView.Depth(),
             duckResources),
-    m_Animator(m_Shape, duckResources.AnimFlyLeft()),
+    m_Animator(m_DuckShape, duckResources.AnimFlyLeft()),
     m_ElapsedSinceLastAnimUpdate(0)
 {
   // Move to start position
