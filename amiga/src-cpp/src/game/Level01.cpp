@@ -20,8 +20,6 @@ Level01::Level01(GameViewBase& gameView,
     m_IsStrike(false),
     m_LastFps(16),
     m_Strain(0),
-    m_StrainMustUpdateSecondBuffer(false),
-    m_ArrowsMustUpdateSecondBuffer(false),
     m_Duck(m_GameView, gameWorld, m_DuckRes),
     m_Arrow(m_GameView, 
             gameWorld, 
@@ -137,16 +135,22 @@ void Level01::gameLoop()
       m_Strain += 4;
       m_InfoDisplay.UpdateStrain(m_Strain, false);
 
-      // Strain must be updated in 2nd screen buffer after switched
-      m_StrainMustUpdateSecondBuffer = true;
+      // Render the entities and switch screen buffers
+      m_GameView.Render();
+
+      // Update changed strain also in 2nd screen buffer
+      m_InfoDisplay.UpdateStrain(m_Strain, true);
     }
     else if(m_IsArrowFlightFinished)
     {
       m_GameVars.DecreaseNumArrows();
       m_InfoDisplay.UpdateArrows();
 
-      // Arrows must be updated in 2nd screen buffer after switched
-      m_ArrowsMustUpdateSecondBuffer = true;
+      // Render the entities and switch screen buffers
+      m_GameView.Render();
+      
+      // Update new number of arrows also in 2nd screen buffer
+      m_InfoDisplay.UpdateArrows();
 
       m_IsArrowFlightFinished = false;
     }
@@ -155,31 +159,18 @@ void Level01::gameLoop()
       m_Strain = 0;
       m_InfoDisplay.UpdateStrain(m_Strain, false);
 
-      // Strain must be updated in 2nd screen buffer after switched
-      m_StrainMustUpdateSecondBuffer = true;      
+      // Render the entities and switch screen buffers
+      m_GameView.Render();
+
+      // Update changed strain also in 2nd screen buffer
+      m_InfoDisplay.UpdateStrain(m_Strain, true);  
     }
-    
-
-    //
-    // Render the entities and switch screen buffers
-    //
-    m_GameView.Render();
-
-    //
-    // Update changed strain and/or arrows on InfoDisplay for 2nd screen
-    // buffer too (if necessary)
-    //
-    if(m_StrainMustUpdateSecondBuffer)
+    else
     {
-      m_InfoDisplay.UpdateStrain(m_Strain, true);
-      m_StrainMustUpdateSecondBuffer = false;
+      // Render the entities and switch screen buffers
+      m_GameView.Render();
     }
 
-    if(m_ArrowsMustUpdateSecondBuffer)
-    {
-      m_InfoDisplay.UpdateArrows();
-      m_ArrowsMustUpdateSecondBuffer = false;
-    }
 
     //
     // Check if exit key ESC has been pressed

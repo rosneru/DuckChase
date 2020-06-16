@@ -61,8 +61,6 @@ private:
   size_t m_LastFps;
   
   size_t m_Strain;
-  bool m_StrainMustUpdateSecondBuffer;
-  bool m_ArrowsMustUpdateSecondBuffer;
 
   // EntityCollection m_Arrows;
   DuckResources m_DuckRes;
