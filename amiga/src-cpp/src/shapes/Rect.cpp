@@ -21,6 +21,16 @@ Rect::Rect(long left, long right, long top, long bottom)
 }
 
 
+Rect::Rect(long left, long top)
+  : m_Left(left),
+    m_Right(left),
+    m_Top(top),
+    m_Bottom(top),
+    m_WordWidth(0)
+{
+
+}
+
 void Rect::Set(long left, long right, long top, long bottom)
 {
   m_Left = left;
@@ -31,6 +41,12 @@ void Rect::Set(long left, long right, long top, long bottom)
   m_WordWidth = (((right - left) + 15) & -16) >> 4;
 }
 
+void Rect::SetWidthHeight(long width, long height)
+{
+  m_Right = m_Left + width;
+  m_Bottom = m_Top + height;
+  m_WordWidth = ((width + 15) & -16) >> 4;
+}
 
 bool Rect::HasSize() const
 {

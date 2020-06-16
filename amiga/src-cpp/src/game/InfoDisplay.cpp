@@ -16,13 +16,20 @@ InfoDisplay::InfoDisplay(GameViewBase& gameView,
   : m_View(gameView),
     m_GameVars(gameVars),
     m_BackgroundPicture("AADevDuck:assets/info_bar.ilbm", false, false),
+    m_ArrowsRect(110, gameView.Height() - 29),
+    m_FpsRect(gameView.Width() - 30, gameView.Height() - 18),
+    m_StrainRect(322, 227),
     m_FormerStrain(0),
     m_StrainSpreadColors(gameColors.GetStrainSpreadColors()),
-    m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.ilbm", 2),
-    m_Right(m_View.Width() - 4),
-    m_Bottom(m_View.Height() - 1)
+    m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.ilbm", 2)
 {
+  m_ArrowsRect.SetWidthHeight(94, 7);
+  m_FpsRect.SetWidthHeight(19, 7);
+  m_StrainRect.SetWidthHeight(m_GameVars.MaxStrain(), 7);
+
   m_View.Render();
+
+  // Blit the InfoDisplay background picture to tzhe bottom
   m_View.BlitPicture(m_BackgroundPicture, 
                      0,
                      m_View.Height() - m_BackgroundPicture.Height());
@@ -37,8 +44,6 @@ InfoDisplay::~InfoDisplay()
 
 void InfoDisplay::UpdateArrows()
 {
-
-
   // Start blitting with an highlighted image for the available arrows
   struct BitMap* pBitMap = m_ArrowImages[0];
 
@@ -54,8 +59,8 @@ void InfoDisplay::UpdateArrows()
                       0, 
                       0, 
                       m_View.RastPort(),
-                      110 + i * (m_ArrowImages.Width() + 5),
-                      m_Bottom - m_ArrowImages.Height() - 1,
+                      m_ArrowsRect.Left() + i * (m_ArrowImages.Width() + 5),
+                      m_ArrowsRect.Top(),
                       m_ArrowImages.Width(),
                       m_ArrowImages.Height(),
                       0xC0);
@@ -75,13 +80,13 @@ void InfoDisplay::UpdateFps(size_t fps)
   SetAPen(m_View.RastPort(), backPen);
   SetBPen(m_View.RastPort(), backPen);
   RectFill(m_View.RastPort(),
-           m_Right - 16, 
-           m_Bottom - 11,
-           m_Right, 
-           m_Bottom); // TODO check 'm_Bottom - 1'
+           m_FpsRect.Left(), 
+           m_FpsRect.Top(),
+           m_FpsRect.Right(), 
+           m_FpsRect.Bottom());
 
   SetAPen(m_View.RastPort(), frontPen);
-  Move(m_View.RastPort(), m_Right - 22, m_Bottom - 3);
+  Move(m_View.RastPort(), m_FpsRect.Left(), m_FpsRect.Top() + 8); // + 8 .. font baseline height. TODO: remove constant.
   Text(m_View.RastPort(), fpsBuf, strlen(fpsBuf));
 }
 
@@ -97,7 +102,11 @@ void InfoDisplay::UpdateStrain(size_t newStrain, bool isForSecondBuffer)
   {
     // Clear the display
     SetAPen(m_View.RastPort(), 0);
-    EraseRect(m_View.RastPort(), 401, 247, 401 + 117, 247 + 5);
+    EraseRect(m_View.RastPort(), 
+              m_StrainRect.Left(),
+              m_StrainRect.Top(), 
+              m_StrainRect.Right(),
+              m_StrainRect.Bottom());
 
     m_FormerStrain = 0;
     return;
@@ -122,10 +131,10 @@ void InfoDisplay::UpdateStrain(size_t newStrain, bool isForSecondBuffer)
   // TODO remove constants
   SetAPen(m_View.RastPort(), 15);
   RectFill(m_View.RastPort(),
-           401 + m_FormerStrain,
-           247,
-           400 + newStrain,
-           247 + 5);
+           m_StrainRect.Left() + 1 + m_FormerStrain,
+           m_StrainRect.Top(),
+           m_StrainRect.Left() + newStrain,
+           m_StrainRect.Bottom());
 
   if(isForSecondBuffer)
   {

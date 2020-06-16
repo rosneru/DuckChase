@@ -67,8 +67,6 @@ void Level01::Run()
 {
   m_StopWatch.Start();
 
-
-
   gameLoop();
   displayWinner();
 
@@ -132,7 +130,7 @@ void Level01::gameLoop()
     //
     if(m_IsArrowFlightPrepared)
     {
-      m_Strain += 4;
+      m_Strain += 2;
       m_InfoDisplay.UpdateStrain(m_Strain, false);
 
       // Render the entities and switch screen buffers
@@ -171,10 +169,7 @@ void Level01::gameLoop()
       m_GameView.Render();
     }
 
-
-    //
     // Check if exit key ESC has been pressed
-    //
     ULONG key = GetKey();
     if((key & 0xff) == 0x45)
     {

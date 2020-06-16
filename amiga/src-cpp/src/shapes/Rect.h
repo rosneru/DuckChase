@@ -12,8 +12,10 @@ class Rect
 public:
   Rect();
   Rect(long left, long right, long top, long bottom);
+  Rect(long left, long top);
 
   void Set(long left, long right, long top, long bottom);
+  void SetWidthHeight(long width, long height);
 
   bool HasSize() const;
 

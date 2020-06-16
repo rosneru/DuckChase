@@ -8,6 +8,7 @@
 #include "GameVars.h"
 #include "GameViewBase.h"
 #include "IlbmBitmap.h"
+#include "Rect.h"
 
 
 /**
@@ -38,17 +39,14 @@ private:
   GameViewBase& m_View;
   GameVars& m_GameVars;
   IlbmBitmap m_BackgroundPicture;
+  Rect m_ArrowsRect;
+  Rect m_FpsRect;
+  Rect m_StrainRect;
 
   size_t m_FormerStrain;
   ULONG* m_StrainSpreadColors;
 
   AnimSeqBitmap m_ArrowImages;
-
-  //RawBitMap m_ArrowDisabledImg;
-  //RawBitMap m_ArrowEnabledImg;
-
-  LONG m_Right;
-  LONG m_Bottom;
 };
 
 #endif
