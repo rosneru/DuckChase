@@ -2,8 +2,8 @@
 
 Rect::Rect()
   : m_Left(0),
-    m_Right(0),
     m_Top(0),
+    m_Right(0),
     m_Bottom(0),
     m_WordWidth(0)
 {
@@ -23,8 +23,8 @@ Rect::Rect(long left, long top, long right, long bottom)
 
 Rect::Rect(long left, long top)
   : m_Left(left),
-    m_Right(left),
     m_Top(top),
+    m_Right(left),
     m_Bottom(top),
     m_WordWidth(0)
 {

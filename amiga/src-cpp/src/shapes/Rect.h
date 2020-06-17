@@ -30,8 +30,8 @@ public:
 
 private:
   long m_Left;
-  long m_Right;
   long m_Top;
+  long m_Right;
   long m_Bottom;
 
   long m_WordWidth;
