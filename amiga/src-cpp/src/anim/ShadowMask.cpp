@@ -35,7 +35,7 @@ ShadowMask::ShadowMask(UBYTE* pMask,
                        ULONG height)
   : m_pMask(pMask),
     m_Width(width),
-    m_WordWidth(),
+    m_WordWidth(((width + 15) & -16) >> 4),
     m_Height(height)
 {
 
@@ -50,9 +50,31 @@ ShadowMask::~ShadowMask()
   }
 }
 
+#include <stdio.h>
+UBYTE bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
+
 bool ShadowMask::IsCollision(const ShadowMask* pOther, 
                              const Rect& thisRect,
                              const Rect& otherRect) const
 {
+  size_t startRow = thisRect.Top();
+  size_t stopRow = thisRect.Bottom();
+
+  size_t bitIndex = 0;
+
+  for(int row = startRow; row <= stopRow; row++)
+  {
+    for(int column = thisRect.Left(); column <= thisRect.Right(); column++)
+    {
+      size_t rowByte = column >> 3;
+      size_t byteId = row * (m_WordWidth * 2) + rowByte;
+      size_t bitInByte = column - rowByte;
+      UBYTE byteValue = m_pMask[byteId];
+      size_t bitValue = byteValue & bits[bitInByte] >> bitInByte;
+      // printf("rowByte = %lu, byteId = %lu, bitInByte = %lu\n", rowByte, byteId, bitInByte);
+      printf("rowByte = %lu, byteId = %lu, bitInByte = %lu, byteValue = %lu, bitValue = %lu\n", rowByte, byteId, bitInByte, byteValue, bitValue);
+    }
+  }
+
   return false;
 }

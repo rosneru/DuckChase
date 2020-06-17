@@ -1,6 +1,8 @@
 #ifndef RECT_H
 #define RECT_H
 
+#include <stddef.h>
+
 /**
  * Represents a simple, geometric rectangle.
  *
@@ -18,6 +20,7 @@ public:
   void SetWidthHeight(long width, long height);
 
   bool HasSize() const;
+  size_t Area() const;
 
   long Left() const;
   long Right() const;

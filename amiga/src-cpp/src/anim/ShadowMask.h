@@ -46,6 +46,8 @@ public:
 private:
   UBYTE* m_pMask;
 
+  bool m_RowPixels[320];
+
   ULONG m_Width;
   ULONG m_WordWidth;
   ULONG m_Height;
