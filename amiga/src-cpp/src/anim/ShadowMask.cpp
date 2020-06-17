@@ -71,7 +71,7 @@ bool ShadowMask::IsCollision(const ShadowMask* pOther,
     // Calculate which pixels in the other mask are set in this row
     pOther->calculateRowPixels(otherRect, otherRow);
 
-    // Now compare the pixels of this row of both collision rects
+    // Now compare this rows pixels of both collision rects
     for(size_t pixelId = 0; pixelId <= thisRect.Width(); pixelId++)
     {
       if((this->m_pRowPixels[pixelId] == true) &&
