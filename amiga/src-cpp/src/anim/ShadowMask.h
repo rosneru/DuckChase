@@ -30,7 +30,7 @@ public:
    * Uses a given mask of given size. Given mask must be valid for the
    * life time of the created ShadowMask.
    */
-  ShadowMask(UBYTE* pMask, ULONG width, ULONG height, ULONG depth);
+  ShadowMask(UBYTE* pMask, ULONG width, ULONG height);
   virtual ~ShadowMask();
 
   /**

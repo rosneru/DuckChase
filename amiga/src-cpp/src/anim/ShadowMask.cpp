@@ -32,8 +32,7 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
 
 ShadowMask::ShadowMask(UBYTE* pMask, 
                        ULONG width, 
-                       ULONG height, 
-                       ULONG depth)
+                       ULONG height)
   : m_pMask(pMask),
     m_Width(width),
     m_WordWidth(),

@@ -10,10 +10,10 @@ Rect::Rect()
 
 }
 
-Rect::Rect(long left, long right, long top, long bottom)
+Rect::Rect(long left, long top, long right, long bottom)
   : m_Left(left),
-    m_Right(right),
     m_Top(top),
+    m_Right(right),
     m_Bottom(bottom),
     m_WordWidth((((right - left) + 15) & -16) >> 4)
 {
@@ -31,11 +31,11 @@ Rect::Rect(long left, long top)
 
 }
 
-void Rect::Set(long left, long right, long top, long bottom)
+void Rect::Set(long left, long top, long right, long bottom)
 {
   m_Left = left;
-  m_Right = right;
   m_Top = top;
+  m_Right = right;
   m_Bottom = bottom;
 
   m_WordWidth = (((right - left) + 15) & -16) >> 4;

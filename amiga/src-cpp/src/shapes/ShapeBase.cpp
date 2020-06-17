@@ -58,8 +58,8 @@ bool ShapeBase::Intersects(const ShapeBase &other)
      Bottom() > other.Top())
   {
     m_IntersRect.Set(other.Left() > Left() ? other.Left()-Left() : 0, 
-                     other.Right() < Right() ? other.Right()-Left() : Width()-1, 
                      other.Top() > Top() ? other.Top()-Top() : 0, 
+                     other.Right() < Right() ? other.Right()-Left() : Width()-1, 
                      other.Bottom() < Bottom() ? other.Bottom()-Top() : Height()-1);
 
     return true;
