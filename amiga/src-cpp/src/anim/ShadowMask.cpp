@@ -54,8 +54,6 @@ ShadowMask::~ShadowMask()
   }
 }
 
-#include <stdio.h>
-UBYTE bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 bool ShadowMask::IsCollision(const ShadowMask* pOther, 
                              const Rect& thisRect,
@@ -67,13 +65,11 @@ bool ShadowMask::IsCollision(const ShadowMask* pOther,
 
   do
   {
-    // printf("THIS ROW..\n");
     // Calculate which pixels in this mask are set in this row
-    this->CalculateRowPixels(thisRect, thisRow);
-    
-    // printf("\nOTHER ROW..\n");
+    this->calculateRowPixels(thisRect, thisRow);
+
     // Calculate which pixels in the other mask are set in this row
-    pOther->CalculateRowPixels(otherRect, otherRow);
+    pOther->calculateRowPixels(otherRect, otherRow);
 
     // Now compare the pixels of this row of both collision rects
     for(size_t pixelId = 0; pixelId <= thisRect.Width(); pixelId++)
@@ -97,7 +93,7 @@ bool ShadowMask::IsCollision(const ShadowMask* pOther,
 }
 
 
-void ShadowMask::CalculateRowPixels(const Rect& rect, size_t row) const
+void ShadowMask::calculateRowPixels(const Rect& rect, size_t row) const
 {
   for(int column = rect.Left(); column <= rect.Right(); column++)
   {
@@ -106,10 +102,7 @@ void ShadowMask::CalculateRowPixels(const Rect& rect, size_t row) const
     size_t byteId = row * (m_WordWidth * 2) + rowByte;
     size_t bitInByte = 7 - (column - rowByte * 8);
     UBYTE byteValue = m_pMask[byteId];
-    // size_t bitValue = (byteValue >> bitInByte) & bits[bitInByte];
     size_t bitValue = byteValue & (1 << bitInByte);
-
-    // printf("  rowByte = %lu, byteId = %lu, bitInByte = %lu, byteValue = %lu, bitValue = %lu\n", rowByte, byteId, bitInByte, byteValue, bitValue);
 
     if(bitValue != 0)
     {

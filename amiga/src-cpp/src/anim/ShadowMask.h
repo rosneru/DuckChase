@@ -44,7 +44,6 @@ public:
                    const Rect& thisRect,
                    const Rect& otherRect) const;
   
-  void CalculateRowPixels(const Rect& rect, size_t row) const;
 
 private:
   UBYTE* m_pMask;
@@ -55,6 +54,7 @@ private:
   ULONG m_WordWidth;
   ULONG m_Height;
 
+  void calculateRowPixels(const Rect& rect, size_t row) const;
 };
 
 #endif
