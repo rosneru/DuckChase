@@ -42,7 +42,7 @@ public:
    */
   bool IsCollision(const ShadowMask* pOther, 
                    const Rect& thisRect,
-                   const Rect& otherRect) const;
+                   const Rect& otherRect);
 private:
   UBYTE* m_pMask;
 
