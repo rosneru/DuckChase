@@ -97,7 +97,6 @@ void ShadowMask::calculateRowPixels(const Rect& rect, size_t row) const
 {
   for(int column = rect.Left(); column <= rect.Right(); column++)
   {
-    // size_t bitIndex = 0;
     size_t rowByte = column >> 3;
     size_t byteId = row * (m_WordWidth * 2) + rowByte;
     size_t bitInByte = 7 - (column - rowByte * 8);
