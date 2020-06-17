@@ -16,6 +16,8 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
   m_Width = m_WordWidth * 16;
   m_Height = pImage->Rows;
 
+  m_pRowPixels = new bool[m_WordWidth * 2 * 8];
+
   for (size_t i = 0; i < numBytes; i++)
   {
     UBYTE maskByte = 0;
@@ -38,11 +40,13 @@ ShadowMask::ShadowMask(UBYTE* pMask,
     m_WordWidth(((width + 15) & -16) >> 4),
     m_Height(height)
 {
-
+  m_pRowPixels = new bool[m_WordWidth * 2 * 8];
 }
 
 ShadowMask::~ShadowMask()
 {
+  delete[] m_pRowPixels;
+
   if(m_pMask != NULL)
   {
     FreeVec(m_pMask);
@@ -55,28 +59,65 @@ UBYTE bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 bool ShadowMask::IsCollision(const ShadowMask* pOther, 
                              const Rect& thisRect,
-                             const Rect& otherRect)
+                             const Rect& otherRect) const
 {
-  size_t startRow = thisRect.Top();
-  size_t stopRow = thisRect.Bottom();
+  size_t thisRow = thisRect.Top();
+  size_t thisStopRow = thisRect.Bottom();
+  size_t otherRow = otherRect.Top();
 
-  size_t bitIndex = 0;
-
-  for(int row = startRow; row <= stopRow; row++)
+  do
   {
-    for(int column = thisRect.Left(); column <= thisRect.Right(); column++)
+    // printf("THIS ROW..\n");
+    // Calculate which pixels in this mask are set in this row
+    this->CalculateRowPixels(thisRect, thisRow);
+    
+    // printf("\nOTHER ROW..\n");
+    // Calculate which pixels in the other mask are set in this row
+    pOther->CalculateRowPixels(otherRect, otherRow);
+
+    // Now compare the pixels of this row of both collision rects
+    for(size_t pixelId = 0; pixelId <= thisRect.Width(); pixelId++)
     {
-      size_t rowByte = column >> 3;
-      size_t byteId = row * (m_WordWidth * 2) + rowByte;
-      size_t bitInByte = 7 - (column - rowByte);
-      UBYTE byteValue = m_pMask[byteId];
-      size_t bitValue = (byteValue >> bitInByte) & bits[bitInByte];
-
-      // printf("rowByte = %lu, byteId = %lu, bitInByte = %lu, byteValue = %lu, bitValue = %lu\n", rowByte, byteId, bitInByte, byteValue, bitValue);
-
-      m_RowPixels[bitIndex++] = bitValue == 0 ? false : true;
+      if((this->m_pRowPixels[pixelId] == true) &&
+         (pOther->m_pRowPixels[pixelId] == true))
+      {
+        // Pixel is set in both collsion rects -> Collision
+        return true;
+      }
     }
+
+    thisRow++;
+    otherRow++;
   }
+  while(thisRow <= thisStopRow);
+
+
 
   return false;
+}
+
+
+void ShadowMask::CalculateRowPixels(const Rect& rect, size_t row) const
+{
+  for(int column = rect.Left(); column <= rect.Right(); column++)
+  {
+    // size_t bitIndex = 0;
+    size_t rowByte = column >> 3;
+    size_t byteId = row * (m_WordWidth * 2) + rowByte;
+    size_t bitInByte = 7 - (column - rowByte * 8);
+    UBYTE byteValue = m_pMask[byteId];
+    // size_t bitValue = (byteValue >> bitInByte) & bits[bitInByte];
+    size_t bitValue = byteValue & (1 << bitInByte);
+
+    // printf("  rowByte = %lu, byteId = %lu, bitInByte = %lu, byteValue = %lu, bitValue = %lu\n", rowByte, byteId, bitInByte, byteValue, bitValue);
+
+    if(bitValue != 0)
+    {
+      m_pRowPixels[column - rect.Left()] = true;
+    }
+    else
+    {
+      m_pRowPixels[column - rect.Left()] = false;
+    }
+  }
 }

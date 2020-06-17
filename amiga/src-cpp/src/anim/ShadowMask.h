@@ -42,15 +42,19 @@ public:
    */
   bool IsCollision(const ShadowMask* pOther, 
                    const Rect& thisRect,
-                   const Rect& otherRect);
+                   const Rect& otherRect) const;
+  
+  void CalculateRowPixels(const Rect& rect, size_t row) const;
+
 private:
   UBYTE* m_pMask;
 
-  bool m_RowPixels[320];
+  bool* m_pRowPixels;
 
   ULONG m_Width;
   ULONG m_WordWidth;
   ULONG m_Height;
+
 };
 
 #endif

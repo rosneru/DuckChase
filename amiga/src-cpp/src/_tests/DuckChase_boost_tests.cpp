@@ -42,8 +42,8 @@ BOOST_AUTO_TEST_CASE( test_ShadowMask )
                         0x00, 0x1C,
                         0x00, 0x38};
 
-  ShadowMask shadowMaskBob(bobMask, 32, 6);
-  ShadowMask shadowMaskSprite(spriteMask, 16, 4);
+  const ShadowMask shadowMaskBob(bobMask, 32, 6);
+  const ShadowMask shadowMaskSprite(spriteMask, 16, 4);
 
   // For the rect dimensions see the file 
   // '(WDB) (DEV) (ALGORITHM) (AMIGA) Collsion detection 2.xlsx'

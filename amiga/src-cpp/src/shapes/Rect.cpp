@@ -82,17 +82,17 @@ long Rect::Bottom() const
   return m_Bottom;
 }
 
-long Rect::Height() const
+size_t Rect::Height() const
 {
   return m_Bottom - m_Top;
 }
 
-long Rect::Width() const
+size_t Rect::Width() const
 {
   return m_Right - m_Left;
 }
 
-long Rect::WordWidth() const
+size_t Rect::WordWidth() const
 {
   return m_WordWidth; 
 }

@@ -27,9 +27,9 @@ public:
   long Top() const;
   long Bottom() const;
   
-  long Height() const;
-  long Width() const;
-  long WordWidth() const;
+  size_t Height() const;
+  size_t Width() const;
+  size_t WordWidth() const;
 
 private:
   long m_Left;
