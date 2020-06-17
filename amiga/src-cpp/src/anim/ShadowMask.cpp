@@ -1,8 +1,5 @@
 #include <stddef.h>
 
-#include <clib/exec_protos.h>
-#include <exec/types.h>
-
 #include "ShadowMask.h"
 
 ShadowMask::ShadowMask(const struct BitMap* pImage)
@@ -14,6 +11,10 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
   {
     throw "ShadowMask: Failed to allocate memory for mask.";
   }
+
+  m_WordWidth = numBytes / 2;
+  m_Width = m_WordWidth * 16;
+  m_Height = pImage->Rows;
 
   for (size_t i = 0; i < numBytes; i++)
   {
@@ -27,6 +28,18 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
 
     m_pMask[i] = maskByte;
   }
+}
+
+ShadowMask::ShadowMask(UBYTE* pMask, 
+                       ULONG width, 
+                       ULONG height, 
+                       ULONG depth)
+  : m_pMask(pMask),
+    m_Width(width),
+    m_WordWidth(),
+    m_Height(height)
+{
+
 }
 
 ShadowMask::~ShadowMask()

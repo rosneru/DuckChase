@@ -7,6 +7,7 @@
                 "/opt/amiga/m68k-amigaos/sys-include/",
                 "/opt/amiga/m68k-amigaos/include/",
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/src/_tests",
                 "${workspaceFolder}/src/amigautils",
                 "${workspaceFolder}/src/anim",
                 "${workspaceFolder}/src/entities",

@@ -1,7 +1,13 @@
 #ifndef SHADOW_MASK_H
 #define SHADOW_MASK_H
 
-#include <graphics/gfx.h>
+#ifndef BOOST_TEST
+  #include <graphics/gfx.h>
+  #include <clib/exec_protos.h>
+  #include <exec/types.h>
+#else
+  #include "amiga_types.h"
+#endif
 
 #include "Rect.h"
 
@@ -14,7 +20,17 @@
 class ShadowMask
 {
 public:
+  /**
+   * Creates a mask from given bitmap. Bitmap can be deleted after
+   * ShadowMask is created.
+   */
   ShadowMask(const struct BitMap* pImage);
+
+  /**
+   * Uses a given mask of given size. Given mask must be valid for the
+   * life time of the created ShadowMask.
+   */
+  ShadowMask(UBYTE* pMask, ULONG width, ULONG height, ULONG depth);
   virtual ~ShadowMask();
 
   /**
@@ -30,6 +46,9 @@ public:
 private:
   UBYTE* m_pMask;
 
+  ULONG m_Width;
+  ULONG m_WordWidth;
+  ULONG m_Height;
 };
 
 #endif
