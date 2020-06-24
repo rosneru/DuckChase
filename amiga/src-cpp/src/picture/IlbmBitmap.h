@@ -52,6 +52,7 @@ public:
 
 private:
   struct IFFHandle* m_pIffHandle;
+  const ULONG m_MaxSrcPlanes;
 
   bool loadColors(struct StoredProperty* pCmapProp);
 
@@ -66,6 +67,21 @@ private:
    * Returns the ID of the current chunk (e.g. ID_CAMG)
    */
   LONG currentChunkIs(struct IFFHandle* pIffHandle, LONG type, LONG id);
+
+
+  /**
+   * Computes the worst case packed size of a "row" of bytes.
+   */
+  inline ULONG maxPackedSize(ULONG rowSize) 
+  {
+    return ( (rowSize) + ( ((rowSize)+127) >> 7 ) );
+  }
+
+  inline ULONG chunkMoreBytes(struct ContextNode* pContextNode)
+  {
+    return pContextNode->cn_Size - pContextNode->cn_Scan;
+  }
+
 };
 
 #endif

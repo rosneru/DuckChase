@@ -4,18 +4,16 @@
 #include <clib/iffparse_protos.h>
 #include <dos/dos.h>
 #include <exec/memory.h>
-#include <graphics/gfxbase.h>
 
 #include "IlbmBitmap.h"
-
-extern struct GfxBase* GfxBase;
 
 
 IlbmBitmap::IlbmBitmap(const char* pFileName,
                        bool bLoadColors,
                        bool bLoadDisplayMode)
   : BitmapPictureBase(),
-    m_pIffHandle(NULL)
+    m_pIffHandle(NULL),
+    m_MaxSrcPlanes(25)
 {
   if (pFileName == NULL)
   {
@@ -215,35 +213,6 @@ bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
 }
 
 
-/**
- * Macro from newiff/packer.h
- * This macro computes the worst case packed size of a "row" of bytes.
- */
-#define MaxPackedSize(rowSize)  ( (rowSize) + ( ((rowSize)+127) >> 7 ) )
-
-/**
- * Macro from newiff/iff.h
- */
-#define ChunkMoreBytes(cn)	(cn->cn_Size - cn->cn_Scan)
-
-/*
- * Macro from newiff/ilbm.h
- *
- * Convert image width to even number of BytesPerRow for ILBM save.
- * Do NOT use this macro to determine the actual number of bytes per row
- * in an Amiga BitMap.  Use BitMap->BytesPerRow for scan-line modulo.
- * Use your screen or viewport width to determine width. Or under
- * V39, use GetBitMapAttr().
- */
-#define RowBytes(w)	((((w) + 15) >> 4) << 1)
-#define RowBits(w)	((((w) + 15) >> 4) << 4
-
-/**
- * See newiff/ilbmr.c
- */
-#define MaxSrcPlanes (25)
-
-
 bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
 {
   if(m_pBitMap == NULL)
@@ -257,29 +226,29 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
     return false;
   }
 
-  ULONG bufSize = MaxPackedSize(RowBytes(Width())) << 4;
-  BYTE* pAllocatedBuf = (BYTE*)AllocVec(bufSize, MEMF_ANY);
-  BYTE* pBuffer = pAllocatedBuf;
-  if (pBuffer == NULL)
+  ULONG srcRowBytes = ((((Width()) + 15) >> 4) << 1);
+  LONG bufRowBytes = maxPackedSize(srcRowBytes);
+  ULONG bufSize = bufRowBytes << 4;
+  BYTE* pBufStart = (BYTE*)AllocVec(bufSize, MEMF_ANY);
+  BYTE* pCurrBufPos = pBufStart;
+  if (pCurrBufPos == NULL)
   {
     return false;
   }
 
-  struct ContextNode* cn = CurrentChunk(m_pIffHandle);
+  struct ContextNode* pContextNode = CurrentChunk(m_pIffHandle);
 
-  WORD srcRowBytes = RowBytes(Width());
   WORD destRowBytes = m_pBitMap->BytesPerRow; // used as a modulo only
-  LONG bufRowBytes = MaxPackedSize(srcRowBytes);
 
   // Initialize array "planes" with bitmap ptrs; NULL in empty slots.
-  BYTE* planes[MaxSrcPlanes]; // array of ptrs to planes & mask
+  BYTE* planes[m_MaxSrcPlanes]; // array of ptrs to planes & mask
   ULONG iPlane = 0;
   for (iPlane = 0; iPlane < m_pBitMap->Depth; iPlane++)
   {
     planes[iPlane] = (BYTE*)m_pBitMap->Planes[iPlane];
   }
 
-  for (; iPlane < MaxSrcPlanes; iPlane++)
+  for (; iPlane < m_MaxSrcPlanes; iPlane++)
   {
     planes[iPlane] = NULL;
   }
@@ -305,13 +274,13 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
   }
 
   // Setup a sink for dummy destination of rows from unwanted planes.
-  BYTE* nullDest = pBuffer;
-  pBuffer += srcRowBytes;
+  BYTE* nullDest = pCurrBufPos;
+  pCurrBufPos += srcRowBytes;
   bufSize -= srcRowBytes;
 
   // Read the BODY contents into client's bitmap. De-interleave planes
   // and decompress rows. MODIFIES: Last iteration modifies bufsize.
-  BYTE* pBuf = pBuffer + bufSize; // Buffer is currently empty.
+  BYTE* pBuf = pCurrBufPos + bufSize; // Buffer is currently empty.
   for (ULONG iRow = Height(); iRow > 0; iRow--)
   {
     for (ULONG iPlane = 0; iPlane < srcPlaneCnt; iPlane++)
@@ -326,34 +295,34 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
       }
 
       // Read in at least enough bytes to uncompress next row.
-      WORD nEmpty = pBuf - pBuffer;     //size of empty part of buffer.
-      WORD nFilled = bufSize - nEmpty;  //this part has data.
+      UWORD nEmpty = pBuf - pCurrBufPos;    //size of empty part of buffer.
+      UWORD nFilled = bufSize - nEmpty; //this part has data.
       if (nFilled < bufRowBytes)
       {
         // Need to read more.
 
         // Move the existing data to the front of the buffer. Now covers
         // range buffer[0]..buffer[nFilled-1].
-        CopyMem(pBuf, pBuffer, nFilled);  // Could be moving 0 bytes.
+        CopyMem(pBuf, pCurrBufPos, nFilled);  // Could be moving 0 bytes.
 
-        if (nEmpty > ChunkMoreBytes(cn))
+        if (nEmpty > chunkMoreBytes(pContextNode))
         {
           // There aren't enough bytes left to fill the buffer.
-          nEmpty = ChunkMoreBytes(cn);
+          nEmpty = chunkMoreBytes(pContextNode);
           bufSize = nFilled + nEmpty; // heh-heh
         }
 
         // Append new data to the existing data
         LONG iffResult = ReadChunkBytes(m_pIffHandle,
-                                        &pBuffer[nFilled],
+                                        &pCurrBufPos[nFilled],
                                         nEmpty);
         if (iffResult < nEmpty)
         {
-          FreeVec(pAllocatedBuf);
+          FreeVec(pBufStart);
           return false;
         }
 
-        pBuf = pBuffer;
+        pBuf = pCurrBufPos;
         nFilled = bufSize;
         nEmpty = 0;
       }
@@ -365,7 +334,7 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
         if (unpackRow(&pBuf, pDest, nFilled, srcRowBytes) == false)
         {
           // Corrupted data in ilbm body of compressed ILBM file.
-          FreeVec(pAllocatedBuf);
+          FreeVec(pBufStart);
           return false;
         }
         else
@@ -378,7 +347,7 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
         if (nFilled < srcRowBytes)
         {
           // Corrupted data in ilbm body of non-compressed ILBM file.
-          FreeVec(pAllocatedBuf);
+          FreeVec(pBufStart);
           return false;
         }
 
@@ -389,7 +358,7 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
     }
   }
 
-  FreeVec(pAllocatedBuf);
+  FreeVec(pBufStart);
   return true;
 }
 

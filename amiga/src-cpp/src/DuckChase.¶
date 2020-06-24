@@ -193,7 +193,6 @@ File
 "entities/Duck.h"
 "anim/AnimSeqGels.h"
 "resources/ResourceGELs.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Arrow.o" "objects_debug/Arrow.debug"
 ""
@@ -210,7 +209,6 @@ File
 "game/GameTile.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Duck.o" "objects_debug/Duck.debug"
 ""
@@ -222,7 +220,6 @@ File
 "game/GameTile.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/EntityBase.o" "objects_debug/EntityBase.debug"
 ""
@@ -235,7 +232,6 @@ File
 "game/GameTile.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/EntityCollection.o" "objects_debug/EntityCollection.debug"
 ""
@@ -254,7 +250,6 @@ File
 "entities/Arrow.h"
 "resources/ResourceExtSprite.h"
 "entities/Duck.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Hunter.o" "objects_debug/Hunter.debug"
 ""
@@ -275,7 +270,6 @@ File
 "resources/ResourceExtSprite.h"
 "game/Level01.h"
 "entities/Duck.h"
-"shapes/Rect.h"
 "game/GameVars.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Game.o" "objects_debug/Game.debug"
@@ -342,7 +336,6 @@ File
 "anim/AnimSeqGels.h"
 "resources/ResourceGELs.h"
 "game/InfoDisplay.h"
-"shapes/Rect.h"
 "game/GameVars.h"
 Storm Shell Project (Dependencies)
 "objects_debug/Level01.o" "objects_debug/Level01.debug"
@@ -481,7 +474,6 @@ File
 "shapes/ShapeBase.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeBob.o" "objects_debug/ShapeBob.debug"
 ""
@@ -494,7 +486,6 @@ File
 "shapes/ShapeBase.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeExtSprite.o" "objects_debug/ShapeExtSprite.debug"
 ""
@@ -507,7 +498,6 @@ File
 "shapes/ShapeBase.h"
 "picture/BitmapPictureBase.h"
 "picture/PictureBase.h"
-"shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "objects_debug/ShapeVSprite.o" "objects_debug/ShapeVSprite.debug"
 ""
