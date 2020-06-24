@@ -55,9 +55,7 @@ private:
 
   bool loadColors(struct StoredProperty* pCmapProp);
 
-  bool decodeIlbmBody(bool isCompressed, 
-                      UBYTE masking = mskNone,
-                      BYTE* mask = NULL);
+  bool decodeIlbmBody(bool isCompressed, UBYTE masking = mskNone);
 
   bool unpackRow(BYTE** ppSource, 
                  BYTE** ppDest, 

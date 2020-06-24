@@ -244,9 +244,7 @@ bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
 #define MaxSrcPlanes (25)
 
 
-bool IlbmBitmap::decodeIlbmBody(bool isCompressed,
-                                UBYTE masking,
-                                BYTE* mask)
+bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
 {
   if(m_pBitMap == NULL)
   {
@@ -290,11 +288,12 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed,
   UBYTE srcPlaneCnt = Depth();
   if (masking == mskHasMask)
   {
-    if (mask != NULL)
+    m_pBitMapMask = AllocBitMap(Width(), Height(), 1, BMF_CLEAR, NULL);
+    if (m_pBitMapMask != NULL)
     {
       // If there are more srcPlanes than dstPlanes, there will be NULL
       // plane-pointers before this.
-      planes[srcPlaneCnt] = mask;
+      planes[srcPlaneCnt] = (BYTE*)m_pBitMapMask->Planes[0];
     }
     else
     {
