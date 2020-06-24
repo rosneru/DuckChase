@@ -73,3 +73,15 @@ add_custom_command(TARGET DuckChase
                    POST_BUILD
                    COMMAND cp DuckChase ${CMAKE_CURRENT_SOURCE_DIR}/..
                    DEPENDS DuckChase)
+
+
+add_executable (SoundPlayer_test_shell
+                _tests_amiga/SoundPlayer_test_shell.cpp)
+
+target_include_directories (SoundPlayer_test_shell PUBLIC
+                            _tests_amiga)
+
+add_custom_command(TARGET SoundPlayer_test_shell
+                   POST_BUILD
+                   COMMAND cp SoundPlayer_test_shell ${CMAKE_CURRENT_SOURCE_DIR}/..
+                   DEPENDS SoundPlayer_test_shell)
