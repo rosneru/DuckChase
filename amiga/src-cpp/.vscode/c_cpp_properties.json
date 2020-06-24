@@ -14,6 +14,7 @@
                 "${workspaceFolder}/src/picture",
                 "${workspaceFolder}/src/resources",
                 "${workspaceFolder}/src/shapes",
+                "${workspaceFolder}/src/sound",
                 "${workspaceFolder}/src/view"
             ],
             "defines": [

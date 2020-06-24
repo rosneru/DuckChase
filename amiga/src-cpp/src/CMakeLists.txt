@@ -51,6 +51,7 @@ add_executable (DuckChase
                 shapes/ShapeBob.cpp
                 shapes/ShapeExtSprite.cpp
                 shapes/ShapeVSprite.cpp
+                sound/Soundfile8SVX.cpp
                 view/GameViewBase.cpp
                 view/GameViewIntui.cpp
                 view/GameViewLowLevel.cpp
@@ -66,6 +67,7 @@ target_include_directories (DuckChase PUBLIC
                             picture
                             resources
                             shapes
+                            sound
                             view
                             .)
 
@@ -76,9 +78,11 @@ add_custom_command(TARGET DuckChase
 
 
 add_executable (SoundPlayer_test_shell
+                sound/Soundfile8SVX.cpp
                 _tests_amiga/SoundPlayer_test_shell.cpp)
 
 target_include_directories (SoundPlayer_test_shell PUBLIC
+                            sound
                             _tests_amiga)
 
 add_custom_command(TARGET SoundPlayer_test_shell

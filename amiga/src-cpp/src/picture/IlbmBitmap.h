@@ -24,7 +24,7 @@
 #define	ID_CAMG		MAKE_ID('C','A','M','G')
 
 /**
- * Class for loading a iff ilbm image file into a Bitmap using the 
+ * Class for loading an iff ilbm file into a Bitmap by using the 
  * iffparse.library. Code of newiff from Commodore is heavily used.
  *
  * @author Uwe Rosner
@@ -34,11 +34,9 @@ class IlbmBitmap : public BitmapPictureBase
 {
 public: 
   /**
-   * Creates a BitMap file by loading the ILBM image of given filename.
+   * Creates a BitMap image by loading the ILBM file with given name.
    * Dimensions of the image are extracted from the ilbm header an can
    * be retrieved after successful loading using the getters. 
-   *
-   * @returns On success: true, on failure: false
    */
   IlbmBitmap(const char* pFileName,
              bool bLoadColors,

@@ -11,8 +11,20 @@
 
 #include <dos/dos.h>
 
+#include "Soundfile8SVX.h"
+
 int main(int argc, char** argv)
 {
+  try
+  {
+    Soundfile8SVX soundfile("AADevDuck:assets/finger_snap.8svx");
+  }
+  catch(const char* pMsg)
+  {
+    printf("%s\n", pMsg);
+    return RETURN_FAIL;
+  }
+
   printf("Finished sound player test.\n<Return>");
   getc(stdin);
   exit(RETURN_OK);
