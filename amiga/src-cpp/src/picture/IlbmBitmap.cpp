@@ -2,8 +2,8 @@
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/iffparse_protos.h>
-#include <datatypes/pictureclass.h> // No usage of datatypes, just for
-                                    // 'struct BitMapHeader' etc.
+#include <datatypes/pictureclass.h> // Not using  datatypes, just for
+                                    // 'BitMapHeader', 'ID_xyz', etc.
 #include <dos/dos.h>
 #include <exec/memory.h>
 
@@ -142,7 +142,6 @@ IlbmBitmap::~IlbmBitmap()
     CloseIFF(m_pIffHandle);
     FreeIFF(m_pIffHandle);
     m_pIffHandle = NULL;
-
   }
 }
 
