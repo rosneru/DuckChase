@@ -1,27 +1,11 @@
 #ifndef ILBM_BITMAP_H
 #define ILBM_BITMAP_H
 
-#include <datatypes/pictureclass.h> // No usage of datatypes, this is just 
-                                    // for 'struct BitMapHeader' etc.
 #include <graphics/gfx.h>
 #include <libraries/iffparse.h>
 
 #include "BitmapPictureBase.h"
 
-
-//  IFF types we may encounter
-#define	ID_ILBM		MAKE_ID('I','L','B','M')
-
-// ILBM Chunk ID's we may encounter
-#define	ID_BMHD		MAKE_ID('B','M','H','D')
-#define	ID_BODY		MAKE_ID('B','O','D','Y')
-#define	ID_CMAP		MAKE_ID('C','M','A','P')
-#define	ID_CRNG		MAKE_ID('C','R','N','G')
-#define	ID_CCRT		MAKE_ID('C','C','R','T')
-#define	ID_GRAB		MAKE_ID('G','R','A','B')
-#define	ID_SPRT		MAKE_ID('S','P','R','T')
-#define	ID_DEST		MAKE_ID('D','E','S','T')
-#define	ID_CAMG		MAKE_ID('C','A','M','G')
 
 /**
  * Class for loading an iff ilbm file into a Bitmap by using the 
@@ -54,7 +38,7 @@ private:
 
   bool loadColors(struct StoredProperty* pCmapProp);
 
-  bool decodeIlbmBody(bool isCompressed, UBYTE masking = mskNone);
+  bool decodeIlbmBody(bool isCompressed, UBYTE masking);
 
   bool unpackRow(BYTE** ppSource, 
                  BYTE** ppDest, 
