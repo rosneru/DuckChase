@@ -3,7 +3,8 @@
 #include <clib/iffparse_protos.h>
 #include <datatypes/soundclass.h> // Not using  datatypes, just for
                                   // 'BitMapHeader', 'ID_xyz', etc.
-#include "IffParse.h"
+#include <exec/memory.h>
+
 #include "SoundFile8SVX.h"
 
 #define MAXOCT 16
@@ -13,7 +14,8 @@
 LONG esvxprops[] = {ID_8SVX, ID_VHDR, ID_8SVX, ID_NAME, TAG_DONE};
 
 Soundfile8SVX::Soundfile8SVX(const char* pFileName)
-  : m_pVoice8Header(NULL)
+  : m_pSampleData(NULL),
+    m_SampleBytes(0)
 {
   IffParse iffParse(pFileName);
 
@@ -43,14 +45,15 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
     throw "Soundfile8SVX: No Voice8Header found in file.";
   }
 
-  m_pVoice8Header = (struct Voice8Header*)pStoredProp->sp_Data;
-  if(m_pVoice8Header == NULL)
+  struct Voice8Header* pVoice8Hdr = (struct Voice8Header*)pStoredProp->sp_Data;
+
+  if(pVoice8Hdr == NULL)
   {
     CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: Voice8Header of sound file is empty.";
   }
 
-  if(decode8SVXBody() == false)
+  if(decode8SVXBody(iffParse, pVoice8Hdr) == false)
   {
     CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: Error while decoding the 8SVX body.";
@@ -61,11 +64,112 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
 
 Soundfile8SVX::~Soundfile8SVX()
 {
-
+  if(m_pSampleData != NULL)
+  {
+    FreeVec(m_pSampleData);
+    m_pSampleData = NULL;
+  }
 }
 
 
-bool Soundfile8SVX::decode8SVXBody()
+bool Soundfile8SVX::decode8SVXBody(IffParse& iffParse, 
+                                   struct Voice8Header* pHdr)
 {
-  return false;
+  if(iffParse.currentChunkIs(ID_8SVX, ID_BODY) == false)
+  {
+    // No body chunk
+    return false;
+  }
+
+  struct ContextNode* pContextNode = CurrentChunk(iffParse.Handle());
+  LONG sampleBytes = iffParse.chunkMoreBytes(pContextNode);
+
+  // If we have to decompress, let's just load it into public mem
+  ULONG memtype = pHdr->sCompression ? MEMF_PUBLIC : MEMF_CHIP;
+  m_pSampleData = (BYTE*) AllocVec(sampleBytes, memtype);
+  if(m_pSampleData == NULL)
+  {
+    // Failed to allocate memory for reading the 8svx body into
+    return false;
+  }
+
+  m_SampleBytes = sampleBytes;
+  LONG rlen = ReadChunkBytes(iffParse.Handle(), m_pSampleData, sampleBytes);
+  if(rlen != sampleBytes)
+  {
+    // Stream read error
+    return false;
+  }
+
+  if(pHdr->sCompression == sCmpFibDelta)
+  {
+    BYTE* pDecompressedSampleData = (BYTE*) AllocVec(sampleBytes << 1, 
+                                                     MEMF_CHIP);
+    if(pDecompressedSampleData == NULL)
+    {
+      // Failed to allocate memory for uncompressing the 8svx body into
+      return false;
+    }
+
+    DUnpack(m_pSampleData, sampleBytes, pDecompressedSampleData);
+    FreeVec(m_pSampleData);
+    m_pSampleData = pDecompressedSampleData;
+    m_SampleBytes = sampleBytes << 1;
+  }
+  else if(pHdr->sCompression != sCmpNone)
+  {
+    // Unknown compression method
+    return false;
+  }
+  
+
+  return true;
+}
+
+
+void Soundfile8SVX::DUnpack(BYTE source[], LONG n, BYTE dest[])
+{
+  /**
+   * ABOUT #1
+   * RKRM 'Devices': This is Steve Hayes' Fibonacci Delta sound
+   * compression technique.  It's like the traditional delta encoding
+   * but encodes each delta in a mere 4 bits.  The compressed data is
+   * half the size of the original data plus a 2-byte overhead for the
+   * initial value.  This much compression introduces some distortion,
+   * so try it out and use it with discretion.
+   */
+
+  /**
+   * ABOUT #2
+   * The algorithm was first described by Steve Hayes and was used in
+   * 8SVX audio stored in the Interchange File Format (IFF). The quality
+   * loss is considerable (especially when the audio contained many
+   * large deltas) and was even in the time it was developed (1985) not
+   * used much.
+   */
+
+  D1Unpack(source + 2, n - 2, dest, source[1]);
+}
+
+BYTE codeToDelta[16] = {-34, -21, -13, -8, -5, -3, -2, -1,
+                        0,   1,   2,   3,  5,  8,  13, 21};
+
+BYTE Soundfile8SVX::D1Unpack(BYTE source[], LONG n, BYTE dest[], BYTE x)
+{
+  BYTE d;
+  LONG i, lim;
+
+  lim = n << 1;
+  for (i = 0; i < lim; ++i)
+  {
+    /* Decode a data nibble, high nibble then low nibble */
+    d = source[i >> 1]; /* get a pair of nibbles */
+    if (i & 1)          /* select low or high nibble */
+      d &= 0xf;         /* mask to get the low nibble */
+    else
+      d >>= 4;           /* shift to get the high nibble */
+    x += codeToDelta[d]; /* add in the decoded delta */
+    dest[i] = x;         /* store a 1 byte sample */
+  }
+  return (x);
 }

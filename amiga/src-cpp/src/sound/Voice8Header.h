@@ -3,6 +3,13 @@
 
 #include <exec/types.h>
 
+#define sCmpNone       0  // not compressed
+#define sCmpFibDelta   1  // Fibonacci-delta encoding; see RKRM Devices, Appendix C
+
+/**
+ * Description of the VHDR iff chunk content as defined in Amiga Rom
+ * Kernel Reference Manual 'Devices'.
+ */
 struct Voice8Header
 {
   /**

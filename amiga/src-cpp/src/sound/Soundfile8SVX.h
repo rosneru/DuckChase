@@ -1,7 +1,9 @@
 #ifndef SOUNDFILE_8SVX_H
 #define SOUNDFILE_8SVX_H
 
+#include "IffParse.h"
 #include "Voice8Header.h"
+
 
 /**
  * Class for loading an iff 8svx sound file by using the
@@ -21,9 +23,26 @@ public:
   virtual ~Soundfile8SVX();
 
 private:
-  struct Voice8Header* m_pVoice8Header;
+  BYTE* m_pSampleData;
+  ULONG m_SampleBytes;
 
-  bool decode8SVXBody();
+  bool decode8SVXBody(IffParse& iffParse, struct Voice8Header* pHdr);
+
+  /** 
+   * Unpack Fibonacci-delta encoded data from n byte source buffer into
+   * 2*(n-2) byte dest buffer. Source buffer has a pad byte, an 8-bit
+   * initial value, followed by n-2 bytes comprising 2*(n-2) 4-bit
+   * encoded samples.
+   */
+  void DUnpack(BYTE source[], LONG n, BYTE dest[]);
+
+  /**
+   * Unpack Fibonacci-delta encoded data from n byte source buffer into
+   * 2*n byte dest buffer, given initial data value x.  It returns the
+   * lats data value x so you can call it several times to incrementally
+   * decompress the data.
+   */
+  BYTE D1Unpack(BYTE source[], LONG n, BYTE dest[], BYTE x);
 };
 
 
