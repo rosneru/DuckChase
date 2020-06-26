@@ -25,12 +25,6 @@ IffParse::IffParse(const char* pFileName)
   }
 
   InitIFFasDOS(m_pIffHandle);
-
-  LONG iffErr;
-  if((iffErr = OpenIFF(m_pIffHandle, IFFF_READ)) != 0)
-  {
-    throw "IffParser: OpenIFF returned error.";
-  }
 }
 
 IffParse::~IffParse()
@@ -42,7 +36,6 @@ IffParse::~IffParse()
       Close(m_pIffHandle->iff_Stream);
     }
 
-    CloseIFF(m_pIffHandle);
     FreeIFF(m_pIffHandle);
     m_pIffHandle = NULL;
   }

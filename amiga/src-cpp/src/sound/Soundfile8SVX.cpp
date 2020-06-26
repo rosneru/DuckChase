@@ -17,14 +17,21 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
 {
   IffParse iffParse(pFileName);
 
+  LONG iffErr;
+  if((iffErr = OpenIFF(iffParse.Handle(), IFFF_READ)) != 0)
+  {
+    throw "Soundfile8SVX: OpenIFF returned error.";
+  }
+
   // Define which chunks to load
   PropChunk(iffParse.Handle(), ID_8SVX, ID_VHDR);
   StopChunk(iffParse.Handle(), ID_8SVX, ID_BODY);
 
   // Parse the iff file
-  LONG iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
+  iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
   if(iffErr != 0)
   {
+    CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: Error in ParseIFF.";
   }
 
@@ -32,19 +39,24 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
   StoredProperty* pStoredProp = FindProp(iffParse.Handle(), ID_8SVX, ID_VHDR);
   if(pStoredProp == NULL)
   {
+    CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: No Voice8Header found in file.";
   }
 
   m_pVoice8Header = (struct Voice8Header*)pStoredProp->sp_Data;
   if(m_pVoice8Header == NULL)
   {
+    CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: Voice8Header of sound file is empty.";
   }
 
   if(decode8SVXBody() == false)
   {
+    CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: Error while decoding the 8SVX body.";
   }
+
+  CloseIFF(iffParse.Handle());
 }
 
 Soundfile8SVX::~Soundfile8SVX()

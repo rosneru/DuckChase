@@ -17,6 +17,12 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
 {
   IffParse iffParse(pFileName);
 
+  LONG iffErr;
+  if((iffErr = OpenIFF(iffParse.Handle(), IFFF_READ)) != 0)
+  {
+    throw "IlbmBitmap: OpenIFF returned error.";
+  }
+
   // Define which chunks to load
   PropChunk(iffParse.Handle(), ID_ILBM, ID_BMHD);
 
@@ -33,9 +39,10 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
   StopChunk(iffParse.Handle(), ID_ILBM, ID_BODY);
 
   // Parse the iff file
-  LONG iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
+  iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
   if(iffErr != 0)
   {
+    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: Error in ParseIFF.";
   }
 
@@ -43,13 +50,15 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
   StoredProperty* pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_BMHD);
   if(pStoredProp == NULL)
   {
-    throw "IlbmBitmap: No BitMap header found in ilbm picture.";
+    CloseIFF(iffParse.Handle());
+    throw "IlbmBitmap: No BitMap header found in file.";
   }
 
   BitMapHeader* pBitMapHeader = (BitMapHeader*)pStoredProp->sp_Data;
   if(pBitMapHeader == NULL)
   {
-    throw "IlbmBitmap: Bitmap header of ilbm picture is empty.";
+    CloseIFF(iffParse.Handle());
+    throw "IlbmBitmap: Bitmap header of ilbm file is empty.";
   }
 
   // Allocate the BitMap
@@ -61,7 +70,8 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
 
   if (m_pBitMap == NULL)
   {
-      throw "IlbmBitmap: Failed to AllocBitMap.";
+    CloseIFF(iffParse.Handle());
+    throw "IlbmBitmap: Failed to AllocBitMap.";
   }
 
   bool isCompressed = false;
@@ -86,6 +96,7 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
     {
       if(loadColors(pStoredProp) == false)
       {
+        CloseIFF(iffParse.Handle());
         throw "IlbmBitmap: Error while loading the colors from ilbm cmap.";
       }
     }
@@ -95,8 +106,11 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
                     isCompressed,
                     pBitMapHeader->bmh_Masking) == false)
   {
+    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: Error while decoding the ilbm body.";
   }
+
+  CloseIFF(iffParse.Handle());
 }
 
 IlbmBitmap::~IlbmBitmap()
