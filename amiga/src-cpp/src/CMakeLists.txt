@@ -36,6 +36,7 @@ add_executable (DuckChase
                 game/GameWorld.cpp
                 game/InfoDisplay.cpp
                 game/Level01.cpp
+                iff/IffParse.cpp
                 main.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp
@@ -64,6 +65,7 @@ target_include_directories (DuckChase PUBLIC
                             anim
                             entities
                             game
+                            iff
                             picture
                             resources
                             shapes
@@ -78,10 +80,12 @@ add_custom_command(TARGET DuckChase
 
 
 add_executable (SoundPlayer_test_shell
+                iff/IffParse.cpp
                 sound/Soundfile8SVX.cpp
                 _tests_amiga/SoundPlayer_test_shell.cpp)
 
 target_include_directories (SoundPlayer_test_shell PUBLIC
+                            iff
                             sound
                             _tests_amiga)
 

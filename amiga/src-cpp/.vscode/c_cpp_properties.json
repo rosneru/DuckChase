@@ -11,6 +11,7 @@
                 "${workspaceFolder}/src/amigautils",
                 "${workspaceFolder}/src/anim",
                 "${workspaceFolder}/src/entities",
+                "${workspaceFolder}/src/iff",
                 "${workspaceFolder}/src/picture",
                 "${workspaceFolder}/src/resources",
                 "${workspaceFolder}/src/shapes",

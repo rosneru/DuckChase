@@ -4,7 +4,6 @@
 #include <clib/iffparse_protos.h>
 #include <datatypes/pictureclass.h> // Not using  datatypes, just for
                                     // 'BitMapHeader', 'ID_xyz', etc.
-#include <dos/dos.h>
 #include <exec/memory.h>
 
 #include "IlbmBitmap.h"
@@ -14,58 +13,34 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
                        bool bLoadColors,
                        bool bLoadDisplayMode)
   : BitmapPictureBase(),
-    m_pIffHandle(NULL),
     m_MaxSrcPlanes(25)
 {
-  if (pFileName == NULL)
-  {
-    throw "IlbmBitmap: No file name provided.";
-  }
-
-  m_pIffHandle = AllocIFF();
-  if(m_pIffHandle == NULL)
-  {
-    throw "IlbmBitmap: Failed to AllocIFF.";
-  }
-
-  m_pIffHandle->iff_Stream = Open(pFileName, MODE_OLDFILE);
-  if (m_pIffHandle->iff_Stream == 0)
-  {
-    throw "IlbmBitmap: Failed to open file.";
-  }
-
-  InitIFFasDOS(m_pIffHandle);
-
-  LONG iffErr;
-  if((iffErr = OpenIFF(m_pIffHandle, IFFF_READ)) != 0)
-  {
-    throw "IlbmBitmap: OpenIFF returned error.";
-  }
+  IffParse iffParse(pFileName);
 
   // Define which chunks to load
-  PropChunk(m_pIffHandle, ID_ILBM, ID_BMHD);
+  PropChunk(iffParse.Handle(), ID_ILBM, ID_BMHD);
 
   if(bLoadColors)
   {
-    PropChunk(m_pIffHandle, ID_ILBM, ID_CMAP);
+    PropChunk(iffParse.Handle(), ID_ILBM, ID_CMAP);
   }
 
   if(bLoadDisplayMode)
   {
-    PropChunk(m_pIffHandle, ID_ILBM, ID_CAMG);
+    PropChunk(iffParse.Handle(), ID_ILBM, ID_CAMG);
   }
 
-  StopChunk(m_pIffHandle, ID_ILBM, ID_BODY);
+  StopChunk(iffParse.Handle(), ID_ILBM, ID_BODY);
 
   // Parse the iff file
-  iffErr = ParseIFF(m_pIffHandle, IFFPARSE_SCAN);
+  LONG iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
   if(iffErr != 0)
   {
     throw "IlbmBitmap: Error in ParseIFF.";
   }
 
   // Load the BitMap header
-  StoredProperty* pStoredProp = FindProp(m_pIffHandle, ID_ILBM, ID_BMHD);
+  StoredProperty* pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_BMHD);
   if(pStoredProp == NULL)
   {
     throw "IlbmBitmap: No BitMap header found in ilbm picture.";
@@ -106,7 +81,7 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
   if(bLoadColors)
   {
     // Load the color map
-    pStoredProp = FindProp(m_pIffHandle, ID_ILBM, ID_CMAP);
+    pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_CMAP);
     if(pStoredProp != NULL)
     {
       if(loadColors(pStoredProp) == false)
@@ -116,33 +91,17 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
     }
   }
 
-  if(decodeIlbmBody(isCompressed,
+  if(decodeIlbmBody(iffParse,
+                    isCompressed,
                     pBitMapHeader->bmh_Masking) == false)
   {
     throw "IlbmBitmap: Error while decoding the ilbm body.";
   }
-
-  Close(m_pIffHandle->iff_Stream);
-  m_pIffHandle->iff_Stream = 0;
-
-  CloseIFF(m_pIffHandle);
-  FreeIFF(m_pIffHandle);
-  m_pIffHandle = NULL;
 }
 
 IlbmBitmap::~IlbmBitmap()
 {
-  if(m_pIffHandle != NULL)
-  {
-    if(m_pIffHandle->iff_Stream != 0)
-    {
-      Close(m_pIffHandle->iff_Stream);
-    }
 
-    CloseIFF(m_pIffHandle);
-    FreeIFF(m_pIffHandle);
-    m_pIffHandle = NULL;
-  }
 }
 
 
@@ -214,21 +173,23 @@ bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
 }
 
 
-bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
+bool IlbmBitmap::decodeIlbmBody(IffParse& iffParse, 
+                                bool isCompressed, 
+                                UBYTE masking)
 {
   if(m_pBitMap == NULL)
   {
     return false;
   }
 
-  if (!(currentChunkIs(m_pIffHandle, ID_ILBM, ID_BODY)))
+  if (!(iffParse.currentChunkIs(ID_ILBM, ID_BODY)))
   {
     // No body chunk. Maybe it's a palette.
     return false;
   }
 
   ULONG srcRowBytes = ((((Width()) + 15) >> 4) << 1);
-  LONG bufRowBytes = maxPackedSize(srcRowBytes);
+  LONG bufRowBytes = iffParse.maxPackedSize(srcRowBytes);
   ULONG bufSize = bufRowBytes << 4;
   BYTE* pBufStart = (BYTE*)AllocVec(bufSize, MEMF_ANY);
   BYTE* pCurrBufPos = pBufStart;
@@ -237,7 +198,7 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
     return false;
   }
 
-  struct ContextNode* pContextNode = CurrentChunk(m_pIffHandle);
+  struct ContextNode* pContextNode = CurrentChunk(iffParse.Handle());
 
   WORD destRowBytes = m_pBitMap->BytesPerRow; // used as a modulo only
 
@@ -306,15 +267,15 @@ bool IlbmBitmap::decodeIlbmBody(bool isCompressed, UBYTE masking)
         // range buffer[0]..buffer[nFilled-1].
         CopyMem(pBuf, pCurrBufPos, nFilled);  // Could be moving 0 bytes.
 
-        if (nEmpty > chunkMoreBytes(pContextNode))
+        if (nEmpty > iffParse.chunkMoreBytes(pContextNode))
         {
           // There aren't enough bytes left to fill the buffer.
-          nEmpty = chunkMoreBytes(pContextNode);
+          nEmpty = iffParse.chunkMoreBytes(pContextNode);
           bufSize = nFilled + nEmpty; // heh-heh
         }
 
         // Append new data to the existing data
-        LONG iffResult = ReadChunkBytes(m_pIffHandle,
+        LONG iffResult = ReadChunkBytes(iffParse.Handle(),
                                         &pCurrBufPos[nFilled],
                                         nEmpty);
         if (iffResult < nEmpty)
@@ -415,23 +376,4 @@ bool IlbmBitmap::unpackRow(BYTE** ppSource,
   *ppSource = pSource;
   *ppDest = pDest;
   return true;
-}
-
-
-LONG IlbmBitmap::currentChunkIs(struct IFFHandle* pIffHandle,
-                                         LONG type,
-                                         LONG id)
-{
-  struct ContextNode* pContextNode;
-  LONG result = 0;
-
-  if ((pContextNode = CurrentChunk(pIffHandle)) != NULL)
-  {
-    if ((pContextNode->cn_Type == type) && (pContextNode->cn_ID == id))
-    {
-      result = 1;
-    }
-  }
-
-  return result;
 }

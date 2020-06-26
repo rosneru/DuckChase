@@ -1,7 +1,6 @@
 #ifndef SOUNDFILE_8SVX_H
 #define SOUNDFILE_8SVX_H
 
-#include <libraries/iffparse.h>
 #include "Voice8Header.h"
 
 /**
@@ -22,7 +21,6 @@ public:
   virtual ~Soundfile8SVX();
 
 private:
-	struct IFFHandle* m_pIffHandle;
   struct Voice8Header* m_pVoice8Header;
 
   bool decode8SVXBody();
