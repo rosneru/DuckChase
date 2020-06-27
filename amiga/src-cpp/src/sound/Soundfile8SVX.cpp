@@ -13,6 +13,7 @@
  */
 LONG esvxprops[] = {ID_8SVX, ID_VHDR, ID_8SVX, ID_NAME, TAG_DONE};
 
+
 Soundfile8SVX::Soundfile8SVX(const char* pFileName)
   : m_pSampleData(NULL),
     m_NumSampleBytes(0),
@@ -83,7 +84,7 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
   BYTE* oneshot = m_pSampleData;
   m_ppOctaves = new Octave*[m_NumOctaves]; // Original m_MaxOctaves
 
-  for(size_t oct = m_NumOctaves - 1; oct >= 0; oct--)
+  for(int oct = m_NumOctaves - 1; oct >= 0; oct--)
   {
     BYTE* oSamps = osize ? oneshot : NULL;
 
