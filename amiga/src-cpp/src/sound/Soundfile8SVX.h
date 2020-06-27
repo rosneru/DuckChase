@@ -6,8 +6,9 @@
 
 
 /**
- * Class for loading an iff 8svx sound file by using the
- * iffparse.library. Code of newiff from Commodore is heavily used.
+ * Class for loading an IFF 8SVX sound file using the iffparse.library.
+ *  
+ * Code of newiff from Commodore is heavily used.
  *
  * @author Uwe Rosner
  * @date 24/06/2020

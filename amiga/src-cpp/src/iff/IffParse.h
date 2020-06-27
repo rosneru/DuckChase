@@ -3,6 +3,16 @@
 
 #include <libraries/iffparse.h>
 
+/**
+ * Creates and holds an IffHandle which is needed by other objects to 
+ * parse iff files with the iffparse.library. Also exposes some useful 
+ * functions which are helpful e.g. when parsing the BODY chunk.
+ * 
+ * Code of newiff from Commodore is heavily used.
+ *
+ * @author Uwe Rosner
+ * @date 24/06/2020
+ */
 class IffParse
 {
 public:
