@@ -1,8 +1,8 @@
 #include "ArrowResources.h"
 
 ArrowResources::ArrowResources()
-  : m_AnimRightUpward("AADevDuck:assets/arrow_right_strip5.ilbm", 5),
-    m_AnimLeftUpward("AADevDuck:assets/arrow_left_strip5.ilbm", 5)
+  : m_AnimRightUpward("AADevDuck:assets/gfx/arrow_right_strip5.ilbm", 5),
+    m_AnimLeftUpward("AADevDuck:assets/gfx/arrow_left_strip5.ilbm", 5)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
   //       throw an exception if not.

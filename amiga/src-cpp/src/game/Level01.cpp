@@ -14,7 +14,7 @@ Level01::Level01(GameViewBase& gameView,
     m_InfoDisplay(infoDisplay),
     m_GameVars(gameVars),
     m_StopWatch(stopWatch),
-    m_BackgroundPicture("AADevDuck:assets/bgr_level01.ilbm", false, false),
+    m_BackgroundPicture("AADevDuck:assets/gfx/bgr_level01.ilbm", false, false),
     m_IsArrowFlightPrepared(false),
     m_IsArrowFlightFinished(false),
     m_IsStrike(false),
@@ -192,8 +192,8 @@ void Level01::gameLoop()
 
 void Level01::displayWinner()
 {
-  char const* pWinnerDuckImagePath = "AADevDuck:assets/winner_duck_comic.ilbm";
-  char const* pWinnerHunterImagePath = "AADevDuck:assets/winner_hunter_comic.ilbm";
+  char const* pWinnerDuckImagePath = "AADevDuck:assets/gfx/winner_duck_comic.ilbm";
+  char const* pWinnerHunterImagePath = "AADevDuck:assets/gfx/winner_hunter_comic.ilbm";
 
   const char* pImagePath;
   if(m_IsStrike)

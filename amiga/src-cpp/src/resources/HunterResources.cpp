@@ -1,10 +1,10 @@
 #include "HunterResources.h"
 
 HunterResources::HunterResources()
-  : m_AnimRightRun("AADevDuck:assets/hunter_right_run_strip2.ilbm", 2),
-    m_AnimRightShoot("AADevDuck:assets/hunter_right_shoot_strip1.ilbm", 1),
-    m_AnimLeftRun("AADevDuck:assets/hunter_left_run_strip2.ilbm", 2),
-    m_AnimLeftShoot("AADevDuck:assets/hunter_left_shoot_strip1.ilbm", 1)
+  : m_AnimRightRun("AADevDuck:assets/gfx/hunter_right_run_strip2.ilbm", 2),
+    m_AnimRightShoot("AADevDuck:assets/gfx/hunter_right_shoot_strip1.ilbm", 1),
+    m_AnimLeftRun("AADevDuck:assets/gfx/hunter_left_run_strip2.ilbm", 2),
+    m_AnimLeftShoot("AADevDuck:assets/gfx/hunter_left_shoot_strip1.ilbm", 1)
 {
   // TODO: Maybe check if all anims have same dimensions / depth and
   //       throw an exception if not.

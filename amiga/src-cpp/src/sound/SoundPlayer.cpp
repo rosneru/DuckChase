@@ -64,7 +64,8 @@ SoundPlayer::SoundPlayer()
   // Create audio I/O blocks so we can send commands to the audio device
   for(size_t k = 0; k < m_NumAIOs; k++)
   {
-    m_ppAIO[k] = (struct IOAudio*) CreateIORequest(m_ReplyPort, sizeof(struct IOAudio));
+    m_ppAIO[k] = (struct IOAudio*) CreateIORequest(m_ReplyPort, 
+                                                   sizeof(struct IOAudio));
     if(m_ppAIO[k] == NULL)
     {
       throw "SoundPlayer: Failed to create IORequest.";

@@ -15,13 +15,13 @@ InfoDisplay::InfoDisplay(GameViewBase& gameView,
                          GameVars& gameVars)
   : m_View(gameView),
     m_GameVars(gameVars),
-    m_BackgroundPicture("AADevDuck:assets/info_bar.ilbm", false, false),
+    m_BackgroundPicture("AADevDuck:assets/gfx/info_bar.ilbm", false, false),
     m_ArrowsRect(110, gameView.Height() - 29),
     m_FpsRect(gameView.Width() - 30, gameView.Height() - 18),
     m_StrainRect(322, 227),
     m_FormerStrain(0),
     m_StrainSpreadColors(gameColors.GetStrainSpreadColors()),
-    m_ArrowImages("AADevDuck:assets/arrow_shadow_strip2.ilbm", 2)
+    m_ArrowImages("AADevDuck:assets/gfx/arrow_shadow_strip2.ilbm", 2)
 {
   m_ArrowsRect.SetWidthHeight(94, 7);
   m_FpsRect.SetWidthHeight(19, 7);

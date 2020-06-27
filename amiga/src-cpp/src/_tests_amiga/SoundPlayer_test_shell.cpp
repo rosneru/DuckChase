@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 {
   try
   {
-    Soundfile8SVX soundfile("AADevDuck:assets/finger_snap.8svx");
+    Soundfile8SVX soundfile("AADevDuck:assets/snd/finger_snap.8svx");
   }
   catch(const char* pMsg)
   {

@@ -17,7 +17,7 @@ int main(void)
   try
   {
     // Load the background image
-    IlbmBitmap paletteImg("AADevDuck:assets/blank_fullsize_Screen.ilbm", 
+    IlbmBitmap paletteImg("AADevDuck:assets/gfx/blank_fullsize_Screen.ilbm", 
                           true, 
                           false);
 
