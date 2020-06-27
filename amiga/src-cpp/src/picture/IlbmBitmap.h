@@ -8,7 +8,7 @@
 
 /**
  * Class for loading an iff ilbm file into a Bitmap by using the 
- * iffparse.library. Code of newiff from Commodore is heavily used.
+ * iffparse.library. Code of newiff from Commodore is used.
  *
  * @author Uwe Rosner
  * @date 04/04/2020

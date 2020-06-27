@@ -6,6 +6,9 @@
 
 extern struct GfxBase* GfxBase;
 
+
+UBYTE whichannel[] = {1, 2, 4, 8};
+
 /* periods for scale starting at   65.40Hz (C) with 128 samples per cycle
  *                            or  130.81Hz (C) with  64 samples per cycle
  *                            or  261.63Hz (C) with  32 samples per cycle
@@ -23,31 +26,29 @@ UWORD per[12];
 SoundPlayer::SoundPlayer()
   : m_NTSCClock(3579545L),
     m_PALClock(3546895L),
-    port(NULL),
+    m_Clock(m_NTSCClock),
+    m_ReplyPort(NULL),
     m_NumAIOs(4),
-    m_ppAIO(NULL)
+    m_ppAIO(NULL),
+    m_IsAudioDeviceOpened(false)
 {
-  // Ask the system if we are PAL or NTSC and set clock constant accordingly
+  // If we are on a PAL Amiga set clock constant accordingly
   if(((struct GfxBase*)GfxBase)->DisplayFlags & PAL)
   {
-    tclock = m_PALClock;
-  }
-  else
-  {
-    tclock = m_NTSCClock;
+    m_Clock = m_PALClock;
   }
 
   // Calculate period values for one octave based on system clock
   ULONG period;
   for (size_t k = 0; k < 12; k++)
   {
-    period = ((per_ntsc[k] * tclock) + (m_NTSCClock >> 1)) / m_NTSCClock;
+    period = ((per_ntsc[k] * m_Clock) + (m_NTSCClock >> 1)) / m_NTSCClock;
     per[k] = period;
   }
 
   // Create a reply port so the audio device can reply to our commands
-  port = CreateMsgPort();
-  if(port == NULL)
+  m_ReplyPort = CreateMsgPort();
+  if(m_ReplyPort == NULL)
   {
     throw "SoundPlayer: Failed to create MessagePort.";
   }
@@ -63,16 +64,49 @@ SoundPlayer::SoundPlayer()
   // Create audio I/O blocks so we can send commands to the audio device
   for(size_t k = 0; k < m_NumAIOs; k++)
   {
-    m_ppAIO[k] = (struct IOAudio*) CreateIORequest(port, sizeof(struct IOAudio));
+    m_ppAIO[k] = (struct IOAudio*) CreateIORequest(m_ReplyPort, sizeof(struct IOAudio));
     if(m_ppAIO[k] == NULL)
     {
       throw "SoundPlayer: Failed to create IORequest.";
     }
   }
+
+  //
+  // Set up the audio I/O block for channel allocation
+  //
+
+  m_ppAIO[0]->ioa_Request.io_Command = ADCMD_ALLOCATE;
+  m_ppAIO[0]->ioa_Request.io_Flags = ADIOF_NOWAIT;
+  m_ppAIO[0]->ioa_AllocKey = 0; // will be filled in by the audio device
+                                // if the allocation succeeds. We must 
+                                // use the key it gives for all other 
+                                // commands sent.
+  m_ppAIO[0]->ioa_Data = whichannel;  // a pointer to the array listing 
+                                      // the channels we want
+  m_ppAIO[0]->ioa_Length = sizeof(whichannel);  // Lenght of array
+
+  if(!OpenDevice("audio.device", 0L, (struct IORequest*)m_ppAIO[0], 0L))
+  {
+    throw "SoundPlayer: Failed to open audio.device.";
+  }
+
+  m_IsAudioDeviceOpened = true;
+
+  // Clone the flags, channel allocation, etc. into other IOAudio requests
+  for (size_t k = 1; k < m_NumAIOs; k++)
+  {
+    *m_ppAIO[k] = *m_ppAIO[0];
+  }
 }
 
 SoundPlayer::~SoundPlayer()
 {
+  if(m_IsAudioDeviceOpened)
+  {
+    CloseDevice((struct IORequest*)m_ppAIO[0]);
+    m_IsAudioDeviceOpened = false;
+  }
+
   if(m_ppAIO != NULL)
   {
     for(size_t k = 0; k < m_NumAIOs; k++)
@@ -88,14 +122,14 @@ SoundPlayer::~SoundPlayer()
     m_ppAIO = NULL;
   }
 
-  if(port != NULL)
+  if(m_ReplyPort != NULL)
   {
-    DeleteMsgPort(port);
-    port = NULL;
+    DeleteMsgPort(m_ReplyPort);
+    m_ReplyPort = NULL;
   }
 }
 
-LONG SoundPlayer::PlaySample(Soundfile8SVX soundFile, 
+LONG SoundPlayer::PlaySample(const Soundfile8SVX& soundFile, 
                              LONG octave, 
                              LONG note, 
                              UWORD volume, 

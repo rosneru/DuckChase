@@ -12,15 +12,18 @@ class SoundPlayer
 {
 public:
   /**
-   * Opens audio device for one audio channel, 2 IO requests
-   * Returns 0 for success
+   * Creates a SoundPlayer by opening the audio device for one audio 
+   * channel, 2 IO requests.
    *
-   * Based on code by Dan Baker
+   * Based on code by Dan Baker; Code of newiff from Commodore is used.
+   * 
+   * @author Uwe Rosner
+   * @date 26/06/2020
    */
   SoundPlayer();
   virtual ~SoundPlayer();
 
-  LONG PlaySample(Soundfile8SVX soundFile, 
+  LONG PlaySample(const Soundfile8SVX& soundFile, 
                   LONG octave, 
                   LONG note, 
                   UWORD volume, 
@@ -29,10 +32,11 @@ public:
 private:
   const LONG m_NTSCClock;
   const LONG m_PALClock;
-  struct MsgPort* port;
+  ULONG m_Clock;
+  struct MsgPort* m_ReplyPort;
   const size_t m_NumAIOs;
   struct IOAudio** m_ppAIO;
-  ULONG tclock;
+  bool m_IsAudioDeviceOpened;
 };
 
 #endif

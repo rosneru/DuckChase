@@ -6,6 +6,7 @@
   "files.associations": {
     "cstdio": "cpp",
     "cstdlib": "cpp",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "type_traits": "cpp"
   }
 }
