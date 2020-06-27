@@ -5,7 +5,13 @@
 
 class Octave
 {
+public:
   Octave();
+  Octave(BYTE* pOSamps, 
+         ULONG oSizes, 
+         BYTE* pRSamps, 
+         ULONG rSizes, 
+         ULONG spCycs);
   virtual ~Octave();
 
 	BYTE* OSamps() const;

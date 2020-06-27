@@ -2,6 +2,7 @@
 #define SOUNDFILE_8SVX_H
 
 #include "IffParse.h"
+#include "Octave.h"
 #include "Voice8Header.h"
 
 
@@ -32,7 +33,7 @@ public:
   UWORD SamplesPerSec() const;
 
   /**
-   *  Number of octaves
+   *  Number of octaves of waveforms
    * 
    *  IMPORTANT: Move into a base class if more audio formats will be 
    *             implemented.
@@ -42,13 +43,10 @@ public:
 private:
   BYTE* m_pSampleData;
   ULONG m_NumSampleBytes;
+  Octave** m_ppOctaves;
 
-  /**
-   *  IMPORTANT: Move the following fields into a bas class if more 
-   *             audio formats will be implemented.
-   */
-  UWORD m_SamplesPerSec;  // 
-  UBYTE m_NumOctaves;       // # of octaves of waveforms
+  UWORD m_SamplesPerSec;
+  UBYTE m_NumOctaves;
 
   bool decode8SVXBody(IffParse& iffParse, struct Voice8Header* pHdr);
 

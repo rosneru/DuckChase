@@ -10,6 +10,20 @@ Octave::Octave()
 
 }
 
+  Octave::Octave(BYTE* pOSamps, 
+                 ULONG oSizes, 
+                 BYTE* pRSamps, 
+                 ULONG rSizes, 
+                 ULONG spCycs)
+  : m_pOSamps(pOSamps),
+    m_OSizes(oSizes),
+    m_pRSamps(pRSamps),
+    m_RSizes(rSizes),
+    m_SpCycs(spCycs)
+{
+
+}
+
 
 Octave::~Octave()
 {

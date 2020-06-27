@@ -9,8 +9,6 @@
 
 #include "SoundFile8SVX.h"
 
-#define MAXOCT 16
-
 /* 8SVX Property chunks to be grabbed
  */
 LONG esvxprops[] = {ID_8SVX, ID_VHDR, ID_8SVX, ID_NAME, TAG_DONE};
@@ -18,6 +16,7 @@ LONG esvxprops[] = {ID_8SVX, ID_VHDR, ID_8SVX, ID_NAME, TAG_DONE};
 Soundfile8SVX::Soundfile8SVX(const char* pFileName)
   : m_pSampleData(NULL),
     m_NumSampleBytes(0),
+    m_ppOctaves(NULL),
     m_SamplesPerSec(0),
     m_NumOctaves(0)
 {
@@ -82,8 +81,16 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
   }
 
   BYTE* oneshot = m_pSampleData;
+  m_ppOctaves = new Octave*[m_NumOctaves]; // Original m_MaxOctaves
+
   for(size_t oct = m_NumOctaves - 1; oct >= 0; oct--)
   {
+    BYTE* oSamps = osize ? oneshot : NULL;
+
+    BYTE* repeat = oneshot + osize;
+    BYTE* rSamps = rsize ? repeat : NULL;
+
+    m_ppOctaves[oct] = new Octave(oSamps, osize, rSamps, rsize, spcyc);
 
     oneshot += (osize + rsize);
     osize <<= 1; 
@@ -97,6 +104,21 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
 
 Soundfile8SVX::~Soundfile8SVX()
 {
+  if(m_ppOctaves != NULL)
+  {
+    for(size_t i = 0; i < m_NumOctaves; i++)
+    {
+      if(m_ppOctaves[i] != NULL)
+      {
+        delete m_ppOctaves[i];
+        m_ppOctaves[i] = NULL;
+      }
+    }
+
+    delete[] m_ppOctaves;
+    m_ppOctaves = NULL;
+  }
+
   if(m_pSampleData != NULL)
   {
     FreeVec(m_pSampleData);
