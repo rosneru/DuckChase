@@ -12,12 +12,14 @@
 #include <dos/dos.h>
 
 #include "Soundfile8SVX.h"
+#include "SoundPlayer.h"
 
 int main(int argc, char** argv)
 {
   try
   {
     Soundfile8SVX soundfile("AADevDuck:assets/snd/finger_snap.8svx");
+    SoundPlayer player();
   }
   catch(const char* pMsg)
   {

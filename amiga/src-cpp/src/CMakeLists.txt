@@ -52,6 +52,7 @@ add_executable (DuckChase
                 shapes/ShapeBob.cpp
                 shapes/ShapeExtSprite.cpp
                 shapes/ShapeVSprite.cpp
+                sound/Octave.cpp
                 sound/Soundfile8SVX.cpp
                 sound/SoundPlayer.cpp
                 view/GameViewBase.cpp
@@ -82,6 +83,7 @@ add_custom_command(TARGET DuckChase
 
 add_executable (SoundPlayer_test_shell
                 iff/IffParse.cpp
+                sound/Octave.cpp
                 sound/Soundfile8SVX.cpp
                 sound/SoundPlayer.cpp
                 _tests_amiga/SoundPlayer_test_shell.cpp)

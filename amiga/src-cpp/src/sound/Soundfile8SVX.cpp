@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include <clib/dos_protos.h>
 #include <clib/exec_protos.h>
 #include <clib/iffparse_protos.h>
@@ -15,7 +17,9 @@ LONG esvxprops[] = {ID_8SVX, ID_VHDR, ID_8SVX, ID_NAME, TAG_DONE};
 
 Soundfile8SVX::Soundfile8SVX(const char* pFileName)
   : m_pSampleData(NULL),
-    m_SampleBytes(0)
+    m_NumSampleBytes(0),
+    m_SamplesPerSec(0),
+    m_NumOctaves(0)
 {
   IffParse iffParse(pFileName);
 
@@ -37,7 +41,7 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
     throw "Soundfile8SVX: Error in ParseIFF.";
   }
 
-  // Load VHDR (Voice8Header)
+  // Find the sample data header (VHDR / Voice8Header)
   StoredProperty* pStoredProp = FindProp(iffParse.Handle(), ID_8SVX, ID_VHDR);
   if(pStoredProp == NULL)
   {
@@ -45,13 +49,18 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
     throw "Soundfile8SVX: No Voice8Header found in file.";
   }
 
+  // Get the sample data header
   struct Voice8Header* pVoice8Hdr = (struct Voice8Header*)pStoredProp->sp_Data;
-
   if(pVoice8Hdr == NULL)
   {
     CloseIFF(iffParse.Handle());
     throw "Soundfile8SVX: Voice8Header of sound file is empty.";
   }
+
+  // Copying some values we may need later when sample data header 
+  // isn't  valid anymore
+  m_SamplesPerSec = pVoice8Hdr->samplesPerSec;
+  m_NumOctaves = pVoice8Hdr->ctOctave;
 
   if(decode8SVXBody(iffParse, pVoice8Hdr) == false)
   {
@@ -59,8 +68,32 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
     throw "Soundfile8SVX: Error while decoding the 8SVX body.";
   }
 
+  UWORD osize = pVoice8Hdr->oneShotHiSamples;
+  UWORD rsize = pVoice8Hdr->repeatHiSamples;
+  UWORD spcyc = pVoice8Hdr->samplesPerHiCycle;
+  if (!spcyc)
+  {
+    spcyc = pVoice8Hdr->repeatHiSamples;
+  }
+
+  if (!spcyc)
+  {
+    spcyc = 8;
+  }
+
+  BYTE* oneshot = m_pSampleData;
+  for(size_t oct = m_NumOctaves - 1; oct >= 0; oct--)
+  {
+
+    oneshot += (osize + rsize);
+    osize <<= 1; 
+    rsize <<= 1; 
+    spcyc <<= 1;
+  }
+
   CloseIFF(iffParse.Handle());
 }
+
 
 Soundfile8SVX::~Soundfile8SVX()
 {
@@ -69,6 +102,18 @@ Soundfile8SVX::~Soundfile8SVX()
     FreeVec(m_pSampleData);
     m_pSampleData = NULL;
   }
+}
+
+
+UWORD Soundfile8SVX::SamplesPerSec() const
+{
+  return m_SamplesPerSec;
+}
+
+
+UBYTE Soundfile8SVX::NumOctaves() const
+{
+  return m_NumOctaves;
 }
 
 
@@ -82,20 +127,20 @@ bool Soundfile8SVX::decode8SVXBody(IffParse& iffParse,
   }
 
   struct ContextNode* pContextNode = CurrentChunk(iffParse.Handle());
-  LONG sampleBytes = iffParse.chunkMoreBytes(pContextNode);
+  LONG numSampleBytes = iffParse.chunkMoreBytes(pContextNode);
 
   // If we have to decompress, let's just load it into public mem
   ULONG memtype = pHdr->sCompression ? MEMF_PUBLIC : MEMF_CHIP;
-  m_pSampleData = (BYTE*) AllocVec(sampleBytes, memtype);
+  m_pSampleData = (BYTE*) AllocVec(numSampleBytes, memtype);
   if(m_pSampleData == NULL)
   {
     // Failed to allocate memory for reading the 8svx body into
     return false;
   }
 
-  m_SampleBytes = sampleBytes;
-  LONG rlen = ReadChunkBytes(iffParse.Handle(), m_pSampleData, sampleBytes);
-  if(rlen != sampleBytes)
+  m_NumSampleBytes = numSampleBytes;
+  LONG rlen = ReadChunkBytes(iffParse.Handle(), m_pSampleData, numSampleBytes);
+  if(rlen != numSampleBytes)
   {
     // Stream read error
     return false;
@@ -103,7 +148,7 @@ bool Soundfile8SVX::decode8SVXBody(IffParse& iffParse,
 
   if(pHdr->sCompression == sCmpFibDelta)
   {
-    BYTE* pDecompressedSampleData = (BYTE*) AllocVec(sampleBytes << 1, 
+    BYTE* pDecompressedSampleData = (BYTE*) AllocVec(numSampleBytes << 1, 
                                                      MEMF_CHIP);
     if(pDecompressedSampleData == NULL)
     {
@@ -111,10 +156,10 @@ bool Soundfile8SVX::decode8SVXBody(IffParse& iffParse,
       return false;
     }
 
-    DUnpack(m_pSampleData, sampleBytes, pDecompressedSampleData);
+    DUnpack(m_pSampleData, numSampleBytes, pDecompressedSampleData);
     FreeVec(m_pSampleData);
     m_pSampleData = pDecompressedSampleData;
-    m_SampleBytes = sampleBytes << 1;
+    m_NumSampleBytes = numSampleBytes << 1;
   }
   else if(pHdr->sCompression != sCmpNone)
   {

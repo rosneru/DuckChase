@@ -23,9 +23,32 @@ public:
 
   virtual ~Soundfile8SVX();
 
+  /**
+   *  Data sampling rate
+   * 
+   *  IMPORTANT: Move into a base class if more audio formats will be 
+   *             implemented.
+   */
+  UWORD SamplesPerSec() const;
+
+  /**
+   *  Number of octaves
+   * 
+   *  IMPORTANT: Move into a base class if more audio formats will be 
+   *             implemented.
+   */
+  UBYTE NumOctaves() const;
+
 private:
   BYTE* m_pSampleData;
-  ULONG m_SampleBytes;
+  ULONG m_NumSampleBytes;
+
+  /**
+   *  IMPORTANT: Move the following fields into a bas class if more 
+   *             audio formats will be implemented.
+   */
+  UWORD m_SamplesPerSec;  // 
+  UBYTE m_NumOctaves;       // # of octaves of waveforms
 
   bool decode8SVXBody(IffParse& iffParse, struct Voice8Header* pHdr);
 

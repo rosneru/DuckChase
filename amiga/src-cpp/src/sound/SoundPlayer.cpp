@@ -20,8 +20,6 @@ UBYTE whichannel[] = {1, 2, 4, 8};
 UWORD per_ntsc[12] = {428, 404, 380, 360, 340, 320,
                       302, 286, 270, 254, 240, 226};
 
-/* periods adjusted for system clock frequency */
-UWORD per[12];
 
 SoundPlayer::SoundPlayer()
   : m_NTSCClock(3579545L),
@@ -43,7 +41,7 @@ SoundPlayer::SoundPlayer()
   for (size_t k = 0; k < 12; k++)
   {
     period = ((per_ntsc[k] * m_Clock) + (m_NTSCClock >> 1)) / m_NTSCClock;
-    per[k] = period;
+    m_Periods[k] = period;
   }
 
   // Create a reply port so the audio device can reply to our commands
@@ -130,11 +128,42 @@ SoundPlayer::~SoundPlayer()
   }
 }
 
-LONG SoundPlayer::PlaySample(const Soundfile8SVX& soundFile, 
+bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile, 
                              LONG octave, 
                              LONG note, 
                              UWORD volume, 
                              ULONG delay)
 {
-  return -1;
+  if(!m_IsAudioDeviceOpened)
+  {
+    return -1;
+  }
+
+  if(note > 11)
+  {
+    note = 0;
+  }
+
+  ULONG period;
+  if(note == -1)
+  {
+    period = m_Clock / soundFile.SamplesPerSec();
+  }
+  else
+  {
+    // table 'per' set up in constructor to system clock frequency
+    period = m_Periods[note];
+  }
+
+  if(octave > soundFile.NumOctaves())
+  {
+    octave = 0;
+  }
+
+  if(volume > 64)
+  {
+    volume = 64;
+  }
+
+  return 0;
 }
