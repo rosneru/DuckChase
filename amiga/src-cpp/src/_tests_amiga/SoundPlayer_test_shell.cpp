@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 {
   try
   {
-    Soundfile8SVX soundfile("AADevDuck:assets/snd/finger_snap.8svx");
+    Soundfile8SVX soundfile("AADevDuck:assets/snd/duck.8svx");
     SoundPlayer player;
 
     player.PlaySample(soundfile, 0, -1, 64, 0);

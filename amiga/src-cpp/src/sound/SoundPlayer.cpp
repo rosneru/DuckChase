@@ -55,7 +55,7 @@ SoundPlayer::SoundPlayer()
   }
   
   // Create a dynamic array for all needed IOAudio structs
-  size_t aioPtrSize = sizeof(struct IOAudio**) * m_NumAIOs;
+  size_t aioPtrSize = sizeof(struct IOAudio*) * m_NumAIOs;
   m_ppAIO = (struct IOAudio**) AllocVec(aioPtrSize, MEMF_ANY|MEMF_CLEAR);
   if(m_ppAIO == NULL)
   {
@@ -87,7 +87,7 @@ SoundPlayer::SoundPlayer()
                                       // the channels we want
   m_ppAIO[0]->ioa_Length = sizeof(whichannel);  // Lenght of array
 
-  if(!OpenDevice(AUDIONAME, 0L, (struct IORequest*)m_ppAIO[0], 0L))
+  if(OpenDevice(AUDIONAME, 0L, (struct IORequest*)m_ppAIO[0], 0L) != 0)
   {
     throw "SoundPlayer: Failed to open audio.device.";
   }
@@ -169,10 +169,11 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
   }
 
   Octave* pOctave = soundFile.GetOctave(octave);
-  UBYTE* oneshot = (UBYTE*) pOctave->OSamps();
-  LONG osize = pOctave->OSizes();
-  UBYTE* repeat = (UBYTE*) pOctave->RSamps();
-  LONG rsize = pOctave->RSizes();
+  
+  UBYTE* pOneShot = (UBYTE*) pOctave->OSamps();
+  LONG oSize = pOctave->OSizes();
+  UBYTE* pRepeat = (UBYTE*) pOctave->RSamps();
+  LONG rSize = pOctave->RSizes();
 
   // Set up audio I/O blocks to play a sample using CMD_WRITE. Set up
   // one request for the oneshot and one for repeat (all ready for
@@ -185,16 +186,16 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
 
   m_ppAIO[0]->ioa_Request.io_Command = CMD_WRITE;
   m_ppAIO[0]->ioa_Request.io_Flags = ADIOF_PERVOL;
-  m_ppAIO[0]->ioa_Data = oneshot;
-  m_ppAIO[0]->ioa_Length = osize;
+  m_ppAIO[0]->ioa_Data = pOneShot;
+  m_ppAIO[0]->ioa_Length = oSize;
   m_ppAIO[0]->ioa_Period = period;
   m_ppAIO[0]->ioa_Volume = volume;
   m_ppAIO[0]->ioa_Cycles = 1;
 
   m_ppAIO[2]->ioa_Request.io_Command = CMD_WRITE;
   m_ppAIO[2]->ioa_Request.io_Flags = ADIOF_PERVOL;
-  m_ppAIO[2]->ioa_Data = repeat;
-  m_ppAIO[2]->ioa_Length = rsize;
+  m_ppAIO[2]->ioa_Data = pRepeat;
+  m_ppAIO[2]->ioa_Length = rSize;
   m_ppAIO[2]->ioa_Period = period;
   m_ppAIO[2]->ioa_Volume = volume;
   m_ppAIO[2]->ioa_Cycles = 0; // repeat until stopped
@@ -206,9 +207,9 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
   struct IOAudio* aout0 = NULL;
   struct IOAudio* aout1 = NULL;
 
-  if(osize != 0)
+  if(oSize != 0)
   {
-    if(osize < MAXSAMPLE)
+    if(oSize < MAXSAMPLE)
     {
       // Simple case for oneshot sample <= 128K (ie. most samples)
       aout0 = m_ppAIO[0];
@@ -218,13 +219,13 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
     {
       // for samples >128K some advanced technique is used
       *m_ppAIO[1] = *m_ppAIO[1];
-      // aout0 = playbigsample(m_ppAIO[0], m_ppAIO[1], oneshot, osize, period, volume);
+      // aout0 = playbigsample(m_ppAIO[0], m_ppAIO[1], pOneShot, oSize, period, volume);
     }
   }
 
-  if(rsize != 0)
+  if(rSize != 0)
   {
-    if(rsize < MAXSAMPLE)
+    if(rSize < MAXSAMPLE)
     {
       // Simple case for oneshot sample <= 128K (ie. most samples)
       aout1 = m_ppAIO[2];
@@ -234,7 +235,7 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
     {
       // for samples >128K some advanced technique is used
       *m_ppAIO[3] = *m_ppAIO[2];
-      // aout0 = playbigsample(m_ppAIO[2], m_ppAIO[3], oneshot, osize, period, volume);
+      // aout0 = playbigsample(m_ppAIO[2], m_ppAIO[3], pOneShot, oSize, period, volume);
     }
   }
 
