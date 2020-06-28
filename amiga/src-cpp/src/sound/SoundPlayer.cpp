@@ -1,3 +1,4 @@
+#include <clib/alib_protos.h>
 #include <clib/dos_protos.h>
 #include <clib/exec_protos.h>
 #include <graphics/gfxbase.h>
@@ -213,7 +214,7 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
     {
       // Simple case for oneshot sample <= 128K (ie. most samples)
       aout0 = m_ppAIO[0];
-      SendIO((struct IORequest*) aout0);
+      BeginIO((struct IORequest*) aout0);
     }
     else
     {
@@ -229,7 +230,7 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
     {
       // Simple case for oneshot sample <= 128K (ie. most samples)
       aout1 = m_ppAIO[2];
-      SendIO((struct IORequest*) aout1);
+      BeginIO((struct IORequest*) aout1);
     }
     else
     {
