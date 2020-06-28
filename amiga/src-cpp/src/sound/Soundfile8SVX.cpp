@@ -68,17 +68,17 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
     throw "Soundfile8SVX: Error while decoding the 8SVX body.";
   }
 
-  UWORD osize = pVoice8Hdr->oneShotHiSamples;
-  UWORD rsize = pVoice8Hdr->repeatHiSamples;
-  UWORD spcyc = pVoice8Hdr->samplesPerHiCycle;
-  if (!spcyc)
+  UWORD oSize = pVoice8Hdr->oneShotHiSamples;
+  UWORD rSize = pVoice8Hdr->repeatHiSamples;
+  UWORD spCyc = pVoice8Hdr->samplesPerHiCycle;
+  if (!spCyc)
   {
-    spcyc = pVoice8Hdr->repeatHiSamples;
+    spCyc = pVoice8Hdr->repeatHiSamples;
   }
 
-  if (!spcyc)
+  if (!spCyc)
   {
-    spcyc = 8;
+    spCyc = 8;
   }
 
   BYTE* oneshot = m_pSampleData;
@@ -86,17 +86,17 @@ Soundfile8SVX::Soundfile8SVX(const char* pFileName)
 
   for(int oct = m_NumOctaves - 1; oct >= 0; oct--)
   {
-    BYTE* oSamps = osize ? oneshot : NULL;
+    BYTE* pOSamps = oSize ? oneshot : NULL;
 
-    BYTE* repeat = oneshot + osize;
-    BYTE* rSamps = rsize ? repeat : NULL;
+    BYTE* pRepeat = oneshot + oSize;
+    BYTE* pRSamps = rSize ? pRepeat : NULL;
 
-    m_ppOctaves[oct] = new Octave(oSamps, osize, rSamps, rsize, spcyc);
+    m_ppOctaves[oct] = new Octave(pOSamps, oSize, pRSamps, rSize, spCyc);
 
-    oneshot += (osize + rsize);
-    osize <<= 1; 
-    rsize <<= 1; 
-    spcyc <<= 1;
+    oneshot += (oSize + rSize);
+    oSize <<= 1; 
+    rSize <<= 1; 
+    spCyc <<= 1;
   }
 
   CloseIFF(iffParse.Handle());
@@ -139,6 +139,15 @@ UBYTE Soundfile8SVX::NumOctaves() const
   return m_NumOctaves;
 }
 
+Octave* Soundfile8SVX::GetOctave(size_t i) const
+{
+  if(i >= m_NumOctaves)
+  {
+    return NULL;
+  }
+
+  return m_ppOctaves[i];
+}
 
 bool Soundfile8SVX::decode8SVXBody(IffParse& iffParse, 
                                    struct Voice8Header* pHdr)

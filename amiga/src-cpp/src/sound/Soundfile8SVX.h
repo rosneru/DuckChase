@@ -40,6 +40,8 @@ public:
    */
   UBYTE NumOctaves() const;
 
+  Octave* GetOctave(size_t i) const;
+
 private:
   BYTE* m_pSampleData;
   ULONG m_NumSampleBytes;

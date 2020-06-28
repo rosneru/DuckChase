@@ -1,3 +1,4 @@
+#include <clib/dos_protos.h>
 #include <clib/exec_protos.h>
 #include <graphics/gfxbase.h>
 
@@ -6,16 +7,18 @@
 
 extern struct GfxBase* GfxBase;
 
+// Max playable sample in one IO request is 128K
+#define MAXSAMPLE 131072
 
 UBYTE whichannel[] = {1, 2, 4, 8};
 
-/* periods for scale starting at   65.40Hz (C) with 128 samples per cycle
- *                            or  130.81Hz (C) with  64 samples per cycle
- *                            or  261.63Hz (C) with  32 samples per cycle
- *                            or  523.25Hz (C) with  16 samples per cycle
- *                            or 1046.50Hz (C) with   8 samples per cycle
- *                            or 2093.00Hz (C) with   4 samples per cycle
- */
+// periods for scale starting at   65.40Hz (C) with 128 samples per cycle
+//                            or  130.81Hz (C) with  64 samples per cycle
+//                            or  261.63Hz (C) with  32 samples per cycle
+//                            or  523.25Hz (C) with  16 samples per cycle
+//                            or 1046.50Hz (C) with   8 samples per cycle
+//                            or 2093.00Hz (C) with   4 samples per cycle
+// 
 
 UWORD per_ntsc[12] = {428, 404, 380, 360, 340, 320,
                       302, 286, 270, 254, 240, 226};
@@ -84,7 +87,7 @@ SoundPlayer::SoundPlayer()
                                       // the channels we want
   m_ppAIO[0]->ioa_Length = sizeof(whichannel);  // Lenght of array
 
-  if(!OpenDevice("audio.device", 0L, (struct IORequest*)m_ppAIO[0], 0L))
+  if(!OpenDevice(AUDIONAME, 0L, (struct IORequest*)m_ppAIO[0], 0L))
   {
     throw "SoundPlayer: Failed to open audio.device.";
   }
@@ -151,7 +154,7 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
   }
   else
   {
-    // table 'per' set up in constructor to system clock frequency
+    // table 'm_Periods' set up in constructor to system clock frequency
     period = m_Periods[note];
   }
 
@@ -163,6 +166,99 @@ bool SoundPlayer::PlaySample(const Soundfile8SVX& soundFile,
   if(volume > 64)
   {
     volume = 64;
+  }
+
+  Octave* pOctave = soundFile.GetOctave(octave);
+  UBYTE* oneshot = (UBYTE*) pOctave->OSamps();
+  LONG osize = pOctave->OSizes();
+  UBYTE* repeat = (UBYTE*) pOctave->RSamps();
+  LONG rsize = pOctave->RSizes();
+
+  // Set up audio I/O blocks to play a sample using CMD_WRITE. Set up
+  // one request for the oneshot and one for repeat (all ready for
+  // simple case, but we may not need both) The io_Flags are set to
+  // ADIOF_PERVOL so we can set the period (speed) and volume with the
+  // our sample; ioa_Data points to the sample; ioa_Length gives the
+  // length ioa_Cycles tells how many times to repeat the sample If you
+  // want to play the sample at a given sampling rate, set ioa_Period =
+  // clock/(given sampling rate)
+
+  m_ppAIO[0]->ioa_Request.io_Command = CMD_WRITE;
+  m_ppAIO[0]->ioa_Request.io_Flags = ADIOF_PERVOL;
+  m_ppAIO[0]->ioa_Data = oneshot;
+  m_ppAIO[0]->ioa_Length = osize;
+  m_ppAIO[0]->ioa_Period = period;
+  m_ppAIO[0]->ioa_Volume = volume;
+  m_ppAIO[0]->ioa_Cycles = 1;
+
+  m_ppAIO[2]->ioa_Request.io_Command = CMD_WRITE;
+  m_ppAIO[2]->ioa_Request.io_Flags = ADIOF_PERVOL;
+  m_ppAIO[2]->ioa_Data = repeat;
+  m_ppAIO[2]->ioa_Length = rsize;
+  m_ppAIO[2]->ioa_Period = period;
+  m_ppAIO[2]->ioa_Volume = volume;
+  m_ppAIO[2]->ioa_Cycles = 0; // repeat until stopped
+
+  // Send the command to start a sound using BeginIO() Go to sleep and
+  // wait for the sound to finish with WaitIO() to wait and get the get
+  // the ReplyMsg
+
+  struct IOAudio* aout0 = NULL;
+  struct IOAudio* aout1 = NULL;
+
+  if(osize != 0)
+  {
+    if(osize < MAXSAMPLE)
+    {
+      // Simple case for oneshot sample <= 128K (ie. most samples)
+      aout0 = m_ppAIO[0];
+      SendIO((struct IORequest*) aout0);
+    }
+    else
+    {
+      // for samples >128K some advanced technique is used
+      *m_ppAIO[1] = *m_ppAIO[1];
+      // aout0 = playbigsample(m_ppAIO[0], m_ppAIO[1], oneshot, osize, period, volume);
+    }
+  }
+
+  if(rsize != 0)
+  {
+    if(rsize < MAXSAMPLE)
+    {
+      // Simple case for oneshot sample <= 128K (ie. most samples)
+      aout1 = m_ppAIO[2];
+      SendIO((struct IORequest*) aout1);
+    }
+    else
+    {
+      // for samples >128K some advanced technique is used
+      *m_ppAIO[3] = *m_ppAIO[2];
+      // aout0 = playbigsample(m_ppAIO[2], m_ppAIO[3], oneshot, osize, period, volume);
+    }
+  }
+
+  if(delay != 0)
+  {
+    // Crude timing for notes
+    Delay(delay);
+  }
+
+  // Wait for any requests we still have out
+  if(aout0 != NULL)
+  {
+    WaitIO((struct IORequest*) aout0);
+  }
+
+  if(aout1 != NULL)
+  {
+    if(note >= 0)
+    {
+      // Stop current note now
+      AbortIO((struct IORequest*) aout1);
+    }
+
+    WaitIO((struct IORequest*) aout1);
   }
 
   return 0;

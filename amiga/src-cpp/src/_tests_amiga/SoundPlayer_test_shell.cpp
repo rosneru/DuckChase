@@ -19,12 +19,16 @@ int main(int argc, char** argv)
   try
   {
     Soundfile8SVX soundfile("AADevDuck:assets/snd/finger_snap.8svx");
-    SoundPlayer player();
+    SoundPlayer player;
+
+    player.PlaySample(soundfile, 0, -1, 64, 0);
+
   }
   catch(const char* pMsg)
   {
-    printf("%s\n", pMsg);
-    return RETURN_FAIL;
+    printf("%s\n<Return>", pMsg);
+    getc(stdin);
+    return RETURN_OK;
   }
 
   printf("Finished sound player test.\n<Return>");
