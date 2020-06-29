@@ -7,7 +7,7 @@
                                   // 'BitMapHeader', 'ID_xyz', etc.
 #include <exec/memory.h>
 
-#include "SoundFile8SVX.h"
+#include "Soundfile8SVX.h"
 
 /* 8SVX Property chunks to be grabbed
  */
