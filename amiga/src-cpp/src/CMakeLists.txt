@@ -97,3 +97,38 @@ add_custom_command(TARGET SoundPlayer_test_shell
                    POST_BUILD
                    COMMAND cp SoundPlayer_test_shell ${CMAKE_CURRENT_SOURCE_DIR}/..
                    DEPENDS SoundPlayer_test_shell)
+
+
+add_executable (Collision_test_ui
+                anim/Animator.h
+                anim/AnimSeqBase.cpp
+                anim/AnimSeqBitmap.cpp
+                anim/AnimSeqExtSprite.cpp
+                anim/AnimSeqGels.cpp
+                anim/AnimSeqGelsBob.cpp
+                anim/ShadowMask.cpp
+                iff/IffParse.cpp
+                picture/BitmapPictureBase.cpp
+                picture/PictureBase.cpp
+                picture/IlbmBitmap.cpp
+                picture/ImageDataPicture.cpp
+                picture/RawBitmap.cpp
+                shapes/GelsLayer.cpp
+                shapes/Rect.cpp
+                shapes/ShapeBase.cpp
+                shapes/ShapeBob.cpp
+                shapes/ShapeExtSprite.cpp
+                _tests_amiga/Collision_test_ui.cpp)
+
+target_include_directories (Collision_test_ui PUBLIC
+                            anim
+                            iff
+                            picture
+                            resources
+                            shapes
+                            .)
+
+add_custom_command(TARGET Collision_test_ui
+                   POST_BUILD
+                   COMMAND cp Collision_test_ui ${CMAKE_CURRENT_SOURCE_DIR}/..
+                   DEPENDS Collision_test_ui)
