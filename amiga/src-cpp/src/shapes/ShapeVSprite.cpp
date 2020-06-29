@@ -9,7 +9,9 @@
 ShapeVSprite::ShapeVSprite(struct RastPort* pRastPort, 
                            const ResourceGELs& gfxResources,
                            WORD* pSpriteColors)
-  : ShapeBase(gfxResources),
+  : ShapeBase(gfxResources.Width(), 
+              gfxResources.Height(), 
+              gfxResources.Depth()),
     m_pRastPort(pRastPort),
     m_pSpriteColors(pSpriteColors),
     m_pSprite(NULL),

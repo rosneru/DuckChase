@@ -13,7 +13,9 @@
 ShapeBob::ShapeBob(struct RastPort* pRastPort, 
                    int rasterDepth,
                    const ResourceGELs& gfxResources)
-  : ShapeBase(gfxResources),
+  : ShapeBase(gfxResources.Width(), 
+              gfxResources.Height(), 
+              gfxResources.Depth()),
     m_pRastPort(pRastPort),
     m_RasterDepth(rasterDepth),
     m_pBob(NULL),

@@ -5,7 +5,7 @@
 
 #include "IlbmBitmap.h"
 #include "Rect.h"
-#include "ResourceBase.h"
+
 
 /**
  * Represents a shape, an graphical object which can be moved over the
@@ -143,7 +143,7 @@ public:
                                BottomDistanceMeasMode mode);
 
 protected:
-  ShapeBase(const ResourceBase& gfxResources);
+  ShapeBase(short width, short height, short depth);
 
   /**
    * The actual move method; it has to be implemented by the childs.

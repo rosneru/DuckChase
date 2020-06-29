@@ -11,7 +11,9 @@
 
 ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
                                const ResourceExtSprite& gfxResources)
-  : ShapeBase(gfxResources),
+  : ShapeBase(gfxResources.Width(), 
+              gfxResources.Height(), 
+              gfxResources.Depth()),
     m_pViewPort(pViewPort),
     m_pEmptySprite(NULL),
     m_pCurrentSprite(NULL),

@@ -1,11 +1,11 @@
 #include "IlbmBitmap.h"
 #include "ShapeBase.h"
 
-ShapeBase::ShapeBase(const ResourceBase& gfxResources)
-  : m_Width(gfxResources.Width()),
-    m_WordWidth(gfxResources.WordWidth()),
-    m_Height(gfxResources.Height()),
-    m_Depth(gfxResources.Depth()),
+ShapeBase::ShapeBase(short width, short height, short depth)
+  : m_Width(width),
+    m_WordWidth(((m_Width + 15) & -16) >> 4),
+    m_Height(height),
+    m_Depth(depth),
     m_HotspotX(0),
     m_HotspotY(0)
 {
