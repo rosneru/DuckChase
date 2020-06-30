@@ -113,6 +113,8 @@ add_executable (Collision_test_ui
                 picture/IlbmBitmap.cpp
                 picture/ImageDataPicture.cpp
                 picture/RawBitmap.cpp
+                resources/ArrowResources.cpp
+                resources/DuckResources.cpp
                 shapes/GelsLayer.cpp
                 shapes/Rect.cpp
                 shapes/ShapeBase.cpp

@@ -19,19 +19,36 @@
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
 
+#include "GelsLayer.h"
+#include "ArrowResources.h"
+#include "DuckResources.h"
+#include "ShapeExtSprite.h"
+#include "ShapeBob.h"
+#include "ShadowMask.h"
 
 struct Screen* m_pScreen = NULL;
 struct Window* m_pWindow = NULL;
 
-char charBuf[80];
+void intuiEventLoop(ShapeBase& duck, 
+                    const ShadowMask* pDuckMask,
+                    ShapeBase& arrow, 
+                    const ShadowMask* pArrowMask);
 
-void intuiEventLoop();
+void displayCollisionState();
+
 int cleanExit(int errorCode = 0);
 
+enum CollisionState
+{
+  CollisionNone,
+  CollisionRects,
+  CollisionFull
+};
+
+CollisionState m_FormerCollisionState = CollisionNone;
 
 int main(int argc, char** argv)
 {
-  
   m_pScreen = OpenScreenTags(NULL,
     SA_LikeWorkbench, TRUE,
     SA_DisplayID, PAL_MONITOR_ID|LORES_KEY,
@@ -68,30 +85,31 @@ int main(int argc, char** argv)
     cleanExit(RETURN_FAIL);
   }
 
-  // if(m_BackgroundImage.LoadFromRawFile("gfx/screen_m25.raw",
-  //                                      223, 233, 4) == false)
-  // {
-  //   printf("Failed to load gfx/screen_m25.raw.\n");
-  //   cleanExit(RETURN_FAIL);
-  // }
+  GelsLayer gelsLayer(m_pWindow->RPort, 0xff);
 
-  // // size_t imgYOffset = 5;
-  // BltBitMapRastPort(m_BackgroundImage.GetBitMap(),
-  //                   0,
-  //                   0,
-  //                   m_pWindow->RPort,
-  //                   BLT_XSTRT,
-  //                   BLT_YSTRT,
-  //                   BLT_XWDTH,
-  //                   BLT_YWDTH,
-  //                   0xC0);
-  
+  DuckResources duckResources;
+  ArrowResources arrowResources;
 
-  intuiEventLoop();
+  ShapeExtSprite arrowShape(&m_pScreen->ViewPort, arrowResources);
+  ShapeBob duckShape(m_pWindow->RPort, 4, duckResources);
+
+  const ShadowMask* pArrowMask = arrowResources.AnimRightUpward()->Mask(0);
+  const ShadowMask* pDuckMask = duckResources.AnimFlyLeft()->Mask(0);
+
+  duckShape.Move(50, 50);
+  arrowShape.Move(160, 128);
+
+  displayCollisionState();
+ 
+
+  intuiEventLoop(duckShape, pDuckMask, arrowShape, pArrowMask);
   cleanExit(RETURN_OK);
 }
 
-void intuiEventLoop()
+void intuiEventLoop(ShapeBase& duck, 
+                    const ShadowMask* pDuckMask,
+                    ShapeBase& arrow, 
+                    const ShadowMask* pArrowMask)
 {
   struct IntuiMessage* pMsg;
 
@@ -117,14 +135,61 @@ void intuiEventLoop()
 
       ReplyMsg((struct Message*)pMsg);
 
-      // TODO Fixme
-      //int colNum = m_BackgroundImage.GetBitMapPixelColorNum(y, x);
-      int colNum = 666;
+      arrow.Move(x, y);
 
-      sprintf(charBuf, "x = %d, y = %d : color number = %d", x, y, colNum);
-      SetWindowTitles(m_pWindow, charBuf, (STRPTR) ~0);
+      // Render the gels
+      SortGList(m_pWindow->RPort);
+      DrawGList(m_pWindow->RPort, &m_pScreen->ViewPort);
+      WaitTOF();
+
+      CollisionState newCollisionState = CollisionNone;
+      if(arrow.Intersects(duck))
+      {
+        newCollisionState = CollisionRects;
+
+        duck.Intersects(arrow);
+        
+        if(pArrowMask->IsCollision(pDuckMask,
+                                   arrow.IntersectRect(),
+                                   duck.IntersectRect()))
+        {
+          newCollisionState = CollisionFull;
+        }
+      }
+
+      if(newCollisionState != m_FormerCollisionState)
+      {
+        m_FormerCollisionState = newCollisionState;
+        displayCollisionState();
+      }
     }
   }
+}
+
+
+void displayCollisionState()
+{
+  char charBuf[80];
+
+  switch (m_FormerCollisionState)
+  {
+  case CollisionNone:
+    sprintf(charBuf, "No collision");
+    break;
+
+  case CollisionRects:
+    sprintf(charBuf, ">> Rect collision");
+    break;
+
+  case CollisionFull:
+    sprintf(charBuf, ">>>> FULL COLLISSION!!");
+    break;
+  
+  default:
+    break;
+  }
+  
+  SetWindowTitles(m_pWindow, charBuf, (STRPTR) ~0);
 }
 
 int cleanExit(int errorCode)

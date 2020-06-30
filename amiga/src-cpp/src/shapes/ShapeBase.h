@@ -19,9 +19,10 @@ class ShapeBase
 {
 public:
   /**
-   * The virtual move method. Moves the object along with its hot spot
-   * position (default top, left edge). Calles the move() method which
-   * each child must implement.
+   * Moves the object by its HotSpot to the given position. As per 
+   * default the HotSpot is set to the top, left edge of the object. 
+   *
+   * Calls the move() method which each derived class must implement.
    */
   void Move(int x, int y);
 
