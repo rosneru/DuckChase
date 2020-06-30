@@ -121,14 +121,20 @@ void intuiEventLoop(ShapeBase& duck,
     Wait(1L << m_pWindow->UserPort->mp_SigBit);
     while (NULL != (pMsg = (struct IntuiMessage*)GetMsg(m_pWindow->UserPort)))
     {
-      // only CLOSEWINDOW and INTUITICKS are active
+      
       if (pMsg->Class == CLOSEWINDOW)
       {
+        //
+        // Handle CLOSEWINDOW
+        //
         ReplyMsg((struct Message*)pMsg);
         return;
       }
 
-      // Handle the intuiticks message
+      //
+      // This must be INTUITICKS as only CLOSEWINDOW and INTUITICKS are 
+      // active
+      //
 
       x = pMsg->MouseX - 4;
       y = pMsg->MouseY - 16;
