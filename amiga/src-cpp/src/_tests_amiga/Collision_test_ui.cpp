@@ -188,7 +188,7 @@ void displayCollisionState()
     break;
 
   case CollisionFull:
-    sprintf(charBuf, ">>>> FULL COLLISSION!!");
+    sprintf(charBuf, ">>>> FULL COLLISION!!");
     break;
   
   default:
