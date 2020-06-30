@@ -1,12 +1,12 @@
 /**
- * Picture_test - tests the method Picture::GetBitMapPixelColorNum()
+ * Tests the method collision detection algorithm of the framework.
+ * 
+ * Move the mouse with the arrow attached to it. As soon as it is inside
+ * the duck rectangle dimesnions this should be displayed on the screen
+ * title bar. As soon as there's a collsision of non-background-colored
+ * pixels this should also be displayed on the title bar.
  *
- * Loading and blitting a LoRes RAW picture.
- *
- * Then while you hover with the mouse over the pixels the current
- * pixels color number is displayed in a gasget at the top
- *
- *
+ * 30.06.2020
  * Author: Uwe Rosner https://github.com/rosneru
  */
 #include <stdlib.h>
