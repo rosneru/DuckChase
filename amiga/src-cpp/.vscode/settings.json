@@ -3,10 +3,11 @@
   "editor.rulers": [
     72
   ],
+  "cSpell.enabled": true,
   "files.associations": {
-    "cstdio": "cpp",
-    "cstdlib": "cpp",
-    "algorithm": "cpp",
-    "type_traits": "cpp"
+    "languageId": "cpp",
+    "includeRegExpList": [
+      "CStyleComment"
+   ]
   }
 }
