@@ -25,10 +25,13 @@ add_executable (DuckChase
                 anim/AnimSeqGelsVSprite.cpp
                 anim/ShadowMask.cpp
                 entities/Arrow.cpp
+                entities/ArrowResources.cpp
                 entities/Duck.cpp
+                entities/DuckResources.cpp
                 entities/EntityBase.cpp
                 entities/EntityCollection.cpp
                 entities/Hunter.cpp
+                entities/HunterResources.cpp
                 game/Game.cpp
                 game/GameColors.cpp
                 game/GameTile.cpp
@@ -43,9 +46,6 @@ add_executable (DuckChase
                 picture/IlbmBitmap.cpp
                 picture/ImageDataPicture.cpp
                 picture/RawBitmap.cpp
-                resources/ArrowResources.cpp
-                resources/DuckResources.cpp
-                resources/HunterResources.cpp
                 shapes/GelsLayer.cpp
                 shapes/Rect.cpp
                 shapes/ShapeBase.cpp
@@ -107,14 +107,14 @@ add_executable (Collision_test_ui
                 anim/AnimSeqGels.cpp
                 anim/AnimSeqGelsBob.cpp
                 anim/ShadowMask.cpp
+                entities/ArrowResources.cpp
+                entities/DuckResources.cpp
                 iff/IffParse.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp
                 picture/IlbmBitmap.cpp
                 picture/ImageDataPicture.cpp
                 picture/RawBitmap.cpp
-                resources/ArrowResources.cpp
-                resources/DuckResources.cpp
                 shapes/GelsLayer.cpp
                 shapes/Rect.cpp
                 shapes/ShapeBase.cpp
@@ -124,6 +124,7 @@ add_executable (Collision_test_ui
 
 target_include_directories (Collision_test_ui PUBLIC
                             anim
+                            entities
                             iff
                             picture
                             resources

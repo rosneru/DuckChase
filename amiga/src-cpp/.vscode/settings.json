@@ -9,5 +9,8 @@
     "includeRegExpList": [
       "CStyleComment"
    ]
-  }
+  },
+  "cSpell.enableFiletypes": [
+    "cpp"
+  ]
 }
