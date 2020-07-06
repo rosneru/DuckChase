@@ -6,7 +6,7 @@
 
 Arrow::Arrow(GameViewBase& gameView,
              const GameWorld& gameWorld,
-             const ArrowResources& arrowResources,
+             const ArrowGfxResources& arrowResources,
              Duck& duck,
              size_t& isStrain,
              bool& isArrowFlightFinished,
@@ -19,7 +19,7 @@ Arrow::Arrow(GameViewBase& gameView,
     m_IsArrowFlightFinished(isArrowFlightFinished),
     m_IsStrike(strike),
     m_ArrowShape(m_GameView.ViewPort(), 
-            arrowResources),
+                 arrowResources),
     m_Animator(m_ArrowShape, arrowResources.AnimRightUpward()),
     m_X0(0),
     m_Y0(0)

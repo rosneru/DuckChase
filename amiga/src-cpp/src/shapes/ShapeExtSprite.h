@@ -6,13 +6,13 @@
 
 #include "AnimSeqExtSprite.h"
 #include "ShapeBase.h"
-#include "ResourceExtSprite.h"
+#include "GfxResourceExtSprite.h"
 
 /**
  * Encapsulates an animatable graphics object using the sprite hardware
  * (ExtSprite) related functions of AmigaOS graphics.libary v39+.
  *
- * To use a ShapeSpriteHw, perform the followng steps:
+ * To use a ShapeSpriteHw, perform the following steps:
  *
  * First, \ref SetAnimSequence should be called to set an animation (can
  * also be a single image) to the sprite. 
@@ -29,7 +29,7 @@ class ShapeExtSprite : public ShapeBase
 {
 public:
   ShapeExtSprite(struct ViewPort* pViewPort,
-                 const ResourceExtSprite& gfxResources);
+                 const GfxResourceExtSprite& gfxResources);
 
   virtual ~ShapeExtSprite();
 

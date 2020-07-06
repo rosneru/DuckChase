@@ -2,9 +2,12 @@
 #define RESOURCES_EXT_SPRITE_H
 
 #include <graphics/sprite.h>
-#include "ResourceBase.h"
+#include "GfxResourceBase.h"
 
-class ResourceExtSprite : public ResourceBase
+/**
+ * ExtSprite resources must provide a DefaultImage in ExtSprite format.
+ */
+class GfxResourceExtSprite : public GfxResourceBase
 {
 public:
   virtual ExtSprite* DefaultImage() const = 0;

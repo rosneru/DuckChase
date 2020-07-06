@@ -29,7 +29,7 @@ InfoDisplay::InfoDisplay(GameViewBase& gameView,
 
   m_View.Render();
 
-  // Blit the InfoDisplay background picture to tzhe bottom
+  // Blit the InfoDisplay background picture to the bottom
   m_View.BlitPicture(m_BackgroundPicture, 
                      0,
                      m_View.Height() - m_BackgroundPicture.Height());

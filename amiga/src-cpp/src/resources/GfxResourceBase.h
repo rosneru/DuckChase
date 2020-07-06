@@ -2,13 +2,13 @@
 #define RESOURCE_BASE_H
 
 /**
- * Base class for gfx resources.
+ * Base class for resources as anims and sound of the entities.
  *
  *
  * @author Uwe Rosner
  * @date 26/05/2020
  */
-class ResourceBase
+class GfxResourceBase
 {
 public:
   virtual short Width() const = 0;

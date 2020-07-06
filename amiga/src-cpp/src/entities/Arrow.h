@@ -3,7 +3,7 @@
 
 #include "AnimSeqExtSprite.h"
 #include "Animator.h"
-#include "ArrowResources.h"
+#include "ArrowGfxResources.h"
 #include "Duck.h"
 #include "EntityBase.h"
 #include "GameColors.h"
@@ -24,7 +24,7 @@ class Arrow : public EntityBase
 public:
   Arrow(GameViewBase& gameView, 
         const GameWorld& gameWorld,
-        const ArrowResources& arrowResources,
+        const ArrowGfxResources& arrowResources,
         Duck& duck,
         size_t& strain,
         bool& isArrowFlightFinished,
@@ -40,7 +40,7 @@ public:
 
 private:
   GameViewBase& m_GameView;
-  const ArrowResources& m_Resources;
+  const ArrowGfxResources& m_Resources;
 
   Duck& m_Duck;
   size_t& m_Strain;

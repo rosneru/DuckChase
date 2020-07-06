@@ -6,7 +6,7 @@
 #include "Animator.h"
 #include "EntityBase.h"
 #include "GameViewBase.h"
-#include "HunterResources.h"
+#include "HunterGfxResources.h"
 #include "ShapeBob.h"
 
 
@@ -22,7 +22,7 @@ class Hunter : public EntityBase
 public:
   Hunter(GameViewBase& gameView, 
          const GameWorld& gameWorld,
-         const HunterResources& jumpmanResources,
+         const HunterGfxResources& hunterResources,
          Arrow& arrow,
          bool& isArrowFlightStarted);
 
@@ -35,7 +35,7 @@ public:
 
 private:
   GameViewBase& m_GameView;
-  const HunterResources& m_Resources;
+  const HunterGfxResources& m_Resources;
 
   ShapeBob m_HunterShape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;

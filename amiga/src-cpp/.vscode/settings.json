@@ -12,5 +12,9 @@
   },
   "cSpell.enableFiletypes": [
     "cpp"
+  ],
+  "cSpell.words": [
+    "Blit",
+    "blitting"
   ]
 }

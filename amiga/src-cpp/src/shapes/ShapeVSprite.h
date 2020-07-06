@@ -5,7 +5,7 @@
 
 #include "AnimSeqGels.h"
 #include "ShapeBase.h"
-#include "ResourceGELs.h"
+#include "GfxResourceGELs.h"
 
 /**
  * Encapsulates an animatable graphics object using the AmigaOS /
@@ -21,7 +21,7 @@ class ShapeVSprite : public ShapeBase
 {
 public:
   ShapeVSprite(struct RastPort* pRastPort, 
-               const ResourceGELs& gfxResources,
+               const GfxResourceGELs& gfxResources,
                WORD* pSpriteColors);
 
   virtual ~ShapeVSprite();

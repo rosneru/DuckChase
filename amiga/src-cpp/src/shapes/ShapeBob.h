@@ -5,7 +5,7 @@
 
 #include "AnimSeqGels.h"
 #include "ShapeBase.h"
-#include "ResourceGELs.h"
+#include "GfxResourceGELs.h"
 
 /**
  * Encapsulates an animatable graphics object using the AmigaOS /
@@ -23,7 +23,7 @@ class ShapeBob : public ShapeBase
 public:
   ShapeBob(struct RastPort* pRastPort, 
            int rasterDepth,
-           const ResourceGELs& gfxResources);
+           const GfxResourceGELs& gfxResources);
 
   virtual ~ShapeBob();
 

@@ -2,7 +2,7 @@
 #define ARROW_RESOURCES_H
 
 #include "AnimSeqExtSprite.h"
-#include "ResourceExtSprite.h"
+#include "GfxResourceExtSprite.h"
 
 /**
  * Contains all gfx resources needed for an arrow.
@@ -11,10 +11,10 @@
  * @author Uwe Rosner
  * @date 31/05/2020
  */
-class ArrowResources : public ResourceExtSprite
+class ArrowGfxResources : public GfxResourceExtSprite
 {
 public:
-  ArrowResources();
+  ArrowGfxResources();
 
   ExtSprite* DefaultImage() const;
   short Width() const;

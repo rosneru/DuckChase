@@ -25,13 +25,13 @@ add_executable (DuckChase
                 anim/AnimSeqGelsVSprite.cpp
                 anim/ShadowMask.cpp
                 entities/Arrow.cpp
-                entities/ArrowResources.cpp
+                entities/ArrowGfxResources.cpp
                 entities/Duck.cpp
-                entities/DuckResources.cpp
+                entities/DuckGfxResources.cpp
                 entities/EntityBase.cpp
                 entities/EntityCollection.cpp
                 entities/Hunter.cpp
-                entities/HunterResources.cpp
+                entities/HunterGfxResources.cpp
                 game/Game.cpp
                 game/GameColors.cpp
                 game/GameTile.cpp
@@ -107,8 +107,8 @@ add_executable (Collision_test_ui
                 anim/AnimSeqGels.cpp
                 anim/AnimSeqGelsBob.cpp
                 anim/ShadowMask.cpp
-                entities/ArrowResources.cpp
-                entities/DuckResources.cpp
+                entities/ArrowGfxResources.cpp
+                entities/DuckGfxResources.cpp
                 iff/IffParse.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp

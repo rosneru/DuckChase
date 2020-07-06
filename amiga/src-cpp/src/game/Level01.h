@@ -10,11 +10,11 @@
 #include "EntityCollection.h"
 
 #include "Arrow.h"
-#include "ArrowResources.h"
+#include "ArrowGfxResources.h"
 #include "Duck.h"
-#include "DuckResources.h"
+#include "DuckGfxResources.h"
 #include "Hunter.h"
-#include "HunterResources.h"
+#include "HunterGfxResources.h"
 #include "StopWatch.h"
 
 #include "GameColors.h"
@@ -63,11 +63,11 @@ private:
   size_t m_Strain;
 
   // EntityCollection m_Arrows;
-  DuckResources m_DuckRes;
+  DuckGfxResources m_DuckRes;
   Duck m_Duck;
-  ArrowResources m_ArrowRes;
+  ArrowGfxResources m_ArrowRes;
   Arrow m_Arrow;
-  HunterResources m_HunterRes;
+  HunterGfxResources m_HunterRes;
   Hunter m_Hunter;
 
   void gameLoop();
