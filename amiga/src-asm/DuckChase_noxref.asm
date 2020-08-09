@@ -25,11 +25,8 @@
 *    https://github.com/rosneru
 **
 
-ExecBase:	equ	$4
 _custom		equ	$dff000
 _ciaa		equ	$bfe001
-
-                bra _main
 
         include "dos/dos.i"
         include "dos/dos_lib.i"
@@ -47,9 +44,6 @@ _ciaa		equ	$bfe001
         ;Entry point
 _main:
 
-        movea.l ExecBase,a6
-        move.l  a6,_SysBase
-
         ;
         ; Open dos.library
         ;
@@ -57,16 +51,16 @@ _main:
         moveq   #36,d0              ;36 needed for VPrintf; gfx.lib will
                                     ;then make the proper v39 check
 
-        jsr     _LVOOpenLibrary(a6)
-        move.l  d0,_DOSBase
+        CALLEXEC OpenLibrary
         beq     Exit
+        move.l  d0,_DOSBase
 
         ;
         ; Open graphics.library
         ;
         lea     gfxname(pc),a1
         moveq.l #36,d0
-        jsr     _LVOOpenLibrary(a6)
+        CALLEXEC OpenLibrary
         move.l  #strErrOpenGfx,d1   ;The error message if it failed
         move.l  d0,_GfxBase
         beq     Exit_err
@@ -77,7 +71,7 @@ _main:
         move.l  #81920,d0           ;Size of needed memory
         move.l  #MEMF_CHIP,d1       ;It must be Chip memory
         or.l    #MEMF_CLEAR,d1      ;New memory should be cleared
-        jsr     _LVOAllocVec(a6)
+        CALLEXEC AllocVec
         move.l  #strErrAllocBgImg,d1 ;The error message if it failed
         move.l  d0,picture          ;Save ptr of allocated memory
         beq     Exit_err            ;No memory has been reserved
@@ -109,8 +103,7 @@ clearview
 
         jsr     _LVOOwnBlitter(a6)
 
-        movea.l _SysBase,a6
-        jsr     _LVOForbid(a6)
+        CALLEXEC Forbid
 
 *======================================================================
 * Main
@@ -169,8 +162,8 @@ loop:
 *======================================================================
 * Clean up
 *======================================================================
-        movea.l _SysBase,a6
-        jsr     _LVOPermit(a6)
+
+        CALLEXEC Permit
 
         movea.l _GfxBase,a6
         jsr     _LVODisownBlitter(a6)
@@ -191,28 +184,25 @@ Exit:
         move.l  gb_copinit(a6),cop1lc(a1)
 
         ; Free memory if it was allocated successfully
-        movea.l _SysBase,a6
         move.l  picture,d0
         tst.l   d0
         beq     .ex2
         move.l  d0,a1
-        jsr     _LVOFreeVec(a6)
+        CALLEXEC FreeVec
 
 .ex2:
         ; Close graphics.library
-        movea.l _SysBase,a6
         move.l  _GfxBase,d0         ;Verify: LibBase needed in d-reg
         beq     .ex3
         move.l  d0,a1               ;Closing: LibBase needed in a1
-        jsr     _LVOCloseLibrary(a6)
+        CALLEXEC CloseLibrary
 
 .ex3:
         ; Close dos.library
-        movea.l _SysBase,a6
         move.l  _DOSBase,d0         ;Verify: LibBase needed in d-reg
         beq     .ex4
         move.l  d0,a1               ;Closing: LibBase needed in a1
-        jsr     _LVOCloseLibrary(a6)
+        CALLEXEC CloseLibrary
 
 
 .ex4:
@@ -296,7 +286,6 @@ gfxname             GRAPHICSNAME        ;gfxbase.i
 
 _DOSBase            ds.l    1
 _GfxBase            ds.l    1
-_SysBase            ds.l    1
 
 oldview             ds.l    1
 
