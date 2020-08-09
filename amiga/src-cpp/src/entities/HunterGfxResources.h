@@ -2,7 +2,7 @@
 #define Hunter_RESOURCES_H
 
 #include "AnimSeqGelsBob.h"
-#include "ResourceGELs.h"
+#include "GfxResourceGELs.h"
 
 /**
  * Contains all gfx resources needed for a hunter.
@@ -11,10 +11,10 @@
  * @author Uwe Rosner
  * @date 30/05/2020
  */
-class HunterResources : public ResourceGELs
+class HunterGfxResources : public GfxResourceGELs
 {
 public:
-  HunterResources();
+  HunterGfxResources();
 
   WORD* DefaultImage() const;
   short Width() const;

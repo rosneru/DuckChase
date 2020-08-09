@@ -2,7 +2,7 @@
  * Tests the method collision detection algorithm of the framework.
  * 
  * Move the mouse with the arrow attached to it. As soon as it is inside
- * the duck rectangle dimesnions this should be displayed on the screen
+ * the duck rectangle dimensions this should be displayed on the screen
  * title bar. As soon as there's a collsision of non-background-colored
  * pixels this should also be displayed on the title bar.
  *
@@ -20,8 +20,8 @@
 #include <intuition/screens.h>
 
 #include "GelsLayer.h"
-#include "ArrowResources.h"
-#include "DuckResources.h"
+#include "ArrowGfxResources.h"
+#include "DuckGfxResources.h"
 #include "ShapeExtSprite.h"
 #include "ShapeBob.h"
 #include "ShadowMask.h"
@@ -87,8 +87,8 @@ int main(int argc, char** argv)
 
   GelsLayer gelsLayer(m_pWindow->RPort, 0xff);
 
-  DuckResources duckResources;
-  ArrowResources arrowResources;
+  DuckGfxResources duckResources;
+  ArrowGfxResources arrowResources;
 
   ShapeExtSprite arrowShape(&m_pScreen->ViewPort, arrowResources);
   ShapeBob duckShape(m_pWindow->RPort, 4, duckResources);

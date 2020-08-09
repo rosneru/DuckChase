@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
-                               const ResourceExtSprite& gfxResources)
+                               const GfxResourceExtSprite& gfxResources)
   : ShapeBase(gfxResources.Width(), 
               gfxResources.Height(), 
               gfxResources.Depth()),

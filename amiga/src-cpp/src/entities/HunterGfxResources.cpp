@@ -1,6 +1,6 @@
-#include "HunterResources.h"
+#include "HunterGfxResources.h"
 
-HunterResources::HunterResources()
+HunterGfxResources::HunterGfxResources()
   : m_AnimRightRun("AADevDuck:assets/gfx/hunter_right_run_strip2.ilbm", 2),
     m_AnimRightShoot("AADevDuck:assets/gfx/hunter_right_shoot_strip1.ilbm", 1),
     m_AnimLeftRun("AADevDuck:assets/gfx/hunter_left_run_strip2.ilbm", 2),
@@ -10,47 +10,47 @@ HunterResources::HunterResources()
   //       throw an exception if not.
 }
 
-WORD* HunterResources::DefaultImage() const
+WORD* HunterGfxResources::DefaultImage() const
 {
   return m_AnimRightRun[0];
 }
 
-short HunterResources::Width() const
+short HunterGfxResources::Width() const
 {
   return m_AnimRightRun.Width();
 }
 
-short HunterResources::WordWidth() const
+short HunterGfxResources::WordWidth() const
 {
   return m_AnimRightRun.WordWidth();
 }
 
-short HunterResources::Height() const
+short HunterGfxResources::Height() const
 {
   return m_AnimRightRun.Height();
 }
 
-short HunterResources::Depth() const
+short HunterGfxResources::Depth() const
 {
   return m_AnimRightRun.Depth();
 }
 
-const AnimSeqGelsBob* HunterResources::AnimRightRun() const
+const AnimSeqGelsBob* HunterGfxResources::AnimRightRun() const
 {
   return &m_AnimRightRun;
 }
 
-const AnimSeqGelsBob* HunterResources::AnimLeftRun() const
+const AnimSeqGelsBob* HunterGfxResources::AnimLeftRun() const
 {
   return &m_AnimLeftRun;
 }
 
-const AnimSeqGelsBob* HunterResources::AnimRightShoot() const
+const AnimSeqGelsBob* HunterGfxResources::AnimRightShoot() const
 {
   return &m_AnimRightShoot;
 }
 
-const AnimSeqGelsBob* HunterResources::AnimLeftShoot() const
+const AnimSeqGelsBob* HunterGfxResources::AnimLeftShoot() const
 {
   return &m_AnimLeftShoot;
 }

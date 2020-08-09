@@ -7,7 +7,7 @@
 #include "ShapeVSprite.h"
 
 ShapeVSprite::ShapeVSprite(struct RastPort* pRastPort, 
-                           const ResourceGELs& gfxResources,
+                           const GfxResourceGELs& gfxResources,
                            WORD* pSpriteColors)
   : ShapeBase(gfxResources.Width(), 
               gfxResources.Height(), 

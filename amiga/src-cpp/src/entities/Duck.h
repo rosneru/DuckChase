@@ -3,7 +3,7 @@
 
 #include "AnimSeqGelsBob.h"
 #include "Animator.h"
-#include "DuckResources.h"
+#include "DuckGfxResources.h"
 #include "EntityBase.h"
 #include "GameColors.h"
 #include "GameViewBase.h"
@@ -23,7 +23,7 @@ class Duck : public EntityBase
 public:
   Duck(GameViewBase& gameView, 
        const GameWorld& gameWorld,
-       const DuckResources& duckResources);
+       const DuckGfxResources& duckResources);
 
   virtual ~Duck();
 
@@ -34,7 +34,7 @@ public:
 
 private:
   GameViewBase& m_GameView;
-  const DuckResources& m_Resources;
+  const DuckGfxResources& m_Resources;
 
   ShapeBob m_DuckShape;
   Animator<ShapeBob, const AnimSeqGelsBob> m_Animator;
