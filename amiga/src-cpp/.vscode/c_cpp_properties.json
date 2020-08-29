@@ -8,6 +8,7 @@
                 "/opt/amiga/m68k-amigaos/include/",
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src/_tests",
+                "${workspaceFolder}/src/_tool_anim_frame_adjust",
                 "${workspaceFolder}/src/amigautils",
                 "${workspaceFolder}/src/anim",
                 "${workspaceFolder}/src/entities",

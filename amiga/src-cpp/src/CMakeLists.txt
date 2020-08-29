@@ -81,22 +81,38 @@ add_custom_command(TARGET DuckChase
                    DEPENDS DuckChase)
 
 
-add_executable (SoundPlayer_test_shell
+
+add_executable (AnimFrameTool
+                anim/Animator.h
+                anim/AnimSeqBase.cpp
+                anim/AnimSeqBitmap.cpp
+                anim/AnimSeqExtSprite.cpp
+                anim/AnimSeqGels.cpp
+                anim/AnimSeqGelsBob.cpp
+                anim/ShadowMask.cpp
                 iff/IffParse.cpp
-                sound/Octave.cpp
-                sound/Soundfile8SVX.cpp
-                sound/SoundPlayer.cpp
-                _tests_amiga/SoundPlayer_test_shell.cpp)
+                picture/BitmapPictureBase.cpp
+                picture/PictureBase.cpp
+                picture/IlbmBitmap.cpp
+                picture/ImageDataPicture.cpp
+                picture/RawBitmap.cpp
+                shapes/Rect.cpp
+                _tool_anim_frame_adjust/AnimFrameTool.cpp
+                _tool_anim_frame_adjust/main.cpp)
 
-target_include_directories (SoundPlayer_test_shell PUBLIC
+target_include_directories (AnimFrameTool PUBLIC
+                            _tool_anim_frame_adjust
+                            anim
                             iff
-                            sound
-                            _tests_amiga)
+                            picture
+                            shapes
+                            .)
 
-add_custom_command(TARGET SoundPlayer_test_shell
+add_custom_command(TARGET AnimFrameTool
                    POST_BUILD
-                   COMMAND cp SoundPlayer_test_shell ${CMAKE_CURRENT_SOURCE_DIR}/..
-                   DEPENDS SoundPlayer_test_shell)
+                   COMMAND cp AnimFrameTool ${CMAKE_CURRENT_SOURCE_DIR}/..
+                   DEPENDS AnimFrameTool)
+
 
 
 add_executable (Collision_test_ui
@@ -135,3 +151,22 @@ add_custom_command(TARGET Collision_test_ui
                    POST_BUILD
                    COMMAND cp Collision_test_ui ${CMAKE_CURRENT_SOURCE_DIR}/..
                    DEPENDS Collision_test_ui)
+
+
+
+add_executable (SoundPlayer_test_shell
+                iff/IffParse.cpp
+                sound/Octave.cpp
+                sound/Soundfile8SVX.cpp
+                sound/SoundPlayer.cpp
+                _tests_amiga/SoundPlayer_test_shell.cpp)
+
+target_include_directories (SoundPlayer_test_shell PUBLIC
+                            iff
+                            sound
+                            _tests_amiga)
+
+add_custom_command(TARGET SoundPlayer_test_shell
+                   POST_BUILD
+                   COMMAND cp SoundPlayer_test_shell ${CMAKE_CURRENT_SOURCE_DIR}/..
+                   DEPENDS SoundPlayer_test_shell)
