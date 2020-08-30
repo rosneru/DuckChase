@@ -43,6 +43,42 @@ private:
    */
   void StripIntuiMessages(struct MsgPort* pMsgPort, 
                           struct Window* pIntuiWindow);
+
+  enum GadgetId
+  {
+    GID_HSlide,
+    GID_VSlide
+  };
+
+  enum MenuId
+  {
+    MID_Run,
+    MID_Step,
+    MID_Quit,
+    MID_HSlow,
+    MID_HFast,
+    MID_VSlow,
+    MID_VFast
+  };
+
+  struct Screen* m_pCanvasScreen = NULL;
+  struct Screen* m_pControlScreen = NULL;
+  struct Window* m_pCanvasWindow = NULL;
+  struct Window* m_pControlWindow = NULL;
+  struct Gadget* m_pGadgetList = NULL;
+  struct Gadget* m_pGadgetSlideHorizontal;
+  struct Gadget* m_pGadgetSlideVertical;
+  struct Menu* m_pMenu = NULL;
+  APTR m_pVisualInfoCanvas = NULL;
+  APTR m_pVisualInfoControl = NULL;
+
+  struct MsgPort* m_pDBufPort = NULL;
+  struct MsgPort* m_pUserPort = NULL;
+
+  struct ScreenBuffer* m_pScreenBuffers[2];
+  struct RastPort m_RastPorts[2];
+
+  ULONG m_Status[2];
 };
 
 #endif

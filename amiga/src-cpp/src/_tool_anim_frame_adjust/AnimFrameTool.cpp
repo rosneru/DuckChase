@@ -30,74 +30,18 @@
 
 #include "AnimFrameTool.h"
 
-/*----------------------------------------------------------------------*/
+#define CONTROLSC_TOP    191
+#define SC_ID      HIRES_KEY
 
+#define OK_REDRAW 1  // Buffer fully detached, ready for redraw
+#define OK_SWAPIN 2  // Buffer redrawn, ready for swap-in
 
-/*----------------------------------------------------------------------*/
 
 /* Some constants to handle the rendering of the animated face */
-#define BM_WIDTH	120
-#define BM_HEIGHT	60
-#define BM_DEPTH	2
+#define BM_WIDTH  120
+#define BM_HEIGHT  60
+#define BM_DEPTH  2
 
-/* Odd numbers to give a non-repeating bounce */
-#define CONTROLSC_TOP		191
-#define SC_ID			HIRES_KEY
-
-/*----------------------------------------------------------------------*/
-
-/* User interface constants and variables */
-
-#define GAD_HORIZ	1
-#define GAD_VERT	2
-
-// enum MenuId
-// {
-//   GID_LeftFileString,
-//   GID_RightFileString,
-//   GID_LeftFileButton,
-//   GID_RightFileButton,
-//   GID_DiffButton,
-//   GID_SwapButton,
-//   GID_ClearButton,
-//   GID_CancelButton,
-// };
-
-#define MENU_RUN	1
-#define MENU_STEP	2
-#define MENU_QUIT	3
-#define MENU_HSLOW	4
-#define MENU_HFAST	5
-#define MENU_VSLOW	6
-#define MENU_VFAST	7
-
-struct Screen* m_pCanvasScreen = NULL;
-struct Screen* m_pControlScreen = NULL;
-struct Window* m_pCanvasWindow = NULL;
-struct Window* m_pControlWindow = NULL;
-struct Gadget* m_pGadgetList = NULL;
-struct Gadget* m_pGadgetSlideHorizontal;
-struct Gadget* m_pGadgetSlideVertical;
-struct Menu* m_pMenu = NULL;
-APTR m_pVisualInfoCanvas = NULL;
-APTR m_pVisualInfoControl = NULL;
-
-/*----------------------------------------------------------------------*/
-
-#define	OK_REDRAW	1	/* Buffer fully detached, ready for redraw */
-#define OK_SWAPIN	2	/* Buffer redrawn, ready for swap-in */
-
-struct MsgPort *dbufport = NULL;
-struct MsgPort *userport = NULL;
-
-struct ScreenBuffer *scbuf[] =
-{
-    NULL,
-    NULL,
-};
-struct RastPort rport[2];
-
-ULONG status[2];
 
 LONG prevx[2] =
 {
@@ -111,26 +55,31 @@ LONG prevy[2] =
 
 ULONG buf_current, buf_nextdraw, buf_nextswap;
 ULONG count;
+
 struct BitMap *face = NULL;
 LONG x, y, xstep, xdir, ystep, ydir;
 
+
+
+
 struct TextAttr Topaz80 =
 {
-    "topaz.font", 		/* Name */
-    8, 				/* YSize */
-    FS_NORMAL,			/* Style */
-    FPF_ROMFONT | FPF_DESIGNED,	/* Flags */
+  "topaz.font",               // Name
+  8,                          // YSize
+  FS_NORMAL,                  // Style
+  FPF_ROMFONT | FPF_DESIGNED, // Flags
 };
 
 AnimFrameTool::AnimFrameTool()
+  : m_pScreenBuffers()
 {
-  if (!(dbufport = CreateMsgPort()))
+  if (!(m_pDBufPort = CreateMsgPort()))
   {
     cleanup();
     throw "Failed to create port";
   }
 
-  if (!(userport = CreateMsgPort()))
+  if (!(m_pUserPort = CreateMsgPort()))
   {
     cleanup();
     throw "Failed to create port";
@@ -145,38 +94,35 @@ AnimFrameTool::AnimFrameTool()
 
   UWORD pens[] =
   {
-      0, /* DETAILPEN */
-      1, /* BLOCKPEN	*/
-      1, /* TEXTPEN	*/
-      2, /* SHINEPEN	*/
-      1, /* SHADOWPEN	*/
-      3, /* FILLPEN	*/
-      1, /* FILLTEXTPEN	*/
-      0, /* BACKGROUNDPEN	*/
-      2, /* HIGHLIGHTTEXTPEN	*/
-
-      1, /* BARDETAILPEN	*/
-      2, /* BARBLOCKPEN	*/
-      1, /* BARTRIMPEN	*/
+      0, // DETAILPEN
+      1, // BLOCKPEN
+      1, // TEXTPEN
+      2, // SHINEPEN
+      1, // SHADOWPEN
+      3, // FILLPEN
+      1, // FILLTEXTPEN
+      0, // BACKGROUNDPEN
+      2, // HIGHLIGHTTEXTPEN
+      1, // BARDETAILPEN
+      2, // BARBLOCKPEN
+      1, // BARTRIMPEN
 
       (UWORD)~0,
   };
 
   struct NewMenu demomenu[] =
   {
-    { NM_TITLE, "Project", 		  0 , 0, 0, 0, },
-    {  NM_ITEM, "Run", 		 "R", 0, 0, (APTR)MENU_RUN, },
-    {  NM_ITEM, "Step", 		 "S", 0, 0, (APTR)MENU_STEP, },
-    {  NM_ITEM, NM_BARLABEL, 	  0 , 0, 0, 0, },
-    {  NM_ITEM, "Slower Horizontal", "1", 0, 0, (APTR)MENU_HSLOW, },
-    {  NM_ITEM, "Faster Horizontal", "2", 0, 0, (APTR)MENU_HFAST, },
-    {  NM_ITEM, "Slower Vertical", 	 "3", 0, 0, (APTR)MENU_VSLOW, },
-    {  NM_ITEM, "Faster Vertical", 	 "4", 0, 0, (APTR)MENU_VFAST, },
-
-    {  NM_ITEM, NM_BARLABEL, 	  0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit", 		 "Q", 0, 0, (APTR)MENU_QUIT, },
-
-    {   NM_END, 0, 			  0 , 0, 0, 0, },
+    { NM_TITLE, "Project",             0 , 0, 0, 0, },
+    {  NM_ITEM, "Run",                "R", 0, 0, (APTR)MID_Run, },
+    {  NM_ITEM, "Step",               "S", 0, 0, (APTR)MID_Step, },
+    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
+    {  NM_ITEM, "Slower Horizontal",  "1", 0, 0, (APTR)MID_HSlow, },
+    {  NM_ITEM, "Faster Horizontal",  "2", 0, 0, (APTR)MID_HFast, },
+    {  NM_ITEM, "Slower Vertical",    "3", 0, 0, (APTR)MID_VSlow, },
+    {  NM_ITEM, "Faster Vertical",    "4", 0, 0, (APTR)MID_VFast, },
+    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
+    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_Quit, },
+    { NM_END,   0,                     0 , 0, 0, 0, },
   };
 
   if (!(m_pCanvasScreen = OpenScreenTags(NULL,
@@ -214,7 +160,7 @@ AnimFrameTool::AnimFrameTool()
     cleanup();
     throw "Couldn't open window";
   }
-  m_pCanvasWindow->UserPort = userport;
+  m_pCanvasWindow->UserPort = m_pUserPort;
 
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
@@ -280,20 +226,20 @@ AnimFrameTool::AnimFrameTool()
     throw "Couldn't open window";
   }
 
-  m_pControlWindow->UserPort = userport;
+  m_pControlWindow->UserPort = m_pUserPort;
   ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
   GT_RefreshWindow(m_pControlWindow, NULL);
   SetMenuStrip(m_pCanvasWindow, m_pMenu);
   LendMenus(m_pControlWindow, m_pCanvasWindow);
 
-  if (!(scbuf[0] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_SCREEN_BITMAP)))
+  if (!(m_pScreenBuffers[0] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_SCREEN_BITMAP)))
   {
     cleanup();
     throw "Couldn't allocate ScreenBuffer 1";
   }
 
-  if (!(scbuf[1] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_COPY_BITMAP)))
+  if (!(m_pScreenBuffers[1] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_COPY_BITMAP)))
   {
     cleanup();
     throw "Couldn't allocate ScreenBuffer 2";
@@ -302,10 +248,10 @@ AnimFrameTool::AnimFrameTool()
   /* Let's use the UserData to store the buffer number, for
    * easy identification when the message comes back.
    */
-  scbuf[0]->sb_DBufInfo->dbi_UserData1 = (APTR)(0);
-  scbuf[1]->sb_DBufInfo->dbi_UserData1 = (APTR)(1);
-  status[0] = OK_REDRAW;
-  status[1] = OK_REDRAW;
+  m_pScreenBuffers[0]->sb_DBufInfo->dbi_UserData1 = (APTR)(0);
+  m_pScreenBuffers[1]->sb_DBufInfo->dbi_UserData1 = (APTR)(1);
+  m_Status[0] = OK_REDRAW;
+  m_Status[1] = OK_REDRAW;
 
   if (!(face = makeImageBM()))
   {
@@ -313,10 +259,10 @@ AnimFrameTool::AnimFrameTool()
     throw "Couldn't allocate image bitmap";
   }
 
-  InitRastPort(&rport[0]);
-  InitRastPort(&rport[1]);
-  rport[0].BitMap = scbuf[0]->sb_BitMap;
-  rport[1].BitMap = scbuf[1]->sb_BitMap;
+  InitRastPort(&m_RastPorts[0]);
+  InitRastPort(&m_RastPorts[1]);
+  m_RastPorts[0].BitMap = m_pScreenBuffers[0]->sb_BitMap;
+  m_RastPorts[1].BitMap = m_pScreenBuffers[1]->sb_BitMap;
 
   x = 50;
   y = 70;
@@ -347,11 +293,11 @@ void AnimFrameTool::Run()
   while (!terminated)
   {
     /* Check for and handle any IntuiMessages */
-    if (sigs & (1 << userport->mp_SigBit))
+    if (sigs & (1 << m_pUserPort->mp_SigBit))
     {
       struct IntuiMessage *imsg;
 
-      while (imsg = GT_GetIMsg(userport))
+      while (imsg = GT_GetIMsg(m_pUserPort))
       {
         terminated |= handleIntuiMessage(imsg);
         GT_ReplyIMsg(imsg);
@@ -362,10 +308,10 @@ void AnimFrameTool::Run()
      * Note that double-buffering messages are "replied" to
      * us, so we don't want to reply them to anyone.
      */
-    if (sigs & (1 << dbufport->mp_SigBit))
+    if (sigs & (1 << m_pDBufPort->mp_SigBit))
     {
       struct Message *dbmsg;
-      while (dbmsg = GetMsg(dbufport))
+      while (dbmsg = GetMsg(m_pDBufPort))
       {
         handleDBufMessage(dbmsg);
       }
@@ -397,7 +343,7 @@ void AnimFrameTool::Run()
          * double-buffering routines, but it might also be an
          * IntuiMessage.
          */
-        sigs = Wait((1 << dbufport->mp_SigBit) | (1 << userport->mp_SigBit));
+        sigs = Wait((1 << m_pDBufPort->mp_SigBit) | (1 << m_pUserPort->mp_SigBit));
       }
     }
   }
@@ -421,7 +367,7 @@ ULONG AnimFrameTool::handleBufferSwap()
    * the imagery, since the buffer is ready to be swapped in.
    * We clear the OK_REDRAW flag, since we're done with redrawing
    */
-  if (status[buf_nextdraw] == OK_REDRAW)
+  if (m_Status[buf_nextdraw] == OK_REDRAW)
   {
     x += xstep * xdir;
     if (x < 0)
@@ -447,19 +393,19 @@ ULONG AnimFrameTool::handleBufferSwap()
       ydir = -1;
     }
 
-    SetAPen(&rport[buf_nextdraw], 0);
-    RectFill(&rport[buf_nextdraw],
+    SetAPen(&m_RastPorts[buf_nextdraw], 0);
+    RectFill(&m_RastPorts[buf_nextdraw],
       prevx[buf_nextdraw], prevy[buf_nextdraw],
       prevx[buf_nextdraw] + BM_WIDTH - 1, prevy[buf_nextdraw] + BM_HEIGHT - 1);
     prevx[buf_nextdraw] = x;
     prevy[buf_nextdraw] = y;
 
-    BltBitMapRastPort(face, 0, 0, &rport[buf_nextdraw], x, y,
+    BltBitMapRastPort(face, 0, 0, &m_RastPorts[buf_nextdraw], x, y,
       BM_WIDTH, BM_HEIGHT, 0xc0);
 
     WaitBlit(); /* Gots to let the BBMRP finish */
 
-    status[buf_nextdraw] = OK_SWAPIN;
+    m_Status[buf_nextdraw] = OK_SWAPIN;
 
     /* Toggle which the next buffer to draw is.
      * If you're using multiple ( >2 ) buffering, you
@@ -473,13 +419,13 @@ ULONG AnimFrameTool::handleBufferSwap()
 
   /* Let's make sure that the next frame is rendered before we swap...
    */
-  if (status[buf_nextswap] == OK_SWAPIN)
+  if (m_Status[buf_nextswap] == OK_SWAPIN)
   {
-    scbuf[buf_nextswap]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = dbufport;
+    m_pScreenBuffers[buf_nextswap]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pDBufPort;
 
-    if (ChangeScreenBuffer(m_pCanvasScreen, scbuf[buf_nextswap]))
+    if (ChangeScreenBuffer(m_pCanvasScreen, m_pScreenBuffers[buf_nextswap]))
     {
-      status[buf_nextswap] = 0;
+      m_Status[buf_nextswap] = 0;
 
       buf_current = buf_nextswap;
       /* Toggle which the next buffer to swap in is.
@@ -517,11 +463,11 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
   case IDCMP_MOUSEMOVE:
     switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
     {
-    case GAD_HORIZ:
+    case GID_HSlide:
       xstep = code;
       break;
 
-    case GAD_VERT:
+    case GID_VSlide:
       ystep = code;
       break;
     }
@@ -556,20 +502,20 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       item = ItemAddress(m_pMenu, code);
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
-      case MENU_RUN:
+      case MID_Run:
         count = ~0;
         break;
 
-      case MENU_STEP:
+      case MID_Step:
         count = 1;
         break;
 
-      case MENU_QUIT:
+      case MID_Quit:
         count = 0;
         terminated = TRUE;
         break;
 
-      case MENU_HSLOW:
+      case MID_HSlow:
         if (xstep > 0)
         {
           xstep--;
@@ -579,7 +525,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MENU_HFAST:
+      case MID_HFast:
         if (xstep < 9)
         {
           xstep++;
@@ -589,7 +535,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MENU_VSLOW:
+      case MID_VSlow:
         if (ystep > 0)
         {
           ystep--;
@@ -599,7 +545,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MENU_VFAST:
+      case MID_VFast:
         if (ystep < 9)
         {
           ystep++;
@@ -636,7 +582,7 @@ void AnimFrameTool::handleDBufMessage(struct Message* pDBufMsg)
    *    ( buffer + NUMBUFFERS - 1 ) % NUMBUFFERS
    *
    */
-  status[buffer ^ 1] = OK_REDRAW;
+  m_Status[buffer ^ 1] = OK_REDRAW;
 }
 
 
@@ -644,7 +590,7 @@ void AnimFrameTool::handleDBufMessage(struct Message* pDBufMsg)
 /*----------------------------------------------------------------------*/
 
 
-#define MAXVECTORS	10
+#define MAXVECTORS  10
 
 /**
  *  Draw a crude "face" for animation 
@@ -718,7 +664,7 @@ struct Gadget* AnimFrameTool::createAllGadgets(struct Gadget **ppGadgetList,
   ng.ng_GadgetText = (UBYTE*)"Horiz:  ";
   ng.ng_TextAttr = &Topaz80;
   ng.ng_VisualInfo = pVisualInfo;
-  ng.ng_GadgetID = GAD_HORIZ;
+  ng.ng_GadgetID = GID_HSlide;
   ng.ng_Flags = 0;
 
   m_pGadgetSlideHorizontal = gad = CreateGadget(SLIDER_KIND, gad, &ng,
@@ -730,7 +676,7 @@ struct Gadget* AnimFrameTool::createAllGadgets(struct Gadget **ppGadgetList,
     TAG_DONE);
 
   ng.ng_LeftEdge += 200;
-  ng.ng_GadgetID = GAD_VERT;
+  ng.ng_GadgetID = GID_VSlide;
   ng.ng_GadgetText = (UBYTE*) "Vert:  ";
   m_pGadgetSlideVertical = gad = CreateGadget(SLIDER_KIND, gad, &ng,
     GTSL_Min, 0,
@@ -768,22 +714,22 @@ void AnimFrameTool::cleanup()
 
   if (m_pCanvasScreen != NULL)
   {
-    FreeScreenBuffer(m_pCanvasScreen, scbuf[1]);
-    FreeScreenBuffer(m_pCanvasScreen, scbuf[0]);
+    FreeScreenBuffer(m_pCanvasScreen, m_pScreenBuffers[1]);
+    FreeScreenBuffer(m_pCanvasScreen, m_pScreenBuffers[0]);
     CloseScreen(m_pCanvasScreen);
     m_pCanvasScreen = NULL;
   }
 
-  if (dbufport != NULL)
+  if (m_pDBufPort != NULL)
   {
-    DeleteMsgPort(dbufport);
-    dbufport = NULL;
+    DeleteMsgPort(m_pDBufPort);
+    m_pDBufPort = NULL;
   }
 
-  if (userport != NULL)
+  if (m_pUserPort != NULL)
   {
-    DeleteMsgPort(userport);
-    userport = NULL;
+    DeleteMsgPort(m_pUserPort);
+    m_pUserPort = NULL;
   }
 
   if (m_pGadgetList != NULL)
