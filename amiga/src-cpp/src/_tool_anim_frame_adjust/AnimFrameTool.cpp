@@ -295,10 +295,10 @@ AnimFrameTool::~AnimFrameTool()
 
 void AnimFrameTool::Run()
 {
+  ULONG sigs = 0;
   BOOL terminated = FALSE;
   while (!terminated)
   {
-    ULONG sigs = 0;
     // Check for and handle any IntuiMessages
     if (sigs & (1 << m_pUserPort->mp_SigBit))
     {
@@ -311,10 +311,10 @@ void AnimFrameTool::Run()
       }
     }
 
-    // Check for and handle any double-buffering messages. Note that
-    // double-buffering messages are "replied" to us, so we don't want
-    // to reply them to anyone.
-    //
+    // Check for and handle any double-buffering messages.
+    // Note that double-buffering messages are "replied" to
+    // us, so we don't want to reply them to anyone.
+    // 
     if (sigs & (1 << m_pDBufPort->mp_SigBit))
     {
       struct Message *dbmsg;
@@ -328,28 +328,28 @@ void AnimFrameTool::Run()
     if (!terminated)
     {
       ULONG held_off = 0;
-      /* Only handle swapping buffers if count is non-zero */
+      // Only handle swapping buffers if count is non-zero
       if (m_Count)
       {
         held_off = handleBufferSwap();
       }
       if (held_off)
       {
-        /* If were held-off at ChangeScreenBuffer() time, then we
-         * need to try ChangeScreenBuffer() again, without awaiting
-         * a signal.  We WaitTOF() to avoid busy-looping.
-         */
+        // If were held-off at ChangeScreenBuffer() time, then we
+        // need to try ChangeScreenBuffer() again, without awaiting
+        // a signal.  We WaitTOF() to avoid busy-looping.
+        // 
         WaitTOF();
       }
       else
       {
-        /* If we were not held-off, then we're all done
-         * with what we have to do.  We'll have no work to do
-         * until some kind of signal arrives.  This will normally
-         * be the arrival of the dbi_SafeMessage from the ROM
-         * double-buffering routines, but it might also be an
-         * IntuiMessage.
-         */
+        // If we were not held-off, then we're all done
+        // with what we have to do.  We'll have no work to do
+        // until some kind of signal arrives.  This will normally
+        // be the arrival of the dbi_SafeMessage from the ROM
+        // double-buffering routines, but it might also be an
+        // IntuiMessage.
+        // 
         sigs = Wait((1 << m_pDBufPort->mp_SigBit) | (1 << m_pUserPort->mp_SigBit));
       }
     }
@@ -357,23 +357,20 @@ void AnimFrameTool::Run()
 }
 
 
-/*----------------------------------------------------------------------*/
-
-/* Handle the rendering and swapping of the buffers */
 
 ULONG AnimFrameTool::handleBufferSwap()
 {
   ULONG held_off = 0;
-  /* 'buf_nextdraw' is the next buffer to draw into.
-   * The buffer is ready for drawing when we've received the
-   * dbi_SafeMessage for that buffer.  Our routine to handle
-   * messaging from the double-buffering functions sets the
-   * OK_REDRAW flag when this message has appeared.
-   *
-   * Here, we set the OK_SWAPIN flag after we've redrawn
-   * the imagery, since the buffer is ready to be swapped in.
-   * We clear the OK_REDRAW flag, since we're done with redrawing
-   */
+
+  // 'buf_nextdraw' is the next buffer to draw into. The buffer is ready
+  // for drawing when we've received the dbi_SafeMessage for that
+  // buffer. Our routine to handle messaging from the double-buffering
+  // functions sets the OK_REDRAW flag when this message has appeared.
+  //
+  // Here, we set the OK_SWAPIN flag after we've redrawn the imagery,
+  // since the buffer is ready to be swapped in. We clear the OK_REDRAW
+  // flag, since we're done with redrawing
+  
   if (m_Status[m_BufNextdraw] == OK_REDRAW)
   {
     x += xstep * xdir;
@@ -414,18 +411,13 @@ ULONG AnimFrameTool::handleBufferSwap()
 
     m_Status[m_BufNextdraw] = OK_SWAPIN;
 
-    /* Toggle which the next buffer to draw is.
-     * If you're using multiple ( >2 ) buffering, you
-     * would use
-     *
-     *    buf_nextdraw = ( buf_nextdraw+1 ) % NUMBUFFERS;
-     *
-     */
+    // Toggle which the next buffer to draw is. If you're using multiple
+    // ( >2 ) buffering, you would use
+    //   buf_nextdraw = ( buf_nextdraw+1 ) % NUMBUFFERS;
     m_BufNextdraw ^= 1;
   }
 
-  /* Let's make sure that the next frame is rendered before we swap...
-   */
+  // Let's make sure that the next frame is rendered before we swap...
   if (m_Status[m_BufNextswap] == OK_SWAPIN)
   {
     m_pScreenBuffers[m_BufNextswap]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pDBufPort;
@@ -435,13 +427,10 @@ ULONG AnimFrameTool::handleBufferSwap()
       m_Status[m_BufNextswap] = 0;
 
       m_BufCurrent = m_BufNextswap;
-      /* Toggle which the next buffer to swap in is.
-       * If you're using multiple ( >2 ) buffering, you
-       * would use
-       *
-       *    buf_nextswap = ( buf_nextswap+1 ) % NUMBUFFERS;
-       *
-       */
+      // Toggle which the next buffer to swap in is.
+      // If you're using multiple ( >2 ) buffering, you
+      // would use
+      //  buf_nextswap = ( buf_nextswap+1 ) % NUMBUFFERS;
       m_BufNextswap ^= 1;
 
       m_Count--;
@@ -453,9 +442,6 @@ ULONG AnimFrameTool::handleBufferSwap()
   }
   return held_off;
 }
-
-/*----------------------------------------------------------------------*/
-
 
 
 BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
@@ -575,20 +561,15 @@ void AnimFrameTool::handleDBufMessage(struct Message* pDBufMsg)
 {
   ULONG buffer;
 
-  /* dbi_SafeMessage is followed by an APTR dbi_UserData1, which
-   * contains the buffer number.  This is an easy way to extract
-   * it.
-   * The dbi_SafeMessage tells us that it's OK to redraw the
-   * in the previous buffer.
-   */
+  // dbi_SafeMessage is followed by an APTR dbi_UserData1, which
+  // contains the buffer number. This is an easy way to extract it. The
+  // dbi_SafeMessage tells us that it's OK to redraw the in the previous
+  // buffer.
   buffer = (ULONG) *((APTR **)(pDBufMsg + 1));
-  /* Mark the previous buffer as OK to redraw into.
-   * If you're using multiple ( >2 ) buffering, you
-   * would use
-   *
-   *    ( buffer + NUMBUFFERS - 1 ) % NUMBUFFERS
-   *
-   */
+  // Mark the previous buffer as OK to redraw into.
+  // If you're using multiple ( >2 ) buffering, you
+  // would use
+  //   ( buffer + NUMBUFFERS - 1 ) % NUMBUFFERS
   m_Status[buffer ^ 1] = OK_REDRAW;
 }
 

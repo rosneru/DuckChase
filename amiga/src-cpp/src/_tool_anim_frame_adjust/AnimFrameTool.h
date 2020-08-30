@@ -24,7 +24,12 @@ private:
   BOOL handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
 
   void handleDBufMessage(struct Message* pDBufMsg);
+
+  /**
+   * Handle the rendering and swapping of the buffers
+   */
   ULONG handleBufferSwap();
+  
   struct BitMap* makeImageBM();
 
   /**
