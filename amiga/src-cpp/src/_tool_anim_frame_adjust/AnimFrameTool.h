@@ -61,24 +61,29 @@ private:
     MID_VFast
   };
 
-  struct Screen* m_pCanvasScreen = NULL;
-  struct Screen* m_pControlScreen = NULL;
-  struct Window* m_pCanvasWindow = NULL;
-  struct Window* m_pControlWindow = NULL;
-  struct Gadget* m_pGadgetList = NULL;
+  struct Screen* m_pCanvasScreen;
+  struct Screen* m_pControlScreen;
+  struct Window* m_pCanvasWindow;
+  struct Window* m_pControlWindow;
+  struct Gadget* m_pGadgetList;
   struct Gadget* m_pGadgetSlideHorizontal;
   struct Gadget* m_pGadgetSlideVertical;
-  struct Menu* m_pMenu = NULL;
-  APTR m_pVisualInfoCanvas = NULL;
-  APTR m_pVisualInfoControl = NULL;
+  struct Menu* m_pMenu;
+  APTR m_pVisualInfoCanvas;
+  APTR m_pVisualInfoControl;
 
-  struct MsgPort* m_pDBufPort = NULL;
-  struct MsgPort* m_pUserPort = NULL;
+  struct MsgPort* m_pDBufPort;
+  struct MsgPort* m_pUserPort;
 
   struct ScreenBuffer* m_pScreenBuffers[2];
   struct RastPort m_RastPorts[2];
 
   ULONG m_Status[2];
+
+  ULONG m_BufCurrent;
+  ULONG m_BufNextdraw;
+  ULONG m_BufNextswap;
+  ULONG m_Count;
 };
 
 #endif

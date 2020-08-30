@@ -53,13 +53,9 @@ LONG prevy[2] =
     50, 50,
 };
 
-ULONG buf_current, buf_nextdraw, buf_nextswap;
-ULONG count;
 
 struct BitMap *face = NULL;
 LONG x, y, xstep, xdir, ystep, ydir;
-
-
 
 
 struct TextAttr Topaz80 =
@@ -70,8 +66,27 @@ struct TextAttr Topaz80 =
   FPF_ROMFONT | FPF_DESIGNED, // Flags
 };
 
+
+
 AnimFrameTool::AnimFrameTool()
-  : m_pScreenBuffers()
+  : m_pCanvasScreen(NULL),
+    m_pControlScreen(NULL),
+    m_pCanvasWindow(NULL),
+    m_pControlWindow(NULL),
+    m_pGadgetList(NULL),
+    m_pGadgetSlideHorizontal(NULL),
+    m_pGadgetSlideVertical(NULL),
+    m_pMenu(NULL),
+    m_pVisualInfoCanvas(NULL),
+    m_pVisualInfoControl(NULL),
+    m_pDBufPort(NULL),
+    m_pUserPort(NULL),
+    m_pScreenBuffers(),
+    m_RastPorts(),
+    m_BufCurrent(0),
+    m_BufNextdraw(1),
+    m_BufNextswap(1),
+    m_Count(0)
 {
   if (!(m_pDBufPort = CreateMsgPort()))
   {
@@ -280,19 +295,11 @@ AnimFrameTool::~AnimFrameTool()
 
 void AnimFrameTool::Run()
 {
-  STRPTR errorstring;
-  ULONG sigs;
   BOOL terminated = FALSE;
-
-  count = 0;
-  buf_current = 0;
-  buf_nextdraw = 1;
-  buf_nextswap = 1;
-  sigs = 0;
-
   while (!terminated)
   {
-    /* Check for and handle any IntuiMessages */
+    ULONG sigs = 0;
+    // Check for and handle any IntuiMessages
     if (sigs & (1 << m_pUserPort->mp_SigBit))
     {
       struct IntuiMessage *imsg;
@@ -304,10 +311,10 @@ void AnimFrameTool::Run()
       }
     }
 
-    /* Check for and handle any double-buffering messages.
-     * Note that double-buffering messages are "replied" to
-     * us, so we don't want to reply them to anyone.
-     */
+    // Check for and handle any double-buffering messages. Note that
+    // double-buffering messages are "replied" to us, so we don't want
+    // to reply them to anyone.
+    //
     if (sigs & (1 << m_pDBufPort->mp_SigBit))
     {
       struct Message *dbmsg;
@@ -322,7 +329,7 @@ void AnimFrameTool::Run()
     {
       ULONG held_off = 0;
       /* Only handle swapping buffers if count is non-zero */
-      if (count)
+      if (m_Count)
       {
         held_off = handleBufferSwap();
       }
@@ -367,7 +374,7 @@ ULONG AnimFrameTool::handleBufferSwap()
    * the imagery, since the buffer is ready to be swapped in.
    * We clear the OK_REDRAW flag, since we're done with redrawing
    */
-  if (m_Status[buf_nextdraw] == OK_REDRAW)
+  if (m_Status[m_BufNextdraw] == OK_REDRAW)
   {
     x += xstep * xdir;
     if (x < 0)
@@ -393,19 +400,19 @@ ULONG AnimFrameTool::handleBufferSwap()
       ydir = -1;
     }
 
-    SetAPen(&m_RastPorts[buf_nextdraw], 0);
-    RectFill(&m_RastPorts[buf_nextdraw],
-      prevx[buf_nextdraw], prevy[buf_nextdraw],
-      prevx[buf_nextdraw] + BM_WIDTH - 1, prevy[buf_nextdraw] + BM_HEIGHT - 1);
-    prevx[buf_nextdraw] = x;
-    prevy[buf_nextdraw] = y;
+    SetAPen(&m_RastPorts[m_BufNextdraw], 0);
+    RectFill(&m_RastPorts[m_BufNextdraw],
+      prevx[m_BufNextdraw], prevy[m_BufNextdraw],
+      prevx[m_BufNextdraw] + BM_WIDTH - 1, prevy[m_BufNextdraw] + BM_HEIGHT - 1);
+    prevx[m_BufNextdraw] = x;
+    prevy[m_BufNextdraw] = y;
 
-    BltBitMapRastPort(face, 0, 0, &m_RastPorts[buf_nextdraw], x, y,
+    BltBitMapRastPort(face, 0, 0, &m_RastPorts[m_BufNextdraw], x, y,
       BM_WIDTH, BM_HEIGHT, 0xc0);
 
     WaitBlit(); /* Gots to let the BBMRP finish */
 
-    m_Status[buf_nextdraw] = OK_SWAPIN;
+    m_Status[m_BufNextdraw] = OK_SWAPIN;
 
     /* Toggle which the next buffer to draw is.
      * If you're using multiple ( >2 ) buffering, you
@@ -414,20 +421,20 @@ ULONG AnimFrameTool::handleBufferSwap()
      *    buf_nextdraw = ( buf_nextdraw+1 ) % NUMBUFFERS;
      *
      */
-    buf_nextdraw ^= 1;
+    m_BufNextdraw ^= 1;
   }
 
   /* Let's make sure that the next frame is rendered before we swap...
    */
-  if (m_Status[buf_nextswap] == OK_SWAPIN)
+  if (m_Status[m_BufNextswap] == OK_SWAPIN)
   {
-    m_pScreenBuffers[buf_nextswap]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pDBufPort;
+    m_pScreenBuffers[m_BufNextswap]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pDBufPort;
 
-    if (ChangeScreenBuffer(m_pCanvasScreen, m_pScreenBuffers[buf_nextswap]))
+    if (ChangeScreenBuffer(m_pCanvasScreen, m_pScreenBuffers[m_BufNextswap]))
     {
-      m_Status[buf_nextswap] = 0;
+      m_Status[m_BufNextswap] = 0;
 
-      buf_current = buf_nextswap;
+      m_BufCurrent = m_BufNextswap;
       /* Toggle which the next buffer to swap in is.
        * If you're using multiple ( >2 ) buffering, you
        * would use
@@ -435,9 +442,9 @@ ULONG AnimFrameTool::handleBufferSwap()
        *    buf_nextswap = ( buf_nextswap+1 ) % NUMBUFFERS;
        *
        */
-      buf_nextswap ^= 1;
+      m_BufNextswap ^= 1;
 
-      count--;
+      m_Count--;
     }
     else
     {
@@ -478,17 +485,17 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     {
     case 'S':
     case 's':
-      count = 1;
+      m_Count = 1;
       break;
 
     case 'R':
     case 'r':
-      count = ~0;
+      m_Count = ~0;
       break;
 
     case 'Q':
     case 'q':
-      count = 0;
+      m_Count = 0;
       terminated = TRUE;
       break;
     }
@@ -503,15 +510,15 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_Run:
-        count = ~0;
+        m_Count = ~0;
         break;
 
       case MID_Step:
-        count = 1;
+        m_Count = 1;
         break;
 
       case MID_Quit:
-        count = 0;
+        m_Count = 0;
         terminated = TRUE;
         break;
 
