@@ -18,13 +18,7 @@
  /*----------------------------------------------------------------------*/
 
 #include <exec/types.h>
-#include <graphics/displayinfo.h>
 #include <graphics/videocontrol.h>
-#include <graphics/gfxbase.h>
-#include <intuition/intuitionbase.h>
-#include <intuition/gadgetclass.h>
-#include <libraries/gadtools.h>
-
 
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
@@ -37,15 +31,7 @@
 #include "AnimFrameTool.h"
 
 /*----------------------------------------------------------------------*/
-void cleanup();
-struct Gadget *createAllGadgets(struct Gadget **glistptr, void *vi);
-BOOL handleIntuiMessage(struct IntuiMessage *imsg);
-void handleDBufMessage(struct Message *dbmsg);
-ULONG handleBufferSwap(void);
-struct BitMap *makeImageBM(void);
 
-void CloseWindowSafely(struct Window *win);
-void StripIntuiMessages(struct MsgPort *mp, struct Window *win);
 
 /*----------------------------------------------------------------------*/
 
@@ -65,6 +51,18 @@ void StripIntuiMessages(struct MsgPort *mp, struct Window *win);
 #define GAD_HORIZ	1
 #define GAD_VERT	2
 
+// enum MenuId
+// {
+//   GID_LeftFileString,
+//   GID_RightFileString,
+//   GID_LeftFileButton,
+//   GID_RightFileButton,
+//   GID_DiffButton,
+//   GID_SwapButton,
+//   GID_ClearButton,
+//   GID_CancelButton,
+// };
+
 #define MENU_RUN	1
 #define MENU_STEP	2
 #define MENU_QUIT	3
@@ -73,65 +71,16 @@ void StripIntuiMessages(struct MsgPort *mp, struct Window *win);
 #define MENU_VSLOW	6
 #define MENU_VFAST	7
 
-struct TextAttr Topaz80 =
-{
-    "topaz.font", 		/* Name */
-    8, 				/* YSize */
-    FS_NORMAL,			/* Style */
-    FPF_ROMFONT | FPF_DESIGNED,	/* Flags */
-};
-
-struct TagItem vctags[] =
-{
-    VTAG_BORDERSPRITE_SET, TRUE,
-    TAG_DONE, 0,
-};
-
-UWORD pens[] =
-{
-    0, /* DETAILPEN */
-    1, /* BLOCKPEN	*/
-    1, /* TEXTPEN	*/
-    2, /* SHINEPEN	*/
-    1, /* SHADOWPEN	*/
-    3, /* FILLPEN	*/
-    1, /* FILLTEXTPEN	*/
-    0, /* BACKGROUNDPEN	*/
-    2, /* HIGHLIGHTTEXTPEN	*/
-
-    1, /* BARDETAILPEN	*/
-    2, /* BARBLOCKPEN	*/
-    1, /* BARTRIMPEN	*/
-
-    (UWORD)~0,
-};
-
-struct NewMenu demomenu[] =
-{
-  { NM_TITLE, "Project", 		  0 , 0, 0, 0, },
-  {  NM_ITEM, "Run", 		 "R", 0, 0, (APTR)MENU_RUN, },
-  {  NM_ITEM, "Step", 		 "S", 0, 0, (APTR)MENU_STEP, },
-  {  NM_ITEM, NM_BARLABEL, 	  0 , 0, 0, 0, },
-  {  NM_ITEM, "Slower Horizontal", "1", 0, 0, (APTR)MENU_HSLOW, },
-  {  NM_ITEM, "Faster Horizontal", "2", 0, 0, (APTR)MENU_HFAST, },
-  {  NM_ITEM, "Slower Vertical", 	 "3", 0, 0, (APTR)MENU_VSLOW, },
-  {  NM_ITEM, "Faster Vertical", 	 "4", 0, 0, (APTR)MENU_VFAST, },
-
-  {  NM_ITEM, NM_BARLABEL, 	  0 , 0, 0, 0, },
-  {  NM_ITEM, "Quit", 		 "Q", 0, 0, (APTR)MENU_QUIT, },
-
-  {   NM_END, 0, 			  0 , 0, 0, 0, },
-};
-
-struct Screen *canvassc = NULL;
-struct Screen *controlsc = NULL;
-struct Window *controlwin = NULL;
-struct Window *canvaswin = NULL;
-struct Gadget *glist = NULL;
-struct Gadget *horizgad, *vertgad;
-struct Menu *menu = NULL;
-void *canvasvi = NULL;
-void *controlvi = NULL;
+struct Screen* m_pCanvasScreen = NULL;
+struct Screen* m_pControlScreen = NULL;
+struct Window* m_pCanvasWindow = NULL;
+struct Window* m_pControlWindow = NULL;
+struct Gadget* m_pGadgetList = NULL;
+struct Gadget* m_pGadgetSlideHorizontal;
+struct Gadget* m_pGadgetSlideVertical;
+struct Menu* m_pMenu = NULL;
+APTR m_pVisualInfoCanvas = NULL;
+APTR m_pVisualInfoControl = NULL;
 
 /*----------------------------------------------------------------------*/
 
@@ -165,7 +114,13 @@ ULONG count;
 struct BitMap *face = NULL;
 LONG x, y, xstep, xdir, ystep, ydir;
 
-/*----------------------------------------------------------------------*/
+struct TextAttr Topaz80 =
+{
+    "topaz.font", 		/* Name */
+    8, 				/* YSize */
+    FS_NORMAL,			/* Style */
+    FPF_ROMFONT | FPF_DESIGNED,	/* Flags */
+};
 
 AnimFrameTool::AnimFrameTool()
 {
@@ -181,7 +136,50 @@ AnimFrameTool::AnimFrameTool()
     throw "Failed to create port";
   }
 
-  if (!(canvassc = OpenScreenTags(NULL,
+
+  struct TagItem vctags[] =
+  {
+      VTAG_BORDERSPRITE_SET, TRUE,
+      TAG_DONE, 0,
+  };
+
+  UWORD pens[] =
+  {
+      0, /* DETAILPEN */
+      1, /* BLOCKPEN	*/
+      1, /* TEXTPEN	*/
+      2, /* SHINEPEN	*/
+      1, /* SHADOWPEN	*/
+      3, /* FILLPEN	*/
+      1, /* FILLTEXTPEN	*/
+      0, /* BACKGROUNDPEN	*/
+      2, /* HIGHLIGHTTEXTPEN	*/
+
+      1, /* BARDETAILPEN	*/
+      2, /* BARBLOCKPEN	*/
+      1, /* BARTRIMPEN	*/
+
+      (UWORD)~0,
+  };
+
+  struct NewMenu demomenu[] =
+  {
+    { NM_TITLE, "Project", 		  0 , 0, 0, 0, },
+    {  NM_ITEM, "Run", 		 "R", 0, 0, (APTR)MENU_RUN, },
+    {  NM_ITEM, "Step", 		 "S", 0, 0, (APTR)MENU_STEP, },
+    {  NM_ITEM, NM_BARLABEL, 	  0 , 0, 0, 0, },
+    {  NM_ITEM, "Slower Horizontal", "1", 0, 0, (APTR)MENU_HSLOW, },
+    {  NM_ITEM, "Faster Horizontal", "2", 0, 0, (APTR)MENU_HFAST, },
+    {  NM_ITEM, "Slower Vertical", 	 "3", 0, 0, (APTR)MENU_VSLOW, },
+    {  NM_ITEM, "Faster Vertical", 	 "4", 0, 0, (APTR)MENU_VFAST, },
+
+    {  NM_ITEM, NM_BARLABEL, 	  0 , 0, 0, 0, },
+    {  NM_ITEM, "Quit", 		 "Q", 0, 0, (APTR)MENU_QUIT, },
+
+    {   NM_END, 0, 			  0 , 0, 0, 0, },
+  };
+
+  if (!(m_pCanvasScreen = OpenScreenTags(NULL,
     SA_DisplayID, SC_ID,
     SA_Overscan, OSCAN_TEXT,
     SA_Depth, 2,
@@ -197,37 +195,37 @@ AnimFrameTool::AnimFrameTool()
     throw "Couldn't open screen";
   }
 
-  if (!(canvasvi = GetVisualInfo(canvassc,
+  if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen,
     TAG_DONE)))
   {
     cleanup();
     throw "Couldn't get VisualInfo";
   }
 
-  if (!(canvaswin = OpenWindowTags(NULL,
+  if (!(m_pCanvasWindow = OpenWindowTags(NULL,
     WA_NoCareRefresh, TRUE,
     WA_Activate, TRUE,
     WA_Borderless, TRUE,
     WA_Backdrop, TRUE,
-    WA_CustomScreen, canvassc,
+    WA_CustomScreen, m_pCanvasScreen,
     WA_NewLookMenus, TRUE,
     TAG_DONE)))
   {
     cleanup();
     throw "Couldn't open window";
   }
-  canvaswin->UserPort = userport;
+  m_pCanvasWindow->UserPort = userport;
 
-  ModifyIDCMP(canvaswin, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+  ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
-  if (!(controlsc = OpenScreenTags(NULL,
+  if (!(m_pControlScreen = OpenScreenTags(NULL,
     SA_DisplayID, SC_ID,
     SA_Overscan, OSCAN_TEXT,
     SA_Depth, 2,
     SA_Pens, pens,
     SA_Top, CONTROLSC_TOP,
     SA_Height, 28,
-    SA_Parent, canvassc,
+    SA_Parent, m_pCanvasScreen,
     SA_ShowTitle, FALSE,
     SA_Draggable, FALSE,
     SA_VideoControl, vctags,
@@ -239,21 +237,21 @@ AnimFrameTool::AnimFrameTool()
     throw "Couldn't open screen";
   }
 
-  if (!(controlvi = GetVisualInfo(controlsc,
+  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen,
     TAG_DONE)))
   {
     cleanup();
     throw "Couldn't get VisualInfo\n";
   }
 
-  if (!(menu = CreateMenus(demomenu,
+  if (!(m_pMenu = CreateMenus(demomenu,
     TAG_DONE)))
   {
     cleanup();
     throw "Couldn't create menus";
   }
 
-  if (!LayoutMenus(menu, canvasvi,
+  if (!LayoutMenus(m_pMenu, m_pVisualInfoCanvas,
     GTMN_NewLookMenus, TRUE,
     TAG_DONE))
   {
@@ -261,41 +259,41 @@ AnimFrameTool::AnimFrameTool()
     throw "Couldn't layout menus";
   }
 
-  if (!createAllGadgets(&glist, controlvi))
+  if (!createAllGadgets(&m_pGadgetList, m_pVisualInfoControl))
   {
     cleanup();
     throw "Couldn't create gadgets";
   }
 
   /* A borderless backdrop window so we can get input */
-  if (!(controlwin = OpenWindowTags(NULL,
+  if (!(m_pControlWindow = OpenWindowTags(NULL,
     WA_NoCareRefresh, TRUE,
     WA_Activate, TRUE,
     WA_Borderless, TRUE,
     WA_Backdrop, TRUE,
-    WA_CustomScreen, controlsc,
+    WA_CustomScreen, m_pControlScreen,
     WA_NewLookMenus, TRUE,
-    WA_Gadgets, glist,
+    WA_Gadgets, m_pGadgetList,
     TAG_DONE)))
   {
     cleanup();
     throw "Couldn't open window";
   }
 
-  controlwin->UserPort = userport;
-  ModifyIDCMP(controlwin, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+  m_pControlWindow->UserPort = userport;
+  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
-  GT_RefreshWindow(controlwin, NULL);
-  SetMenuStrip(canvaswin, menu);
-  LendMenus(controlwin, canvaswin);
+  GT_RefreshWindow(m_pControlWindow, NULL);
+  SetMenuStrip(m_pCanvasWindow, m_pMenu);
+  LendMenus(m_pControlWindow, m_pCanvasWindow);
 
-  if (!(scbuf[0] = AllocScreenBuffer(canvassc, NULL, SB_SCREEN_BITMAP)))
+  if (!(scbuf[0] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_SCREEN_BITMAP)))
   {
     cleanup();
     throw "Couldn't allocate ScreenBuffer 1";
   }
 
-  if (!(scbuf[1] = AllocScreenBuffer(canvassc, NULL, SB_COPY_BITMAP)))
+  if (!(scbuf[1] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_COPY_BITMAP)))
   {
     cleanup();
     throw "Couldn't allocate ScreenBuffer 2";
@@ -410,7 +408,7 @@ void AnimFrameTool::Run()
 
 /* Handle the rendering and swapping of the buffers */
 
-ULONG handleBufferSwap(void)
+ULONG AnimFrameTool::handleBufferSwap()
 {
   ULONG held_off = 0;
   /* 'buf_nextdraw' is the next buffer to draw into.
@@ -431,16 +429,16 @@ ULONG handleBufferSwap(void)
       x = 0;
       xdir = 1;
     }
-    else if (x > canvassc->Width - BM_WIDTH)
+    else if (x > m_pCanvasScreen->Width - BM_WIDTH)
     {
-      x = canvassc->Width - BM_WIDTH - 1;
+      x = m_pCanvasScreen->Width - BM_WIDTH - 1;
       xdir = -1;
     }
 
     y += ystep * ydir;
-    if (y < canvassc->BarLayer->Height)
+    if (y < m_pCanvasScreen->BarLayer->Height)
     {
-      y = canvassc->BarLayer->Height;
+      y = m_pCanvasScreen->BarLayer->Height;
       ydir = 1;
     }
     else if (y >= CONTROLSC_TOP - BM_HEIGHT)
@@ -479,7 +477,7 @@ ULONG handleBufferSwap(void)
   {
     scbuf[buf_nextswap]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = dbufport;
 
-    if (ChangeScreenBuffer(canvassc, scbuf[buf_nextswap]))
+    if (ChangeScreenBuffer(m_pCanvasScreen, scbuf[buf_nextswap]))
     {
       status[buf_nextswap] = 0;
 
@@ -505,19 +503,19 @@ ULONG handleBufferSwap(void)
 
 /*----------------------------------------------------------------------*/
 
-/* Handle Intuition messages */
 
-BOOL handleIntuiMessage(struct IntuiMessage *imsg)
+
+BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 {
-  UWORD code = imsg->Code;
+  UWORD code = pIntuiMsg->Code;
   BOOL terminated = FALSE;
 
-  switch (imsg->Class)
+  switch (pIntuiMsg->Class)
   {
   case IDCMP_GADGETDOWN:
   case IDCMP_GADGETUP:
   case IDCMP_MOUSEMOVE:
-    switch (((struct Gadget *)imsg->IAddress)->GadgetID)
+    switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
     {
     case GAD_HORIZ:
       xstep = code;
@@ -555,7 +553,7 @@ BOOL handleIntuiMessage(struct IntuiMessage *imsg)
     {
       struct MenuItem *item;
 
-      item = ItemAddress(menu, code);
+      item = ItemAddress(m_pMenu, code);
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MENU_RUN:
@@ -576,7 +574,7 @@ BOOL handleIntuiMessage(struct IntuiMessage *imsg)
         {
           xstep--;
         }
-        GT_SetGadgetAttrs(horizgad, controlwin, NULL,
+        GT_SetGadgetAttrs(m_pGadgetSlideHorizontal, m_pControlWindow, NULL,
           GTSL_Level, xstep,
           TAG_DONE);
         break;
@@ -586,7 +584,7 @@ BOOL handleIntuiMessage(struct IntuiMessage *imsg)
         {
           xstep++;
         }
-        GT_SetGadgetAttrs(horizgad, controlwin, NULL,
+        GT_SetGadgetAttrs(m_pGadgetSlideHorizontal, m_pControlWindow, NULL,
           GTSL_Level, xstep,
           TAG_DONE);
         break;
@@ -596,7 +594,7 @@ BOOL handleIntuiMessage(struct IntuiMessage *imsg)
         {
           ystep--;
         }
-        GT_SetGadgetAttrs(vertgad, controlwin, NULL,
+        GT_SetGadgetAttrs(m_pGadgetSlideVertical, m_pControlWindow, NULL,
           GTSL_Level, ystep,
           TAG_DONE);
         break;
@@ -606,7 +604,7 @@ BOOL handleIntuiMessage(struct IntuiMessage *imsg)
         {
           ystep++;
         }
-        GT_SetGadgetAttrs(vertgad, controlwin, NULL,
+        GT_SetGadgetAttrs(m_pGadgetSlideVertical, m_pControlWindow, NULL,
           GTSL_Level, ystep,
           TAG_DONE);
         break;
@@ -619,9 +617,8 @@ BOOL handleIntuiMessage(struct IntuiMessage *imsg)
   return terminated;
 }
 
-/*----------------------------------------------------------------------*/
 
-void handleDBufMessage(struct Message *dbmsg)
+void AnimFrameTool::handleDBufMessage(struct Message* pDBufMsg)
 {
   ULONG buffer;
 
@@ -631,7 +628,7 @@ void handleDBufMessage(struct Message *dbmsg)
    * The dbi_SafeMessage tells us that it's OK to redraw the
    * in the previous buffer.
    */
-  buffer = (ULONG) *((APTR **)(dbmsg + 1));
+  buffer = (ULONG) *((APTR **)(pDBufMsg + 1));
   /* Mark the previous buffer as OK to redraw into.
    * If you're using multiple ( >2 ) buffering, you
    * would use
@@ -642,14 +639,17 @@ void handleDBufMessage(struct Message *dbmsg)
   status[buffer ^ 1] = OK_REDRAW;
 }
 
+
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
-/* Draw a crude "face" for animation */
 
 #define MAXVECTORS	10
 
-struct BitMap *makeImageBM(void)
+/**
+ *  Draw a crude "face" for animation 
+ */
+struct BitMap* AnimFrameTool::makeImageBM()
 {
   struct BitMap *bm;
   struct RastPort rport;
@@ -702,17 +702,14 @@ struct BitMap *makeImageBM(void)
   }
 }
 
-/*----------------------------------------------------------------------*/
 
-/* Make a pair of slider gadgets to control horizontal and vertical
- * speed of motion.
- */
-struct Gadget *createAllGadgets(struct Gadget **glistptr, void *vi)
+struct Gadget* AnimFrameTool::createAllGadgets(struct Gadget **ppGadgetList, 
+                                               APTR pVisualInfo)
 {
   struct NewGadget ng;
   struct Gadget *gad;
 
-  gad = CreateContext(glistptr);
+  gad = CreateContext(ppGadgetList);
 
   ng.ng_LeftEdge = 100;
   ng.ng_TopEdge = 1;
@@ -720,11 +717,11 @@ struct Gadget *createAllGadgets(struct Gadget **glistptr, void *vi)
   ng.ng_Height = 12;
   ng.ng_GadgetText = (UBYTE*)"Horiz:  ";
   ng.ng_TextAttr = &Topaz80;
-  ng.ng_VisualInfo = vi;
+  ng.ng_VisualInfo = pVisualInfo;
   ng.ng_GadgetID = GAD_HORIZ;
   ng.ng_Flags = 0;
 
-  horizgad = gad = CreateGadget(SLIDER_KIND, gad, &ng,
+  m_pGadgetSlideHorizontal = gad = CreateGadget(SLIDER_KIND, gad, &ng,
     GTSL_Min, 0,
     GTSL_Max, 9,
     GTSL_Level, 1,
@@ -735,7 +732,7 @@ struct Gadget *createAllGadgets(struct Gadget **glistptr, void *vi)
   ng.ng_LeftEdge += 200;
   ng.ng_GadgetID = GAD_VERT;
   ng.ng_GadgetText = (UBYTE*) "Vert:  ";
-  vertgad = gad = CreateGadget(SLIDER_KIND, gad, &ng,
+  m_pGadgetSlideVertical = gad = CreateGadget(SLIDER_KIND, gad, &ng,
     GTSL_Min, 0,
     GTSL_Max, 9,
     GTSL_Level, 1,
@@ -746,36 +743,35 @@ struct Gadget *createAllGadgets(struct Gadget **glistptr, void *vi)
   return gad;
 }
 
-/*----------------------------------------------------------------------*/
 
-void cleanup()
+void AnimFrameTool::cleanup()
 {
-  if (controlwin != NULL)
+  if (m_pControlWindow != NULL)
   {
-    ClearMenuStrip(controlwin);
-    CloseWindowSafely(controlwin);
-    controlwin = NULL;
+    ClearMenuStrip(m_pControlWindow);
+    CloseWindowSafely(m_pControlWindow);
+    m_pControlWindow = NULL;
   }
 
-  if (canvaswin != NULL)
+  if (m_pCanvasWindow != NULL)
   {
-    ClearMenuStrip(canvaswin);
-    CloseWindowSafely(canvaswin);
-    canvaswin = NULL;
+    ClearMenuStrip(m_pCanvasWindow);
+    CloseWindowSafely(m_pCanvasWindow);
+    m_pCanvasWindow = NULL;
   }
 
-  if (controlsc != NULL)
+  if (m_pControlScreen != NULL)
   {
-    CloseScreen(controlsc);
-    controlsc = NULL;
+    CloseScreen(m_pControlScreen);
+    m_pControlScreen = NULL;
   }
 
-  if (canvassc != NULL)
+  if (m_pCanvasScreen != NULL)
   {
-    FreeScreenBuffer(canvassc, scbuf[1]);
-    FreeScreenBuffer(canvassc, scbuf[0]);
-    CloseScreen(canvassc);
-    canvassc = NULL;
+    FreeScreenBuffer(m_pCanvasScreen, scbuf[1]);
+    FreeScreenBuffer(m_pCanvasScreen, scbuf[0]);
+    CloseScreen(m_pCanvasScreen);
+    m_pCanvasScreen = NULL;
   }
 
   if (dbufport != NULL)
@@ -790,28 +786,28 @@ void cleanup()
     userport = NULL;
   }
 
-  if (glist != NULL)
+  if (m_pGadgetList != NULL)
   {
-    FreeGadgets(glist);
-    glist = NULL;
+    FreeGadgets(m_pGadgetList);
+    m_pGadgetList = NULL;
   }
 
-  if(menu != NULL)
+  if(m_pMenu != NULL)
   {
-    FreeMenus(menu);
-    menu = NULL;
+    FreeMenus(m_pMenu);
+    m_pMenu = NULL;
   }
 
-  if(canvasvi != NULL)
+  if(m_pVisualInfoCanvas != NULL)
   {
-    FreeVisualInfo(canvasvi);
-    canvasvi = NULL;
+    FreeVisualInfo(m_pVisualInfoCanvas);
+    m_pVisualInfoCanvas = NULL;
   }
 
-  if(controlvi != NULL)
+  if(m_pVisualInfoControl != NULL)
   {
-    FreeVisualInfo(controlvi);
-    controlvi = NULL;
+    FreeVisualInfo(m_pVisualInfoControl);
+    m_pVisualInfoControl = NULL;
   }
 
   if (face != NULL)
@@ -822,74 +818,45 @@ void cleanup()
 }
 
 
-/*----------------------------------------------------------------------*/
-
-/* these functions close an Intuition window
- * that shares a port with other Intuition
- * windows or IPC customers.
- *
- * We are careful to set the UserPort to
- * null before closing, and to free
- * any messages that it might have been
- * sent.
- */
-#include "exec/types.h"
-#include "exec/nodes.h"
-#include "exec/lists.h"
-#include "exec/ports.h"
-#include "intuition/intuition.h"
-
-void CloseWindowSafely(struct Window *win)
+void AnimFrameTool::CloseWindowSafely(struct Window* pIntuiWindow)
 {
-  /* we forbid here to keep out of race conditions with Intuition */
+  // we forbid here to keep out of race conditions with Intuition
   Forbid();
 
-  /* send back any messages for this window
-   * that have not yet been processed
-   */
-  StripIntuiMessages(win->UserPort, win);
+  // send back any messages for this window that have not yet been
+  // processed
+  StripIntuiMessages(pIntuiWindow->UserPort, pIntuiWindow);
 
-  /* clear UserPort so Intuition will not free it */
-  win->UserPort = NULL;
+  // clear UserPort so Intuition will not free it
+  pIntuiWindow->UserPort = NULL;
 
-  /* tell Intuition to stop sending more messages */
-  ModifyIDCMP(win, 0L);
+  // tell Intuition to stop sending more messages
+  ModifyIDCMP(pIntuiWindow, 0L);
 
-  /* turn multitasking back on */
+  // turn multitasking back on
   Permit();
 
-  /* and really close the window */
-  CloseWindow(win);
+  // and really close the window
+  CloseWindow(pIntuiWindow);
 }
 
-/* remove and reply all IntuiMessages on a port that
- * have been sent to a particular window
- * ( note that we don't rely on the ln_Succ pointer
- *  of a message after we have replied it )
- */
-void StripIntuiMessages(struct MsgPort *mp, struct Window *win)
+
+void AnimFrameTool::StripIntuiMessages(struct MsgPort* pMsgPort, 
+                                       struct Window* pIntuiWindow)
 {
-  struct IntuiMessage *msg;
-  struct Node *succ;
+  struct IntuiMessage* pMsg = (struct IntuiMessage *) pMsgPort->mp_MsgList.lh_Head;
 
-  msg = (struct IntuiMessage *) mp->mp_MsgList.lh_Head;
-
-  while (succ = msg->ExecMessage.mn_Node.ln_Succ)
+  struct Node* pSuccessor = NULL;
+  while ((pSuccessor = pMsg->ExecMessage.mn_Node.ln_Succ) != NULL)
   {
-
-    if (msg->IDCMPWindow == win)
+    if (pMsg->IDCMPWindow == pIntuiWindow)
     {
-
-      /* Intuition is about to free this message.
-       * Make sure that we have politely sent it back.
-       */
-      Remove((struct Node *)msg);
-
-      ReplyMsg((struct Message *)msg);
+      // Intuition is about to free this message. Make sure that we have
+      // politely sent it back.
+      Remove((struct Node *)pMsg);
+      ReplyMsg((struct Message *)pMsg);
     }
 
-    msg = (struct IntuiMessage *) succ;
+    pMsg = (struct IntuiMessage *) pSuccessor;
   }
 }
-
-/*----------------------------------------------------------------------*/
