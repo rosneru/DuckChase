@@ -4,7 +4,17 @@
 #include <exec/ports.h>
 #include <intuition/intuition.h>
 
-
+/**
+ * A tool to adjust frames of an anim strip on a horizontal row in an
+ * iff ilbm file to a raster.
+ *
+ * Solution is based on the AmigaOS NDK3.1 DBuf example.
+ *
+ * Rough idea write up done on 26.08.2020 in Xertigny.
+ * 
+ * @author Uwe Rosner
+ * @date 19/01/2020
+ */
 class AnimFrameTool
 {
 public:
@@ -15,8 +25,8 @@ public:
 
 private:
   void cleanup();
-  struct Gadget* createAllGadgets(struct Gadget **ppGadgetList, 
-                                  APTR pVisualInfo);
+  struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
+                               APTR pVisualInfo);
 
   /** 
    * Handle Intuition messages 
@@ -29,7 +39,7 @@ private:
    * Handle the rendering and swapping of the buffers
    */
   ULONG handleBufferSwap();
-  
+
   struct BitMap* makeImageBM();
 
   /**
@@ -51,7 +61,8 @@ private:
 
   enum GadgetId
   {
-    GID_HSlide,
+    GID_SlideHScroll,
+    GID_TextFilename,
     GID_VSlide
   };
 
@@ -71,7 +82,8 @@ private:
   struct Window* m_pCanvasWindow;
   struct Window* m_pControlWindow;
   struct Gadget* m_pGadgetList;
-  struct Gadget* m_pGadgetSlideHorizontal;
+  struct Gadget* m_pGadgetSlideHScroll;
+  struct Gadget* m_pGadgetTextFilename;
   struct Gadget* m_pGadgetSlideVertical;
   struct Menu* m_pMenu;
   APTR m_pVisualInfoCanvas;

@@ -1,23 +1,5 @@
-/*
- * doublebuffer.c - shows double-buffering, attached screens, menu lending
- *
- * (c) Copyright 1992-1999 Amiga, Inc.  All rights reserved.
- *
- * This software is provided as-is and is subject to change; no warranties
- * are made.  All use is at your own risk.  No liability or responsibility
- * is assumed.
- *
- * Example shows use of V39 double-buffering functions to achieve
- * 60 frame-per-second animation.  Also shows use of menus in
- * double-buffered screens, and the use of attached screens with
- * menu-lending to achieve the appearance of slider gadgets in
- * double-buffered screens.
- *
- */
-
- /*----------------------------------------------------------------------*/
-
 #include <exec/types.h>
+#include <libraries/gadtools.h>
 #include <graphics/videocontrol.h>
 
 #include <clib/exec_protos.h>
@@ -27,8 +9,17 @@
 
 #include "AnimFrameTool.h"
 
-#define CONTROLSC_TOP    191
-#define SC_ID      HIRES_KEY
+#define VIEW_MODE_ID              LORES_KEY
+#define VIEW_WIDTH                320
+#define VIEW_HEIGHT               256
+
+#define CANVAS_HEIGHT             120
+
+#define UI_RASTER_WIDTH           5
+#define UI_RASTER_HEIGHT          16
+#define UI_LABEL_WIDTH            80
+#define UI_BEVBOX_BORDERS_WIDTH   4
+#define UI_BEVBOX_WIDTH           120
 
 #define OK_REDRAW 1  // Buffer fully detached, ready for redraw
 #define OK_SWAPIN 2  // Buffer redrawn, ready for swap-in
@@ -71,7 +62,8 @@ AnimFrameTool::AnimFrameTool()
     m_pCanvasWindow(NULL),
     m_pControlWindow(NULL),
     m_pGadgetList(NULL),
-    m_pGadgetSlideHorizontal(NULL),
+    m_pGadgetSlideHScroll(NULL),
+    m_pGadgetTextFilename(NULL),
     m_pGadgetSlideVertical(NULL),
     m_pMenu(NULL),
     m_pVisualInfoCanvas(NULL),
@@ -138,26 +130,25 @@ AnimFrameTool::AnimFrameTool()
   };
 
   if (!(m_pCanvasScreen = OpenScreenTags(NULL,
-    SA_DisplayID, SC_ID,
+    SA_DisplayID, VIEW_MODE_ID,
     SA_Overscan, OSCAN_TEXT,
     SA_Depth, 2,
     SA_AutoScroll, 1,
     SA_Pens, pens,
     SA_ShowTitle, TRUE,
-    SA_Title, "Intuition double-buffering example",
+    SA_Title, "Animation frame tool",
     SA_VideoControl, vctags,
     SA_Font, &Topaz80,
     TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't open screen";
+    throw "Couldn't open canvas screen.";
   }
 
-  if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen,
-    TAG_DONE)))
+  if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen, TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't get VisualInfo";
+    throw "Couldn't get VisualInfo of canvas screen.";
   }
 
   if (!(m_pCanvasWindow = OpenWindowTags(NULL,
@@ -170,19 +161,19 @@ AnimFrameTool::AnimFrameTool()
     TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't open window";
+    throw "Couldn't open canvas window.";
   }
   m_pCanvasWindow->UserPort = m_pUserPort;
 
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
-    SA_DisplayID, SC_ID,
+    SA_DisplayID, VIEW_MODE_ID,
     SA_Overscan, OSCAN_TEXT,
     SA_Depth, 2,
     SA_Pens, pens,
-    SA_Top, CONTROLSC_TOP,
-    SA_Height, 28,
+    SA_Top, CANVAS_HEIGHT,
+    SA_Height, VIEW_HEIGHT-CANVAS_HEIGHT,
     SA_Parent, m_pCanvasScreen,
     SA_ShowTitle, FALSE,
     SA_Draggable, FALSE,
@@ -192,21 +183,20 @@ AnimFrameTool::AnimFrameTool()
     TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't open screen";
+    throw "Couldn't open control screen.";
   }
 
-  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen,
-    TAG_DONE)))
+  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't get VisualInfo\n";
+    throw "Couldn't get VisualInfo of control screen.";
   }
 
   if (!(m_pMenu = CreateMenus(demomenu,
     TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't create menus";
+    throw "Couldn't create menus.";
   }
 
   if (!LayoutMenus(m_pMenu, m_pVisualInfoCanvas,
@@ -214,13 +204,13 @@ AnimFrameTool::AnimFrameTool()
     TAG_DONE))
   {
     cleanup();
-    throw "Couldn't layout menus";
+    throw "Couldn't layout menus.";
   }
 
-  if (!createAllGadgets(&m_pGadgetList, m_pVisualInfoControl))
+  if (!createGadgets(&m_pGadgetList, m_pVisualInfoControl))
   {
     cleanup();
-    throw "Couldn't create gadgets";
+    throw "Couldn't create gadgets.";
   }
 
   /* A borderless backdrop window so we can get input */
@@ -235,8 +225,17 @@ AnimFrameTool::AnimFrameTool()
     TAG_DONE)))
   {
     cleanup();
-    throw "Couldn't open window";
+    throw "Couldn't open control window.";
   }
+
+  DrawBevelBox(m_pControlWindow->RPort, 
+               VIEW_WIDTH - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - UI_BEVBOX_BORDERS_WIDTH,
+               UI_RASTER_HEIGHT,
+               UI_BEVBOX_WIDTH,
+               UI_BEVBOX_WIDTH, // square -> height is width
+               GT_VisualInfo, m_pVisualInfoControl,
+               GTBB_Recessed, TRUE,
+               TAG_DONE);
 
   m_pControlWindow->UserPort = m_pUserPort;
   ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
@@ -248,13 +247,13 @@ AnimFrameTool::AnimFrameTool()
   if (!(m_pScreenBuffers[0] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_SCREEN_BITMAP)))
   {
     cleanup();
-    throw "Couldn't allocate ScreenBuffer 1";
+    throw "Couldn't allocate ScreenBuffer 1.";
   }
 
   if (!(m_pScreenBuffers[1] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_COPY_BITMAP)))
   {
     cleanup();
-    throw "Couldn't allocate ScreenBuffer 2";
+    throw "Couldn't allocate ScreenBuffer 2.";
   }
 
   // Let's use the UserData to store the buffer number, for easy
@@ -267,7 +266,7 @@ AnimFrameTool::AnimFrameTool()
   if (!(face = makeImageBM()))
   {
     cleanup();
-    throw "Couldn't allocate image bitmap";
+    throw "Couldn't allocate image bitmap.";
   }
 
   InitRastPort(&m_RastPorts[0]);
@@ -298,25 +297,24 @@ void AnimFrameTool::Run()
     // Check for and handle any IntuiMessages
     if (sigs & (1 << m_pUserPort->mp_SigBit))
     {
-      struct IntuiMessage *imsg;
+      struct IntuiMessage* pIntuiMsg;
 
-      while ((imsg = GT_GetIMsg(m_pUserPort)) != NULL)
+      while ((pIntuiMsg = GT_GetIMsg(m_pUserPort)) != NULL)
       {
-        terminated |= handleIntuiMessage(imsg);
-        GT_ReplyIMsg(imsg);
+        terminated |= handleIntuiMessage(pIntuiMsg);
+        GT_ReplyIMsg(pIntuiMsg);
       }
     }
 
-    // Check for and handle any double-buffering messages.
-    // Note that double-buffering messages are "replied" to
-    // us, so we don't want to reply them to anyone.
-    // 
+    // Check for and handle any double-buffering messages. Note that
+    // double-buffering messages are "replied" to us, so we don't want
+    // to reply them to anyone.
     if (sigs & (1 << m_pDBufPort->mp_SigBit))
     {
-      struct Message *dbmsg;
-      while ((dbmsg = GetMsg(m_pDBufPort)) != NULL)
+      struct Message* pDBufMsg;
+      while ((pDBufMsg = GetMsg(m_pDBufPort)) != NULL)
       {
-        handleDBufMessage(dbmsg);
+        handleDBufMessage(pDBufMsg);
       }
     }
 
@@ -333,19 +331,17 @@ void AnimFrameTool::Run()
       {
         // If were held-off at ChangeScreenBuffer() time, then we
         // need to try ChangeScreenBuffer() again, without awaiting
-        // a signal.  We WaitTOF() to avoid busy-looping.
+        // a signal. We WaitTOF() to avoid busy-looping.
         // 
         WaitTOF();
       }
       else
       {
-        // If we were not held-off, then we're all done
-        // with what we have to do.  We'll have no work to do
-        // until some kind of signal arrives.  This will normally
-        // be the arrival of the dbi_SafeMessage from the ROM
-        // double-buffering routines, but it might also be an
-        // IntuiMessage.
-        // 
+        // If we were not held-off, then we're all done with what we
+        // have to do.  We'll have no work to do until some kind of
+        // signal arrives.  This will normally be the arrival of the
+        // dbi_SafeMessage from the ROM double-buffering routines, but
+        // it might also be an IntuiMessage.
         sigs = Wait((1 << m_pDBufPort->mp_SigBit) | (1 << m_pUserPort->mp_SigBit));
       }
     }
@@ -382,14 +378,15 @@ ULONG AnimFrameTool::handleBufferSwap()
     }
 
     y += ystep * ydir;
+
     if (y < m_pCanvasScreen->BarLayer->Height)
     {
       y = m_pCanvasScreen->BarLayer->Height;
       ydir = 1;
     }
-    else if (y >= CONTROLSC_TOP - BM_HEIGHT)
+    else if (y >= CANVAS_HEIGHT - BM_HEIGHT)
     {
-      y = CONTROLSC_TOP - BM_HEIGHT - 1;
+      y = CANVAS_HEIGHT - BM_HEIGHT - 1;
       ydir = -1;
     }
 
@@ -452,7 +449,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
   case IDCMP_MOUSEMOVE:
     switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
     {
-    case GID_HSlide:
+    case GID_SlideHScroll:
       xstep = code;
       break;
 
@@ -509,7 +506,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         {
           xstep--;
         }
-        GT_SetGadgetAttrs(m_pGadgetSlideHorizontal, m_pControlWindow, NULL,
+        GT_SetGadgetAttrs(m_pGadgetSlideHScroll, m_pControlWindow, NULL,
           GTSL_Level, xstep,
           TAG_DONE);
         break;
@@ -519,7 +516,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         {
           xstep++;
         }
-        GT_SetGadgetAttrs(m_pGadgetSlideHorizontal, m_pControlWindow, NULL,
+        GT_SetGadgetAttrs(m_pGadgetSlideHScroll, m_pControlWindow, NULL,
           GTSL_Level, xstep,
           TAG_DONE);
         break;
@@ -635,36 +632,52 @@ struct BitMap* AnimFrameTool::makeImageBM()
 }
 
 
-struct Gadget* AnimFrameTool::createAllGadgets(struct Gadget **ppGadgetList, 
-                                               APTR pVisualInfo)
+struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList, 
+                                            APTR pVisualInfo)
 {
   struct NewGadget ng;
-  struct Gadget *gad;
+  struct Gadget* pGadget;
 
-  gad = CreateContext(ppGadgetList);
+  pGadget = CreateContext(ppGadgetList);
 
-  ng.ng_LeftEdge = 100;
-  ng.ng_TopEdge = 1;
-  ng.ng_Width = 100;
+  ng.ng_LeftEdge = 0;
+  ng.ng_TopEdge = 0;
+  ng.ng_Width = VIEW_WIDTH;
   ng.ng_Height = 12;
-  ng.ng_GadgetText = (UBYTE*)"Horiz:  ";
   ng.ng_TextAttr = &Topaz80;
+  ng.ng_GadgetText = NULL;
   ng.ng_VisualInfo = pVisualInfo;
-  ng.ng_GadgetID = GID_HSlide;
+  ng.ng_GadgetID = GID_SlideHScroll;
   ng.ng_Flags = 0;
 
-  m_pGadgetSlideHorizontal = gad = CreateGadget(SLIDER_KIND, gad, &ng,
-    GTSL_Min, 0,
-    GTSL_Max, 9,
-    GTSL_Level, 1,
-    GTSL_MaxLevelLen, 1,
-    GTSL_LevelFormat, "%ld",
-    TAG_DONE);
+  m_pGadgetSlideHScroll = pGadget = CreateGadget(SLIDER_KIND, 
+                                                 pGadget, 
+                                                 &ng,
+                                                 GTSL_Min, 0,
+                                                 GTSL_Max, 0,
+                                                 GTSL_Level, 0,
+                                                 TAG_DONE);
 
-  ng.ng_LeftEdge += 200;
+  ng.ng_TopEdge = UI_RASTER_HEIGHT;
+  ng.ng_LeftEdge = UI_RASTER_WIDTH + UI_LABEL_WIDTH;
+  ng.ng_Width = VIEW_WIDTH 
+              - UI_BEVBOX_WIDTH 
+              - UI_BEVBOX_BORDERS_WIDTH
+              - 2 * UI_RASTER_WIDTH 
+              - UI_LABEL_WIDTH;
+              
+  ng.ng_GadgetID = GID_TextFilename;
+  ng.ng_Flags = NG_HIGHLABEL;
+  ng.ng_GadgetText = (UBYTE*) "Filename";
+  m_pGadgetTextFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
+                                                 GTTX_Border, TRUE,
+                                                 //GTTX_Text, pFileName,
+                                                 TAG_DONE);
+
+  ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_GadgetID = GID_VSlide;
-  ng.ng_GadgetText = (UBYTE*) "Vert:  ";
-  m_pGadgetSlideVertical = gad = CreateGadget(SLIDER_KIND, gad, &ng,
+  ng.ng_GadgetText = (UBYTE*) "Frames  ";
+  m_pGadgetSlideVertical = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
     GTSL_Min, 0,
     GTSL_Max, 9,
     GTSL_Level, 1,
@@ -672,7 +685,7 @@ struct Gadget* AnimFrameTool::createAllGadgets(struct Gadget **ppGadgetList,
     GTSL_LevelFormat, "%ld",
     TAG_DONE);
 
-  return gad;
+  return pGadget;
 }
 
 
