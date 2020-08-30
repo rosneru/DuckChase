@@ -25,9 +25,6 @@
 #include <clib/intuition_protos.h>
 #include <clib/gadtools_protos.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "AnimFrameTool.h"
 
 #define CONTROLSC_TOP    191
@@ -260,9 +257,8 @@ AnimFrameTool::AnimFrameTool()
     throw "Couldn't allocate ScreenBuffer 2";
   }
 
-  /* Let's use the UserData to store the buffer number, for
-   * easy identification when the message comes back.
-   */
+  // Let's use the UserData to store the buffer number, for easy
+  // identification when the message comes back.
   m_pScreenBuffers[0]->sb_DBufInfo->dbi_UserData1 = (APTR)(0);
   m_pScreenBuffers[1]->sb_DBufInfo->dbi_UserData1 = (APTR)(1);
   m_Status[0] = OK_REDRAW;
@@ -304,7 +300,7 @@ void AnimFrameTool::Run()
     {
       struct IntuiMessage *imsg;
 
-      while (imsg = GT_GetIMsg(m_pUserPort))
+      while ((imsg = GT_GetIMsg(m_pUserPort)) != NULL)
       {
         terminated |= handleIntuiMessage(imsg);
         GT_ReplyIMsg(imsg);
@@ -318,7 +314,7 @@ void AnimFrameTool::Run()
     if (sigs & (1 << m_pDBufPort->mp_SigBit))
     {
       struct Message *dbmsg;
-      while (dbmsg = GetMsg(m_pDBufPort))
+      while ((dbmsg = GetMsg(m_pDBufPort)) != NULL)
       {
         handleDBufMessage(dbmsg);
       }
@@ -578,14 +574,14 @@ void AnimFrameTool::handleDBufMessage(struct Message* pDBufMsg)
 /*----------------------------------------------------------------------*/
 
 
-#define MAXVECTORS  10
+#define MAXVECTORS  100
 
 /**
  *  Draw a crude "face" for animation 
  */
 struct BitMap* AnimFrameTool::makeImageBM()
 {
-  struct BitMap *bm;
+  struct BitMap *bm = NULL;
   struct RastPort rport;
   struct AreaInfo area;
   struct TmpRas tmpRas;
@@ -634,6 +630,8 @@ struct BitMap* AnimFrameTool::makeImageBM()
 
     return bm;
   }
+
+  return NULL;
 }
 
 
