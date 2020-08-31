@@ -16,10 +16,10 @@
 #define CANVAS_HEIGHT             120
 
 #define UI_RASTER_WIDTH           5
-#define UI_RASTER_HEIGHT          16
+#define UI_RASTER_HEIGHT          20
 #define UI_LABEL_WIDTH            80
 #define UI_BEVBOX_BORDERS_WIDTH   4
-#define UI_BEVBOX_WIDTH           120
+#define UI_BEVBOX_WIDTH           96
 
 #define OK_REDRAW 1  // Buffer fully detached, ready for redraw
 #define OK_SWAPIN 2  // Buffer redrawn, ready for swap-in
@@ -64,7 +64,11 @@ AnimFrameTool::AnimFrameTool()
     m_pGadgetList(NULL),
     m_pGadgetSlideHScroll(NULL),
     m_pGadgetTextFilename(NULL),
-    m_pGadgetSlideVertical(NULL),
+    m_pGadgetFrameWidth(NULL),
+    m_pGadgetButtonPlay(NULL),
+    m_pGadgetButtonStop(NULL),
+    m_pGadgetStringCurrFrame(NULL),
+    m_pGadgetTextNumFrames(NULL),
     m_pMenu(NULL),
     m_pVisualInfoCanvas(NULL),
     m_pVisualInfoControl(NULL),
@@ -75,8 +79,21 @@ AnimFrameTool::AnimFrameTool()
     m_BufCurrent(0),
     m_BufNextdraw(1),
     m_BufNextswap(1),
-    m_Count(0)
+    m_Count(0),
+    m_ResultFrameRect(VIEW_WIDTH - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
+                      UI_RASTER_HEIGHT),
+    m_ControlsRect(UI_RASTER_WIDTH, m_ResultFrameRect.Top() - 1)                  
 {
+  m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
+                                   UI_BEVBOX_WIDTH); // square -> height is width
+  
+  m_ControlsRect.SetWidthHeight(m_ResultFrameRect.Left()
+                                  - 2 // width of the bevel box border
+                                  - UI_RASTER_WIDTH,
+                                m_ResultFrameRect.Bottom() 
+                                  - m_ControlsRect.Top() 
+                                  + 1);
+
   if (!(m_pDBufPort = CreateMsgPort()))
   {
     cleanup();
@@ -200,8 +217,8 @@ AnimFrameTool::AnimFrameTool()
   }
 
   if (!LayoutMenus(m_pMenu, m_pVisualInfoCanvas,
-    GTMN_NewLookMenus, TRUE,
-    TAG_DONE))
+                   GTMN_NewLookMenus, TRUE,
+                   TAG_DONE))
   {
     cleanup();
     throw "Couldn't layout menus.";
@@ -215,24 +232,27 @@ AnimFrameTool::AnimFrameTool()
 
   /* A borderless backdrop window so we can get input */
   if (!(m_pControlWindow = OpenWindowTags(NULL,
-    WA_NoCareRefresh, TRUE,
-    WA_Activate, TRUE,
-    WA_Borderless, TRUE,
-    WA_Backdrop, TRUE,
-    WA_CustomScreen, m_pControlScreen,
-    WA_NewLookMenus, TRUE,
-    WA_Gadgets, m_pGadgetList,
-    TAG_DONE)))
+                                          WA_NoCareRefresh, TRUE,
+                                          WA_Activate, TRUE,
+                                          WA_Borderless, TRUE,
+                                          WA_Backdrop, TRUE,
+                                          WA_CustomScreen, m_pControlScreen,
+                                          WA_NewLookMenus, TRUE,
+                                          WA_Gadgets, m_pGadgetList,
+                                          TAG_DONE)))
   {
     cleanup();
     throw "Couldn't open control window.";
   }
+  
 
+  // printf("(%d, %d) == w = %d, h = %d\n", m_OutputFrameRect.Left()
+  //                                       m_OutputFrameRect.Right());
   DrawBevelBox(m_pControlWindow->RPort, 
-               VIEW_WIDTH - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - UI_BEVBOX_BORDERS_WIDTH,
-               UI_RASTER_HEIGHT,
-               UI_BEVBOX_WIDTH,
-               UI_BEVBOX_WIDTH, // square -> height is width
+               m_ResultFrameRect.Left() - 2,
+               m_ResultFrameRect.Top() - 1,
+               m_ResultFrameRect.Width() + 4,
+               m_ResultFrameRect.Height() + 2,
                GT_VisualInfo, m_pVisualInfoControl,
                GTBB_Recessed, TRUE,
                TAG_DONE);
@@ -453,7 +473,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       xstep = code;
       break;
 
-    case GID_FrameWordWidth:
+    case GID_SlideFrameWordWidth:
       ystep = code;
       break;
     }
@@ -526,7 +546,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         {
           ystep++;
         }
-        GT_SetGadgetAttrs(m_pGadgetSlideVertical, m_pControlWindow, NULL,
+        GT_SetGadgetAttrs(m_pGadgetFrameWidth, m_pControlWindow, NULL,
           GTSL_Level, ystep,
           TAG_DONE);
         break;
@@ -626,18 +646,21 @@ LONG WordsToPixels(struct Gadget* pGadget, WORD level)
   return ((WORD)(level * 16));
 }
 
+
 struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList, 
                                             APTR pVisualInfo)
 {
   struct NewGadget ng;
   struct Gadget* pGadget;
 
+  const int rowHeight = 12;
+
   pGadget = CreateContext(ppGadgetList);
 
   ng.ng_LeftEdge = 0;
   ng.ng_TopEdge = 0;
   ng.ng_Width = VIEW_WIDTH;
-  ng.ng_Height = 12;
+  ng.ng_Height = rowHeight;
   ng.ng_TextAttr = &Topaz80;
   ng.ng_GadgetText = NULL;
   ng.ng_VisualInfo = pVisualInfo;
@@ -652,17 +675,13 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                                  GTSL_Level, 0,
                                                  TAG_DONE);
 
-  ng.ng_TopEdge = UI_RASTER_HEIGHT;
-  ng.ng_LeftEdge = UI_RASTER_WIDTH + UI_LABEL_WIDTH;
-  ng.ng_Width = VIEW_WIDTH 
-              - UI_BEVBOX_WIDTH 
-              - UI_BEVBOX_BORDERS_WIDTH
-              - 3 * UI_RASTER_WIDTH
-              - UI_LABEL_WIDTH;
-              
+  ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
+  ng.ng_TopEdge = m_ControlsRect.Top();
+  ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
+
   ng.ng_GadgetID = GID_TextFilename;
   ng.ng_Flags = NG_HIGHLABEL;
-  ng.ng_GadgetText = (UBYTE*) "Filename:";
+  ng.ng_GadgetText = (UBYTE*) "File:   ";
   
   m_pGadgetTextFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
                                                  GTTX_Border, TRUE,
@@ -670,18 +689,56 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                                  TAG_DONE);
 
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
-  ng.ng_GadgetID = GID_FrameWordWidth;
-  ng.ng_GadgetText = (UBYTE*) "Width:   ";
-  m_pGadgetSlideVertical = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
-    GTSL_Min, 1,
-    GTSL_Max, 16,
-    GTSL_Level, 1,
-    GTSL_MaxLevelLen, 3,
-    GTSL_LevelFormat, "%ld",
-    GTSL_MaxPixelLen, 24,
-    GTSL_Justification, GTJ_RIGHT,
-    GTSL_DispFunc, WordsToPixels,
-    TAG_DONE);
+  ng.ng_GadgetID = GID_SlideFrameWordWidth;
+  ng.ng_GadgetText = (UBYTE*) "FWidth:  ";
+  m_pGadgetFrameWidth = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
+                                               GTSL_Min, 1,
+                                               GTSL_Max, 16,
+                                               GTSL_Level, 1,
+                                               GTSL_MaxLevelLen, 3,
+                                               GTSL_LevelFormat, "%ld",
+                                               GTSL_MaxPixelLen, 24,
+                                               GTSL_Justification, GTJ_RIGHT,
+                                               GTSL_DispFunc, WordsToPixels,
+                                               TAG_DONE);
+  ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
+  ng.ng_TopEdge += UI_RASTER_HEIGHT;
+  ng.ng_Width = 45; // manually adjusted to fit this lines width
+  ng.ng_GadgetID = GID_StringCurrentFrame;
+  ng.ng_GadgetText = (UBYTE*) "Frame:   ";
+
+  m_pGadgetStringCurrFrame = pGadget = CreateGadget(STRING_KIND,
+                                                    pGadget,
+                                                    &ng,
+                                                    GTST_MaxChars, 2,
+                                                    TAG_DONE);
+
+  ng.ng_LeftEdge = m_ControlsRect.Right() - ng.ng_Width - UI_RASTER_WIDTH;
+
+  ng.ng_GadgetID = GID_TextNumFrames;
+  ng.ng_GadgetText = (UBYTE*) "of";
+
+  m_pGadgetTextNumFrames = pGadget = CreateGadget(TEXT_KIND,
+                                                  pGadget,
+                                                  &ng,
+                                                  GTTX_Border, TRUE,
+                                                  TAG_DONE);  
+
+  ng.ng_LeftEdge = m_ControlsRect.Left();
+  ng.ng_TopEdge = m_ControlsRect.Bottom() - rowHeight;
+  ng.ng_Width = (m_ControlsRect.Width() / 2) - UI_RASTER_WIDTH;
+  ng.ng_GadgetID = GID_ButtonPlay;
+  ng.ng_GadgetText = (UBYTE*) "Play";
+
+  m_pGadgetButtonPlay = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
+                                               TAG_DONE);
+
+  ng.ng_LeftEdge += ng.ng_Width + UI_RASTER_WIDTH;
+  ng.ng_GadgetID = GID_ButtonStop;
+  ng.ng_GadgetText = (UBYTE*) "Stop";
+
+  m_pGadgetButtonStop = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
+                                               TAG_DONE);
 
   return pGadget;
 }
