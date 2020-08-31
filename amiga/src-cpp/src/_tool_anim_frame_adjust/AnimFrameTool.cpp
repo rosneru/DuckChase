@@ -7,13 +7,16 @@
 #include <clib/intuition_protos.h>
 #include <clib/gadtools_protos.h>
 
+
+#include "AslFileRequest.h"
 #include "AnimFrameTool.h"
+
 
 #define VIEW_MODE_ID              LORES_KEY
 #define VIEW_WIDTH                320
 #define VIEW_HEIGHT               256
 
-#define CANVAS_HEIGHT             120
+#define CANVAS_HEIGHT             112
 
 #define UI_RASTER_WIDTH           5
 #define UI_RASTER_HEIGHT          20
@@ -81,7 +84,7 @@ AnimFrameTool::AnimFrameTool()
     m_BufNextswap(1),
     m_Count(0),
     m_ResultFrameRect(VIEW_WIDTH - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
-                      UI_RASTER_HEIGHT),
+                      2 * UI_RASTER_HEIGHT),
     m_ControlsRect(UI_RASTER_WIDTH, m_ResultFrameRect.Top() - 1)                  
 {
   m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
@@ -305,8 +308,23 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
+      {
         m_Count = ~0;
+
+        AslFileRequest request(m_pControlWindow);
+        std::string filename = request.SelectFile("Open anim image", 
+                                                  "", 
+                                                  false);
+        if(filename.length() > 0)
+        {
+          m_Filename = filename;
+          GT_SetGadgetAttrs(m_pGadgetTextFilename, m_pControlWindow, NULL,
+                            GTTX_Text, m_Filename.c_str(),
+                            TAG_DONE);
+        }
+
         break;
+      }
 
       case MID_ProjectSaveAnim:
         m_Count = 1;
@@ -581,7 +599,7 @@ void AnimFrameTool::initialize()
     throw "Couldn't create gadgets.";
   }
 
-  /* A borderless backdrop window so we can get input */
+  // A borderless backdrop window so we can get input
   if (!(m_pControlWindow = OpenWindowTags(NULL,
                                           WA_NoCareRefresh, TRUE,
                                           WA_Activate, TRUE,
@@ -682,8 +700,8 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                                  TAG_DONE);
 
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
-  ng.ng_TopEdge = m_ControlsRect.Top();
-  ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
+  ng.ng_TopEdge += UI_RASTER_HEIGHT;
+  ng.ng_Width = m_ResultFrameRect.Right() - ng.ng_LeftEdge + 2;
 
   ng.ng_GadgetID = GID_TextFilename;
   ng.ng_Flags = NG_HIGHLABEL;
@@ -691,10 +709,11 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   
   m_pGadgetTextFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
                                                  GTTX_Border, TRUE,
-                                                 //GTTX_Text, pFileName,
+                                                 GTTX_Text, m_Filename.c_str(),
                                                  TAG_DONE);
 
-  ng.ng_TopEdge += UI_RASTER_HEIGHT;
+  ng.ng_TopEdge = m_ControlsRect.Top();
+  ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
   ng.ng_GadgetID = GID_SlideFrameWordWidth;
   ng.ng_GadgetText = (UBYTE*) "FWidth:  ";
   m_pGadgetFrameWidth = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,

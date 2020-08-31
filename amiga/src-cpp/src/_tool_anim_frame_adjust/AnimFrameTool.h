@@ -4,6 +4,9 @@
 #include <exec/ports.h>
 #include <intuition/intuition.h>
 
+
+#include <string>
+
 #include "Rect.h"
 
 /**
@@ -15,7 +18,7 @@
  * Rough idea write up done on 26.08.2020 in Xertigny.
  * 
  * @author Uwe Rosner
- * @date 19/01/2020
+ * @date 29/08/2020
  */
 class AnimFrameTool
 {
@@ -26,6 +29,8 @@ public:
   void Run();
 
 private:
+  std::string m_Filename;
+
   void initialize();
   struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
                                APTR pVisualInfo);
