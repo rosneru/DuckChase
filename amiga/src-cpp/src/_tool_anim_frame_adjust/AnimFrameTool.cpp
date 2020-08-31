@@ -136,7 +136,7 @@ AnimFrameTool::AnimFrameTool()
     SA_AutoScroll, 1,
     SA_Pens, pens,
     SA_ShowTitle, TRUE,
-    SA_Title, "Animation frame tool",
+    SA_Title, "Animation frame adjustment tool",
     SA_VideoControl, vctags,
     SA_Font, &Topaz80,
     TAG_DONE)))
@@ -453,7 +453,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       xstep = code;
       break;
 
-    case GID_VSlide:
+    case GID_FrameWordWidth:
       ystep = code;
       break;
     }
@@ -631,6 +631,10 @@ struct BitMap* AnimFrameTool::makeImageBM()
   return NULL;
 }
 
+LONG WordsToPixels(struct Gadget* pGadget, WORD level)
+{
+  return ((WORD)(level * 16));
+}
 
 struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList, 
                                             APTR pVisualInfo)
@@ -663,26 +667,30 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_Width = VIEW_WIDTH 
               - UI_BEVBOX_WIDTH 
               - UI_BEVBOX_BORDERS_WIDTH
-              - 2 * UI_RASTER_WIDTH 
+              - 3 * UI_RASTER_WIDTH
               - UI_LABEL_WIDTH;
               
   ng.ng_GadgetID = GID_TextFilename;
   ng.ng_Flags = NG_HIGHLABEL;
-  ng.ng_GadgetText = (UBYTE*) "Filename";
+  ng.ng_GadgetText = (UBYTE*) "Filename:";
+  
   m_pGadgetTextFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
                                                  GTTX_Border, TRUE,
                                                  //GTTX_Text, pFileName,
                                                  TAG_DONE);
 
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
-  ng.ng_GadgetID = GID_VSlide;
-  ng.ng_GadgetText = (UBYTE*) "Frames  ";
+  ng.ng_GadgetID = GID_FrameWordWidth;
+  ng.ng_GadgetText = (UBYTE*) "Framewidth:";
   m_pGadgetSlideVertical = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
-    GTSL_Min, 0,
-    GTSL_Max, 9,
+    GTSL_Min, 1,
+    GTSL_Max, 16,
     GTSL_Level, 1,
-    GTSL_MaxLevelLen, 1,
+    GTSL_MaxLevelLen, 3,
     GTSL_LevelFormat, "%ld",
+    GTSL_MaxPixelLen, 24,
+    GTSL_Justification, GTJ_RIGHT,
+    GTSL_DispFunc, WordsToPixels,
     TAG_DONE);
 
   return pGadget;

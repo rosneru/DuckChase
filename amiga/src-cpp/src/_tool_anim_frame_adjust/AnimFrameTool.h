@@ -63,7 +63,7 @@ private:
   {
     GID_SlideHScroll,
     GID_TextFilename,
-    GID_VSlide
+    GID_FrameWordWidth
   };
 
   enum MenuId
