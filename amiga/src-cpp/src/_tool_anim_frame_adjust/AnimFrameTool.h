@@ -68,12 +68,12 @@ private:
 
   enum MenuId
   {
-    MID_AnimOpen,
-    MID_AnimSave,
-    MID_Quit,
-    MID_About,
-    MID_ToolCenterAllFrames,
-    MID_ToolGetMaxWidth
+    MID_ProjectOpenAnim,
+    MID_ProjectSaveAnim,
+    MID_ProjectAbout,
+    MID_ProjectQuit,
+    MID_ToolsCenterAllFrames,
+    MID_ToolsGetMaxWidth
   };
 
   struct Screen* m_pCanvasScreen;

@@ -117,15 +117,15 @@ AnimFrameTool::AnimFrameTool()
   struct NewMenu demomenu[] =
   {
     { NM_TITLE, "Project",             0 , 0, 0, 0, },
-    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_AnimOpen, },
-    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_AnimSave, },
+    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
+    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_About, },
+    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_Quit, },
+    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_ProjectQuit, },
     { NM_TITLE, "Tools",               0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolCenterAllFrames, },
-    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolGetMaxWidth, },
+    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolsCenterAllFrames, },
+    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolsGetMaxWidth, },
     { NM_END,   0,                     0 , 0, 0, 0, },
   };
 
@@ -488,20 +488,20 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       item = ItemAddress(m_pMenu, code);
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
-      case MID_AnimOpen:
+      case MID_ProjectOpenAnim:
         m_Count = ~0;
         break;
 
-      case MID_AnimSave:
+      case MID_ProjectSaveAnim:
         m_Count = 1;
         break;
 
-      case MID_Quit:
+      case MID_ProjectQuit:
         m_Count = 0;
         terminated = TRUE;
         break;
 
-      case MID_About:
+      case MID_ProjectAbout:
         if (xstep > 0)
         {
           xstep--;
@@ -511,7 +511,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MID_ToolCenterAllFrames:
+      case MID_ToolsCenterAllFrames:
         if (xstep < 9)
         {
           xstep++;
@@ -521,7 +521,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MID_ToolGetMaxWidth:
+      case MID_ToolsGetMaxWidth:
         if (ystep < 9)
         {
           ystep++;
