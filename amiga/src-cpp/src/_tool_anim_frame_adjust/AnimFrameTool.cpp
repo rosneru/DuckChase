@@ -681,7 +681,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_GadgetID = GID_FrameWordWidth;
-  ng.ng_GadgetText = (UBYTE*) "Framewidth:";
+  ng.ng_GadgetText = (UBYTE*) "Width:   ";
   m_pGadgetSlideVertical = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
     GTSL_Min, 1,
     GTSL_Max, 16,
