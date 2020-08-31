@@ -94,212 +94,8 @@ AnimFrameTool::AnimFrameTool()
                                   - m_ControlsRect.Top() 
                                   + 1);
 
-  if (!(m_pDBufPort = CreateMsgPort()))
-  {
-    cleanup();
-    throw "Failed to create port";
-  }
 
-  if (!(m_pUserPort = CreateMsgPort()))
-  {
-    cleanup();
-    throw "Failed to create port";
-  }
-
-
-  struct TagItem vctags[] =
-  {
-      VTAG_BORDERSPRITE_SET, TRUE,
-      TAG_DONE, 0,
-  };
-
-  UWORD pens[] =
-  {
-      0, // DETAILPEN
-      1, // BLOCKPEN
-      1, // TEXTPEN
-      2, // SHINEPEN
-      1, // SHADOWPEN
-      3, // FILLPEN
-      1, // FILLTEXTPEN
-      0, // BACKGROUNDPEN
-      2, // HIGHLIGHTTEXTPEN
-      1, // BARDETAILPEN
-      2, // BARBLOCKPEN
-      1, // BARTRIMPEN
-
-      (UWORD)~0,
-  };
-
-  struct NewMenu demomenu[] =
-  {
-    { NM_TITLE, "Project",             0 , 0, 0, 0, },
-    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
-    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
-    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_ProjectQuit, },
-    { NM_TITLE, "Tools",               0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolsCenterAllFrames, },
-    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolsGetMaxWidth, },
-    { NM_END,   0,                     0 , 0, 0, 0, },
-  };
-
-  if (!(m_pCanvasScreen = OpenScreenTags(NULL,
-    SA_DisplayID, VIEW_MODE_ID,
-    SA_Overscan, OSCAN_TEXT,
-    SA_Depth, 2,
-    SA_AutoScroll, 1,
-    SA_Pens, pens,
-    SA_ShowTitle, TRUE,
-    SA_Title, "Animation frame adjustment tool",
-    SA_VideoControl, vctags,
-    SA_Font, &Topaz80,
-    TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't open canvas screen.";
-  }
-
-  if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen, TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't get VisualInfo of canvas screen.";
-  }
-
-  if (!(m_pCanvasWindow = OpenWindowTags(NULL,
-    WA_NoCareRefresh, TRUE,
-    WA_Activate, TRUE,
-    WA_Borderless, TRUE,
-    WA_Backdrop, TRUE,
-    WA_CustomScreen, m_pCanvasScreen,
-    WA_NewLookMenus, TRUE,
-    TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't open canvas window.";
-  }
-  m_pCanvasWindow->UserPort = m_pUserPort;
-
-  ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
-
-  if (!(m_pControlScreen = OpenScreenTags(NULL,
-    SA_DisplayID, VIEW_MODE_ID,
-    SA_Overscan, OSCAN_TEXT,
-    SA_Depth, 2,
-    SA_Pens, pens,
-    SA_Top, CANVAS_HEIGHT,
-    SA_Height, VIEW_HEIGHT-CANVAS_HEIGHT,
-    SA_Parent, m_pCanvasScreen,
-    SA_ShowTitle, FALSE,
-    SA_Draggable, FALSE,
-    SA_VideoControl, vctags,
-    SA_Quiet, TRUE,
-    SA_Font, &Topaz80,
-    TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't open control screen.";
-  }
-
-  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't get VisualInfo of control screen.";
-  }
-
-  if (!(m_pMenu = CreateMenus(demomenu,
-    TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't create menus.";
-  }
-
-  if (!LayoutMenus(m_pMenu, m_pVisualInfoCanvas,
-                   GTMN_NewLookMenus, TRUE,
-                   TAG_DONE))
-  {
-    cleanup();
-    throw "Couldn't layout menus.";
-  }
-
-  if (!createGadgets(&m_pGadgetList, m_pVisualInfoControl))
-  {
-    cleanup();
-    throw "Couldn't create gadgets.";
-  }
-
-  /* A borderless backdrop window so we can get input */
-  if (!(m_pControlWindow = OpenWindowTags(NULL,
-                                          WA_NoCareRefresh, TRUE,
-                                          WA_Activate, TRUE,
-                                          WA_Borderless, TRUE,
-                                          WA_Backdrop, TRUE,
-                                          WA_CustomScreen, m_pControlScreen,
-                                          WA_NewLookMenus, TRUE,
-                                          WA_Gadgets, m_pGadgetList,
-                                          TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't open control window.";
-  }
-  
-
-  // printf("(%d, %d) == w = %d, h = %d\n", m_OutputFrameRect.Left()
-  //                                       m_OutputFrameRect.Right());
-  DrawBevelBox(m_pControlWindow->RPort, 
-               m_ResultFrameRect.Left() - 2,
-               m_ResultFrameRect.Top() - 1,
-               m_ResultFrameRect.Width() + 4,
-               m_ResultFrameRect.Height() + 2,
-               GT_VisualInfo, m_pVisualInfoControl,
-               GTBB_Recessed, TRUE,
-               TAG_DONE);
-
-  m_pControlWindow->UserPort = m_pUserPort;
-  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
-
-  GT_RefreshWindow(m_pControlWindow, NULL);
-  SetMenuStrip(m_pCanvasWindow, m_pMenu);
-  LendMenus(m_pControlWindow, m_pCanvasWindow);
-
-  if (!(m_pScreenBuffers[0] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_SCREEN_BITMAP)))
-  {
-    cleanup();
-    throw "Couldn't allocate ScreenBuffer 1.";
-  }
-
-  if (!(m_pScreenBuffers[1] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_COPY_BITMAP)))
-  {
-    cleanup();
-    throw "Couldn't allocate ScreenBuffer 2.";
-  }
-
-  // Let's use the UserData to store the buffer number, for easy
-  // identification when the message comes back.
-  m_pScreenBuffers[0]->sb_DBufInfo->dbi_UserData1 = (APTR)(0);
-  m_pScreenBuffers[1]->sb_DBufInfo->dbi_UserData1 = (APTR)(1);
-  m_Status[0] = OK_REDRAW;
-  m_Status[1] = OK_REDRAW;
-
-  if (!(face = makeImageBM()))
-  {
-    cleanup();
-    throw "Couldn't allocate image bitmap.";
-  }
-
-  InitRastPort(&m_RastPorts[0]);
-  InitRastPort(&m_RastPorts[1]);
-  m_RastPorts[0].BitMap = m_pScreenBuffers[0]->sb_BitMap;
-  m_RastPorts[1].BitMap = m_pScreenBuffers[1]->sb_BitMap;
-
-  x = 50;
-  y = 70;
-  xstep = 1;
-  xdir = 1;
-  ystep = 1;
-  ydir = -1;
+  initialize();
 }
 
 
@@ -646,6 +442,216 @@ LONG WordsToPixels(struct Gadget* pGadget, WORD level)
   return ((WORD)(level * 16));
 }
 
+
+void AnimFrameTool::initialize()
+{
+  if (!(m_pDBufPort = CreateMsgPort()))
+  {
+    cleanup();
+    throw "Failed to create port";
+  }
+
+  if (!(m_pUserPort = CreateMsgPort()))
+  {
+    cleanup();
+    throw "Failed to create port";
+  }
+
+
+  struct TagItem vctags[] =
+  {
+      VTAG_BORDERSPRITE_SET, TRUE,
+      TAG_DONE, 0,
+  };
+
+  UWORD pens[] =
+  {
+      0, // DETAILPEN
+      1, // BLOCKPEN
+      1, // TEXTPEN
+      2, // SHINEPEN
+      1, // SHADOWPEN
+      3, // FILLPEN
+      1, // FILLTEXTPEN
+      0, // BACKGROUNDPEN
+      2, // HIGHLIGHTTEXTPEN
+      1, // BARDETAILPEN
+      2, // BARBLOCKPEN
+      1, // BARTRIMPEN
+
+      (UWORD)~0,
+  };
+
+  struct NewMenu demomenu[] =
+  {
+    { NM_TITLE, "Project",             0 , 0, 0, 0, },
+    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
+    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
+    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
+    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
+    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
+    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_ProjectQuit, },
+    { NM_TITLE, "Tools",               0 , 0, 0, 0, },
+    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolsCenterAllFrames, },
+    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolsGetMaxWidth, },
+    { NM_END,   0,                     0 , 0, 0, 0, },
+  };
+
+  if (!(m_pCanvasScreen = OpenScreenTags(NULL,
+    SA_DisplayID, VIEW_MODE_ID,
+    SA_Overscan, OSCAN_TEXT,
+    SA_Depth, 2,
+    SA_AutoScroll, 1,
+    SA_Pens, pens,
+    SA_ShowTitle, TRUE,
+    SA_Title, "Animation frame adjustment tool",
+    SA_VideoControl, vctags,
+    SA_Font, &Topaz80,
+    TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't open canvas screen.";
+  }
+
+  if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen, TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't get VisualInfo of canvas screen.";
+  }
+
+  if (!(m_pCanvasWindow = OpenWindowTags(NULL,
+    WA_NoCareRefresh, TRUE,
+    WA_Activate, TRUE,
+    WA_Borderless, TRUE,
+    WA_Backdrop, TRUE,
+    WA_CustomScreen, m_pCanvasScreen,
+    WA_NewLookMenus, TRUE,
+    TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't open canvas window.";
+  }
+  m_pCanvasWindow->UserPort = m_pUserPort;
+
+  ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+
+  if (!(m_pControlScreen = OpenScreenTags(NULL,
+    SA_DisplayID, VIEW_MODE_ID,
+    SA_Overscan, OSCAN_TEXT,
+    SA_Depth, 2,
+    SA_Pens, pens,
+    SA_Top, CANVAS_HEIGHT,
+    SA_Height, VIEW_HEIGHT-CANVAS_HEIGHT,
+    SA_Parent, m_pCanvasScreen,
+    SA_ShowTitle, FALSE,
+    SA_Draggable, FALSE,
+    SA_VideoControl, vctags,
+    SA_Quiet, TRUE,
+    SA_Font, &Topaz80,
+    TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't open control screen.";
+  }
+
+  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't get VisualInfo of control screen.";
+  }
+
+  if (!(m_pMenu = CreateMenus(demomenu,
+    TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't create menus.";
+  }
+
+  if (!LayoutMenus(m_pMenu, m_pVisualInfoCanvas,
+                   GTMN_NewLookMenus, TRUE,
+                   TAG_DONE))
+  {
+    cleanup();
+    throw "Couldn't layout menus.";
+  }
+
+  if (!createGadgets(&m_pGadgetList, m_pVisualInfoControl))
+  {
+    cleanup();
+    throw "Couldn't create gadgets.";
+  }
+
+  /* A borderless backdrop window so we can get input */
+  if (!(m_pControlWindow = OpenWindowTags(NULL,
+                                          WA_NoCareRefresh, TRUE,
+                                          WA_Activate, TRUE,
+                                          WA_Borderless, TRUE,
+                                          WA_Backdrop, TRUE,
+                                          WA_CustomScreen, m_pControlScreen,
+                                          WA_NewLookMenus, TRUE,
+                                          WA_Gadgets, m_pGadgetList,
+                                          TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't open control window.";
+  }
+  
+
+  // printf("(%d, %d) == w = %d, h = %d\n", m_OutputFrameRect.Left()
+  //                                       m_OutputFrameRect.Right());
+  DrawBevelBox(m_pControlWindow->RPort, 
+               m_ResultFrameRect.Left() - 2,
+               m_ResultFrameRect.Top() - 1,
+               m_ResultFrameRect.Width() + 4,
+               m_ResultFrameRect.Height() + 2,
+               GT_VisualInfo, m_pVisualInfoControl,
+               GTBB_Recessed, TRUE,
+               TAG_DONE);
+
+  m_pControlWindow->UserPort = m_pUserPort;
+  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+
+  GT_RefreshWindow(m_pControlWindow, NULL);
+  SetMenuStrip(m_pCanvasWindow, m_pMenu);
+  LendMenus(m_pControlWindow, m_pCanvasWindow);
+
+  if (!(m_pScreenBuffers[0] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_SCREEN_BITMAP)))
+  {
+    cleanup();
+    throw "Couldn't allocate ScreenBuffer 1.";
+  }
+
+  if (!(m_pScreenBuffers[1] = AllocScreenBuffer(m_pCanvasScreen, NULL, SB_COPY_BITMAP)))
+  {
+    cleanup();
+    throw "Couldn't allocate ScreenBuffer 2.";
+  }
+
+  // Let's use the UserData to store the buffer number, for easy
+  // identification when the message comes back.
+  m_pScreenBuffers[0]->sb_DBufInfo->dbi_UserData1 = (APTR)(0);
+  m_pScreenBuffers[1]->sb_DBufInfo->dbi_UserData1 = (APTR)(1);
+  m_Status[0] = OK_REDRAW;
+  m_Status[1] = OK_REDRAW;
+
+  if (!(face = makeImageBM()))
+  {
+    cleanup();
+    throw "Couldn't allocate image bitmap.";
+  }
+
+  InitRastPort(&m_RastPorts[0]);
+  InitRastPort(&m_RastPorts[1]);
+  m_RastPorts[0].BitMap = m_pScreenBuffers[0]->sb_BitMap;
+  m_RastPorts[1].BitMap = m_pScreenBuffers[1]->sb_BitMap;
+
+  x = 50;
+  y = 70;
+  xstep = 1;
+  xdir = 1;
+  ystep = 1;
+  ydir = -1;
+}
 
 struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList, 
                                             APTR pVisualInfo)

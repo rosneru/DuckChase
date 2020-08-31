@@ -98,6 +98,8 @@ add_executable (AnimFrameTool
                 picture/RawBitmap.cpp
                 shapes/Rect.cpp
                 _tool_anim_frame_adjust/AnimFrameTool.cpp
+                _tool_anim_frame_adjust/AslFileRequest.cpp
+                _tool_anim_frame_adjust/MessageBox.cpp
                 _tool_anim_frame_adjust/main.cpp)
 
 target_include_directories (AnimFrameTool PUBLIC

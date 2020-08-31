@@ -26,9 +26,10 @@ public:
   void Run();
 
 private:
-  void cleanup();
+  void initialize();
   struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
                                APTR pVisualInfo);
+  void cleanup();
 
   /** 
    * Handle Intuition messages 
