@@ -117,15 +117,15 @@ AnimFrameTool::AnimFrameTool()
   struct NewMenu demomenu[] =
   {
     { NM_TITLE, "Project",             0 , 0, 0, 0, },
-    {  NM_ITEM, "Run",                "R", 0, 0, (APTR)MID_Run, },
-    {  NM_ITEM, "Step",               "S", 0, 0, (APTR)MID_Step, },
+    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_AnimOpen, },
+    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_AnimSave, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "Slower Horizontal",  "1", 0, 0, (APTR)MID_HSlow, },
-    {  NM_ITEM, "Faster Horizontal",  "2", 0, 0, (APTR)MID_HFast, },
-    {  NM_ITEM, "Slower Vertical",    "3", 0, 0, (APTR)MID_VSlow, },
-    {  NM_ITEM, "Faster Vertical",    "4", 0, 0, (APTR)MID_VFast, },
+    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_About, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
     {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_Quit, },
+    { NM_TITLE, "Tools",               0 , 0, 0, 0, },
+    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolCenterAllFrames, },
+    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolGetMaxWidth, },
     { NM_END,   0,                     0 , 0, 0, 0, },
   };
 
@@ -488,11 +488,11 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       item = ItemAddress(m_pMenu, code);
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
-      case MID_Run:
+      case MID_AnimOpen:
         m_Count = ~0;
         break;
 
-      case MID_Step:
+      case MID_AnimSave:
         m_Count = 1;
         break;
 
@@ -501,7 +501,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         terminated = TRUE;
         break;
 
-      case MID_HSlow:
+      case MID_About:
         if (xstep > 0)
         {
           xstep--;
@@ -511,7 +511,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MID_HFast:
+      case MID_ToolCenterAllFrames:
         if (xstep < 9)
         {
           xstep++;
@@ -521,17 +521,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           TAG_DONE);
         break;
 
-      case MID_VSlow:
-        if (ystep > 0)
-        {
-          ystep--;
-        }
-        GT_SetGadgetAttrs(m_pGadgetSlideVertical, m_pControlWindow, NULL,
-          GTSL_Level, ystep,
-          TAG_DONE);
-        break;
-
-      case MID_VFast:
+      case MID_ToolGetMaxWidth:
         if (ystep < 9)
         {
           ystep++;
