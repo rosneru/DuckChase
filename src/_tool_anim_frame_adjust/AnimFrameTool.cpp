@@ -13,14 +13,12 @@
 
 
 #define VIEW_MODE_ID              LORES_KEY
-#define VIEW_WIDTH                320
-#define VIEW_HEIGHT               256
 
 #define CANVAS_HEIGHT             112
 
 #define UI_RASTER_WIDTH           5
 #define UI_RASTER_HEIGHT          20
-#define UI_LABEL_WIDTH            80
+#define UI_LABEL_WIDTH            96
 #define UI_BEVBOX_BORDERS_WIDTH   4
 #define UI_BEVBOX_WIDTH           96
 
@@ -30,7 +28,7 @@
 
 /* Some constants to handle the rendering of the animated face */
 #define BM_WIDTH  120
-#define BM_HEIGHT  60
+#define BM_HEIGHT 60
 #define BM_DEPTH  2
 
 
@@ -60,7 +58,9 @@ struct TextAttr Topaz80 =
 
 
 AnimFrameTool::AnimFrameTool()
-  : m_pCanvasScreen(NULL),
+  : m_OScanWidth(0),
+    m_OScanHeight(0),
+    m_pCanvasScreen(NULL),
     m_pControlScreen(NULL),
     m_pCanvasWindow(NULL),
     m_pControlWindow(NULL),
@@ -82,22 +82,8 @@ AnimFrameTool::AnimFrameTool()
     m_BufCurrent(0),
     m_BufNextdraw(1),
     m_BufNextswap(1),
-    m_Count(0),
-    m_ResultFrameRect(VIEW_WIDTH - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
-                      2 * UI_RASTER_HEIGHT),
-    m_ControlsRect(UI_RASTER_WIDTH, m_ResultFrameRect.Top() - 1)                  
+    m_Count(0)                
 {
-  m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
-                                   UI_BEVBOX_WIDTH); // square -> height is width
-  
-  m_ControlsRect.SetWidthHeight(m_ResultFrameRect.Left()
-                                  - 2 // width of the bevel box border
-                                  - UI_RASTER_WIDTH,
-                                m_ResultFrameRect.Bottom() 
-                                  - m_ControlsRect.Top() 
-                                  + 1);
-
-
   initialize();
 }
 
@@ -531,6 +517,31 @@ void AnimFrameTool::initialize()
     throw "Couldn't open canvas screen.";
   }
 
+  if(m_OScanHeight == 0)
+  {
+    // First screen opening, canvas screen is still empty:
+    // Reading the overscan dimensions from its size
+    m_OScanWidth = m_pCanvasScreen->Width;
+    m_OScanHeight = m_pCanvasScreen->Height;
+
+    // Calculate the two main rectangular areas of the control screen
+    m_ResultFrameRect = Rect(m_OScanWidth - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
+                            2 * UI_RASTER_HEIGHT);
+
+    m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
+                                    UI_BEVBOX_WIDTH); // square -> height is width
+    
+    m_ControlsRect = Rect(UI_RASTER_WIDTH, 
+                          m_ResultFrameRect.Top() - 1);
+    
+    m_ControlsRect.SetWidthHeight(m_ResultFrameRect.Left()
+                                    - 2 // width of the bevel box border
+                                    - UI_RASTER_WIDTH,
+                                  m_ResultFrameRect.Bottom() 
+                                    - m_ControlsRect.Top() 
+                                    + 1);
+  }
+
   if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen, TAG_DONE)))
   {
     cleanup();
@@ -559,7 +570,7 @@ void AnimFrameTool::initialize()
     SA_Depth, 2,
     SA_Pens, pens,
     SA_Top, CANVAS_HEIGHT,
-    SA_Height, VIEW_HEIGHT-CANVAS_HEIGHT,
+    SA_Height, m_OScanHeight-CANVAS_HEIGHT,
     SA_Parent, m_pCanvasScreen,
     SA_ShowTitle, FALSE,
     SA_Draggable, FALSE,
@@ -614,9 +625,6 @@ void AnimFrameTool::initialize()
     throw "Couldn't open control window.";
   }
   
-
-  // printf("(%d, %d) == w = %d, h = %d\n", m_OutputFrameRect.Left()
-  //                                       m_OutputFrameRect.Right());
   DrawBevelBox(m_pControlWindow->RPort, 
                m_ResultFrameRect.Left() - 2,
                m_ResultFrameRect.Top() - 1,
@@ -683,7 +691,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
   ng.ng_LeftEdge = 0;
   ng.ng_TopEdge = 0;
-  ng.ng_Width = VIEW_WIDTH;
+  ng.ng_Width = m_OScanWidth;
   ng.ng_Height = rowHeight;
   ng.ng_TextAttr = &Topaz80;
   ng.ng_GadgetText = NULL;
@@ -705,7 +713,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
   ng.ng_GadgetID = GID_TextFilename;
   ng.ng_Flags = NG_HIGHLABEL;
-  ng.ng_GadgetText = (UBYTE*) "File:   ";
+  ng.ng_GadgetText = (UBYTE*) "File:    ";
   
   m_pGadgetTextFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
                                                  GTTX_Border, TRUE,
@@ -715,7 +723,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_TopEdge = m_ControlsRect.Top();
   ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
   ng.ng_GadgetID = GID_SlideFrameWordWidth;
-  ng.ng_GadgetText = (UBYTE*) "FWidth:  ";
+  ng.ng_GadgetText = (UBYTE*) "FWidth:    ";
   m_pGadgetFrameWidth = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
                                                GTSL_Min, 1,
                                                GTSL_Max, 16,
@@ -728,9 +736,9 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                                TAG_DONE);
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
-  ng.ng_Width = 45; // manually adjusted to fit this lines width
+  ng.ng_Width = 36; // manually adjusted to fit this lines width
   ng.ng_GadgetID = GID_StringCurrentFrame;
-  ng.ng_GadgetText = (UBYTE*) "Frame:   ";
+  ng.ng_GadgetText = (UBYTE*) "Frame:    ";
 
   m_pGadgetStringCurrFrame = pGadget = CreateGadget(STRING_KIND,
                                                     pGadget,

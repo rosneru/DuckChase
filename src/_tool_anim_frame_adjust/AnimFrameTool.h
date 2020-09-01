@@ -30,42 +30,8 @@ public:
 
 private:
   std::string m_Filename;
-
-  void initialize();
-  struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
-                               APTR pVisualInfo);
-  void cleanup();
-
-  /** 
-   * Handle Intuition messages 
-   */                         
-  BOOL handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
-
-  void handleDBufMessage(struct Message* pDBufMsg);
-
-  /**
-   * Handle the rendering and swapping of the buffers
-   */
-  ULONG handleBufferSwap();
-
-  struct BitMap* makeImageBM();
-
-  /**
-   * Close an Intuition window that shares a port with other Intuition
-   * windows or IPC customers.
-   *
-   * We are careful to set the UserPort to null before closing, and to
-   * free any messages that it might have been sent.
-   */
-  void CloseWindowSafely(struct Window* pIntuiWindow);
-
-  /**
-   * Remove and reply all IntuiMessages on a port that have been sent to
-   * a particular window ( note that we don't rely on the ln_Succ
-   * pointer of a message after we have replied it )
-   */
-  void StripIntuiMessages(struct MsgPort* pMsgPort, 
-                          struct Window* pIntuiWindow);
+  ULONG m_OScanWidth;
+  ULONG m_OScanHeight;
 
   enum GadgetId
   {
@@ -121,6 +87,42 @@ private:
 
   Rect m_ResultFrameRect;
   Rect m_ControlsRect;
+
+  void initialize();
+  struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
+                               APTR pVisualInfo);
+  void cleanup();
+
+  /** 
+   * Handle Intuition messages 
+   */                         
+  BOOL handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
+
+  void handleDBufMessage(struct Message* pDBufMsg);
+
+  /**
+   * Handle the rendering and swapping of the buffers
+   */
+  ULONG handleBufferSwap();
+
+  struct BitMap* makeImageBM();
+
+  /**
+   * Close an Intuition window that shares a port with other Intuition
+   * windows or IPC customers.
+   *
+   * We are careful to set the UserPort to null before closing, and to
+   * free any messages that it might have been sent.
+   */
+  void CloseWindowSafely(struct Window* pIntuiWindow);
+
+  /**
+   * Remove and reply all IntuiMessages on a port that have been sent to
+   * a particular window ( note that we don't rely on the ln_Succ
+   * pointer of a message after we have replied it )
+   */
+  void StripIntuiMessages(struct MsgPort* pMsgPort, 
+                          struct Window* pIntuiWindow);
 };
 
 #endif
