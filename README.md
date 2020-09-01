@@ -5,12 +5,12 @@ game, 'though.
 
 ## C++-game in *src* directory
 The Duckchase C++ game in directory *src* uses RAII and for that
-exceptions are used heavily. While this should (in gcc 6.5) have [no run
-time
+exceptions are enabled and used heavily. While this should (in gcc 6.5)
+have [no run time
 overhead](http://eab.abime.net/showthread.php?p=1393192#post1394112) it
 has two disadvantages to be noticed:
 
-- Enabling exceptions and using RAII blow the binary size from 50k to 150k.
+- Enabling exceptions and using RAII blew the binary size from 50k to 150k.
 
 - Binary needs a full 32 bit processor to run. **Not working on 68000
   anymore**.
