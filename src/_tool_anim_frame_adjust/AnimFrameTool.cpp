@@ -538,29 +538,29 @@ void AnimFrameTool::initialize()
 
   const char* pScreenTitle = "Animation frame adjustment tool";
 
-  if(m_pLoadedPicture != NULL)
-  {
-    ULONG screenWidth = m_pLoadedPicture->Width();
-    if(screenWidth < m_OScanWidth)
-    {
-      screenWidth = m_OScanWidth;
-    }
+//   if(m_pLoadedPicture != NULL)
+//   {
+//     ULONG screenWidth = m_pLoadedPicture->Width();
+//     if(screenWidth < m_OScanWidth)
+//     {
+//       screenWidth = m_OScanWidth;
+//     }
 
-    m_pCanvasScreen = OpenScreenTags(NULL,
-                                     SA_DisplayID, VIEW_MODE_ID,
-                                     SA_Overscan, OSCAN_TEXT,
-                                     SA_Width, screenWidth,
-//                                     SA_Height, CANVAS_HEIGHT,
-                                     SA_Depth, m_pLoadedPicture->Depth(),
-                                     SA_Colors32, m_pLoadedPicture->GetColors32(),
-                                     SA_AutoScroll, 1,
-                                     SA_ShowTitle, TRUE,
-                                     SA_Title, pScreenTitle,
-                                     SA_VideoControl, vctags,
-                                     SA_Font, &Topaz80,
-                                     TAG_DONE);
-  }
-  else
+//     m_pCanvasScreen = OpenScreenTags(NULL,
+//                                      SA_DisplayID, VIEW_MODE_ID,
+//                                      SA_Overscan, OSCAN_TEXT,
+//                                      SA_Width, screenWidth,
+// //                                     SA_Height, CANVAS_HEIGHT,
+//                                      SA_Depth, m_pLoadedPicture->Depth(),
+//                                      SA_Colors32, m_pLoadedPicture->GetColors32(),
+//                                      SA_AutoScroll, 1,
+//                                      SA_ShowTitle, TRUE,
+//                                      SA_Title, pScreenTitle,
+//                                      SA_VideoControl, vctags,
+//                                      SA_Font, &Topaz80,
+//                                      TAG_DONE);
+//   }
+//   else
   {
     m_pCanvasScreen = OpenScreenTags(NULL,
                                      SA_DisplayID, VIEW_MODE_ID,
@@ -631,14 +631,17 @@ void AnimFrameTool::initialize()
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
 
-  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
-                    0, 0, 
-                    m_pCanvasWindow->RPort, 
-                    0, 0,
-                    m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
-                    0xc0);
+  if(m_pLoadedPicture != NULL)
+  {
+    // BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+    //                   0, 0, 
+    //                   m_pCanvasWindow->RPort, 
+    //                   0, 0,
+    //                   m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
+    //                   0xc0);
 
-  WaitBlit();
+    // WaitBlit();
+  }
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
     SA_DisplayID, VIEW_MODE_ID,
