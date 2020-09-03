@@ -4,10 +4,12 @@
 #include <exec/ports.h>
 #include <intuition/intuition.h>
 
-
 #include <string>
 
+#include "IlbmBitmap.h"
 #include "Rect.h"
+
+
 
 /**
  * A tool to adjust frames of an anim strip on a horizontal row in an
@@ -32,6 +34,7 @@ private:
   std::string m_Filename;
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
+  IlbmBitmap* m_pLoadedPicture;
 
   enum GadgetId
   {
@@ -93,10 +96,12 @@ private:
                                APTR pVisualInfo);
   void cleanup();
 
+  void openAnim();
+
   /** 
    * Handle Intuition messages 
    */                         
-  BOOL handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
+  bool handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
 
   void handleDBufMessage(struct Message* pDBufMsg);
 

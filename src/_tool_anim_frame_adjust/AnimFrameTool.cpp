@@ -9,6 +9,8 @@
 
 
 #include "AslFileRequest.h"
+#include "MessageBox.h"
+
 #include "AnimFrameTool.h"
 
 
@@ -60,6 +62,7 @@ struct TextAttr Topaz80 =
 AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
     m_OScanHeight(0),
+    m_pLoadedPicture(NULL),
     m_pCanvasScreen(NULL),
     m_pControlScreen(NULL),
     m_pCanvasWindow(NULL),
@@ -96,8 +99,8 @@ AnimFrameTool::~AnimFrameTool()
 void AnimFrameTool::Run()
 {
   ULONG sigs = 0;
-  BOOL terminated = FALSE;
-  while (!terminated)
+  bool isTerminated = false;
+  while (!isTerminated)
   {
     // Check for and handle any IntuiMessages
     if (sigs & (1 << m_pUserPort->mp_SigBit))
@@ -106,7 +109,7 @@ void AnimFrameTool::Run()
 
       while ((pIntuiMsg = GT_GetIMsg(m_pUserPort)) != NULL)
       {
-        terminated |= handleIntuiMessage(pIntuiMsg);
+        isTerminated |= handleIntuiMessage(pIntuiMsg);
         GT_ReplyIMsg(pIntuiMsg);
       }
     }
@@ -124,7 +127,7 @@ void AnimFrameTool::Run()
     }
 
 
-    if (!terminated)
+    if (!isTerminated)
     {
       ULONG held_off = 0;
       // Only handle swapping buffers if count is non-zero
@@ -242,10 +245,10 @@ ULONG AnimFrameTool::handleBufferSwap()
 }
 
 
-BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
+bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 {
   UWORD code = pIntuiMsg->Code;
-  BOOL terminated = FALSE;
+  bool hasTerminated = false;
 
   switch (pIntuiMsg->Class)
   {
@@ -280,7 +283,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     case 'Q':
     case 'q':
       m_Count = 0;
-      terminated = TRUE;
+      hasTerminated = true;
       break;
     }
     break;
@@ -294,31 +297,16 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-      {
-        m_Count = ~0;
-
-        AslFileRequest request(m_pControlWindow);
-        std::string filename = request.SelectFile("Open anim image", 
-                                                  "", 
-                                                  false);
-        if(filename.length() > 0)
-        {
-          m_Filename = filename;
-          GT_SetGadgetAttrs(m_pGadgetTextFilename, m_pControlWindow, NULL,
-                            GTTX_Text, m_Filename.c_str(),
-                            TAG_DONE);
-        }
-
+        openAnim();
         break;
-      }
 
       case MID_ProjectSaveAnim:
-        m_Count = 1;
+        m_Count = ~0;  // Starts the anim face; TODO remove
         break;
 
       case MID_ProjectQuit:
         m_Count = 0;
-        terminated = TRUE;
+        hasTerminated = TRUE;
         break;
 
       case MID_ProjectAbout:
@@ -356,7 +344,7 @@ BOOL AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     break;
   }
 
-  return terminated;
+  return hasTerminated;
 }
 
 
@@ -379,6 +367,53 @@ void AnimFrameTool::handleDBufMessage(struct Message* pDBufMsg)
 
 /*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
+
+void AnimFrameTool::openAnim()
+{
+  AslFileRequest request(m_pControlWindow);
+  std::string filename = request.SelectFile("Open anim picture", 
+                                            "", 
+                                            false);
+  if(filename.length() > 0)
+  {
+    try
+    {
+      // Creating the IlbmBitmap will throw an exception on failure
+      IlbmBitmap* pNewPicture = new IlbmBitmap(filename.c_str(), 
+                                               true,
+                                               false);
+
+      if(m_pLoadedPicture != NULL)
+      {
+        delete m_pLoadedPicture;
+      }
+
+      m_pLoadedPicture = pNewPicture;
+
+      m_Filename = filename;
+      GT_SetGadgetAttrs(m_pGadgetTextFilename, m_pControlWindow, NULL,
+                        GTTX_Text, m_Filename.c_str(),
+                        TAG_DONE);
+
+      cleanup();
+      initialize();
+    }
+    catch(const char* pMsg)
+    {
+      std::string msgString = "The selected picture\n\n";
+      msgString += filename;
+      msgString += "\n\ncouldn't be loaded:\n\n";
+      msgString += pMsg;
+
+      MessageBox request;
+      request.Show("Failed to load anim picture",
+                   msgString.c_str(),
+                   "Ok");
+    }
+    
+
+  }
+}
 
 
 #define MAXVECTORS  100
@@ -501,22 +536,52 @@ void AnimFrameTool::initialize()
     { NM_END,   0,                     0 , 0, 0, 0, },
   };
 
-  if (!(m_pCanvasScreen = OpenScreenTags(NULL,
-    SA_DisplayID, VIEW_MODE_ID,
-    SA_Overscan, OSCAN_TEXT,
-    SA_Depth, 2,
-    SA_AutoScroll, 1,
-    SA_Pens, pens,
-    SA_ShowTitle, TRUE,
-    SA_Title, "Animation frame adjustment tool",
-    SA_VideoControl, vctags,
-    SA_Font, &Topaz80,
-    TAG_DONE)))
+  const char* pScreenTitle = "Animation frame adjustment tool";
+
+  if(m_pLoadedPicture != NULL)
+  {
+    ULONG screenWidth = m_pLoadedPicture->Width();
+    if(screenWidth < m_OScanWidth)
+    {
+      screenWidth = m_OScanWidth;
+    }
+
+    m_pCanvasScreen = OpenScreenTags(NULL,
+                                     SA_DisplayID, VIEW_MODE_ID,
+                                     SA_Overscan, OSCAN_TEXT,
+                                     SA_Width, screenWidth,
+//                                     SA_Height, CANVAS_HEIGHT,
+                                     SA_Depth, m_pLoadedPicture->Depth(),
+                                     SA_Colors32, m_pLoadedPicture->GetColors32(),
+                                     SA_AutoScroll, 1,
+                                     SA_ShowTitle, TRUE,
+                                     SA_Title, pScreenTitle,
+                                     SA_VideoControl, vctags,
+                                     SA_Font, &Topaz80,
+                                     TAG_DONE);
+  }
+  else
+  {
+    m_pCanvasScreen = OpenScreenTags(NULL,
+                                     SA_DisplayID, VIEW_MODE_ID,
+                                     SA_Overscan, OSCAN_TEXT,
+                                     SA_Depth, 2,
+                                     SA_AutoScroll, 1,
+                                     SA_Pens, pens,
+                                     SA_ShowTitle, TRUE,
+                                     SA_Title, pScreenTitle,
+                                     SA_VideoControl, vctags,
+                                     SA_Font, &Topaz80,
+                                     TAG_DONE);
+  }
+  
+  if(m_pCanvasScreen == NULL)
   {
     cleanup();
     throw "Couldn't open canvas screen.";
   }
 
+  
   if(m_OScanHeight == 0)
   {
     // First screen opening, canvas screen is still empty:
@@ -560,9 +625,20 @@ void AnimFrameTool::initialize()
     cleanup();
     throw "Couldn't open canvas window.";
   }
+
   m_pCanvasWindow->UserPort = m_pUserPort;
 
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+
+
+  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+                    0, 0, 
+                    m_pCanvasWindow->RPort, 
+                    0, 0,
+                    m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
+                    0xc0);
+
+  WaitBlit();
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
     SA_DisplayID, VIEW_MODE_ID,
@@ -779,6 +855,12 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
 void AnimFrameTool::cleanup()
 {
+  if(m_pLoadedPicture != NULL)
+  {
+    delete m_pLoadedPicture;
+    m_pLoadedPicture = NULL;
+  }
+
   if (m_pControlWindow != NULL)
   {
     ClearMenuStrip(m_pControlWindow);
