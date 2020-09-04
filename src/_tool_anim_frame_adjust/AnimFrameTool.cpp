@@ -246,11 +246,52 @@ void AnimFrameTool::openAnim()
                    msgString.c_str(),
                    "Ok");
     }
-    
-
   }
 }
 
+void AnimFrameTool::paintPicture()
+{
+  if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
+  {
+    return;
+  }
+
+  // BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+  //                   0, 0, 
+  //                   m_pCanvasWindow->RPort, 
+  //                   0, 0,
+  //                   m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
+  //                   0xc0);
+
+  // WaitBlit();
+}
+
+void AnimFrameTool::paintGrid()
+{
+  if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
+  {
+    return;
+  }
+
+  LONG wordWidth;
+  if(1 != GT_GetGadgetAttrs(m_pGadgetFrameWidth, 
+                            m_pControlWindow, 
+                            NULL,
+                            GTSL_Level, &wordWidth,
+                            TAG_DONE))
+  {
+    return;
+  }
+
+  int frameWidth = wordWidth * 16;
+  if(frameWidth == 0)
+  {
+    return;
+  }
+
+  int numFrames = m_pCanvasScreen->Width / frameWidth;
+  // TODO Draw numFrames rects from left to right on canvas screen
+}
 
 LONG WordsToPixels(struct Gadget* pGadget, WORD level)
 {
@@ -400,19 +441,6 @@ void AnimFrameTool::initialize()
 
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
-
-  if(m_pLoadedPicture != NULL)
-  {
-    // BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
-    //                   0, 0, 
-    //                   m_pCanvasWindow->RPort, 
-    //                   0, 0,
-    //                   m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
-    //                   0xc0);
-
-    // WaitBlit();
-  }
-
   if (!(m_pControlScreen = OpenScreenTags(NULL,
     SA_DisplayID, VIEW_MODE_ID,
     SA_Overscan, OSCAN_TEXT,
@@ -489,6 +517,9 @@ void AnimFrameTool::initialize()
   GT_RefreshWindow(m_pControlWindow, NULL);
   SetMenuStrip(m_pCanvasWindow, m_pMenu);
   LendMenus(m_pControlWindow, m_pCanvasWindow);
+
+  paintPicture();
+  paintGrid();
 }
 
 

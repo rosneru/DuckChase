@@ -87,6 +87,10 @@ private:
 
   void openAnim();
 
+  void paintPicture();
+  void paintGrid();
+
+
   /** 
    * Handle Intuition messages 
    */                         
