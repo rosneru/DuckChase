@@ -75,18 +75,7 @@ private:
   APTR m_pVisualInfoCanvas;
   APTR m_pVisualInfoControl;
 
-  struct MsgPort* m_pDBufPort;
   struct MsgPort* m_pUserPort;
-
-  struct ScreenBuffer* m_pScreenBuffers[2];
-  struct RastPort m_RastPorts[2];
-
-  ULONG m_Status[2];
-
-  ULONG m_BufCurrent;
-  ULONG m_BufNextdraw;
-  ULONG m_BufNextswap;
-  ULONG m_Count;
 
   Rect m_ResultFrameRect;
   Rect m_ControlsRect;
@@ -103,14 +92,6 @@ private:
    */                         
   bool handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
 
-  void handleDBufMessage(struct Message* pDBufMsg);
-
-  /**
-   * Handle the rendering and swapping of the buffers
-   */
-  ULONG handleBufferSwap();
-
-  struct BitMap* makeImageBM();
 
   /**
    * Close an Intuition window that shares a port with other Intuition
