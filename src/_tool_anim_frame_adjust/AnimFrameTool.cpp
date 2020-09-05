@@ -37,6 +37,29 @@ struct TextAttr Topaz80 =
 };
 
 
+  struct TagItem vctags[] =
+  {
+      VTAG_BORDERSPRITE_SET, TRUE,
+      TAG_DONE, 0,
+  };
+
+  UWORD pens[] =
+  {
+      0, // DETAILPEN
+      1, // BLOCKPEN
+      1, // TEXTPEN
+      2, // SHINEPEN
+      1, // SHADOWPEN
+      3, // FILLPEN
+      1, // FILLTEXTPEN
+      0, // BACKGROUNDPEN
+      2, // HIGHLIGHTTEXTPEN
+      1, // BARDETAILPEN
+      2, // BARBLOCKPEN
+      1, // BARTRIMPEN
+
+      (UWORD)~0,
+  };
 
 AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
@@ -59,13 +82,184 @@ AnimFrameTool::AnimFrameTool()
     m_pVisualInfoControl(NULL),
     m_pUserPort(NULL)          
 {
-  initialize();
+  if (!(m_pUserPort = CreateMsgPort()))
+  {
+    cleanup();
+    throw "Failed to create port";
+  }
+
+  struct NewMenu demomenu[] =
+  {
+    { NM_TITLE, "Project",             0 , 0, 0, 0, },
+    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
+    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
+    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
+    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
+    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
+    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_ProjectQuit, },
+    { NM_TITLE, "Tools",               0 , 0, 0, 0, },
+    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolsCenterAllFrames, },
+    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolsGetMaxWidth, },
+    { NM_END,   0,                     0 , 0, 0, 0, },
+  };
+
+  if (!(m_pControlScreen = OpenScreenTags(NULL,
+    SA_DisplayID, VIEW_MODE_ID,
+    SA_Overscan, OSCAN_TEXT,
+    SA_Depth, 2,
+    SA_Pens, pens,
+    SA_Title, "Animation frame adjustment tool",
+    SA_VideoControl, vctags,
+    SA_Font, &Topaz80,
+    TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't open control screen.";
+  }
+
+  // Until the canvas is opened the control screen fills the whole
+  // display. Read the overscan dimensions from its size.
+  m_OScanWidth = m_pControlScreen->Width;
+  m_OScanHeight = m_pControlScreen->Height;
+
+  // Calculate the two main rectangular areas of the control screen
+  m_ResultFrameRect = Rect(m_OScanWidth - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
+                           m_pControlScreen->BarHeight + 2 * UI_RASTER_HEIGHT);
+
+  m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
+                                   UI_BEVBOX_WIDTH); // square -> height is width
+  
+  m_ControlsRect = Rect(UI_RASTER_WIDTH, 
+                        m_ResultFrameRect.Top() - 1);
+  
+  m_ControlsRect.SetWidthHeight(m_ResultFrameRect.Left()
+                                  - 2 // width of the bevel box border
+                                  - UI_RASTER_WIDTH,
+                                m_ResultFrameRect.Bottom() 
+                                  - m_ControlsRect.Top() 
+                                  + 1);
+
+  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't get VisualInfo of control screen.";
+  }
+
+  if (!(m_pMenu = CreateMenus(demomenu,
+    TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't create menus.";
+  }
+
+  if (!LayoutMenus(m_pMenu, m_pVisualInfoControl,
+                   GTMN_NewLookMenus, TRUE,
+                   TAG_DONE))
+  {
+    cleanup();
+    throw "Couldn't layout menus.";
+  }
+
+  if (!createGadgets(&m_pGadgetList, m_pVisualInfoControl))
+  {
+    cleanup();
+    throw "Couldn't create gadgets.";
+  }
+
+  // A borderless backdrop window so we can get input
+  if (!(m_pControlWindow = OpenWindowTags(NULL,
+                                          WA_NoCareRefresh, TRUE,
+                                          WA_Activate, TRUE,
+                                          WA_Borderless, TRUE,
+                                          WA_Backdrop, TRUE,
+                                          WA_CustomScreen, m_pControlScreen,
+                                          WA_NewLookMenus, TRUE,
+                                          WA_Gadgets, m_pGadgetList,
+                                          TAG_DONE)))
+  {
+    cleanup();
+    throw "Couldn't open control window.";
+  }
+  
+  DrawBevelBox(m_pControlWindow->RPort, 
+               m_ResultFrameRect.Left() - 2,
+               m_ResultFrameRect.Top() - 1,
+               m_ResultFrameRect.Width() + 4,
+               m_ResultFrameRect.Height() + 2,
+               GT_VisualInfo, m_pVisualInfoControl,
+               GTBB_Recessed, TRUE,
+               TAG_DONE);
+
+  m_pControlWindow->UserPort = m_pUserPort;
+  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+
+  GT_RefreshWindow(m_pControlWindow, NULL);
+  SetMenuStrip(m_pControlWindow, m_pMenu);
+
+  openCanvas();
+
+  paintGrid();
 }
 
 
 AnimFrameTool::~AnimFrameTool()
 {
   cleanup();
+}
+
+void AnimFrameTool::cleanup()
+{
+  if(m_pLoadedPicture != NULL)
+  {
+    delete m_pLoadedPicture;
+    m_pLoadedPicture = NULL;
+  }
+
+  if (m_pControlWindow != NULL)
+  {
+    ClearMenuStrip(m_pControlWindow);
+    CloseWindowSafely(m_pControlWindow);
+    m_pControlWindow = NULL;
+  }
+
+  closeCanvas();
+
+  if (m_pControlScreen != NULL)
+  {
+    CloseScreen(m_pControlScreen);
+    m_pControlScreen = NULL;
+  }
+
+
+  if (m_pUserPort != NULL)
+  {
+    DeleteMsgPort(m_pUserPort);
+    m_pUserPort = NULL;
+  }
+
+  if (m_pGadgetList != NULL)
+  {
+    FreeGadgets(m_pGadgetList);
+    m_pGadgetList = NULL;
+  }
+
+  if(m_pMenu != NULL)
+  {
+    FreeMenus(m_pMenu);
+    m_pMenu = NULL;
+  }
+
+  if(m_pVisualInfoCanvas != NULL)
+  {
+    FreeVisualInfo(m_pVisualInfoCanvas);
+    m_pVisualInfoCanvas = NULL;
+  }
+
+  if(m_pVisualInfoControl != NULL)
+  {
+    FreeVisualInfo(m_pVisualInfoControl);
+    m_pVisualInfoControl = NULL;
+  }
 }
 
 void AnimFrameTool::Run()
@@ -231,8 +425,9 @@ void AnimFrameTool::openAnim()
                         GTTX_Text, m_Filename.c_str(),
                         TAG_DONE);
 
-      cleanup();
-      initialize();
+      closeCanvas();
+      openCanvas();
+      paintPicture();
     }
     catch(const char* pMsg)
     {
@@ -256,14 +451,14 @@ void AnimFrameTool::paintPicture()
     return;
   }
 
-  // BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
-  //                   0, 0, 
-  //                   m_pCanvasWindow->RPort, 
-  //                   0, 0,
-  //                   m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
-  //                   0xc0);
+  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+                    0, 0, 
+                    m_pCanvasWindow->RPort, 
+                    0, 0,
+                    m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
+                    0xc0);
 
-  // WaitBlit();
+  WaitBlit();
 }
 
 void AnimFrameTool::paintGrid()
@@ -299,90 +494,55 @@ LONG WordsToPixels(struct Gadget* pGadget, WORD level)
 }
 
 
-void AnimFrameTool::initialize()
+void AnimFrameTool::openCanvas()
 {
-  if (!(m_pUserPort = CreateMsgPort()))
+  if(m_pControlWindow == NULL)
   {
-    cleanup();
-    throw "Failed to create port";
+    return;
   }
 
-
-  struct TagItem vctags[] =
+  if(m_pLoadedPicture != NULL)
   {
-      VTAG_BORDERSPRITE_SET, TRUE,
-      TAG_DONE, 0,
-  };
+    ULONG screenWidth = m_pLoadedPicture->Width();
+    if(screenWidth < m_OScanWidth)
+    {
+      screenWidth = m_OScanWidth;
+    }
 
-  UWORD pens[] =
-  {
-      0, // DETAILPEN
-      1, // BLOCKPEN
-      1, // TEXTPEN
-      2, // SHINEPEN
-      1, // SHADOWPEN
-      3, // FILLPEN
-      1, // FILLTEXTPEN
-      0, // BACKGROUNDPEN
-      2, // HIGHLIGHTTEXTPEN
-      1, // BARDETAILPEN
-      2, // BARBLOCKPEN
-      1, // BARTRIMPEN
-
-      (UWORD)~0,
-  };
-
-  struct NewMenu demomenu[] =
-  {
-    { NM_TITLE, "Project",             0 , 0, 0, 0, },
-    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
-    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
-    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_ProjectQuit, },
-    { NM_TITLE, "Tools",               0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolsCenterAllFrames, },
-    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolsGetMaxWidth, },
-    { NM_END,   0,                     0 , 0, 0, 0, },
-  };
-
-  const char* pScreenTitle = "Animation frame adjustment tool";
-
-//   if(m_pLoadedPicture != NULL)
-//   {
-//     ULONG screenWidth = m_pLoadedPicture->Width();
-//     if(screenWidth < m_OScanWidth)
-//     {
-//       screenWidth = m_OScanWidth;
-//     }
-
-//     m_pCanvasScreen = OpenScreenTags(NULL,
-//                                      SA_DisplayID, VIEW_MODE_ID,
-//                                      SA_Overscan, OSCAN_TEXT,
-//                                      SA_Width, screenWidth,
-// //                                     SA_Height, CANVAS_HEIGHT,
-//                                      SA_Depth, m_pLoadedPicture->Depth(),
-//                                      SA_Colors32, m_pLoadedPicture->GetColors32(),
-//                                      SA_AutoScroll, 1,
-//                                      SA_ShowTitle, TRUE,
-//                                      SA_Title, pScreenTitle,
-//                                      SA_VideoControl, vctags,
-//                                      SA_Font, &Topaz80,
-//                                      TAG_DONE);
-//   }
-//   else
+    m_pCanvasScreen = OpenScreenTags(NULL,
+                                     SA_AutoScroll, 1,
+                                     SA_Colors32, m_pLoadedPicture->GetColors32(),
+                                     SA_Depth, 2,
+                                     SA_DisplayID, VIEW_MODE_ID,
+                                     SA_Depth, m_pLoadedPicture->Depth(),
+                                     SA_Draggable, FALSE,
+                                     SA_Interleaved, TRUE,
+                                     SA_Font, &Topaz80,
+                                     SA_Overscan, OSCAN_TEXT,
+                                     SA_Parent, m_pControlScreen,
+                                     SA_Quiet, TRUE,
+                                     SA_ShowTitle, FALSE,
+                                     SA_Top, m_pControlScreen->Height - CANVAS_HEIGHT,
+                                     SA_VideoControl, vctags,
+                                     SA_Width, screenWidth,
+                                     TAG_DONE);
+  }
+  else
   {
     m_pCanvasScreen = OpenScreenTags(NULL,
-                                     SA_DisplayID, VIEW_MODE_ID,
-                                     SA_Overscan, OSCAN_TEXT,
-                                     SA_Depth, 2,
                                      SA_AutoScroll, 1,
-                                     SA_Pens, pens,
-                                     SA_ShowTitle, TRUE,
-                                     SA_Title, pScreenTitle,
-                                     SA_VideoControl, vctags,
+                                     SA_Depth, 2,
+                                     SA_DisplayID, VIEW_MODE_ID,
+                                     SA_Draggable, FALSE,
+                                     SA_Interleaved, TRUE,
                                      SA_Font, &Topaz80,
+                                     SA_Overscan, OSCAN_TEXT,
+                                     SA_Parent, m_pControlScreen,
+                                     SA_Pens, pens,
+                                     SA_Quiet, TRUE,
+                                     SA_ShowTitle, FALSE,
+                                     SA_Top, m_pControlScreen->Height - CANVAS_HEIGHT,
+                                     SA_VideoControl, vctags,
                                      TAG_DONE);
   }
   
@@ -390,32 +550,6 @@ void AnimFrameTool::initialize()
   {
     cleanup();
     throw "Couldn't open canvas screen.";
-  }
-
-  
-  if(m_OScanHeight == 0)
-  {
-    // First screen opening, canvas screen is still empty:
-    // Reading the overscan dimensions from its size
-    m_OScanWidth = m_pCanvasScreen->Width;
-    m_OScanHeight = m_pCanvasScreen->Height;
-
-    // Calculate the two main rectangular areas of the control screen
-    m_ResultFrameRect = Rect(m_OScanWidth - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
-                            2 * UI_RASTER_HEIGHT);
-
-    m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
-                                    UI_BEVBOX_WIDTH); // square -> height is width
-    
-    m_ControlsRect = Rect(UI_RASTER_WIDTH, 
-                          m_ResultFrameRect.Top() - 1);
-    
-    m_ControlsRect.SetWidthHeight(m_ResultFrameRect.Left()
-                                    - 2 // width of the bevel box border
-                                    - UI_RASTER_WIDTH,
-                                  m_ResultFrameRect.Bottom() 
-                                    - m_ControlsRect.Top() 
-                                    + 1);
   }
 
   if (!(m_pVisualInfoCanvas = GetVisualInfo(m_pCanvasScreen, TAG_DONE)))
@@ -441,85 +575,7 @@ void AnimFrameTool::initialize()
 
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
 
-  if (!(m_pControlScreen = OpenScreenTags(NULL,
-    SA_DisplayID, VIEW_MODE_ID,
-    SA_Overscan, OSCAN_TEXT,
-    SA_Depth, 2,
-    SA_Pens, pens,
-    SA_Top, CANVAS_HEIGHT,
-    SA_Height, m_OScanHeight-CANVAS_HEIGHT,
-    SA_Parent, m_pCanvasScreen,
-    SA_ShowTitle, FALSE,
-    SA_Draggable, FALSE,
-    SA_VideoControl, vctags,
-    SA_Quiet, TRUE,
-    SA_Font, &Topaz80,
-    TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't open control screen.";
-  }
-
-  if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't get VisualInfo of control screen.";
-  }
-
-  if (!(m_pMenu = CreateMenus(demomenu,
-    TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't create menus.";
-  }
-
-  if (!LayoutMenus(m_pMenu, m_pVisualInfoCanvas,
-                   GTMN_NewLookMenus, TRUE,
-                   TAG_DONE))
-  {
-    cleanup();
-    throw "Couldn't layout menus.";
-  }
-
-  if (!createGadgets(&m_pGadgetList, m_pVisualInfoControl))
-  {
-    cleanup();
-    throw "Couldn't create gadgets.";
-  }
-
-  // A borderless backdrop window so we can get input
-  if (!(m_pControlWindow = OpenWindowTags(NULL,
-                                          WA_NoCareRefresh, TRUE,
-                                          WA_Activate, TRUE,
-                                          WA_Borderless, TRUE,
-                                          WA_Backdrop, TRUE,
-                                          WA_CustomScreen, m_pControlScreen,
-                                          WA_NewLookMenus, TRUE,
-                                          WA_Gadgets, m_pGadgetList,
-                                          TAG_DONE)))
-  {
-    cleanup();
-    throw "Couldn't open control window.";
-  }
-  
-  DrawBevelBox(m_pControlWindow->RPort, 
-               m_ResultFrameRect.Left() - 2,
-               m_ResultFrameRect.Top() - 1,
-               m_ResultFrameRect.Width() + 4,
-               m_ResultFrameRect.Height() + 2,
-               GT_VisualInfo, m_pVisualInfoControl,
-               GTBB_Recessed, TRUE,
-               TAG_DONE);
-
-  m_pControlWindow->UserPort = m_pUserPort;
-  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
-
-  GT_RefreshWindow(m_pControlWindow, NULL);
-  SetMenuStrip(m_pCanvasWindow, m_pMenu);
-  LendMenus(m_pControlWindow, m_pCanvasWindow);
-
-  paintPicture();
-  paintGrid();
+  LendMenus(m_pCanvasWindow, m_pControlWindow);
 }
 
 
@@ -534,7 +590,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   pGadget = CreateContext(ppGadgetList);
 
   ng.ng_LeftEdge = 0;
-  ng.ng_TopEdge = 0;
+  ng.ng_TopEdge = m_pControlScreen->BarHeight + 1;
   ng.ng_Width = m_OScanWidth;
   ng.ng_Height = rowHeight;
   ng.ng_TextAttr = &Topaz80;
@@ -621,21 +677,8 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 }
 
 
-void AnimFrameTool::cleanup()
+void AnimFrameTool::closeCanvas()
 {
-  if(m_pLoadedPicture != NULL)
-  {
-    delete m_pLoadedPicture;
-    m_pLoadedPicture = NULL;
-  }
-
-  if (m_pControlWindow != NULL)
-  {
-    ClearMenuStrip(m_pControlWindow);
-    CloseWindowSafely(m_pControlWindow);
-    m_pControlWindow = NULL;
-  }
-
   if (m_pCanvasWindow != NULL)
   {
     ClearMenuStrip(m_pCanvasWindow);
@@ -643,46 +686,10 @@ void AnimFrameTool::cleanup()
     m_pCanvasWindow = NULL;
   }
 
-  if (m_pControlScreen != NULL)
-  {
-    CloseScreen(m_pControlScreen);
-    m_pControlScreen = NULL;
-  }
-
   if (m_pCanvasScreen != NULL)
   {
     CloseScreen(m_pCanvasScreen);
     m_pCanvasScreen = NULL;
-  }
-
-  if (m_pUserPort != NULL)
-  {
-    DeleteMsgPort(m_pUserPort);
-    m_pUserPort = NULL;
-  }
-
-  if (m_pGadgetList != NULL)
-  {
-    FreeGadgets(m_pGadgetList);
-    m_pGadgetList = NULL;
-  }
-
-  if(m_pMenu != NULL)
-  {
-    FreeMenus(m_pMenu);
-    m_pMenu = NULL;
-  }
-
-  if(m_pVisualInfoCanvas != NULL)
-  {
-    FreeVisualInfo(m_pVisualInfoCanvas);
-    m_pVisualInfoCanvas = NULL;
-  }
-
-  if(m_pVisualInfoControl != NULL)
-  {
-    FreeVisualInfo(m_pVisualInfoControl);
-    m_pVisualInfoControl = NULL;
   }
 }
 

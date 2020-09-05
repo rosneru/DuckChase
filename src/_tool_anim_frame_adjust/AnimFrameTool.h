@@ -80,10 +80,13 @@ private:
   Rect m_ResultFrameRect;
   Rect m_ControlsRect;
 
-  void initialize();
   struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
                                APTR pVisualInfo);
+
   void cleanup();
+
+  void openCanvas();
+  void closeCanvas();
 
   void openAnim();
 
