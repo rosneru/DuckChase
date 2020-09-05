@@ -453,9 +453,9 @@ void AnimFrameTool::paintPicture()
 
   BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
                     0, 0, 
-                    m_pCanvasWindow->RPort, 
+                    &m_pCanvasScreen->RastPort, 
                     0, 0,
-                    m_pLoadedPicture->Width(), CANVAS_HEIGHT, 
+                    m_pLoadedPicture->Width(), m_pLoadedPicture->Height(), 
                     0xc0);
 
   WaitBlit();
@@ -512,13 +512,11 @@ void AnimFrameTool::openCanvas()
     m_pCanvasScreen = OpenScreenTags(NULL,
                                      SA_AutoScroll, 1,
                                      SA_Colors32, m_pLoadedPicture->GetColors32(),
-                                     SA_Depth, 2,
                                      SA_DisplayID, VIEW_MODE_ID,
                                      SA_Depth, m_pLoadedPicture->Depth(),
                                      SA_Draggable, FALSE,
                                      SA_Interleaved, TRUE,
                                      SA_Font, &Topaz80,
-                                     SA_Overscan, OSCAN_TEXT,
                                      SA_Parent, m_pControlScreen,
                                      SA_Quiet, TRUE,
                                      SA_ShowTitle, FALSE,
