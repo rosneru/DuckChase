@@ -1,0 +1,262 @@
+Storm Shell Project (0018)
+Settings (Start)
+C/C++ Environment
+"StormC:include"
+0
+"StormC:stlport"
+0
+"AADevDuck:src/_tool_anim_frame_adjust"
+0
+"/iff"
+0
+"/picture"
+0
+"/shapes"
+0
+Includepath (End)
+0 "" 80
+1 "objects_debug"
+1 0 "makelog.txt"
+""
+0
+0 0
+0
+0 0
+C/C++ Preprozessor
+0 "NDEBUG" ""
+0
+Defines (End)
+1 1 1
+0 0
+C/C++ Options
+1 1 1 2 1 0 0 0 1 0 0 0 0 0 0
+0 0 0
+0
+0 1 0
+C/C++ Optimizer
+9
+C/C++ Warnings
+1 1 1 1 1 1 0 1
+0 0
+GCC Options (1)
+0 "NDEBUG" ""
+0
+Defines (End)
+1 0 0 1 0
+3 0 0 1 1 1 0
+0 2 1 0 0
+0 0 1 0 1 0 0
+0 0 0 0
+0 ""
+2 0 0 0
+1 0 0 1 0 1 0 1 0 1
+1 1 0 1 0 1
+0 1 1 1 1 0 0
+1 0 0 0 0
+Assembler
+0 ""
+0 "CON://640/200/Storm Assembler/AUTO/WAIT/SCREEN StormScreen"
+0 0
+0 1 60 0 1 0 0 20 0
+Sets (End)
+0 1 0 0 0 2 1 0 0
+1 1 1 1 0 0 0 0 0
+1 0
+0 0 0 0 0
+Linker
+0 0 "PROGDIR:startup.o" 0 0 1 0 1 0 0
+"StormC:lib/" 0 "StormC:lib/logfile" 0 0 0
+0 "_WizardSurface"
+0 0 50 0 50 0 50 0 0
+0 0 0 0 0 0 0 0
+Run
+30 "" "" "" 0
+""
+
+1 "CON://400/180/Storm Console/AUTO/WAIT/SCREEN StormScreen" "RAM:Output" "RAM:Input"
+1 0
+0 0 0 "" ""
+Settings (End)
+Storm Shell Project (Custom Sections End)
+Section
+1 1 100
+0 1 1 0
+4
+File
+1 "AnimFrameTool.cpp"
+"AnimFrameTool.cpp"
+"AslFileRequest.h"
+"MessageBox.h"
+"AnimFrameTool.h"
+"/picture/BitmapPictureBase.h"
+"/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AnimFrameTool.o" "objects_debug/AnimFrameTool.debug"
+""
+1 1
+File
+1 "AslFileRequest.cpp"
+"AslFileRequest.cpp"
+"AslFileRequest.h"
+Storm Shell Project (Dependencies)
+"objects_debug/AslFileRequest.o" "objects_debug/AslFileRequest.debug"
+""
+1 1
+File
+1 "main.cpp"
+"main.cpp"
+"AnimFrameTool.h"
+"/picture/BitmapPictureBase.h"
+"/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/main.o" "objects_debug/main.debug"
+""
+1 1
+File
+1 "MessageBox.cpp"
+"MessageBox.cpp"
+"MessageBox.h"
+Storm Shell Project (Dependencies)
+"objects_debug/MessageBox.o" "objects_debug/MessageBox.debug"
+""
+1 1
+File
+1 "Shared:dev/projects_2018_2020/DuckChase/src/iff/IffParse.cpp"
+"Shared:dev/projects_2018_2020/DuckChase/src/iff/IffParse.cpp"
+"/iff/IffParse.h"
+Storm Shell Project (Dependencies)
+"objects_debug/IffParse.o" "objects_debug/IffParse.debug"
+""
+1 1
+File
+1 "Shared:dev/projects_2018_2020/DuckChase/src/picture/BitmapPictureBase.cpp"
+"Shared:dev/projects_2018_2020/DuckChase/src/picture/BitmapPictureBase.cpp"
+"/picture/BitmapPictureBase.h"
+"/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/BitmapPictureBase.o" "objects_debug/BitmapPictureBase.debug"
+""
+1 1
+File
+1 "Shared:dev/projects_2018_2020/DuckChase/src/picture/IlbmBitmap.cpp"
+"Shared:dev/projects_2018_2020/DuckChase/src/picture/IlbmBitmap.cpp"
+"/picture/IlbmBitmap.h"
+"/picture/BitmapPictureBase.h"
+"/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/IlbmBitmap.o" "objects_debug/IlbmBitmap.debug"
+""
+1 1
+File
+1 "Shared:dev/projects_2018_2020/DuckChase/src/picture/PictureBase.cpp"
+"Shared:dev/projects_2018_2020/DuckChase/src/picture/PictureBase.cpp"
+"/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"objects_debug/PictureBase.o" "objects_debug/PictureBase.debug"
+""
+1 1
+File
+1 "Shared:dev/projects_2018_2020/DuckChase/src/shapes/Rect.cpp"
+"Shared:dev/projects_2018_2020/DuckChase/src/shapes/Rect.cpp"
+"/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"objects_debug/Rect.o" "objects_debug/Rect.debug"
+""
+1 1
+Section
+2 1 95
+0 1 1 0
+2
+File
+2 "AnimFrameTool.h"
+"AnimFrameTool.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "AslFileRequest.h"
+"AslFileRequest.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "MessageBox.h"
+"MessageBox.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "Shared:dev/projects_2018_2020/DuckChase/src/iff/IffParse.h"
+"Shared:dev/projects_2018_2020/DuckChase/src/iff/IffParse.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "Shared:dev/projects_2018_2020/DuckChase/src/picture/BitmapPictureBase.h"
+"Shared:dev/projects_2018_2020/DuckChase/src/picture/BitmapPictureBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "Shared:dev/projects_2018_2020/DuckChase/src/picture/IlbmBitmap.h"
+"Shared:dev/projects_2018_2020/DuckChase/src/picture/IlbmBitmap.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "Shared:dev/projects_2018_2020/DuckChase/src/picture/PictureBase.h"
+"Shared:dev/projects_2018_2020/DuckChase/src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "Shared:dev/projects_2018_2020/DuckChase/src/shapes/Rect.h"
+"Shared:dev/projects_2018_2020/DuckChase/src/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+10 1 40
+0 0 0 0
+7
+File
+10 "AnimFrameTool"
+"AnimFrameTool"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+5 1 -50
+0 0 0 0
+7
+File
+5 "storm.lib"
+"storm.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "amiga.lib"
+"amiga.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "debug.lib"
+"debug.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Storm Shell Project (End)
