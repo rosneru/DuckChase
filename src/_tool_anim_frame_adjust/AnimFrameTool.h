@@ -38,7 +38,7 @@ private:
 
   enum GadgetId
   {
-    GID_SlideHScroll,
+    GID_HScroll,
     GID_TextFilename,
     GID_SlideFrameWordWidth,
     GID_ButtonPlay,
@@ -88,7 +88,7 @@ private:
   void openCanvas();
   void closeCanvas();
 
-  void openAnim();
+  void openAnimPicture();
 
   void paintPicture();
   void paintGrid();

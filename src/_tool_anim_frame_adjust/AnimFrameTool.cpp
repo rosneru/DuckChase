@@ -324,7 +324,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
   case IDCMP_MOUSEMOVE:
     switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
     {
-    case GID_SlideHScroll:
+    case GID_HScroll:
       // TODO
       break;
 
@@ -364,7 +364,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-        openAnim();
+        openAnimPicture();
         break;
 
       case MID_ProjectSaveAnim:
@@ -398,7 +398,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
 
 
-void AnimFrameTool::openAnim()
+void AnimFrameTool::openAnimPicture()
 {
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile("Open anim picture", 
@@ -659,15 +659,16 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_TopEdge = m_pControlScreen->Height - CANVAS_HEIGHT - rowHeight - 3; // Bottom of control screen
   ng.ng_Width = m_OScanWidth;
   ng.ng_GadgetText = NULL;
-  ng.ng_GadgetID = GID_SlideHScroll;
+  ng.ng_GadgetID = GID_HScroll;
   ng.ng_Flags = 0;
 
-  m_pGadgetSlideHScroll = pGadget = CreateGadget(SLIDER_KIND, 
+  m_pGadgetSlideHScroll = pGadget = CreateGadget(SCROLLER_KIND, 
                                                  pGadget, 
                                                  &ng,
-                                                 GTSL_Min, 0,
-                                                 GTSL_Max, 0,
-                                                 GTSL_Level, 0,
+                                                 GTSC_Top, 0,
+                                                 GTSC_Total, 0,
+                                                 GTSC_Visible, 0,
+                                                 GTSC_Arrows, rowHeight + 1,
                                                  TAG_DONE);
 
   return pGadget;
