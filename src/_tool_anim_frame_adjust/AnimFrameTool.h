@@ -63,7 +63,7 @@ private:
   struct Window* m_pControlWindow;
 
   struct Gadget* m_pGadgetList;
-  struct Gadget* m_pGadgetSlideHScroll;
+  struct Gadget* m_pGadgetHScroll;
   struct Gadget* m_pGadgetTextFilename;
   struct Gadget* m_pGadgetFrameWidth;
   struct Gadget* m_pGadgetButtonPlay;

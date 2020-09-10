@@ -70,7 +70,7 @@ AnimFrameTool::AnimFrameTool()
     m_pCanvasWindow(NULL),
     m_pControlWindow(NULL),
     m_pGadgetList(NULL),
-    m_pGadgetSlideHScroll(NULL),
+    m_pGadgetHScroll(NULL),
     m_pGadgetTextFilename(NULL),
     m_pGadgetFrameWidth(NULL),
     m_pGadgetButtonPlay(NULL),
@@ -570,10 +570,18 @@ void AnimFrameTool::openCanvas()
   }
 
   m_pCanvasWindow->UserPort = m_pUserPort;
-
   ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
-
   LendMenus(m_pCanvasWindow, m_pControlWindow);
+
+  // Adjust the scroller gadget to left<->right scroll the screen
+  if(m_pLoadedPicture != NULL)
+  {
+    GT_SetGadgetAttrs(m_pGadgetHScroll, m_pControlWindow, NULL,
+                      GTSC_Top, 0,
+                      GTSC_Total, m_pLoadedPicture->Width(),
+                      GTSC_Visible, m_pControlScreen->Width,
+                      TAG_DONE);
+  }
 }
 
 
@@ -662,14 +670,14 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_GadgetID = GID_HScroll;
   ng.ng_Flags = 0;
 
-  m_pGadgetSlideHScroll = pGadget = CreateGadget(SCROLLER_KIND, 
-                                                 pGadget, 
-                                                 &ng,
-                                                 GTSC_Top, 0,
-                                                 GTSC_Total, 0,
-                                                 GTSC_Visible, 0,
-                                                 GTSC_Arrows, rowHeight + 1,
-                                                 TAG_DONE);
+  m_pGadgetHScroll = pGadget = CreateGadget(SCROLLER_KIND, 
+                                            pGadget, 
+                                            &ng,
+                                            GTSC_Top, 0,
+                                            GTSC_Total, 0,
+                                            GTSC_Visible, 0,
+                                            GTSC_Arrows, rowHeight + 1,
+                                            TAG_DONE);
 
   return pGadget;
 }
