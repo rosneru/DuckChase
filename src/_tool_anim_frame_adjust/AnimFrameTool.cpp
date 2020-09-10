@@ -124,7 +124,7 @@ AnimFrameTool::AnimFrameTool()
 
   // Calculate the two main rectangular areas of the control screen
   m_ResultFrameRect = Rect(m_OScanWidth - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
-                           m_pControlScreen->BarHeight + 2 * UI_RASTER_HEIGHT);
+                           m_pControlScreen->BarHeight + UI_RASTER_HEIGHT); // TODO maybe only UI_RASTER_HEIGHT / 2 ??
 
   m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
                                    UI_BEVBOX_WIDTH); // square -> height is width
@@ -587,28 +587,12 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
   pGadget = CreateContext(ppGadgetList);
 
-  ng.ng_LeftEdge = 0;
-  ng.ng_TopEdge = m_pControlScreen->BarHeight + 1;
-  ng.ng_Width = m_OScanWidth;
-  ng.ng_Height = rowHeight;
-  ng.ng_TextAttr = &Topaz80;
-  ng.ng_GadgetText = NULL;
-  ng.ng_VisualInfo = pVisualInfo;
-  ng.ng_GadgetID = GID_SlideHScroll;
-  ng.ng_Flags = 0;
-
-  m_pGadgetSlideHScroll = pGadget = CreateGadget(SLIDER_KIND, 
-                                                 pGadget, 
-                                                 &ng,
-                                                 GTSL_Min, 0,
-                                                 GTSL_Max, 0,
-                                                 GTSL_Level, 0,
-                                                 TAG_DONE);
-
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_Width = m_ResultFrameRect.Right() - ng.ng_LeftEdge + 2;
-
+  ng.ng_Height = rowHeight;
+  ng.ng_TextAttr = &Topaz80;
+  ng.ng_VisualInfo = pVisualInfo;
   ng.ng_GadgetID = GID_TextFilename;
   ng.ng_Flags = NG_HIGHLABEL;
   ng.ng_GadgetText = (UBYTE*) "File:    ";
@@ -670,6 +654,21 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
   m_pGadgetButtonStop = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
                                                TAG_DONE);
+
+  ng.ng_LeftEdge = 0;
+  ng.ng_TopEdge = m_pControlScreen->Height - CANVAS_HEIGHT - rowHeight - 3; // Bottom of control screen
+  ng.ng_Width = m_OScanWidth;
+  ng.ng_GadgetText = NULL;
+  ng.ng_GadgetID = GID_SlideHScroll;
+  ng.ng_Flags = 0;
+
+  m_pGadgetSlideHScroll = pGadget = CreateGadget(SLIDER_KIND, 
+                                                 pGadget, 
+                                                 &ng,
+                                                 GTSL_Min, 0,
+                                                 GTSL_Max, 0,
+                                                 GTSL_Level, 0,
+                                                 TAG_DONE);
 
   return pGadget;
 }
