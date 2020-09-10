@@ -1,0 +1,977 @@
+Storm Shell Project (0018)
+Settings (Start)
+C/C++ Environment
+"StormC:include"
+0
+"src/amigautils/"
+0
+"src/anim/"
+0
+"src/entities/"
+0
+"src/game/"
+0
+"src/iff/"
+0
+"src/picture/"
+0
+"src/resources/"
+0
+"src/shapes/"
+0
+"src/sound/"
+0
+"src/view/"
+0
+Includepath (End)
+0 "" 80
+1 "build-stormc"
+1 0 "makelog.txt"
+""
+0
+0 0
+0
+0 0
+C/C++ Preprozessor
+0 "NDEBUG" ""
+0
+Defines (End)
+1 1 1
+0 0
+C/C++ Options
+1 1 1 2 1 0 0 0 1 0 0 0 0 0 0
+0 0 0
+0
+0 1 0
+C/C++ Optimizer
+9
+C/C++ Warnings
+1 1 1 1 1 1 0 1
+0 0
+GCC Options (1)
+0 "NDEBUG" ""
+0
+Defines (End)
+1 0 0 1 0
+3 0 0 1 1 1 0
+0 2 1 0 0
+0 0 1 0 1 0 0
+0 0 0 0
+0 ""
+2 0 0 0
+1 0 0 1 0 1 0 1 0 1
+1 1 0 1 0 1
+0 1 1 1 1 0 0
+1 0 0 0 0
+Assembler
+0 ""
+0 "CON://640/200/Storm Assembler/AUTO/WAIT/SCREEN StormScreen"
+0 0
+0 1 60 0 1 0 0 20 0
+Sets (End)
+0 1 0 0 0 2 1 0 0
+1 1 1 1 0 0 0 0 0
+1 0
+0 0 0 0 0
+Linker
+0 0 "PROGDIR:startup.o" 0 0 1 0 1 0 0
+"StormC:lib/" 0 "StormC:lib/logfile" 0 0 0
+0 "_WizardSurface"
+0 0 50 0 50 0 50 0 0
+0 0 0 0 0 0 0 0
+Run
+30 "" "" "" 0
+""
+
+1 "CON://400/180/Storm Console/AUTO/WAIT/SCREEN StormScreen" "RAM:Output" "RAM:Input"
+1 0
+0 0 0 "" ""
+Settings (End)
+Storm Shell Project (Custom Sections End)
+Section
+1 1 100
+0 1 1 0
+4
+File
+1 "src/amigautils/StopWatch.cpp"
+"src/amigautils/StopWatch.cpp"
+"src/amigautils/StopWatch.h"
+Storm Shell Project (Dependencies)
+"build-stormc/StopWatch.o" "build-stormc/StopWatch.debug"
+""
+1 1
+File
+1 "src/anim/AnimSeqBase.cpp"
+"src/anim/AnimSeqBase.cpp"
+"src/anim/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/AnimSeqBase.o" "build-stormc/AnimSeqBase.debug"
+""
+1 1
+File
+1 "src/anim/AnimSeqBitmap.cpp"
+"src/anim/AnimSeqBitmap.cpp"
+"src/anim/AnimSeqBitmap.h"
+"src/anim/AnimSeqBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/AnimSeqBitmap.o" "build-stormc/AnimSeqBitmap.debug"
+""
+1 1
+File
+1 "src/anim/AnimSeqExtSprite.cpp"
+"src/anim/AnimSeqExtSprite.cpp"
+"src/anim/AnimSeqExtSprite.h"
+"src/anim/AnimSeqBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/AnimSeqExtSprite.o" "build-stormc/AnimSeqExtSprite.debug"
+""
+1 1
+File
+1 "src/anim/AnimSeqGels.cpp"
+"src/anim/AnimSeqGels.cpp"
+"src/picture/PictureBase.h"
+"src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/AnimSeqGels.o" "build-stormc/AnimSeqGels.debug"
+""
+1 1
+File
+1 "src/anim/AnimSeqGelsBob.cpp"
+"src/anim/AnimSeqGelsBob.cpp"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/anim/AnimSeqGelsBob.h"
+"src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/AnimSeqGelsBob.o" "build-stormc/AnimSeqGelsBob.debug"
+""
+1 1
+File
+1 "src/anim/AnimSeqGelsVSprite.cpp"
+"src/anim/AnimSeqGelsVSprite.cpp"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/anim/AnimSeqGelsVSprite.h"
+"src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/AnimSeqGelsVSprite.o" "build-stormc/AnimSeqGelsVSprite.debug"
+""
+1 1
+File
+1 "src/anim/ShadowMask.cpp"
+"src/anim/ShadowMask.cpp"
+"src/anim/ShadowMask.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ShadowMask.o" "build-stormc/ShadowMask.debug"
+""
+1 1
+File
+1 "src/entities/Arrow.cpp"
+"src/entities/Arrow.cpp"
+"src/entities/Arrow.h"
+"src/anim/AnimSeqBase.h"
+"src/entities/ArrowGfxResources.h"
+"src/entities/Duck.h"
+"src/anim/AnimSeqGels.h"
+"src/entities/DuckGfxResources.h"
+"src/entities/EntityBase.h"
+"src/game/GameTile.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Arrow.o" "build-stormc/Arrow.debug"
+""
+1 1
+File
+1 "src/entities/ArrowGfxResources.cpp"
+"src/entities/ArrowGfxResources.cpp"
+"src/entities/ArrowGfxResources.h"
+"src/anim/AnimSeqBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ArrowGfxResources.o" "build-stormc/ArrowGfxResources.debug"
+""
+1 1
+File
+1 "src/entities/Duck.cpp"
+"src/entities/Duck.cpp"
+"src/entities/Duck.h"
+"src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqBase.h"
+"src/entities/DuckGfxResources.h"
+"src/entities/EntityBase.h"
+"src/game/GameTile.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Duck.o" "build-stormc/Duck.debug"
+""
+1 1
+File
+1 "src/entities/DuckGfxResources.cpp"
+"src/entities/DuckGfxResources.cpp"
+"src/entities/DuckGfxResources.h"
+"src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/DuckGfxResources.o" "build-stormc/DuckGfxResources.debug"
+""
+1 1
+File
+1 "src/entities/EntityBase.cpp"
+"src/entities/EntityBase.cpp"
+"src/entities/EntityBase.h"
+"src/game/GameTile.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/EntityBase.o" "build-stormc/EntityBase.debug"
+""
+1 1
+File
+1 "src/entities/EntityCollection.cpp"
+"src/entities/EntityCollection.cpp"
+"src/entities/EntityCollection.h"
+"src/entities/EntityBase.h"
+"src/game/GameTile.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/EntityCollection.o" "build-stormc/EntityCollection.debug"
+""
+1 1
+File
+1 "src/entities/Hunter.cpp"
+"src/entities/Hunter.cpp"
+"src/entities/Hunter.h"
+"src/entities/Arrow.h"
+"src/anim/AnimSeqBase.h"
+"src/entities/ArrowGfxResources.h"
+"src/entities/Duck.h"
+"src/anim/AnimSeqGels.h"
+"src/entities/DuckGfxResources.h"
+"src/entities/EntityBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/entities/HunterGfxResources.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Hunter.o" "build-stormc/Hunter.debug"
+""
+1 1
+File
+1 "src/entities/HunterGfxResources.cpp"
+"src/entities/HunterGfxResources.cpp"
+"src/entities/HunterGfxResources.h"
+"src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/HunterGfxResources.o" "build-stormc/HunterGfxResources.debug"
+""
+1 1
+File
+1 "src/game/Game.cpp"
+"src/game/Game.cpp"
+"src/game/Level01.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/game/GameVars.h"
+"src/game/GameWorld.h"
+"src/game/GameTile.h"
+"src/entities/EntityBase.h"
+"src/anim/AnimSeqBase.h"
+"src/entities/ArrowGfxResources.h"
+"src/entities/Duck.h"
+"src/anim/AnimSeqGels.h"
+"src/entities/DuckGfxResources.h"
+"src/entities/HunterGfxResources.h"
+"src/game/InfoDisplay.h"
+"src/game/Game.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Game.o" "build-stormc/Game.debug"
+""
+1 1
+File
+1 "src/game/GameColors.cpp"
+"src/game/GameColors.cpp"
+"src/game/GameColors.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameColors.o" "build-stormc/GameColors.debug"
+""
+1 1
+File
+1 "src/game/GameTile.cpp"
+"src/game/GameTile.cpp"
+"src/game/GameTile.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameTile.o" "build-stormc/GameTile.debug"
+""
+1 1
+File
+1 "src/game/GameVars.cpp"
+"src/game/GameVars.cpp"
+"src/game/GameVars.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameVars.o" "build-stormc/GameVars.debug"
+""
+1 1
+File
+1 "src/game/GameWorld.cpp"
+"src/game/GameWorld.cpp"
+"src/game/GameWorld.h"
+"src/game/GameTile.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameWorld.o" "build-stormc/GameWorld.debug"
+""
+1 1
+File
+1 "src/game/InfoDisplay.cpp"
+"src/game/InfoDisplay.cpp"
+"src/game/InfoDisplay.h"
+"src/anim/AnimSeqBase.h"
+"src/game/GameColors.h"
+"src/game/GameVars.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/InfoDisplay.o" "build-stormc/InfoDisplay.debug"
+""
+1 1
+File
+1 "src/game/Level01.cpp"
+"src/game/Level01.cpp"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/game/Level01.h"
+"src/game/GameVars.h"
+"src/game/GameWorld.h"
+"src/game/GameTile.h"
+"src/entities/EntityBase.h"
+"src/anim/AnimSeqBase.h"
+"src/entities/ArrowGfxResources.h"
+"src/entities/Duck.h"
+"src/anim/AnimSeqGels.h"
+"src/entities/DuckGfxResources.h"
+"src/entities/HunterGfxResources.h"
+"src/game/InfoDisplay.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Level01.o" "build-stormc/Level01.debug"
+""
+1 1
+File
+1 "src/iff/IffParse.cpp"
+"src/iff/IffParse.cpp"
+"src/iff/IffParse.h"
+Storm Shell Project (Dependencies)
+"build-stormc/IffParse.o" "build-stormc/IffParse.debug"
+""
+1 1
+File
+1 "src/main.cpp"
+"src/main.cpp"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/game/GameColors.h"
+"src/game/GameVars.h"
+"src/game/GameWorld.h"
+"src/game/GameTile.h"
+"src/game/InfoDisplay.h"
+"src/anim/AnimSeqBase.h"
+"src/view/lowlevelview.h"
+"src/view/lowlevelviewport.h"
+Storm Shell Project (Dependencies)
+"build-stormc/main.o" "build-stormc/main.debug"
+""
+1 1
+File
+1 "src/picture/BitmapPictureBase.cpp"
+"src/picture/BitmapPictureBase.cpp"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/BitmapPictureBase.o" "build-stormc/BitmapPictureBase.debug"
+""
+1 1
+File
+1 "src/picture/IlbmBitmap.cpp"
+"src/picture/IlbmBitmap.cpp"
+"src/picture/IlbmBitmap.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/IlbmBitmap.o" "build-stormc/IlbmBitmap.debug"
+""
+1 1
+File
+1 "src/picture/ImageDataPicture.cpp"
+"src/picture/ImageDataPicture.cpp"
+"src/picture/ImageDataPicture.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ImageDataPicture.o" "build-stormc/ImageDataPicture.debug"
+""
+1 1
+File
+1 "src/picture/PictureBase.cpp"
+"src/picture/PictureBase.cpp"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/PictureBase.o" "build-stormc/PictureBase.debug"
+""
+1 1
+File
+1 "src/picture/RawBitmap.cpp"
+"src/picture/RawBitmap.cpp"
+"src/picture/RawBitmap.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/RawBitmap.o" "build-stormc/RawBitmap.debug"
+""
+1 1
+File
+1 "src/shapes/GelsLayer.cpp"
+"src/shapes/GelsLayer.cpp"
+"src/shapes/GelsLayer.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GelsLayer.o" "build-stormc/GelsLayer.debug"
+""
+1 1
+File
+1 "src/shapes/Rect.cpp"
+"src/shapes/Rect.cpp"
+"src/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Rect.o" "build-stormc/Rect.debug"
+""
+1 1
+File
+1 "src/shapes/ShapeBase.cpp"
+"src/shapes/ShapeBase.cpp"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/shapes/ShapeBase.h"
+"src/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ShapeBase.o" "build-stormc/ShapeBase.debug"
+""
+1 1
+File
+1 "src/shapes/ShapeBob.cpp"
+"src/shapes/ShapeBob.cpp"
+"src/shapes/ShapeBob.h"
+"src/anim/AnimSeqBase.h"
+"src/shapes/ShapeBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ShapeBob.o" "build-stormc/ShapeBob.debug"
+""
+1 1
+File
+1 "src/shapes/ShapeExtSprite.cpp"
+"src/shapes/ShapeExtSprite.cpp"
+"src/shapes/ShapeExtSprite.h"
+"src/anim/AnimSeqBase.h"
+"src/shapes/ShapeBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ShapeExtSprite.o" "build-stormc/ShapeExtSprite.debug"
+""
+1 1
+File
+1 "src/shapes/ShapeVSprite.cpp"
+"src/shapes/ShapeVSprite.cpp"
+"src/shapes/ShapeVSprite.h"
+"src/anim/AnimSeqBase.h"
+"src/shapes/ShapeBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/ShapeVSprite.o" "build-stormc/ShapeVSprite.debug"
+""
+1 1
+File
+1 "src/sound/Octave.cpp"
+"src/sound/Octave.cpp"
+"src/sound/Octave.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Octave.o" "build-stormc/Octave.debug"
+""
+1 1
+File
+1 "src/sound/Soundfile8SVX.cpp"
+"src/sound/Soundfile8SVX.cpp"
+"src/sound/Soundfile8SVX.h"
+"src/sound/Octave.h"
+"src/sound/Voice8Header.h"
+Storm Shell Project (Dependencies)
+"build-stormc/Soundfile8SVX.o" "build-stormc/Soundfile8SVX.debug"
+""
+1 1
+File
+1 "src/sound/SoundPlayer.cpp"
+"src/sound/SoundPlayer.cpp"
+"src/sound/SoundPlayer.h"
+"src/sound/Soundfile8SVX.h"
+"src/sound/Octave.h"
+"src/sound/Voice8Header.h"
+Storm Shell Project (Dependencies)
+"build-stormc/SoundPlayer.o" "build-stormc/SoundPlayer.debug"
+""
+1 1
+File
+1 "src/view/GameViewBase.cpp"
+"src/view/GameViewBase.cpp"
+"src/view/GameViewBase.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameViewBase.o" "build-stormc/GameViewBase.debug"
+""
+1 1
+File
+1 "src/view/GameViewIntui.cpp"
+"src/view/GameViewIntui.cpp"
+"src/view/GameViewIntui.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/view/GameViewBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameViewIntui.o" "build-stormc/GameViewIntui.debug"
+""
+1 1
+File
+1 "src/view/GameViewLowLevel.cpp"
+"src/view/GameViewLowLevel.cpp"
+"src/view/GameViewLowLevel.h"
+"src/view/lowlevelview.h"
+"src/view/lowlevelviewport.h"
+"src/picture/BitmapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/view/GameViewBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc/GameViewLowLevel.o" "build-stormc/GameViewLowLevel.debug"
+""
+1 1
+File
+1 "src/view/lowlevelview.cpp"
+"src/view/lowlevelview.cpp"
+"src/view/lowlevelview.h"
+Storm Shell Project (Dependencies)
+"build-stormc/lowlevelview.o" "build-stormc/lowlevelview.debug"
+""
+1 1
+File
+1 "src/view/lowlevelviewport.cpp"
+"src/view/lowlevelviewport.cpp"
+"src/view/lowlevelviewport.h"
+Storm Shell Project (Dependencies)
+"build-stormc/lowlevelviewport.o" "build-stormc/lowlevelviewport.debug"
+""
+1 1
+Section
+2 1 95
+0 1 1 0
+2
+File
+2 "src/amigautils/StopWatch.h"
+"src/amigautils/StopWatch.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/Animator.h"
+"src/anim/Animator.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/AnimSeqBase.h"
+"src/anim/AnimSeqBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/AnimSeqBitmap.h"
+"src/anim/AnimSeqBitmap.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/AnimSeqExtSprite.h"
+"src/anim/AnimSeqExtSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/AnimSeqGels.h"
+"src/anim/AnimSeqGels.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/AnimSeqGelsBob.h"
+"src/anim/AnimSeqGelsBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/AnimSeqGelsVSprite.h"
+"src/anim/AnimSeqGelsVSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/anim/ShadowMask.h"
+"src/anim/ShadowMask.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/Arrow.h"
+"src/entities/Arrow.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/ArrowGfxResources.h"
+"src/entities/ArrowGfxResources.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/Duck.h"
+"src/entities/Duck.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/DuckGfxResources.h"
+"src/entities/DuckGfxResources.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/EntityBase.h"
+"src/entities/EntityBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/EntityCollection.h"
+"src/entities/EntityCollection.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/Hunter.h"
+"src/entities/Hunter.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/entities/HunterGfxResources.h"
+"src/entities/HunterGfxResources.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/Game.h"
+"src/game/Game.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/GameColors.h"
+"src/game/GameColors.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/GameTile.h"
+"src/game/GameTile.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/GameVars.h"
+"src/game/GameVars.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/GameWorld.h"
+"src/game/GameWorld.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/InfoDisplay.h"
+"src/game/InfoDisplay.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/game/Level01.h"
+"src/game/Level01.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/iff/IffParse.h"
+"src/iff/IffParse.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/picture/BitmapPictureBase.h"
+"src/picture/BitmapPictureBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/picture/IlbmBitmap.h"
+"src/picture/IlbmBitmap.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/picture/ImageDataPicture.h"
+"src/picture/ImageDataPicture.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/picture/PictureBase.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/picture/RawBitmap.h"
+"src/picture/RawBitmap.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/resources/GfxResourceBase.h"
+"src/resources/GfxResourceBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/resources/GfxResourceExtSprite.h"
+"src/resources/GfxResourceExtSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/resources/GfxResourceGELs.h"
+"src/resources/GfxResourceGELs.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/shapes/GelsLayer.h"
+"src/shapes/GelsLayer.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/shapes/Rect.h"
+"src/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/shapes/ShapeBase.h"
+"src/shapes/ShapeBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/shapes/ShapeBob.h"
+"src/shapes/ShapeBob.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/shapes/ShapeExtSprite.h"
+"src/shapes/ShapeExtSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/shapes/ShapeVSprite.h"
+"src/shapes/ShapeVSprite.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/sound/Octave.h"
+"src/sound/Octave.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/sound/Soundfile8SVX.h"
+"src/sound/Soundfile8SVX.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/sound/SoundPlayer.h"
+"src/sound/SoundPlayer.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/sound/Voice8Header.h"
+"src/sound/Voice8Header.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/view/GameViewBase.h"
+"src/view/GameViewBase.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/view/GameViewIntui.h"
+"src/view/GameViewIntui.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/view/GameViewLowLevel.h"
+"src/view/GameViewLowLevel.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/view/lowlevelview.h"
+"src/view/lowlevelview.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/view/lowlevelviewport.h"
+"src/view/lowlevelviewport.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+10 1 40
+0 0 0 0
+7
+File
+10 "DuckChase_stormc"
+"DuckChase_stormc"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+5 1 -50
+0 0 0 0
+7
+File
+5 "storm.lib"
+"storm.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "amiga.lib"
+"amiga.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+5 "debug.lib"
+"debug.lib"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Section
+11 1 -120
+0 0 0 0
+7
+File
+11 "src/game/InfoDisplay.cpp.old"
+"src/game/InfoDisplay.cpp.old"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+Storm Shell Project (End)

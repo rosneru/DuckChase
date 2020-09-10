@@ -2,8 +2,6 @@
 cmake_minimum_required (VERSION 2.8.11)
 
 
-#project (DokeyKong-Amiga-C)
-
 set(CROSS_COMPILE m68k-amigaos-)
 
 SET(CMAKE_CXX_COMPILER m68k-amigaos-g++)
@@ -14,7 +12,7 @@ SET(CMAKE_CXX_FLAGS_RELEASE "-noixemul -fomit-frame-pointer -fno-rtti -Wall -Os 
 
 set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <FLAGS> <CMAKE_CXX_LINK_FLAGS> <OBJECTS>  -o <TARGET>")
 
-add_executable (DuckChase
+add_executable (DuckChase_gcc
                 amigautils/StopWatch.cpp
                 anim/Animator.h
                 anim/AnimSeqBase.cpp
@@ -62,7 +60,7 @@ add_executable (DuckChase
                 view/lowlevelviewport.cpp)
 
 
-target_include_directories (DuckChase PUBLIC
+target_include_directories (DuckChase_gcc PUBLIC
                             amigautils
                             anim
                             entities
@@ -75,10 +73,10 @@ target_include_directories (DuckChase PUBLIC
                             view
                             .)
 
-add_custom_command(TARGET DuckChase
+add_custom_command(TARGET DuckChase_gcc
                    POST_BUILD
-                   COMMAND cp DuckChase ${CMAKE_CURRENT_SOURCE_DIR}/..
-                   DEPENDS DuckChase)
+                   COMMAND cp DuckChase_gcc ${CMAKE_CURRENT_SOURCE_DIR}/..
+                   DEPENDS DuckChase_gcc)
 
 
 
