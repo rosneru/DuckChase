@@ -310,8 +310,6 @@ void AnimFrameTool::Run()
 }
 
 
-
-
 bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 {
   UWORD code = pIntuiMsg->Code;
@@ -325,8 +323,19 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
     {
     case GID_HScroll:
-      // TODO
+    {
+      // Get new top position of the scroller
+      ULONG newTop;
+      GT_GetGadgetAttrs(m_pGadgetHScroll, m_pControlWindow, NULL, 
+                        GTSC_Top, &newTop,
+                        TAG_DONE);
+      
+      // Scroll canvas screens viewport to the new position
+      m_pCanvasScreen->ViewPort.RasInfo->RxOffset = newTop;
+      ScrollVPort(&m_pCanvasScreen->ViewPort);
       break;
+
+    }
 
     case GID_SlideFrameWordWidth:
       // TODO
