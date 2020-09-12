@@ -124,7 +124,7 @@ AnimFrameTool::AnimFrameTool()
 
   // Calculate the two main rectangular areas of the control screen
   m_ResultFrameRect = Rect(m_OScanWidth - UI_RASTER_WIDTH - UI_BEVBOX_WIDTH - 4,
-                           m_pControlScreen->BarHeight + UI_RASTER_HEIGHT); // TODO maybe only UI_RASTER_HEIGHT / 2 ??
+                           m_pControlScreen->BarHeight + UI_RASTER_HEIGHT + 6); // TODO maybe only UI_RASTER_HEIGHT / 2 ??
 
   m_ResultFrameRect.SetWidthHeight(UI_BEVBOX_WIDTH, 
                                    UI_BEVBOX_WIDTH); // square -> height is width
@@ -642,7 +642,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   pGadget = CreateContext(ppGadgetList);
 
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
-  ng.ng_TopEdge += UI_RASTER_HEIGHT;
+  ng.ng_TopEdge = m_ControlsRect.Top() - UI_RASTER_HEIGHT;
   ng.ng_Width = m_ResultFrameRect.Right() - ng.ng_LeftEdge + 2;
   ng.ng_Height = rowHeight;
   ng.ng_TextAttr = &Topaz80;
@@ -656,7 +656,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                                  GTTX_Text, m_Filename.c_str(),
                                                  TAG_DONE);
 
-  ng.ng_TopEdge = m_ControlsRect.Top();
+  ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
   ng.ng_GadgetID = GID_SlideFrameWordWidth;
   ng.ng_GadgetText = (UBYTE*) "FWidth:    ";
