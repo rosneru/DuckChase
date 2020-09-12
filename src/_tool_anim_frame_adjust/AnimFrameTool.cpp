@@ -7,6 +7,8 @@
 #include <clib/intuition_protos.h>
 #include <clib/gadtools_protos.h>
 
+#include <math.h>
+#include <stdio.h>
 
 #include "AslFileRequest.h"
 #include "MessageBox.h"
@@ -92,7 +94,7 @@ AnimFrameTool::AnimFrameTool()
   {
     { NM_TITLE, "Project",             0 , 0, 0, 0, },
     {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Open anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
+    {  NM_ITEM, "Save anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
     {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
@@ -377,7 +379,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-        openAnimPicture();
+        loadAnimPicture();
         break;
 
       case MID_ProjectSaveAnim:
@@ -411,7 +413,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
 
 
-void AnimFrameTool::openAnimPicture()
+void AnimFrameTool::loadAnimPicture()
 {
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile("Open anim picture", 
@@ -462,6 +464,13 @@ void AnimFrameTool::openAnimPicture()
 
 void AnimFrameTool::calcFrameRects()
 {
+  if(m_pLoadedPicture == NULL)
+  {
+    return;
+  }
+
+  m_CurrentFrameIdx = 0;
+
   LONG wordWidth;
   if(1 != GT_GetGadgetAttrs(m_pGadgetFrameWidth, 
                             m_pControlWindow, 
@@ -481,20 +490,44 @@ void AnimFrameTool::calcFrameRects()
   m_FrameRects.clear();
   
   // Create the needed number of yet uninitialized Rects
-  size_t numFrames = m_pCanvasScreen->Width / frameWidth;
-  for(size_t i = 0; i < numFrames; i++)
+  m_NumFrames = m_pLoadedPicture->Width() / frameWidth;
+  for(int i = 0; i < m_NumFrames; i++)
   {
     m_FrameRects.push_back(Rect());
   }
 
   // Initialize the rects
-  for(size_t i = 0; i < numFrames; i++)
+  for(int i = 0; i < m_NumFrames; i++)
   {
-    m_FrameRects[i].Set(i * frameWidth,             // left
-                        0,                          // top
-                        ((i+1) * frameWidth) - 1,   // right
-                        CANVAS_HEIGHT);             // bottom
+    m_FrameRects[i].Set(i * frameWidth,               // left
+                        0,                            // top
+                        ((i+1) * frameWidth) - 1,     // right
+                        m_pLoadedPicture->Height());  // bottom
   }
+
+
+  updateFrameIdxGadgets(false);
+}
+
+void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
+{
+  char buf[16];
+
+  sprintf(buf, "%d", m_CurrentFrameIdx);
+  GT_SetGadgetAttrs(m_pGadgetStringCurrFrame, m_pControlWindow, NULL,
+                    GTST_String, buf,
+                    TAG_DONE);
+
+  if(bCurrentOnly)
+  {
+    return;
+  }
+
+  sprintf(buf, "%d", m_NumFrames);
+  GT_SetGadgetAttrs(m_pGadgetTextNumFrames, m_pControlWindow, NULL,
+                    GTTX_Text, buf,
+                    GTTX_CopyText, TRUE,
+                    TAG_DONE);
 }
 
 void AnimFrameTool::paintPicture()
@@ -503,6 +536,8 @@ void AnimFrameTool::paintPicture()
   {
     return;
   }
+
+  SetRast(m_pCanvasWindow->RPort, 0);
 
   BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
                     0, 0, 
@@ -514,7 +549,7 @@ void AnimFrameTool::paintPicture()
   WaitBlit();
 }
 
-#include <stdio.h>
+
 void AnimFrameTool::paintGrid()
 {
   if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
@@ -522,16 +557,25 @@ void AnimFrameTool::paintGrid()
     return;
   }
 
-  // TODO Draw all m_FrameRect's
-
-  printf("\nNew frame rects are:\n");
+  // Draw all m_FrameRect's
+  ULONG highestPen = pow(2, m_pLoadedPicture->Depth()) - 1;
   for(size_t i = 0; i < m_FrameRects.size(); i++)
   {
-    printf("  (%d, %d) to (%d, %d)\n", m_FrameRects[i].Left(), 
-                                       m_FrameRects[i].Top(),
-                                       m_FrameRects[i].Right(),
-                                       m_FrameRects[i].Bottom());
+    // For current frame set a different pen color (the highest pen available)
+    ULONG pen = ((int)i == m_CurrentFrameIdx ? highestPen : 1);
+    SetAPen(m_pCanvasWindow->RPort, pen);
+    drawRect(m_FrameRects[i]);
   }
+}
+
+void AnimFrameTool::drawRect(const Rect& rect)
+{
+  Move(m_pCanvasWindow->RPort, rect.Left(), rect.Top());
+  Draw(m_pCanvasWindow->RPort, rect.Left(), rect.Bottom());
+  Draw(m_pCanvasWindow->RPort, rect.Right(), rect.Bottom());
+  Draw(m_pCanvasWindow->RPort, rect.Right(), rect.Top());
+  Draw(m_pCanvasWindow->RPort, rect.Left(), rect.Top());
+
 }
 
 LONG WordsToPixels(struct Gadget* pGadget, WORD level)

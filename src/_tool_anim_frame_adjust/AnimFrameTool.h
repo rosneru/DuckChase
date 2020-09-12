@@ -36,6 +36,9 @@ private:
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
   IlbmBitmap* m_pLoadedPicture;
+  
+  int m_NumFrames;
+  int m_CurrentFrameIdx;
 
   enum GadgetId
   {
@@ -91,13 +94,14 @@ private:
   void openCanvas();
   void closeCanvas();
 
-  void openAnimPicture();
+  void loadAnimPicture();
   
   void calcFrameRects();
+  void updateFrameIdxGadgets(bool bCurrentOnly);
 
   void paintPicture();
   void paintGrid();
-  void drawRect(ULONG);
+  void drawRect(const Rect& rect);
 
 
   /** 
