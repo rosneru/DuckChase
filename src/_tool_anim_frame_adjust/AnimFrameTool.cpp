@@ -338,8 +338,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     }
 
     case GID_SlideFrameWordWidth:
-      // TODO
-      break;
+      {
+        paintPicture();
+        calcFrameRects();
+        paintGrid();
+        break;
+      }
     }
     break;
 
@@ -434,9 +438,12 @@ void AnimFrameTool::openAnimPicture()
                         GTTX_Text, m_Filename.c_str(),
                         TAG_DONE);
 
+      calcFrameRects();
+
       closeCanvas();
       openCanvas();
       paintPicture();
+      paintGrid();
     }
     catch(const char* pMsg)
     {
@@ -450,6 +457,43 @@ void AnimFrameTool::openAnimPicture()
                    msgString.c_str(),
                    "Ok");
     }
+  }
+}
+
+void AnimFrameTool::calcFrameRects()
+{
+  LONG wordWidth;
+  if(1 != GT_GetGadgetAttrs(m_pGadgetFrameWidth, 
+                            m_pControlWindow, 
+                            NULL,
+                            GTSL_Level, &wordWidth,
+                            TAG_DONE))
+  {
+    return;
+  }
+
+  int frameWidth = wordWidth * 16;
+  if(frameWidth == 0)
+  {
+    return;
+  }
+
+  m_FrameRects.clear();
+  
+  // Create the needed number of yet uninitialized Rects
+  size_t numFrames = m_pCanvasScreen->Width / frameWidth;
+  for(size_t i = 0; i < numFrames; i++)
+  {
+    m_FrameRects.push_back(Rect());
+  }
+
+  // Initialize the rects
+  for(size_t i = 0; i < numFrames; i++)
+  {
+    m_FrameRects[i].Set(i * frameWidth,             // left
+                        0,                          // top
+                        ((i+1) * frameWidth) - 1,   // right
+                        CANVAS_HEIGHT);             // bottom
   }
 }
 
@@ -470,6 +514,7 @@ void AnimFrameTool::paintPicture()
   WaitBlit();
 }
 
+#include <stdio.h>
 void AnimFrameTool::paintGrid()
 {
   if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
@@ -477,24 +522,16 @@ void AnimFrameTool::paintGrid()
     return;
   }
 
-  LONG wordWidth;
-  if(1 != GT_GetGadgetAttrs(m_pGadgetFrameWidth, 
-                            m_pControlWindow, 
-                            NULL,
-                            GTSL_Level, &wordWidth,
-                            TAG_DONE))
-  {
-    return;
-  }
+  // TODO Draw all m_FrameRect's
 
-  int frameWidth = wordWidth * 16;
-  if(frameWidth == 0)
+  printf("\nNew frame rects are:\n");
+  for(size_t i = 0; i < m_FrameRects.size(); i++)
   {
-    return;
+    printf("  (%d, %d) to (%d, %d)\n", m_FrameRects[i].Left(), 
+                                       m_FrameRects[i].Top(),
+                                       m_FrameRects[i].Right(),
+                                       m_FrameRects[i].Bottom());
   }
-
-  int numFrames = m_pCanvasScreen->Width / frameWidth;
-  // TODO Draw numFrames rects from left to right on canvas screen
 }
 
 LONG WordsToPixels(struct Gadget* pGadget, WORD level)

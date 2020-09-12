@@ -4,6 +4,7 @@
 #include <exec/ports.h>
 #include <intuition/intuition.h>
 
+#include <vector>
 #include <string>
 
 #include "IlbmBitmap.h"
@@ -80,6 +81,8 @@ private:
   Rect m_ResultFrameRect;
   Rect m_ControlsRect;
 
+  std::vector<Rect> m_FrameRects;
+
   struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
                                APTR pVisualInfo);
 
@@ -89,9 +92,12 @@ private:
   void closeCanvas();
 
   void openAnimPicture();
+  
+  void calcFrameRects();
 
   void paintPicture();
   void paintGrid();
+  void drawRect(ULONG);
 
 
   /** 
