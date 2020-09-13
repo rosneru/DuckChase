@@ -9,7 +9,6 @@
 
 #include <devices/input.h>
 
-#include <math.h>
 #include <stdio.h>
 
 #include "AslFileRequest.h"
@@ -454,7 +453,7 @@ void AnimFrameTool::paintGrid()
 
   // Set the pens for the grid
   m_NormalRectPen = 1;
-  m_HighlightedRectPen = pow(2, m_pLoadedPicture->Depth()) - 1;
+  m_HighlightedRectPen = (1L << m_pLoadedPicture->Depth()) - 1;
 
   // Draw all m_FrameRect's
   for(size_t i = 0; i < m_FrameRects.size(); i++)
