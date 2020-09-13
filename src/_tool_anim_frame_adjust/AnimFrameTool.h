@@ -94,14 +94,16 @@ private:
   void openCanvas();
   void closeCanvas();
 
-  void loadAnimPicture();
+  void openAnimPicture();
   
   void calcFrameRects();
   void updateFrameIdxGadgets(bool bCurrentOnly);
 
   void paintPicture();
   void paintGrid();
-  void drawRect(const Rect& rect);
+  void drawSelectionRect(const Rect& rect);
+
+  void paintCurrentFrameToResultRect();
 
 
   /** 

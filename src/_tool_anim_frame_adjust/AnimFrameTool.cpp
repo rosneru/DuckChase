@@ -139,7 +139,7 @@ AnimFrameTool::AnimFrameTool()
                                   - UI_RASTER_WIDTH,
                                 m_ResultFrameRect.Bottom() 
                                   - m_ControlsRect.Top() 
-                                  + 1);
+                                  + 3);
 
   if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
   {
@@ -186,14 +186,17 @@ AnimFrameTool::AnimFrameTool()
   DrawBevelBox(m_pControlWindow->RPort, 
                m_ResultFrameRect.Left() - 2,
                m_ResultFrameRect.Top() - 1,
-               m_ResultFrameRect.Width() + 4,
-               m_ResultFrameRect.Height() + 2,
+               m_ResultFrameRect.Width() + 5,
+               m_ResultFrameRect.Height() + 3,
                GT_VisualInfo, m_pVisualInfoControl,
                GTBB_Recessed, TRUE,
                TAG_DONE);
 
   m_pControlWindow->UserPort = m_pUserPort;
-  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP | IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+  ModifyIDCMP(m_pControlWindow, SLIDERIDCMP 
+                                | IDCMP_MENUPICK 
+                                | IDCMP_VANILLAKEY
+                                | IDCMP_RAWKEY);
 
   GT_RefreshWindow(m_pControlWindow, NULL);
   SetMenuStrip(m_pControlWindow, m_pMenu);
@@ -370,6 +373,19 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     }
     break;
 
+  case IDCMP_RAWKEY:
+    switch (code)
+    {
+    case 0x4e:
+      // TODO Cursor right
+      break;
+
+    case 0x4f:
+      // TODO Cursor left
+      break;
+    }
+    break;
+
   case IDCMP_MENUPICK:
     while (code != MENUNULL)
     {
@@ -379,7 +395,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-        loadAnimPicture();
+        openAnimPicture();
         break;
 
       case MID_ProjectSaveAnim:
@@ -413,7 +429,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
 
 
-void AnimFrameTool::loadAnimPicture()
+void AnimFrameTool::openAnimPicture()
 {
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile("Open anim picture", 
@@ -447,6 +463,16 @@ void AnimFrameTool::loadAnimPicture()
       openCanvas();
       paintPicture();
       paintGrid();
+
+      // Clear result rect
+      SetAPen(m_pControlWindow->RPort, 0);
+      RectFill(m_pControlWindow->RPort, 
+               m_ResultFrameRect.Left(),
+               m_ResultFrameRect.Top(),
+               m_ResultFrameRect.Right(),
+               m_ResultFrameRect.Bottom());
+
+      paintCurrentFrameToResultRect();
     }
     catch(const char* pMsg)
     {
@@ -565,11 +591,11 @@ void AnimFrameTool::paintGrid()
     // For current frame set a different pen color (the highest pen available)
     ULONG pen = ((int)i == m_CurrentFrameIdx ? highestPen : 1);
     SetAPen(m_pCanvasWindow->RPort, pen);
-    drawRect(m_FrameRects[i]);
+    drawSelectionRect(m_FrameRects[i]);
   }
 }
 
-void AnimFrameTool::drawRect(const Rect& rect)
+void AnimFrameTool::drawSelectionRect(const Rect& rect)
 {
   Move(m_pCanvasWindow->RPort, rect.Left(), rect.Top());
   Draw(m_pCanvasWindow->RPort, rect.Left(), rect.Bottom());
@@ -578,6 +604,25 @@ void AnimFrameTool::drawRect(const Rect& rect)
   Draw(m_pCanvasWindow->RPort, rect.Left(), rect.Top());
 
 }
+
+
+void AnimFrameTool::paintCurrentFrameToResultRect()
+{
+  if((m_pLoadedPicture == NULL) || (m_pControlWindow == NULL))
+  {
+    return;
+  }
+
+  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+                    m_FrameRects[m_CurrentFrameIdx].Left(),
+                    m_FrameRects[m_CurrentFrameIdx].Top(), 
+                    m_pControlWindow->RPort, 
+                    m_ResultFrameRect.Left(), m_ResultFrameRect.Top(),
+                    m_FrameRects[m_CurrentFrameIdx].Width(), 
+                    m_FrameRects[m_CurrentFrameIdx].Height(), 
+                    0xc0);
+}
+
 
 LONG WordsToPixels(struct Gadget* pGadget, WORD level)
 {
@@ -688,7 +733,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
   ng.ng_TopEdge = m_ControlsRect.Top() - UI_RASTER_HEIGHT;
-  ng.ng_Width = m_ResultFrameRect.Right() - ng.ng_LeftEdge + 2;
+  ng.ng_Width = m_ResultFrameRect.Right() - ng.ng_LeftEdge + 3;
   ng.ng_Height = rowHeight;
   ng.ng_TextAttr = &Topaz80;
   ng.ng_VisualInfo = pVisualInfo;
