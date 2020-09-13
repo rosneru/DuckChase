@@ -96,14 +96,14 @@ private:
   void selectPreviousFrame();
   void selectNextFrame();
   
-  void openAnimPicture();
+  void openAnimIlbmPicture();
 
   void calcFrameRects();
   void updateFrameIdxGadgets(bool bCurrentOnly);
 
   void paintPicture();
   void paintGrid();
-  void drawSelectionRect(const Rect& rect, bool isHighlighted);
+  void paintSelectionRect(const Rect& rect, bool isHighlighted);
   void paintCurrentFrameToResultRect();
 
   /** 

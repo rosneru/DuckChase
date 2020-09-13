@@ -140,7 +140,7 @@ AnimFrameTool::AnimFrameTool()
                                   - UI_RASTER_WIDTH,
                                 m_ResultFrameRect.Bottom() 
                                   - m_ControlsRect.Top() 
-                                  + 3);
+                                  + 4);
 
   if (!(m_pVisualInfoControl = GetVisualInfo(m_pControlScreen, TAG_DONE)))
   {
@@ -270,8 +270,8 @@ void AnimFrameTool::selectPreviousFrame()
     prevIndex = m_FrameRects.size() - 1;
   }
 
-  drawSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
-  drawSelectionRect(m_FrameRects[prevIndex], true);
+  paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  paintSelectionRect(m_FrameRects[prevIndex], true);
   m_CurrentFrameIdx = prevIndex;
   
   paintCurrentFrameToResultRect();
@@ -286,15 +286,15 @@ void AnimFrameTool::selectNextFrame()
     nextIndex = 0;
   }
 
-  drawSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
-  drawSelectionRect(m_FrameRects[nextIndex], true);
+  paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  paintSelectionRect(m_FrameRects[nextIndex], true);
   m_CurrentFrameIdx = nextIndex;
 
   paintCurrentFrameToResultRect();
 }
 
 
-void AnimFrameTool::openAnimPicture()
+void AnimFrameTool::openAnimIlbmPicture()
 {
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile("Open anim picture", 
@@ -340,6 +340,7 @@ void AnimFrameTool::openAnimPicture()
                m_ResultFrameRect.Bottom());
 
       paintCurrentFrameToResultRect();
+
     }
     catch(const char* pMsg)
     {
@@ -393,12 +394,11 @@ void AnimFrameTool::calcFrameRects()
   // Initialize the rects
   for(int i = 0; i < m_NumFrames; i++)
   {
-    m_FrameRects[i].Set(i * frameWidth,               // left
-                        0,                            // top
-                        ((i+1) * frameWidth) - 1,     // right
-                        m_pLoadedPicture->Height());  // bottom
+    m_FrameRects[i].Set(i * frameWidth,                   // left
+                        0,                                // top
+                        ((i+1) * frameWidth) - 1,         // right
+                        m_pLoadedPicture->Height() - 1);  // bottom
   }
-
 
   updateFrameIdxGadgets(false);
 }
@@ -460,11 +460,11 @@ void AnimFrameTool::paintGrid()
   {
     // For current frame set a different pen color (the highest pen available)
     bool isHighlighted = ((int)i == m_CurrentFrameIdx ? true : false);
-    drawSelectionRect(m_FrameRects[i], isHighlighted);
+    paintSelectionRect(m_FrameRects[i], isHighlighted);
   }
 }
 
-void AnimFrameTool::drawSelectionRect(const Rect& rect, 
+void AnimFrameTool::paintSelectionRect(const Rect& rect, 
                                       bool isHighlighted)
 {
   if(isHighlighted)
@@ -535,6 +535,16 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         paintPicture();
         calcFrameRects();
         paintGrid();
+
+        // Clear result rect
+        SetAPen(m_pControlWindow->RPort, 0);
+        RectFill(m_pControlWindow->RPort, 
+                m_ResultFrameRect.Left(),
+                m_ResultFrameRect.Top(),
+                m_ResultFrameRect.Right(),
+                m_ResultFrameRect.Bottom());
+
+        paintCurrentFrameToResultRect();
         break;
       }
     }
@@ -617,7 +627,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-        openAnimPicture();
+        openAnimIlbmPicture();
         break;
 
       case MID_ProjectSaveAnim:
