@@ -86,16 +86,16 @@ private:
 
   std::vector<Rect> m_FrameRects;
 
-  struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
-                               APTR pVisualInfo);
+  void moveFrameContentLeft();
+  void moveFrameContentRight();
+  void moveFrameContentUpward();
+  void moveFrameContentDownward();
 
-  void cleanup();
-
-  void openCanvas();
-  void closeCanvas();
-
-  void openAnimPicture();
+  void selectPreviousFrame();
+  void selectNextFrame();
   
+  void openAnimPicture();
+
   void calcFrameRects();
   void updateFrameIdxGadgets(bool bCurrentOnly);
 
@@ -105,13 +105,19 @@ private:
 
   void paintCurrentFrameToResultRect();
 
-
   /** 
    * Handle Intuition messages 
    */                         
   bool handleIntuiMessage(struct IntuiMessage* pIntuiMsg);
 
+  void cleanup();
 
+  void openCanvas();
+  void closeCanvas();
+
+  struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
+                               APTR pVisualInfo);
+  
   /**
    * Close an Intuition window that shares a port with other Intuition
    * windows or IPC customers.
@@ -119,14 +125,14 @@ private:
    * We are careful to set the UserPort to null before closing, and to
    * free any messages that it might have been sent.
    */
-  void CloseWindowSafely(struct Window* pIntuiWindow);
+  void closeWindowSafely(struct Window* pIntuiWindow);
 
   /**
    * Remove and reply all IntuiMessages on a port that have been sent to
    * a particular window ( note that we don't rely on the ln_Succ
    * pointer of a message after we have replied it )
    */
-  void StripIntuiMessages(struct MsgPort* pMsgPort, 
+  void stripIntuiMessages(struct MsgPort* pMsgPort, 
                           struct Window* pIntuiWindow);
 };
 

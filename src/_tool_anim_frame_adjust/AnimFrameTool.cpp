@@ -7,6 +7,8 @@
 #include <clib/intuition_protos.h>
 #include <clib/gadtools_protos.h>
 
+#include <devices/input.h>
+
 #include <math.h>
 #include <stdio.h>
 
@@ -212,60 +214,6 @@ AnimFrameTool::~AnimFrameTool()
   cleanup();
 }
 
-void AnimFrameTool::cleanup()
-{
-  if(m_pLoadedPicture != NULL)
-  {
-    delete m_pLoadedPicture;
-    m_pLoadedPicture = NULL;
-  }
-
-  if (m_pControlWindow != NULL)
-  {
-    ClearMenuStrip(m_pControlWindow);
-    CloseWindowSafely(m_pControlWindow);
-    m_pControlWindow = NULL;
-  }
-
-  closeCanvas();
-
-  if (m_pControlScreen != NULL)
-  {
-    CloseScreen(m_pControlScreen);
-    m_pControlScreen = NULL;
-  }
-
-
-  if (m_pUserPort != NULL)
-  {
-    DeleteMsgPort(m_pUserPort);
-    m_pUserPort = NULL;
-  }
-
-  if (m_pGadgetList != NULL)
-  {
-    FreeGadgets(m_pGadgetList);
-    m_pGadgetList = NULL;
-  }
-
-  if(m_pMenu != NULL)
-  {
-    FreeMenus(m_pMenu);
-    m_pMenu = NULL;
-  }
-
-  if(m_pVisualInfoCanvas != NULL)
-  {
-    FreeVisualInfo(m_pVisualInfoCanvas);
-    m_pVisualInfoCanvas = NULL;
-  }
-
-  if(m_pVisualInfoControl != NULL)
-  {
-    FreeVisualInfo(m_pVisualInfoControl);
-    m_pVisualInfoControl = NULL;
-  }
-}
 
 void AnimFrameTool::Run()
 {
@@ -287,146 +235,44 @@ void AnimFrameTool::Run()
     }
   }
   while(!hasTerminated);
-
-  // ULONG sigs = 0;
-  // bool hasTerminated = false;
-  // while (!hasTerminated)
-  // {
-  //   // Check for and handle any IntuiMessages
-  //   if (sigs & (1 << m_pUserPort->mp_SigBit))
-  //   {
-  //     struct IntuiMessage* pIntuiMsg;
-
-  //     while ((pIntuiMsg = GT_GetIMsg(m_pUserPort)) != NULL)
-  //     {
-  //       hasTerminated |= handleIntuiMessage(pIntuiMsg);
-  //       GT_ReplyIMsg(pIntuiMsg);
-  //     }
-  //   }
-
-  //   if (!hasTerminated)
-  //   {
-  //       // We're all done with what we have to do. We'll have no work to
-  //       // do until some kind of signal arrives. This will be an
-  //       // IntuiMessage.
-  //       sigs = Wait((1 << m_pDBufPort->mp_SigBit) | (1 << m_pUserPort->mp_SigBit));
-  //   }
-  // }
 }
 
 
-bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
+
+void AnimFrameTool::moveFrameContentLeft()
 {
-  UWORD code = pIntuiMsg->Code;
-  bool hasTerminated = false;
 
-  switch (pIntuiMsg->Class)
-  {
-  case IDCMP_GADGETDOWN:
-  case IDCMP_GADGETUP:
-  case IDCMP_MOUSEMOVE:
-    switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
-    {
-    case GID_HScroll:
-    {
-      // Get new top position of the scroller
-      ULONG newTop;
-      GT_GetGadgetAttrs(m_pGadgetHScroll, m_pControlWindow, NULL, 
-                        GTSC_Top, &newTop,
-                        TAG_DONE);
-      
-      // Scroll canvas screens viewport to the new position
-      m_pCanvasScreen->ViewPort.RasInfo->RxOffset = newTop;
-      ScrollVPort(&m_pCanvasScreen->ViewPort);
-      break;
-
-    }
-
-    case GID_SlideFrameWordWidth:
-      {
-        paintPicture();
-        calcFrameRects();
-        paintGrid();
-        break;
-      }
-    }
-    break;
-
-  case IDCMP_VANILLAKEY:
-    switch (code)
-    {
-    case 'S':
-    case 's':
-      // TODO
-      break;
-
-    case 'R':
-    case 'r':
-      // TODO
-      break;
-
-    case 'Q':
-    case 'q':
-      // TODO
-      hasTerminated = true;
-      break;
-    }
-    break;
-
-  case IDCMP_RAWKEY:
-    switch (code)
-    {
-    case 0x4e:
-      // TODO Cursor right
-      break;
-
-    case 0x4f:
-      // TODO Cursor left
-      break;
-    }
-    break;
-
-  case IDCMP_MENUPICK:
-    while (code != MENUNULL)
-    {
-      struct MenuItem *item;
-
-      item = ItemAddress(m_pMenu, code);
-      switch ((ULONG)GTMENUITEM_USERDATA(item))
-      {
-      case MID_ProjectOpenAnim:
-        openAnimPicture();
-        break;
-
-      case MID_ProjectSaveAnim:
-        // TODO
-        break;
-
-      case MID_ProjectQuit:
-        hasTerminated = TRUE;
-        break;
-
-      case MID_ProjectAbout:
-        // TODO
-        break;
-
-      case MID_ToolsCenterAllFrames:
-        // TODO
-        break;
-
-      case MID_ToolsGetMaxWidth:
-        // TODO
-        break;
-      }
-      code = item->NextSelect;
-    }
-    break;
-  }
-
-  return hasTerminated;
 }
 
 
+void AnimFrameTool::moveFrameContentRight()
+{
+
+}
+
+
+void AnimFrameTool::moveFrameContentUpward()
+{
+
+}
+
+
+void AnimFrameTool::moveFrameContentDownward()
+{
+
+}
+
+
+void AnimFrameTool::selectPreviousFrame()
+{
+
+}
+
+
+void AnimFrameTool::selectNextFrame()
+{
+
+}
 
 
 void AnimFrameTool::openAnimPicture()
@@ -624,9 +470,206 @@ void AnimFrameTool::paintCurrentFrameToResultRect()
 }
 
 
-LONG WordsToPixels(struct Gadget* pGadget, WORD level)
+bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 {
-  return ((WORD)(level * 16));
+  UWORD code = pIntuiMsg->Code;
+  ULONG shiftQualifier = IEQUALIFIER_LSHIFT | IEQUALIFIER_RSHIFT;
+  bool hasTerminated = false;
+
+  switch (pIntuiMsg->Class)
+  {
+  case IDCMP_GADGETDOWN:
+  case IDCMP_GADGETUP:
+  case IDCMP_MOUSEMOVE:
+    switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
+    {
+    case GID_HScroll:
+    {
+      // Get new top position of the scroller
+      ULONG newTop;
+      GT_GetGadgetAttrs(m_pGadgetHScroll, m_pControlWindow, NULL, 
+                        GTSC_Top, &newTop,
+                        TAG_DONE);
+      
+      // Scroll canvas screens viewport to the new position
+      m_pCanvasScreen->ViewPort.RasInfo->RxOffset = newTop;
+      ScrollVPort(&m_pCanvasScreen->ViewPort);
+      break;
+
+    }
+
+    case GID_SlideFrameWordWidth:
+      {
+        paintPicture();
+        calcFrameRects();
+        paintGrid();
+        break;
+      }
+    }
+    break;
+
+  case IDCMP_VANILLAKEY:
+    switch (code)
+    {
+    case 'S':
+    case 's':
+      // TODO
+      break;
+
+    case 'R':
+    case 'r':
+      // TODO
+      break;
+
+    case 'Q':
+    case 'q':
+      // TODO
+      hasTerminated = true;
+      break;
+    }
+    break;
+
+  case IDCMP_RAWKEY:
+    switch (code)
+    {
+    case 0x4f:
+      // Cursor left
+      if(pIntuiMsg->Qualifier & shiftQualifier)
+      {
+        moveFrameContentLeft();
+      }
+      else
+      {
+        selectPreviousFrame();
+      }
+      break;
+
+    case 0x4e:
+      // Cursor right
+      if(pIntuiMsg->Qualifier & shiftQualifier)
+      {
+        moveFrameContentRight();
+      }
+      else
+      {
+        selectNextFrame();
+      }
+      break;
+
+    case 0x4c:
+      // Cursor Up
+      if(pIntuiMsg->Qualifier & shiftQualifier)
+      {
+        moveFrameContentUpward();
+      }
+      break;
+
+    case 0x4d:
+      // Cursor Down
+
+      if(pIntuiMsg->Qualifier & shiftQualifier)
+      {
+        moveFrameContentDownward();
+      }
+      break;
+
+    }
+    break;
+
+  case IDCMP_MENUPICK:
+    while (code != MENUNULL)
+    {
+      struct MenuItem *item;
+
+      item = ItemAddress(m_pMenu, code);
+      switch ((ULONG)GTMENUITEM_USERDATA(item))
+      {
+      case MID_ProjectOpenAnim:
+        openAnimPicture();
+        break;
+
+      case MID_ProjectSaveAnim:
+        // TODO
+        break;
+
+      case MID_ProjectQuit:
+        hasTerminated = TRUE;
+        break;
+
+      case MID_ProjectAbout:
+        // TODO
+        break;
+
+      case MID_ToolsCenterAllFrames:
+        // TODO
+        break;
+
+      case MID_ToolsGetMaxWidth:
+        // TODO
+        break;
+      }
+      code = item->NextSelect;
+    }
+    break;
+  }
+
+  return hasTerminated;
+}
+
+
+void AnimFrameTool::cleanup()
+{
+  if(m_pLoadedPicture != NULL)
+  {
+    delete m_pLoadedPicture;
+    m_pLoadedPicture = NULL;
+  }
+
+  if (m_pControlWindow != NULL)
+  {
+    ClearMenuStrip(m_pControlWindow);
+    closeWindowSafely(m_pControlWindow);
+    m_pControlWindow = NULL;
+  }
+
+  closeCanvas();
+
+  if (m_pControlScreen != NULL)
+  {
+    CloseScreen(m_pControlScreen);
+    m_pControlScreen = NULL;
+  }
+
+
+  if (m_pUserPort != NULL)
+  {
+    DeleteMsgPort(m_pUserPort);
+    m_pUserPort = NULL;
+  }
+
+  if (m_pGadgetList != NULL)
+  {
+    FreeGadgets(m_pGadgetList);
+    m_pGadgetList = NULL;
+  }
+
+  if(m_pMenu != NULL)
+  {
+    FreeMenus(m_pMenu);
+    m_pMenu = NULL;
+  }
+
+  if(m_pVisualInfoCanvas != NULL)
+  {
+    FreeVisualInfo(m_pVisualInfoCanvas);
+    m_pVisualInfoCanvas = NULL;
+  }
+
+  if(m_pVisualInfoControl != NULL)
+  {
+    FreeVisualInfo(m_pVisualInfoControl);
+    m_pVisualInfoControl = NULL;
+  }
 }
 
 
@@ -706,7 +749,7 @@ void AnimFrameTool::openCanvas()
   }
 
   m_pCanvasWindow->UserPort = m_pUserPort;
-  ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY);
+  ModifyIDCMP(m_pCanvasWindow, IDCMP_MENUPICK | IDCMP_VANILLAKEY | IDCMP_RAWKEY);
   LendMenus(m_pCanvasWindow, m_pControlWindow);
 
   // Adjust the scroller gadget to left<->right scroll the screen
@@ -718,6 +761,29 @@ void AnimFrameTool::openCanvas()
                       GTSC_Visible, m_pControlScreen->Width,
                       TAG_DONE);
   }
+}
+
+
+void AnimFrameTool::closeCanvas()
+{
+  if (m_pCanvasWindow != NULL)
+  {
+    ClearMenuStrip(m_pCanvasWindow);
+    closeWindowSafely(m_pCanvasWindow);
+    m_pCanvasWindow = NULL;
+  }
+
+  if (m_pCanvasScreen != NULL)
+  {
+    CloseScreen(m_pCanvasScreen);
+    m_pCanvasScreen = NULL;
+  }
+}
+
+
+LONG wordsToPixels(struct Gadget* pGadget, WORD level)
+{
+  return ((WORD)(level * 16));
 }
 
 
@@ -758,7 +824,7 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                                GTSL_LevelFormat, "%ld",
                                                GTSL_MaxPixelLen, 24,
                                                GTSL_Justification, GTJ_RIGHT,
-                                               GTSL_DispFunc, WordsToPixels,
+                                               GTSL_DispFunc, wordsToPixels,
                                                TAG_DONE);
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
@@ -819,31 +885,16 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
 }
 
 
-void AnimFrameTool::closeCanvas()
-{
-  if (m_pCanvasWindow != NULL)
-  {
-    ClearMenuStrip(m_pCanvasWindow);
-    CloseWindowSafely(m_pCanvasWindow);
-    m_pCanvasWindow = NULL;
-  }
-
-  if (m_pCanvasScreen != NULL)
-  {
-    CloseScreen(m_pCanvasScreen);
-    m_pCanvasScreen = NULL;
-  }
-}
 
 
-void AnimFrameTool::CloseWindowSafely(struct Window* pIntuiWindow)
+void AnimFrameTool::closeWindowSafely(struct Window* pIntuiWindow)
 {
   // we forbid here to keep out of race conditions with Intuition
   Forbid();
 
   // send back any messages for this window that have not yet been
   // processed
-  StripIntuiMessages(pIntuiWindow->UserPort, pIntuiWindow);
+  stripIntuiMessages(pIntuiWindow->UserPort, pIntuiWindow);
 
   // clear UserPort so Intuition will not free it
   pIntuiWindow->UserPort = NULL;
@@ -859,7 +910,7 @@ void AnimFrameTool::CloseWindowSafely(struct Window* pIntuiWindow)
 }
 
 
-void AnimFrameTool::StripIntuiMessages(struct MsgPort* pMsgPort, 
+void AnimFrameTool::stripIntuiMessages(struct MsgPort* pMsgPort, 
                                        struct Window* pIntuiWindow)
 {
   struct IntuiMessage* pMsg = (struct IntuiMessage *) pMsgPort->mp_MsgList.lh_Head;
