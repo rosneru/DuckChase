@@ -419,6 +419,7 @@ void AnimFrameTool::loadAnimPicture()
   std::string filename = request.SelectFile("Open anim picture", 
                                             "", 
                                             false);
+  std::string msgString;
   if(filename.length() > 0)
   {
     try
@@ -449,13 +450,13 @@ void AnimFrameTool::loadAnimPicture()
     }
     catch(const char* pMsg)
     {
-      std::string msgString = "The selected picture\n\n";
+      msgString = "Failed to load \n  '";
       msgString += filename;
-      msgString += "\n\ncouldn't be loaded:\n\n";
+      msgString += "'\nas ilbm picture.\n\n";
       msgString += pMsg;
 
-      MessageBox request;
-      request.Show("Failed to load anim picture",
+      MessageBox request(m_pControlWindow);
+      request.Show("Loading error",
                    msgString.c_str(),
                    "Ok");
     }
