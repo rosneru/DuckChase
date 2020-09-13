@@ -36,6 +36,8 @@ private:
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
   IlbmBitmap* m_pLoadedPicture;
+  ULONG m_NormalRectPen;
+  ULONG m_HighlightedRectPen;
   
   int m_NumFrames;
   int m_CurrentFrameIdx;
@@ -101,8 +103,7 @@ private:
 
   void paintPicture();
   void paintGrid();
-  void drawSelectionRect(const Rect& rect);
-
+  void drawSelectionRect(const Rect& rect, bool isHighlighted);
   void paintCurrentFrameToResultRect();
 
   /** 

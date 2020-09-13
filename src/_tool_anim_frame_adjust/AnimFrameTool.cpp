@@ -265,13 +265,33 @@ void AnimFrameTool::moveFrameContentDownward()
 
 void AnimFrameTool::selectPreviousFrame()
 {
+  int prevIndex = m_CurrentFrameIdx - 1;
+  if(prevIndex < 0)
+  {
+    prevIndex = m_FrameRects.size() - 1;
+  }
 
+  drawSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  drawSelectionRect(m_FrameRects[prevIndex], true);
+  m_CurrentFrameIdx = prevIndex;
+  
+  paintCurrentFrameToResultRect();
 }
 
 
 void AnimFrameTool::selectNextFrame()
 {
+  int nextIndex = m_CurrentFrameIdx + 1;
+  if(nextIndex >= (int)m_FrameRects.size())
+  {
+    nextIndex = 0;
+  }
 
+  drawSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  drawSelectionRect(m_FrameRects[nextIndex], true);
+  m_CurrentFrameIdx = nextIndex;
+
+  paintCurrentFrameToResultRect();
 }
 
 
@@ -303,11 +323,13 @@ void AnimFrameTool::openAnimPicture()
                         GTTX_Text, m_Filename.c_str(),
                         TAG_DONE);
 
-      calcFrameRects();
 
       closeCanvas();
       openCanvas();
+
       paintPicture();
+
+      calcFrameRects();
       paintGrid();
 
       // Clear result rect
@@ -430,25 +452,36 @@ void AnimFrameTool::paintGrid()
     return;
   }
 
+  // Set the pens for the grid
+  m_NormalRectPen = 1;
+  m_HighlightedRectPen = pow(2, m_pLoadedPicture->Depth()) - 1;
+
   // Draw all m_FrameRect's
-  ULONG highestPen = pow(2, m_pLoadedPicture->Depth()) - 1;
   for(size_t i = 0; i < m_FrameRects.size(); i++)
   {
     // For current frame set a different pen color (the highest pen available)
-    ULONG pen = ((int)i == m_CurrentFrameIdx ? highestPen : 1);
-    SetAPen(m_pCanvasWindow->RPort, pen);
-    drawSelectionRect(m_FrameRects[i]);
+    bool isHighlighted = ((int)i == m_CurrentFrameIdx ? true : false);
+    drawSelectionRect(m_FrameRects[i], isHighlighted);
   }
 }
 
-void AnimFrameTool::drawSelectionRect(const Rect& rect)
+void AnimFrameTool::drawSelectionRect(const Rect& rect, 
+                                      bool isHighlighted)
 {
+  if(isHighlighted)
+  {
+    SetAPen(m_pCanvasWindow->RPort, m_HighlightedRectPen);
+  }
+  else
+  {
+    SetAPen(m_pCanvasWindow->RPort, m_NormalRectPen);
+  }
+  
   Move(m_pCanvasWindow->RPort, rect.Left(), rect.Top());
   Draw(m_pCanvasWindow->RPort, rect.Left(), rect.Bottom());
   Draw(m_pCanvasWindow->RPort, rect.Right(), rect.Bottom());
   Draw(m_pCanvasWindow->RPort, rect.Right(), rect.Top());
   Draw(m_pCanvasWindow->RPort, rect.Left(), rect.Top());
-
 }
 
 
