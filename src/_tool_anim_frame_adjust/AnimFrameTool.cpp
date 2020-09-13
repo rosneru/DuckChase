@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 
+
 #include "AslFileRequest.h"
 #include "MessageBox.h"
 
@@ -73,13 +74,13 @@ AnimFrameTool::AnimFrameTool()
     m_pCanvasWindow(NULL),
     m_pControlWindow(NULL),
     m_pGadgetList(NULL),
-    m_pGadgetHScroll(NULL),
-    m_pGadgetTextFilename(NULL),
-    m_pGadgetFrameWidth(NULL),
-    m_pGadgetButtonPlay(NULL),
-    m_pGadgetButtonStop(NULL),
-    m_pGadgetStringCurrFrame(NULL),
-    m_pGadgetTextNumFrames(NULL),
+    m_pGadScrCanvasHScroll(NULL),
+    m_pGadTxtFilename(NULL),
+    m_pGadSliFrameWidth(NULL),
+    m_pGadBtnPlay(NULL),
+    m_pGadBtnStop(NULL),
+    m_pGadIntCurrentFrame(NULL),
+    m_pGadTxtNumFrames(NULL),
     m_pMenu(NULL),
     m_pVisualInfoCanvas(NULL),
     m_pVisualInfoControl(NULL),
@@ -262,6 +263,53 @@ void AnimFrameTool::moveFrameContentDownward()
 }
 
 
+void AnimFrameTool::gadgetFrameWidthChanged()
+{
+  calcFrameRects();
+  paintPicture();
+  paintGrid();
+
+  // Clear result rect
+  SetAPen(m_pControlWindow->RPort, 0);
+  RectFill(m_pControlWindow->RPort, 
+          m_ResultFrameRect.Left(),
+          m_ResultFrameRect.Top(),
+          m_ResultFrameRect.Right(),
+          m_ResultFrameRect.Bottom());
+
+  paintCurrentFrameToResultRect();
+}
+
+
+void AnimFrameTool::gadgetCurrentFrameChanged()
+{
+  ULONG newCurrentFrameNum;
+  if(1 != GT_GetGadgetAttrs(m_pGadIntCurrentFrame, 
+                            m_pControlWindow, 
+                            NULL,
+                            GTIN_Number, &newCurrentFrameNum,
+                            TAG_DONE))
+  {
+    return;
+  }
+
+  if((newCurrentFrameNum < 1) || (newCurrentFrameNum > m_FrameRects.size()))
+  {
+    // User input frame number is too small or too big
+    updateFrameIdxGadgets(true);
+    return;
+  }
+
+  int newCurrentFrameIdx = newCurrentFrameNum - 1;
+
+  paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  paintSelectionRect(m_FrameRects[newCurrentFrameIdx], true);
+  m_CurrentFrameIdx = newCurrentFrameIdx;
+
+  paintCurrentFrameToResultRect();
+}
+
+
 void AnimFrameTool::selectPreviousFrame()
 {
   int prevIndex = m_CurrentFrameIdx - 1;
@@ -273,6 +321,8 @@ void AnimFrameTool::selectPreviousFrame()
   paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
   paintSelectionRect(m_FrameRects[prevIndex], true);
   m_CurrentFrameIdx = prevIndex;
+
+  updateFrameIdxGadgets(true);
   
   paintCurrentFrameToResultRect();
 }
@@ -289,6 +339,8 @@ void AnimFrameTool::selectNextFrame()
   paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
   paintSelectionRect(m_FrameRects[nextIndex], true);
   m_CurrentFrameIdx = nextIndex;
+
+  updateFrameIdxGadgets(true);
 
   paintCurrentFrameToResultRect();
 }
@@ -318,7 +370,7 @@ void AnimFrameTool::openAnimIlbmPicture()
       m_pLoadedPicture = pNewPicture;
 
       m_Filename = filename;
-      GT_SetGadgetAttrs(m_pGadgetTextFilename, m_pControlWindow, NULL,
+      GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
                         GTTX_Text, m_Filename.c_str(),
                         TAG_DONE);
 
@@ -367,7 +419,7 @@ void AnimFrameTool::calcFrameRects()
   m_CurrentFrameIdx = 0;
 
   LONG wordWidth;
-  if(1 != GT_GetGadgetAttrs(m_pGadgetFrameWidth, 
+  if(1 != GT_GetGadgetAttrs(m_pGadSliFrameWidth, 
                             m_pControlWindow, 
                             NULL,
                             GTSL_Level, &wordWidth,
@@ -405,11 +457,9 @@ void AnimFrameTool::calcFrameRects()
 
 void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
 {
-  char buf[16];
 
-  sprintf(buf, "%d", m_CurrentFrameIdx);
-  GT_SetGadgetAttrs(m_pGadgetStringCurrFrame, m_pControlWindow, NULL,
-                    GTST_String, buf,
+  GT_SetGadgetAttrs(m_pGadIntCurrentFrame, m_pControlWindow, NULL,
+                    GTIN_Number, m_CurrentFrameIdx + 1,
                     TAG_DONE);
 
   if(bCurrentOnly)
@@ -417,8 +467,9 @@ void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
     return;
   }
 
+  char buf[16];
   sprintf(buf, "%d", m_NumFrames);
-  GT_SetGadgetAttrs(m_pGadgetTextNumFrames, m_pControlWindow, NULL,
+  GT_SetGadgetAttrs(m_pGadTxtNumFrames, m_pControlWindow, NULL,
                     GTTX_Text, buf,
                     GTTX_CopyText, TRUE,
                     TAG_DONE);
@@ -515,11 +566,11 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
   case IDCMP_MOUSEMOVE:
     switch (((struct Gadget *)pIntuiMsg->IAddress)->GadgetID)
     {
-    case GID_HScroll:
+    case GID_ScrCanvasHoriz:
     {
       // Get new top position of the scroller
       ULONG newTop;
-      GT_GetGadgetAttrs(m_pGadgetHScroll, m_pControlWindow, NULL, 
+      GT_GetGadgetAttrs(m_pGadScrCanvasHScroll, m_pControlWindow, NULL, 
                         GTSC_Top, &newTop,
                         TAG_DONE);
       
@@ -530,21 +581,15 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
     }
 
-    case GID_SlideFrameWordWidth:
+    case GID_SliFrameWordWidth:
       {
-        paintPicture();
-        calcFrameRects();
-        paintGrid();
-
-        // Clear result rect
-        SetAPen(m_pControlWindow->RPort, 0);
-        RectFill(m_pControlWindow->RPort, 
-                m_ResultFrameRect.Left(),
-                m_ResultFrameRect.Top(),
-                m_ResultFrameRect.Right(),
-                m_ResultFrameRect.Bottom());
-
-        paintCurrentFrameToResultRect();
+        gadgetFrameWidthChanged();
+        break;
+      }
+    
+    case GID_IntCurrentFrame:
+      {
+        gadgetCurrentFrameChanged();
         break;
       }
     }
@@ -797,7 +842,7 @@ void AnimFrameTool::openCanvas()
   // Adjust the scroller gadget to left<->right scroll the screen
   if(m_pLoadedPicture != NULL)
   {
-    GT_SetGadgetAttrs(m_pGadgetHScroll, m_pControlWindow, NULL,
+    GT_SetGadgetAttrs(m_pGadScrCanvasHScroll, m_pControlWindow, NULL,
                       GTSC_Top, 0,
                       GTSC_Total, m_pLoadedPicture->Width(),
                       GTSC_Visible, m_pControlScreen->Width,
@@ -845,20 +890,20 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_Height = rowHeight;
   ng.ng_TextAttr = &Topaz80;
   ng.ng_VisualInfo = pVisualInfo;
-  ng.ng_GadgetID = GID_TextFilename;
+  ng.ng_GadgetID = GID_TxtFilename;
   ng.ng_Flags = NG_HIGHLABEL;
   ng.ng_GadgetText = (UBYTE*) "File:    ";
   
-  m_pGadgetTextFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
-                                                 GTTX_Border, TRUE,
-                                                 GTTX_Text, m_Filename.c_str(),
-                                                 TAG_DONE);
+  m_pGadTxtFilename = pGadget = CreateGadget(TEXT_KIND, pGadget, &ng,
+                                             GTTX_Border, TRUE,
+                                             GTTX_Text, m_Filename.c_str(),
+                                             TAG_DONE);
 
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
-  ng.ng_GadgetID = GID_SlideFrameWordWidth;
+  ng.ng_GadgetID = GID_SliFrameWordWidth;
   ng.ng_GadgetText = (UBYTE*) "FWidth:    ";
-  m_pGadgetFrameWidth = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
+  m_pGadSliFrameWidth = pGadget = CreateGadget(SLIDER_KIND, pGadget, &ng,
                                                GTSL_Min, 1,
                                                GTSL_Max, 16,
                                                GTSL_Level, 1,
@@ -871,57 +916,57 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_Width = 36; // manually adjusted to fit this lines width
-  ng.ng_GadgetID = GID_StringCurrentFrame;
+  ng.ng_GadgetID = GID_IntCurrentFrame;
   ng.ng_GadgetText = (UBYTE*) "Frame:    ";
 
-  m_pGadgetStringCurrFrame = pGadget = CreateGadget(STRING_KIND,
-                                                    pGadget,
-                                                    &ng,
-                                                    GTST_MaxChars, 2,
-                                                    TAG_DONE);
+  m_pGadIntCurrentFrame = pGadget = CreateGadget(INTEGER_KIND,
+                                                 pGadget,
+                                                 &ng,
+                                                 GTST_MaxChars, 2,
+                                                 TAG_DONE);
 
   ng.ng_LeftEdge = m_ControlsRect.Right() - ng.ng_Width - UI_RASTER_WIDTH;
 
-  ng.ng_GadgetID = GID_TextNumFrames;
+  ng.ng_GadgetID = GID_TxtNumFrames;
   ng.ng_GadgetText = (UBYTE*) "of";
 
-  m_pGadgetTextNumFrames = pGadget = CreateGadget(TEXT_KIND,
-                                                  pGadget,
-                                                  &ng,
-                                                  GTTX_Border, TRUE,
-                                                  TAG_DONE);  
+  m_pGadTxtNumFrames = pGadget = CreateGadget(TEXT_KIND,
+                                              pGadget,
+                                              &ng,
+                                              GTTX_Border, TRUE,
+                                              TAG_DONE);  
 
   ng.ng_LeftEdge = m_ControlsRect.Left();
   ng.ng_TopEdge = m_ControlsRect.Bottom() - rowHeight;
   ng.ng_Width = (m_ControlsRect.Width() / 2) - UI_RASTER_WIDTH;
-  ng.ng_GadgetID = GID_ButtonPlay;
+  ng.ng_GadgetID = GID_BtnPlay;
   ng.ng_GadgetText = (UBYTE*) "Play";
 
-  m_pGadgetButtonPlay = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
-                                               TAG_DONE);
+  m_pGadBtnPlay = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
+                                         TAG_DONE);
 
   ng.ng_LeftEdge += ng.ng_Width + UI_RASTER_WIDTH;
-  ng.ng_GadgetID = GID_ButtonStop;
+  ng.ng_GadgetID = GID_BtnStop;
   ng.ng_GadgetText = (UBYTE*) "Stop";
 
-  m_pGadgetButtonStop = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
-                                               TAG_DONE);
+  m_pGadBtnStop = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
+                                         TAG_DONE);
 
   ng.ng_LeftEdge = 0;
   ng.ng_TopEdge = m_pControlScreen->Height - CANVAS_HEIGHT - rowHeight - 3; // Bottom of control screen
   ng.ng_Width = m_OScanWidth;
   ng.ng_GadgetText = NULL;
-  ng.ng_GadgetID = GID_HScroll;
+  ng.ng_GadgetID = GID_ScrCanvasHoriz;
   ng.ng_Flags = 0;
 
-  m_pGadgetHScroll = pGadget = CreateGadget(SCROLLER_KIND, 
-                                            pGadget, 
-                                            &ng,
-                                            GTSC_Top, 0,
-                                            GTSC_Total, 0,
-                                            GTSC_Visible, 0,
-                                            GTSC_Arrows, rowHeight + 1,
-                                            TAG_DONE);
+  m_pGadScrCanvasHScroll = pGadget = CreateGadget(SCROLLER_KIND, 
+                                                  pGadget, 
+                                                  &ng,
+                                                  GTSC_Top, 0,
+                                                  GTSC_Total, 0,
+                                                  GTSC_Visible, 0,
+                                                  GTSC_Arrows, rowHeight + 1,
+                                                  TAG_DONE);
 
   return pGadget;
 }

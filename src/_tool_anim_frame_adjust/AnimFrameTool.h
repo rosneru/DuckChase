@@ -44,13 +44,13 @@ private:
 
   enum GadgetId
   {
-    GID_HScroll,
-    GID_TextFilename,
-    GID_SlideFrameWordWidth,
-    GID_ButtonPlay,
-    GID_ButtonStop,
-    GID_StringCurrentFrame,
-    GID_TextNumFrames
+    GID_ScrCanvasHoriz,
+    GID_TxtFilename,
+    GID_SliFrameWordWidth,
+    GID_BtnPlay,
+    GID_BtnStop,
+    GID_IntCurrentFrame,
+    GID_TxtNumFrames
   };
 
   enum MenuId
@@ -69,13 +69,13 @@ private:
   struct Window* m_pControlWindow;
 
   struct Gadget* m_pGadgetList;
-  struct Gadget* m_pGadgetHScroll;
-  struct Gadget* m_pGadgetTextFilename;
-  struct Gadget* m_pGadgetFrameWidth;
-  struct Gadget* m_pGadgetButtonPlay;
-  struct Gadget* m_pGadgetButtonStop;
-  struct Gadget* m_pGadgetStringCurrFrame;
-  struct Gadget* m_pGadgetTextNumFrames;
+  struct Gadget* m_pGadScrCanvasHScroll;
+  struct Gadget* m_pGadTxtFilename;
+  struct Gadget* m_pGadSliFrameWidth;
+  struct Gadget* m_pGadBtnPlay;
+  struct Gadget* m_pGadBtnStop;
+  struct Gadget* m_pGadIntCurrentFrame;
+  struct Gadget* m_pGadTxtNumFrames;
 
   struct Menu* m_pMenu;
   APTR m_pVisualInfoCanvas;
@@ -92,6 +92,9 @@ private:
   void moveFrameContentRight();
   void moveFrameContentUpward();
   void moveFrameContentDownward();
+
+  void gadgetFrameWidthChanged();
+  void gadgetCurrentFrameChanged();
 
   void selectPreviousFrame();
   void selectNextFrame();
