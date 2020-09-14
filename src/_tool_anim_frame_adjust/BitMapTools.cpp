@@ -21,8 +21,8 @@ BitMapTools::BitMapTools(const BitMap* pBitmap)
   m_PixelWidth = GetBitMapAttr(pBitmap, BMA_WIDTH);
   m_LineHeight = GetBitMapAttr(pBitmap, BMA_HEIGHT);
 
-  m_pBitmap = AllocBitMap(m_PixelWidth, m_LineHeight, 1, BMF_CLEAR, NULL);
-  if(m_pBitmap == NULL)
+  m_pMaskBitMap = AllocBitMap(m_PixelWidth, m_LineHeight, 1, BMF_CLEAR, NULL);
+  if(m_pMaskBitMap == NULL)
   {
     throw "BitMapTools: Failed to allocate mask BitMap.";
   }
