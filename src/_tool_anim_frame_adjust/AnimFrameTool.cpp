@@ -15,8 +15,8 @@
 #include "AslFileRequest.h"
 #include "MessageBox.h"
 
+#include "BitMapTools.h"
 #include "AnimFrameTool.h"
-
 
 #define VIEW_MODE_ID              LORES_KEY
 
@@ -241,25 +241,41 @@ void AnimFrameTool::Run()
 
 void AnimFrameTool::moveFrameContentLeft()
 {
-
+  if(m_pLoadedPicture == NULL)
+  {
+    return;
+  }
 }
 
 
 void AnimFrameTool::moveFrameContentRight()
 {
+  if(m_pLoadedPicture == NULL)
+  {
+    return;
+  }
 
+  BitMapTools bitmapTools(m_pLoadedPicture->GetBitMap());
+
+  Rect imageBox = bitmapTools.FindImageBoundingBox(m_FrameRects[m_CurrentFrameIdx]);
 }
 
 
 void AnimFrameTool::moveFrameContentUpward()
 {
-
+  if(m_pLoadedPicture == NULL)
+  {
+    return;
+  }
 }
 
 
 void AnimFrameTool::moveFrameContentDownward()
 {
-
+  if(m_pLoadedPicture == NULL)
+  {
+    return;
+  }
 }
 
 
