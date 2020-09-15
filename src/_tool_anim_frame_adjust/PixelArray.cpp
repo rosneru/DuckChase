@@ -83,6 +83,21 @@ PixelArray::~PixelArray()
 }
 
 
+Rect PixelArray::FindBoundingBox()
+{
+  long left = findXStart();
+  long top = findXStop();
+  long right = findYStart();
+  long bottom = findXStop();
+
+  printf("Bounding box:");
+  printf("left = %ld, top = %ld, right = %ld, bottom = %ld\n\n", left, top, right, bottom);
+  
+  
+  return Rect(left, top, right, bottom);
+}
+
+
 void PixelArray::Print()
 {
   printf("Printing pixel array..\n");
@@ -102,23 +117,71 @@ void PixelArray::Print()
 
 long PixelArray::findXStart()
 {
+  for(size_t x = 0; x < m_Rect.Width(); x++)
+  {
+    for(size_t y = 0; y < m_Rect.Height(); y++)
+    {
+      size_t idx = x + y * m_Rect.Height();
+      if(m_pArray[idx] != 0)
+      {
+        return x;
+      }
+    }
+  }
+
   return 0;
 }
 
 
 long PixelArray::findXStop()
 {
+  for(size_t x = m_Rect.Width() - 1; x >= 0 ; x--)
+  {
+    for(size_t y = 0; y < m_Rect.Height(); y++)
+    {
+      size_t idx = x + y * m_Rect.Height();
+      if(m_pArray[idx] != 0)
+      {
+        return x;
+      }
+    }
+  }
+
   return 0;
 }
 
 
 long PixelArray::findYStart()
 {
+  for(size_t y = 0; y < m_Rect.Height(); y++)
+  {
+    for(size_t x = 0; x < m_Rect.Width(); x++)
+    {
+      size_t idx = x + y * m_Rect.Height();
+      if(m_pArray[idx] != 0)
+      {
+        return y;
+      }
+    }
+  }
+
   return 0;
 }
 
 
 long PixelArray::findYStop()
 {
+  for(size_t y = m_Rect.Height() - 1; y >= 0 ; y--)
+  {
+    for(size_t x = 0; x < m_Rect.Width(); x++)
+    {
+      size_t idx = x + y * m_Rect.Height();
+      if(m_pArray[idx] != 0)
+      {
+        return y;
+      }
+    }
+  }
+
   return 0;
 }

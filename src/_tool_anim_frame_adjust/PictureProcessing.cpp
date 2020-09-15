@@ -29,14 +29,12 @@ PictureProcessing::~PictureProcessing()
 
 Rect PictureProcessing::FindBoundingBox(const Rect& searchArea)
 {
-  // for(size_t i = 0; i < searchArea.Width() / 2; i ++)
-  // {
-
-  // }
   PrintMaskShell();
 
   PixelArray pixelArray(searchArea, m_pBitMap);
   pixelArray.Print();
+
+  // Rect box = pixelArray.FindBoundingBox();
 
   return Rect();
 }

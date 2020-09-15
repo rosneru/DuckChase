@@ -23,6 +23,11 @@ public:
   PixelArray(const Rect& rect, struct BitMap* pBitmap);
 
   virtual ~PixelArray();
+
+  /**
+   * Return the bounding box of the non-zero pixels in this PixelArray.
+   */
+  Rect FindBoundingBox();
   
   void Print();
 
@@ -33,9 +38,36 @@ private:
   UBYTE* m_pArray;
   size_t m_BytesPerRow;
 
+  /**
+   * Scans all columns from left to right and returns the index of the
+   * first column that contains a non-zero pixel.
+   * 
+   * Returns 0 when no non-zero pixel found in any column.
+   */
   long findXStart();
+
+  /**
+   * Scans all columns from right to left and returns the index of the
+   * last column that contains a non-zero pixel.
+   * 
+   * Returns 0 when no non-zero pixel found in any column.
+   */
   long findXStop();
+
+  /**
+   * Scans all rows from top to bottom and returns the first index
+   * that contains a non-zero pixel.
+   * 
+   * Returns 0 when no non-zero pixel found in any row.
+   */
   long findYStart();
+
+  /**
+   * Scans all rows from bottom to topand returns the last index
+   * that contains a non-zero pixel.
+   * 
+   * Returns 0 when no non-zero pixel found in any row.
+   */
   long findYStop();
 };
 
