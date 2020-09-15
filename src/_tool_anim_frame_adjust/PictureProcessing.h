@@ -16,7 +16,7 @@
 class PictureProcessing
 {
 public:
-  PictureProcessing(BitMap* pBitMap, BitMap* pMaskBitMap);
+  PictureProcessing(BitMap* pPicture, BitMap* pMask);
   virtual ~PictureProcessing();
 
   /**
@@ -33,8 +33,8 @@ public:
   void PrintMaskShell();
 
 private:
-  struct BitMap* m_pBitMap;
-  struct BitMap* m_pMaskBitMap;
+  struct BitMap* m_pPicture;
+  struct BitMap* m_pMask;
   ULONG m_PixelWidth;
   ULONG m_LineHeight;
 

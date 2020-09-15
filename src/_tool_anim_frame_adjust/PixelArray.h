@@ -20,7 +20,7 @@ public:
    * Creates a PixelArray of a given rectangular region in the given
    * BitMap.
    */
-  PixelArray(const Rect& rect, struct BitMap* pBitmap);
+  PixelArray(const Rect& rect, struct BitMap* pPicture);
 
   virtual ~PixelArray();
 
@@ -36,7 +36,7 @@ private:
   struct RastPort m_RastPort;
   struct RastPort m_TempRastPort;
   UBYTE* m_pArray;
-  size_t m_BytesPerRow;
+
 
   /**
    * Scans all columns from left to right and returns the index of the

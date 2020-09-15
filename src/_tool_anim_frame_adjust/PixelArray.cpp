@@ -6,16 +6,15 @@
 
 #include "PixelArray.h"
 
-PixelArray::PixelArray(const Rect& rect, struct BitMap* pBitmap)
+PixelArray::PixelArray(const Rect& rect, struct BitMap* pPicture)
   : m_Rect(rect),
     m_RastPort(),
     m_TempRastPort(),
-    m_pArray(NULL),
-    m_BytesPerRow(0)
+    m_pArray(NULL)
 {
   m_RastPort.BitMap = NULL;
 
-  if(pBitmap == NULL)
+  if(pPicture == NULL)
   {
     throw "PixelArray: Missing Parameter.";
   }
@@ -23,7 +22,8 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pBitmap)
   // TODO: Maybe check if rect is fit into BitMap and else throw an
   // exception.
 
-  int depth = GetBitMapAttr(pBitmap, BMA_DEPTH);
+  int depth = GetBitMapAttr(pPicture, BMA_DEPTH);
+
   if(depth > 8)
   {
     throw "PixelArray: Not more than 8 bitplanes supported.";
@@ -31,14 +31,14 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pBitmap)
 
   // Main RastPort as needed by Read/WritePixelArray8()
   InitRastPort(&m_RastPort);
-  m_RastPort.BitMap = pBitmap;
+  m_RastPort.BitMap = pPicture;
 
   // Temporaray RastPort as needed by Read/WritePixelArray8()
   m_TempRastPort = m_RastPort;
   m_TempRastPort.Layer = NULL;
   m_TempRastPort.BitMap = AllocBitMap(rect.Width(), 
                                       rect.Height(), 
-                                      1, 
+                                      depth, 
                                       BMF_CLEAR, 
                                       NULL);
 
@@ -47,9 +47,9 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pBitmap)
     throw "PixelArray: Failed to allocate a BitMap.";
   }
 
-  // TODO What happens if rect.width is not a factor of 16?
-  m_BytesPerRow = ((rect.Width() + 15) >> 4) << 4;
-  m_pArray = (UBYTE*)AllocVec(m_BytesPerRow * rect.Height(), MEMF_PUBLIC);
+  // see description of WritePixelArray8 in autodocs.
+  size_t bytes = ((((rect.Width() + 15) >> 4) << 4) * (rect.Bottom() - rect.Top() + 1));
+  m_pArray = (UBYTE*)AllocVec(bytes, MEMF_PUBLIC);
 
   // Converting the rectangular area of the bitmap into an array
   size_t count = ReadPixelArray8(&m_RastPort, 
@@ -86,13 +86,9 @@ PixelArray::~PixelArray()
 Rect PixelArray::FindBoundingBox()
 {
   long left = findXStart();
-  long top = findXStop();
-  long right = findYStart();
-  long bottom = findXStop();
-
-  printf("Bounding box:");
-  printf("left = %ld, top = %ld, right = %ld, bottom = %ld\n\n", left, top, right, bottom);
-  
+  long top = findYStart();
+  long right = findXStop();
+  long bottom = findYStop();
   
   return Rect(left, top, right, bottom);
 }
@@ -106,9 +102,10 @@ void PixelArray::Print()
   {
     for(size_t x = 0; x < m_Rect.Width(); x++)
     {
-      size_t idx = x + y * m_Rect.Height();
-      printf("%u", m_pArray[idx]);
+      size_t idx = x + y * m_Rect.Width();
+      printf("%3u", m_pArray[idx]);
     }
+    printf("\n");
   }
 
   printf("\n\n");
@@ -121,7 +118,7 @@ long PixelArray::findXStart()
   {
     for(size_t y = 0; y < m_Rect.Height(); y++)
     {
-      size_t idx = x + y * m_Rect.Height();
+      size_t idx = x + y * m_Rect.Width();
       if(m_pArray[idx] != 0)
       {
         return x;
@@ -139,7 +136,7 @@ long PixelArray::findXStop()
   {
     for(size_t y = 0; y < m_Rect.Height(); y++)
     {
-      size_t idx = x + y * m_Rect.Height();
+      size_t idx = x + y * m_Rect.Width();
       if(m_pArray[idx] != 0)
       {
         return x;
@@ -157,7 +154,7 @@ long PixelArray::findYStart()
   {
     for(size_t x = 0; x < m_Rect.Width(); x++)
     {
-      size_t idx = x + y * m_Rect.Height();
+      size_t idx = x + y * m_Rect.Width();
       if(m_pArray[idx] != 0)
       {
         return y;
@@ -175,7 +172,7 @@ long PixelArray::findYStop()
   {
     for(size_t x = 0; x < m_Rect.Width(); x++)
     {
-      size_t idx = x + y * m_Rect.Height();
+      size_t idx = x + y * m_Rect.Width();
       if(m_pArray[idx] != 0)
       {
         return y;

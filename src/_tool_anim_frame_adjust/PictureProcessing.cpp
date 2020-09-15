@@ -8,13 +8,13 @@
 #include "PixelArray.h"
 #include "PictureProcessing.h"
 
-PictureProcessing::PictureProcessing(BitMap* pBitMap, BitMap* pMaskBitMap)
-  : m_pBitMap(pMaskBitMap),
-    m_pMaskBitMap(NULL),
+PictureProcessing::PictureProcessing(BitMap* pPicture, BitMap* pMask)
+  : m_pPicture(pPicture),
+    m_pMask(pMask),
     m_PixelWidth(0),
     m_LineHeight(0)
 {
-  if(pBitMap == NULL || pMaskBitMap == NULL)
+  if(pPicture == NULL || pMask == NULL)
   {
     throw "PictureProcessing: Missing parameter.";
   }
@@ -31,25 +31,27 @@ Rect PictureProcessing::FindBoundingBox(const Rect& searchArea)
 {
   PrintMaskShell();
 
-  PixelArray pixelArray(searchArea, m_pBitMap);
+  printf("searchArea: Left=%d, Top=%d, Right=%d, Bottom=%d\n\n", searchArea.Left(), searchArea.Right(), searchArea.Top(), searchArea.Bottom());
+
+  PixelArray pixelArray(searchArea, m_pPicture);
   pixelArray.Print();
 
-  // Rect box = pixelArray.FindBoundingBox();
+  Rect box = pixelArray.FindBoundingBox();
 
-  return Rect();
+  return box;
 }
 
 
 void PictureProcessing::PrintBitMapShell()
 {
-  printBitMap(m_pBitMap);
+  printBitMap(m_pPicture);
 }
 
 
 void PictureProcessing::PrintMaskShell()
 {
   printf("Printing mask..\n");
-  printBitMap(m_pMaskBitMap);
+  printBitMap(m_pMask);
   printf("\n\n");
 }
 
