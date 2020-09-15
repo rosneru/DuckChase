@@ -23,9 +23,14 @@ public:
   const struct BitMap* GetBitMap() const;
 
   /**
+   * Returns the transparency mask for this picture. If the mask doesn't
+   * exists it will be craeted on firts call of this method.
+   * 
+   * The mask is freed when this picture is destroyed.
+   * 
    * FIXME: Isn't this already done on ilbm loading..?
    */
-  const struct BitMap* CreateBitMapMask();
+  const struct BitMap* GetMaskBitMap();
 
   int GetBitMapPixelColorNum(long row, long column) const;
 

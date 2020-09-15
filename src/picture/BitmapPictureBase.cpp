@@ -41,7 +41,7 @@ const struct BitMap* BitmapPictureBase::GetBitMap() const
 }
 
 
-const struct BitMap* BitmapPictureBase::CreateBitMapMask()
+const struct BitMap* BitmapPictureBase::GetMaskBitMap()
 {
   if(m_pBitMap == NULL)
   {
@@ -59,7 +59,7 @@ const struct BitMap* BitmapPictureBase::CreateBitMapMask()
 
     PLANEPTR pMask = m_pBitMapMask->Planes[0];
 
-    // TODO: Does this work for chunky BitMaps?
+    // TODO: Does this work for interleaved BitMaps?
     size_t numBytes = m_pBitMap->BytesPerRow * m_pBitMap->Rows;
     for (size_t i = 0; i < numBytes; i++)
     {
