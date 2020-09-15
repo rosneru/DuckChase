@@ -56,7 +56,7 @@ bool Rect::HasSize() const
 
 size_t Rect::Area() const
 {
-  return (m_Right - m_Left) * (m_Bottom - m_Top);
+  return Width() * Height();
 }
 
 long Rect::Left() const

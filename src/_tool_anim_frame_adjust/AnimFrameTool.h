@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 
+#include "PictureProcessing.h"
 #include "IlbmBitmap.h"
 #include "Rect.h"
 
@@ -36,6 +37,7 @@ private:
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
   IlbmBitmap* m_pLoadedPicture;
+  PictureProcessing* m_pPicProcessing;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
   

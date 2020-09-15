@@ -5,16 +5,19 @@
 #include "Rect.h"
 
 /**
- * Tools and functions to be performed with a struct BitMap.
- * 
+ * Tools and functions to be performed with a picture and its mask.
+ *
+ * NOTE: Some of the operations will change the BitMap and BitMap mask
+ * given in the constructor.
+ *
  * @author Uwe Rosner
  * @date 14/09/2020
  */
-class BitMapTools
+class PictureProcessing
 {
 public:
-  BitMapTools(const BitMap* pBitmap);
-  virtual ~BitMapTools();
+  PictureProcessing(BitMap* pBitMap, BitMap* pMaskBitMap);
+  virtual ~PictureProcessing();
 
   /**
    * Returns the bounding box of the real image pixels inside the given
@@ -24,19 +27,22 @@ public:
    * the search area are skipped until a non-zero pixel is found in each
    * direction.
    */
-  Rect FindImageBoundingBox(const Rect& searchArea);
+  Rect FindBoundingBox(const Rect& searchArea);
 
   void PrintBitMapShell();
   void PrintMaskShell();
 
 private:
-  const struct BitMap* m_pBitmap;
+  struct BitMap* m_pBitMap;
   struct BitMap* m_pMaskBitMap;
   ULONG m_PixelWidth;
   ULONG m_LineHeight;
 
   void printBitMap(const BitMap* pBitMap);
   void printBits(size_t const size, void const * const ptr);
+
+  UBYTE* createRectPixelArray(const Rect& searchArea);
+  UBYTE* freeRectPixelArray(const Rect& searchArea);
 };
 
 

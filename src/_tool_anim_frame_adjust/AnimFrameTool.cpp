@@ -15,7 +15,6 @@
 #include "AslFileRequest.h"
 #include "MessageBox.h"
 
-#include "BitMapTools.h"
 #include "AnimFrameTool.h"
 
 #define VIEW_MODE_ID              LORES_KEY
@@ -69,6 +68,7 @@ AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
     m_OScanHeight(0),
     m_pLoadedPicture(NULL),
+    m_pPicProcessing(NULL),
     m_pCanvasScreen(NULL),
     m_pControlScreen(NULL),
     m_pCanvasWindow(NULL),
@@ -250,14 +250,12 @@ void AnimFrameTool::moveFrameContentLeft()
 
 void AnimFrameTool::moveFrameContentRight()
 {
-  if(m_pLoadedPicture == NULL)
+  if(m_pLoadedPicture == NULL || m_pPicProcessing == NULL)
   {
     return;
   }
 
-  BitMapTools bitmapTools(m_pLoadedPicture->GetBitMap());
-
-  Rect imageBox = bitmapTools.FindImageBoundingBox(m_FrameRects[m_CurrentFrameIdx]);
+  Rect imageBox = m_pPicProcessing->FindBoundingBox(m_FrameRects[m_CurrentFrameIdx]);
 }
 
 
@@ -383,7 +381,17 @@ void AnimFrameTool::openAnimIlbmPicture()
         delete m_pLoadedPicture;
       }
 
+      if(m_pPicProcessing != NULL)
+      {
+        delete m_pPicProcessing;
+      }
+
       m_pLoadedPicture = pNewPicture;
+
+      // Now create a PictureProcessing instance to allow some
+      // operations to the picture. FIXME: Remove the ugly casts.
+      m_pPicProcessing = new PictureProcessing((BitMap*)m_pLoadedPicture->GetBitMap(),
+                                                   (BitMap*)m_pLoadedPicture->GetMaskBitMap());
 
       m_Filename = filename;
       GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
