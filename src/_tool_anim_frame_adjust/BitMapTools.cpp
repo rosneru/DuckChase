@@ -41,6 +41,7 @@ int BitMapTools::MoveObjectLeft(const Rect& searchArea,
 
   // Limit the number of pixels to move if the object is too near to the
   // left border.
+
   if(objectBounds.Left() < numPixels)
   {
     numPixels = objectBounds.Left();
@@ -51,7 +52,7 @@ int BitMapTools::MoveObjectLeft(const Rect& searchArea,
     return 0;
   }
 
-  Rect scrollArea(searchArea.Left() + objectBounds.Left(),
+  Rect scrollArea(searchArea.Left() + objectBounds.Left() - 1,
                   searchArea.Top() + objectBounds.Top(),
                   searchArea.Left() + objectBounds.Right(),
                   searchArea.Top() + objectBounds.Bottom());
@@ -76,14 +77,19 @@ int BitMapTools::MoveObjectRight(const Rect& searchArea, size_t numPixels)
 
   // Limit the number of pixels to move if the object is too near to the
   // left border.
-  if(numPixels > (searchArea.Width() - objectBounds.Right()))
+  if(numPixels > ((searchArea.Width() - 1 - objectBounds.Right())))
   {
-    numPixels = searchArea.Width() - objectBounds.Right();
+    numPixels = searchArea.Width() - 1  - objectBounds.Right();
+  }
+
+  if(numPixels == 0)
+  {
+    return 0;
   }
 
   Rect scrollArea(searchArea.Left() + objectBounds.Left(),
                   searchArea.Top() + objectBounds.Top(),
-                  searchArea.Left() + objectBounds.Right(),
+                  searchArea.Left() + objectBounds.Right() + 1,
                   searchArea.Top() + objectBounds.Bottom());
 
   ScrollRaster(&m_RastPort, -numPixels, 0,
@@ -117,7 +123,7 @@ int BitMapTools::MoveObjectUp(const Rect& searchArea, size_t numPixels)
   }
 
   Rect scrollArea(searchArea.Left() + objectBounds.Left(),
-                  searchArea.Top() + objectBounds.Top(),
+                  searchArea.Top() + objectBounds.Top() - 1,
                   searchArea.Left() + objectBounds.Right(),
                   searchArea.Top() + objectBounds.Bottom());
 
@@ -141,15 +147,20 @@ int BitMapTools::MoveObjectDown(const Rect& searchArea, size_t numPixels)
 
   // Limit the number of pixels to move if the object is too near to the
   // left border.
-  if(numPixels > (searchArea.Height() - objectBounds.Bottom()))
+  if(numPixels > (searchArea.Height() - 1 - objectBounds.Bottom()))
   {
-    numPixels = searchArea.Height() - objectBounds.Bottom();
+    numPixels = searchArea.Height() - 1 - objectBounds.Bottom();
+  }
+
+  if(numPixels == 0)
+  {
+    return 0;
   }
 
   Rect scrollArea(searchArea.Left() + objectBounds.Left(),
                   searchArea.Top() + objectBounds.Top(),
                   searchArea.Left() + objectBounds.Right(),
-                  searchArea.Top() + objectBounds.Bottom());
+                  searchArea.Top() + objectBounds.Bottom() + 1);
 
   ScrollRaster(&m_RastPort, 0, -numPixels,
                scrollArea.Left(),
