@@ -46,6 +46,11 @@ int BitMapTools::MoveObjectLeft(const Rect& searchArea,
     numPixels = objectBounds.Left();
   }
 
+  if(numPixels == 0)
+  {
+    return 0;
+  }
+
   Rect scrollArea(searchArea.Left() + objectBounds.Left(),
                   searchArea.Top() + objectBounds.Top(),
                   searchArea.Left() + objectBounds.Right(),
@@ -63,19 +68,96 @@ int BitMapTools::MoveObjectLeft(const Rect& searchArea,
 
 int BitMapTools::MoveObjectRight(const Rect& searchArea, size_t numPixels)
 {
+  // Create an array of junky pixels of the area
+  ChunkyPixelArray chunkyPixelArray(searchArea, m_pBitMap);
 
+  // Get the rect of the actual object (non-zero-pixels)
+  Rect objectBounds = chunkyPixelArray.FindBoundingBox();
+
+  // Limit the number of pixels to move if the object is too near to the
+  // left border.
+  if(numPixels > (searchArea.Width() - objectBounds.Right()))
+  {
+    numPixels = searchArea.Width() - objectBounds.Right();
+  }
+
+  Rect scrollArea(searchArea.Left() + objectBounds.Left(),
+                  searchArea.Top() + objectBounds.Top(),
+                  searchArea.Left() + objectBounds.Right(),
+                  searchArea.Top() + objectBounds.Bottom());
+
+  ScrollRaster(&m_RastPort, -numPixels, 0,
+               scrollArea.Left(),
+               scrollArea.Top(),
+               scrollArea.Right(),
+               scrollArea.Bottom());
+
+  return numPixels;
 }
 
 
 int BitMapTools::MoveObjectUp(const Rect& searchArea, size_t numPixels)
 {
+  // Create an array of junky pixels of the area
+  ChunkyPixelArray chunkyPixelArray(searchArea, m_pBitMap);
 
+  // Get the rect of the actual object (non-zero-pixels)
+  Rect objectBounds = chunkyPixelArray.FindBoundingBox();
+
+  // Limit the number of pixels to move if the object is too near to the
+  // left border.
+  if(objectBounds.Top() < numPixels)
+  {
+    numPixels = objectBounds.Top();
+  }
+
+  if(numPixels == 0)
+  {
+    return 0;
+  }
+
+  Rect scrollArea(searchArea.Left() + objectBounds.Left(),
+                  searchArea.Top() + objectBounds.Top(),
+                  searchArea.Left() + objectBounds.Right(),
+                  searchArea.Top() + objectBounds.Bottom());
+
+  ScrollRaster(&m_RastPort, 0, numPixels,
+               scrollArea.Left(),
+               scrollArea.Top(),
+               scrollArea.Right(),
+               scrollArea.Bottom());
+
+  return numPixels;
 }
 
 
 int BitMapTools::MoveObjectDown(const Rect& searchArea, size_t numPixels)
 {
+  // Create an array of junky pixels of the area
+  ChunkyPixelArray chunkyPixelArray(searchArea, m_pBitMap);
 
+  // Get the rect of the actual object (non-zero-pixels)
+  Rect objectBounds = chunkyPixelArray.FindBoundingBox();
+
+  // Limit the number of pixels to move if the object is too near to the
+  // left border.
+  if(numPixels > (searchArea.Height() - objectBounds.Bottom()))
+  {
+    numPixels = searchArea.Height() - objectBounds.Bottom();
+  }
+
+  Rect scrollArea(searchArea.Left() + objectBounds.Left(),
+                  searchArea.Top() + objectBounds.Top(),
+                  searchArea.Left() + objectBounds.Right(),
+                  searchArea.Top() + objectBounds.Bottom());
+
+  ScrollRaster(&m_RastPort, 0, -numPixels,
+               scrollArea.Left(),
+               scrollArea.Top(),
+               scrollArea.Right(),
+               scrollArea.Bottom());
+
+  return numPixels;
 }
 
 
