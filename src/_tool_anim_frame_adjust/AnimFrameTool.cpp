@@ -68,7 +68,7 @@ AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
     m_OScanHeight(0),
     m_pLoadedPicture(NULL),
-    m_pPicProcessing(NULL),
+    m_pBitMapTools(NULL),
     m_pCanvasScreen(NULL),
     m_pControlScreen(NULL),
     m_pCanvasWindow(NULL),
@@ -245,35 +245,73 @@ void AnimFrameTool::moveFrameContentLeft()
   {
     return;
   }
+
+  // Move object (non-zero pixels) of current frame left by 1 pixel
+  if(m_pBitMapTools->MoveObjectLeft(m_FrameRects[m_FrameId], 1) < 1)
+  {
+    return;
+  }
+
+  paintPicture();
+  paintGrid();
+  paintCurrentFrameToResultRect();
 }
 
 
 void AnimFrameTool::moveFrameContentRight()
 {
-  if(m_pLoadedPicture == NULL || m_pPicProcessing == NULL)
+  if(m_pLoadedPicture == NULL || m_pBitMapTools == NULL)
   {
     return;
   }
 
-  Rect imageBox = m_pPicProcessing->FindBoundingBox(m_FrameRects[m_CurrentFrameIdx]);
+  // Move object (non-zero pixels) of current frame left by 1 pixel
+  if(m_pBitMapTools->MoveObjectRight(m_FrameRects[m_FrameId], 1) < 1)
+  {
+    return;
+  }
+
+  paintPicture();
+  paintGrid();
+  paintCurrentFrameToResultRect();
 }
 
 
-void AnimFrameTool::moveFrameContentUpward()
+void AnimFrameTool::moveFrameContentUp()
 {
   if(m_pLoadedPicture == NULL)
   {
     return;
   }
+
+  // Move object (non-zero pixels) of current frame left by 1 pixel
+  if(m_pBitMapTools->MoveObjectUp(m_FrameRects[m_FrameId], 1) < 1)
+  {
+    return;
+  }
+
+  paintPicture();
+  paintGrid();
+  paintCurrentFrameToResultRect();
 }
 
 
-void AnimFrameTool::moveFrameContentDownward()
+void AnimFrameTool::moveFrameContentDown()
 {
   if(m_pLoadedPicture == NULL)
   {
     return;
   }
+
+  // Move object (non-zero pixels) of current frame left by 1 pixel
+  if(m_pBitMapTools->MoveObjectDown(m_FrameRects[m_FrameId], 1) < 1)
+  {
+    return;
+  }
+
+  paintPicture();
+  paintGrid();
+  paintCurrentFrameToResultRect();
 }
 
 
@@ -297,28 +335,28 @@ void AnimFrameTool::gadgetFrameWidthChanged()
 
 void AnimFrameTool::gadgetCurrentFrameChanged()
 {
-  ULONG newCurrentFrameNum;
+  ULONG newFrameNum;
   if(1 != GT_GetGadgetAttrs(m_pGadIntCurrentFrame, 
                             m_pControlWindow, 
                             NULL,
-                            GTIN_Number, &newCurrentFrameNum,
+                            GTIN_Number, &newFrameNum,
                             TAG_DONE))
   {
     return;
   }
 
-  if((newCurrentFrameNum < 1) || (newCurrentFrameNum > m_FrameRects.size()))
+  if((newFrameNum < 1) || (newFrameNum > m_FrameRects.size()))
   {
     // User input frame number is too small or too big
     updateFrameIdxGadgets(true);
     return;
   }
 
-  int newCurrentFrameIdx = newCurrentFrameNum - 1;
+  int newFrameId = newFrameNum - 1;
 
-  paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
-  paintSelectionRect(m_FrameRects[newCurrentFrameIdx], true);
-  m_CurrentFrameIdx = newCurrentFrameIdx;
+  paintSelectionRect(m_FrameRects[m_FrameId], false);
+  paintSelectionRect(m_FrameRects[newFrameId], true);
+  m_FrameId = newFrameId;
 
   paintCurrentFrameToResultRect();
 }
@@ -326,15 +364,15 @@ void AnimFrameTool::gadgetCurrentFrameChanged()
 
 void AnimFrameTool::selectPreviousFrame()
 {
-  int prevIndex = m_CurrentFrameIdx - 1;
+  int prevIndex = m_FrameId - 1;
   if(prevIndex < 0)
   {
     prevIndex = m_FrameRects.size() - 1;
   }
 
-  paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  paintSelectionRect(m_FrameRects[m_FrameId], false);
   paintSelectionRect(m_FrameRects[prevIndex], true);
-  m_CurrentFrameIdx = prevIndex;
+  m_FrameId = prevIndex;
 
   updateFrameIdxGadgets(true);
   
@@ -344,15 +382,15 @@ void AnimFrameTool::selectPreviousFrame()
 
 void AnimFrameTool::selectNextFrame()
 {
-  int nextIndex = m_CurrentFrameIdx + 1;
+  int nextIndex = m_FrameId + 1;
   if(nextIndex >= (int)m_FrameRects.size())
   {
     nextIndex = 0;
   }
 
-  paintSelectionRect(m_FrameRects[m_CurrentFrameIdx], false);
+  paintSelectionRect(m_FrameRects[m_FrameId], false);
   paintSelectionRect(m_FrameRects[nextIndex], true);
-  m_CurrentFrameIdx = nextIndex;
+  m_FrameId = nextIndex;
 
   updateFrameIdxGadgets(true);
 
@@ -381,16 +419,16 @@ void AnimFrameTool::openAnimIlbmPicture()
         delete m_pLoadedPicture;
       }
 
-      if(m_pPicProcessing != NULL)
+      if(m_pBitMapTools != NULL)
       {
-        delete m_pPicProcessing;
+        delete m_pBitMapTools;
       }
 
       m_pLoadedPicture = pNewPicture;
 
-      // Now create a PictureProcessing instance to allow some
+      // Now create a BitMapTools instance to allow some
       // operations to the picture. FIXME: Remove the ugly cast.
-      m_pPicProcessing = new PictureProcessing((BitMap*)m_pLoadedPicture->GetBitMap());
+      m_pBitMapTools = new BitMapTools((BitMap*)m_pLoadedPicture->GetBitMap());
 
       m_Filename = filename;
       GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
@@ -439,7 +477,7 @@ void AnimFrameTool::calcFrameRects()
     return;
   }
 
-  m_CurrentFrameIdx = 0;
+  m_FrameId = 0;
 
   LONG wordWidth;
   if(1 != GT_GetGadgetAttrs(m_pGadSliFrameWidth, 
@@ -482,7 +520,7 @@ void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
 {
 
   GT_SetGadgetAttrs(m_pGadIntCurrentFrame, m_pControlWindow, NULL,
-                    GTIN_Number, m_CurrentFrameIdx + 1,
+                    GTIN_Number, m_FrameId + 1,
                     TAG_DONE);
 
   if(bCurrentOnly)
@@ -533,7 +571,7 @@ void AnimFrameTool::paintGrid()
   for(size_t i = 0; i < m_FrameRects.size(); i++)
   {
     // For current frame set a different pen color (the highest pen available)
-    bool isHighlighted = ((int)i == m_CurrentFrameIdx ? true : false);
+    bool isHighlighted = ((int)i == m_FrameId ? true : false);
     paintSelectionRect(m_FrameRects[i], isHighlighted);
   }
 }
@@ -566,12 +604,12 @@ void AnimFrameTool::paintCurrentFrameToResultRect()
   }
 
   BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
-                    m_FrameRects[m_CurrentFrameIdx].Left(),
-                    m_FrameRects[m_CurrentFrameIdx].Top(), 
+                    m_FrameRects[m_FrameId].Left(),
+                    m_FrameRects[m_FrameId].Top(), 
                     m_pControlWindow->RPort, 
                     m_ResultFrameRect.Left(), m_ResultFrameRect.Top(),
-                    m_FrameRects[m_CurrentFrameIdx].Width(), 
-                    m_FrameRects[m_CurrentFrameIdx].Height(), 
+                    m_FrameRects[m_FrameId].Width(), 
+                    m_FrameRects[m_FrameId].Height(), 
                     0xc0);
 }
 
@@ -670,7 +708,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       // Cursor Up
       if(pIntuiMsg->Qualifier & shiftQualifier)
       {
-        moveFrameContentUpward();
+        moveFrameContentUp();
       }
       break;
 
@@ -679,7 +717,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
       if(pIntuiMsg->Qualifier & shiftQualifier)
       {
-        moveFrameContentDownward();
+        moveFrameContentDown();
       }
       break;
 
@@ -729,6 +767,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
 void AnimFrameTool::cleanup()
 {
+  if(m_pBitMapTools != NULL)
+  {
+    delete m_pBitMapTools;
+    m_pBitMapTools = NULL;
+  }
+
   if(m_pLoadedPicture != NULL)
   {
     delete m_pLoadedPicture;

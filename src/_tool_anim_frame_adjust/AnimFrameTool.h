@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 
-#include "PictureProcessing.h"
+#include "BitMapTools.h"
 #include "IlbmBitmap.h"
 #include "Rect.h"
 
@@ -37,12 +37,12 @@ private:
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
   IlbmBitmap* m_pLoadedPicture;
-  PictureProcessing* m_pPicProcessing;
+  BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
   
   int m_NumFrames;
-  int m_CurrentFrameIdx;
+  int m_FrameId;
 
   enum GadgetId
   {
@@ -92,8 +92,8 @@ private:
 
   void moveFrameContentLeft();
   void moveFrameContentRight();
-  void moveFrameContentUpward();
-  void moveFrameContentDownward();
+  void moveFrameContentUp();
+  void moveFrameContentDown();
 
   void gadgetFrameWidthChanged();
   void gadgetCurrentFrameChanged();
