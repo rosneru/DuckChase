@@ -389,9 +389,8 @@ void AnimFrameTool::openAnimIlbmPicture()
       m_pLoadedPicture = pNewPicture;
 
       // Now create a PictureProcessing instance to allow some
-      // operations to the picture. FIXME: Remove the ugly casts.
-      m_pPicProcessing = new PictureProcessing((BitMap*)m_pLoadedPicture->GetBitMap(),
-                                               (BitMap*)m_pLoadedPicture->GetMaskBitMap());
+      // operations to the picture. FIXME: Remove the ugly cast.
+      m_pPicProcessing = new PictureProcessing((BitMap*)m_pLoadedPicture->GetBitMap());
 
       m_Filename = filename;
       GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,

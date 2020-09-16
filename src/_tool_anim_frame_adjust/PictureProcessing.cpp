@@ -8,13 +8,10 @@
 #include "ChunkyPixelArray.h"
 #include "PictureProcessing.h"
 
-PictureProcessing::PictureProcessing(BitMap* pPicture, BitMap* pMask)
-  : m_pPicture(pPicture),
-    m_pMask(pMask),
-    m_PixelWidth(0),
-    m_LineHeight(0)
+PictureProcessing::PictureProcessing(BitMap* pPicture)
+  : m_pBitMap(pPicture)
 {
-  if(pPicture == NULL || pMask == NULL)
+  if(pPicture == NULL)
   {
     throw "PictureProcessing: Missing parameter.";
   }
@@ -29,11 +26,9 @@ PictureProcessing::~PictureProcessing()
 
 Rect PictureProcessing::FindBoundingBox(const Rect& searchArea)
 {
-  PrintMaskShell();
-
   printf("searchArea: Left=%d, Top=%d, Right=%d, Bottom=%d\n\n", searchArea.Left(), searchArea.Right(), searchArea.Top(), searchArea.Bottom());
 
-  ChunkyPixelArray pixelArray(searchArea, m_pPicture);
+  ChunkyPixelArray pixelArray(searchArea, m_pBitMap);
   pixelArray.Print();
 
   Rect box = pixelArray.FindBoundingBox();
@@ -42,33 +37,16 @@ Rect PictureProcessing::FindBoundingBox(const Rect& searchArea)
 }
 
 
-void PictureProcessing::PrintBitMapShell()
+void PictureProcessing::Print()
 {
-  printBitMap(m_pPicture);
-}
-
-
-void PictureProcessing::PrintMaskShell()
-{
-  printf("Printing mask..\n");
-  printBitMap(m_pMask);
-  printf("\n\n");
-}
-
-
-void PictureProcessing::printBitMap(const BitMap* pBitMap)
-{
-  //
-  // Print the BitMap bitwise. Uncomment if needed.
-  //
-  for(int i = 0; i < pBitMap->Depth; i++)
+  for(int i = 0; i < m_pBitMap->Depth; i++)
   {
-    PLANEPTR pPlane = pBitMap->Planes[i];
-    for(int row = 0; row < pBitMap->Rows; row++)
+    PLANEPTR pPlane = m_pBitMap->Planes[i];
+    for(int row = 0; row < m_pBitMap->Rows; row++)
     {
-      for(int byte = 0; byte < pBitMap->BytesPerRow; byte++)
+      for(int byte = 0; byte < m_pBitMap->BytesPerRow; byte++)
       {
-        size_t offset = byte + (pBitMap->BytesPerRow * row);
+        size_t offset = byte + (m_pBitMap->BytesPerRow * row);
         printBits(1, pPlane + offset);
         printf(" ");
       }

@@ -5,10 +5,10 @@
 #include "Rect.h"
 
 /**
- * Tools and functions to be performed with a picture and its mask.
+ * Tools and functions to be performed with a picture.
  *
- * NOTE: Some of the operations will change the BitMap and BitMap mask
- * given in the constructor.
+ * NOTE: Some of the operations will change the BitMap given in the
+ * constructor.
  *
  * @author Uwe Rosner
  * @date 14/09/2020
@@ -16,7 +16,7 @@
 class PictureProcessing
 {
 public:
-  PictureProcessing(BitMap* pPicture, BitMap* pMask);
+  PictureProcessing(BitMap* pPicture);
   virtual ~PictureProcessing();
 
   /**
@@ -29,16 +29,16 @@ public:
    */
   Rect FindBoundingBox(const Rect& searchArea);
 
-  void PrintBitMapShell();
-  void PrintMaskShell();
+
+  /**
+   * Print-out the array into a shell window. Useful for debugging
+   * with small array dimensions.
+   */
+  void Print();
 
 private:
-  struct BitMap* m_pPicture;
-  struct BitMap* m_pMask;
-  ULONG m_PixelWidth;
-  ULONG m_LineHeight;
+  struct BitMap* m_pBitMap;
 
-  void printBitMap(const BitMap* pBitMap);
   void printBits(size_t const size, void const * const ptr);
 
   UBYTE* createRectPixelArray(const Rect& searchArea);

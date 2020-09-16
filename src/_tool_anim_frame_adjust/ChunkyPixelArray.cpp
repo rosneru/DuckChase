@@ -23,10 +23,9 @@ ChunkyPixelArray::ChunkyPixelArray(const Rect& rect, struct BitMap* pPicture)
   // exception.
 
   int depth = GetBitMapAttr(pPicture, BMA_DEPTH);
-
   if(depth > 8)
   {
-    throw "ChunkyPixelArray: Not more than 8 bitplanes supported.";
+    throw "ChunkyPixelArray: No more than 8 bitplanes supported.";
   }
 
   // Main RastPort as needed by Read/WritePixelArray8()
@@ -96,7 +95,7 @@ Rect ChunkyPixelArray::FindBoundingBox()
 
 void ChunkyPixelArray::Print()
 {
-  printf("Printing pixel array..\n");
+  printf("Printing chunky pixel array..\n");
 
   for(size_t y = 0; y < m_Rect.Height(); y++)
   {
