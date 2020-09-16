@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-#include "PixelArray.h"
+#include "ChunkyPixelArray.h"
 #include "PictureProcessing.h"
 
 PictureProcessing::PictureProcessing(BitMap* pPicture, BitMap* pMask)
@@ -33,7 +33,7 @@ Rect PictureProcessing::FindBoundingBox(const Rect& searchArea)
 
   printf("searchArea: Left=%d, Top=%d, Right=%d, Bottom=%d\n\n", searchArea.Left(), searchArea.Right(), searchArea.Top(), searchArea.Bottom());
 
-  PixelArray pixelArray(searchArea, m_pPicture);
+  ChunkyPixelArray pixelArray(searchArea, m_pPicture);
   pixelArray.Print();
 
   Rect box = pixelArray.FindBoundingBox();

@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 
-#include "PixelArray.h"
+#include "ChunkyPixelArray.h"
 
-PixelArray::PixelArray(const Rect& rect, struct BitMap* pPicture)
+ChunkyPixelArray::ChunkyPixelArray(const Rect& rect, struct BitMap* pPicture)
   : m_Rect(rect),
     m_RastPort(),
     m_TempRastPort(),
@@ -16,7 +16,7 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pPicture)
 
   if(pPicture == NULL)
   {
-    throw "PixelArray: Missing Parameter.";
+    throw "ChunkyPixelArray: Missing Parameter.";
   }
 
   // TODO: Maybe check if rect is fit into BitMap and else throw an
@@ -26,7 +26,7 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pPicture)
 
   if(depth > 8)
   {
-    throw "PixelArray: Not more than 8 bitplanes supported.";
+    throw "ChunkyPixelArray: Not more than 8 bitplanes supported.";
   }
 
   // Main RastPort as needed by Read/WritePixelArray8()
@@ -44,7 +44,7 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pPicture)
 
   if(m_TempRastPort.BitMap == NULL)
   {
-    throw "PixelArray: Failed to allocate a BitMap.";
+    throw "ChunkyPixelArray: Failed to allocate a BitMap.";
   }
 
   // see description of WritePixelArray8 in autodocs.
@@ -62,12 +62,12 @@ PixelArray::PixelArray(const Rect& rect, struct BitMap* pPicture)
 
   if(count != m_Rect.Area())
   {
-    throw "PixelArray: Wrong number of Pixels read.";
+    throw "ChunkyPixelArray: Wrong number of Pixels read.";
   }
 }
 
 
-PixelArray::~PixelArray()
+ChunkyPixelArray::~ChunkyPixelArray()
 {
   if(m_pArray != NULL)
   {
@@ -83,7 +83,7 @@ PixelArray::~PixelArray()
 }
 
 
-Rect PixelArray::FindBoundingBox()
+Rect ChunkyPixelArray::FindBoundingBox()
 {
   long left = findXStart();
   long top = findYStart();
@@ -94,7 +94,7 @@ Rect PixelArray::FindBoundingBox()
 }
 
 
-void PixelArray::Print()
+void ChunkyPixelArray::Print()
 {
   printf("Printing pixel array..\n");
 
@@ -112,7 +112,7 @@ void PixelArray::Print()
 }
 
 
-long PixelArray::findXStart()
+long ChunkyPixelArray::findXStart()
 {
   for(size_t x = 0; x < m_Rect.Width(); x++)
   {
@@ -130,7 +130,7 @@ long PixelArray::findXStart()
 }
 
 
-long PixelArray::findXStop()
+long ChunkyPixelArray::findXStop()
 {
   for(size_t x = m_Rect.Width() - 1; x >= 0 ; x--)
   {
@@ -148,7 +148,7 @@ long PixelArray::findXStop()
 }
 
 
-long PixelArray::findYStart()
+long ChunkyPixelArray::findYStart()
 {
   for(size_t y = 0; y < m_Rect.Height(); y++)
   {
@@ -166,7 +166,7 @@ long PixelArray::findYStart()
 }
 
 
-long PixelArray::findYStop()
+long ChunkyPixelArray::findYStop()
 {
   for(size_t y = m_Rect.Height() - 1; y >= 0 ; y--)
   {
