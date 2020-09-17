@@ -39,7 +39,7 @@ add_executable (DuckChase_gcc
                 game/Level01.cpp
                 iff/IffParse.cpp
                 main.cpp
-                picture/BitmapPictureBase.cpp
+                picture/BitMapPictureBase.cpp
                 picture/PictureBase.cpp
                 picture/OpenIlbmPictureBitMap.cpp
                 picture/OpenImageDataPicture.cpp
@@ -89,7 +89,7 @@ add_executable (AnimFrameTool
                 anim/AnimSeqGelsBob.cpp
                 anim/ShadowMask.cpp
                 iff/IffParse.cpp
-                picture/BitmapPictureBase.cpp
+                picture/BitMapPictureBase.cpp
                 picture/PictureBase.cpp
                 picture/OpenIlbmPictureBitMap.cpp
                 picture/OpenImageDataPicture.cpp
@@ -128,7 +128,7 @@ add_executable (Collision_test_ui
                 entities/ArrowGfxResources.cpp
                 entities/DuckGfxResources.cpp
                 iff/IffParse.cpp
-                picture/BitmapPictureBase.cpp
+                picture/BitMapPictureBase.cpp
                 picture/PictureBase.cpp
                 picture/OpenIlbmPictureBitMap.cpp
                 picture/OpenImageDataPicture.cpp

@@ -15,7 +15,7 @@ OpenRawPictureBitMap::OpenRawPictureBitMap(const char* pFileName,
                      ULONG width, 
                      ULONG height, 
                      ULONG depth)
-  : BitmapPictureBase(),
+  : BitMapPictureBase(),
     m_FileHandle(0)
 {
   if (pFileName == NULL)

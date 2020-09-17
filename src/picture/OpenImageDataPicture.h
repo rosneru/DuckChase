@@ -1,5 +1,5 @@
-#ifndef IMG_LOADER_RAW_PURE_H
-#define IMG_LOADER_RAW_PURE_H
+#ifndef OPEN_IMAGE_DATA_PICTURE_H
+#define OPEN_IMAGE_DATA_PICTURE_H
 
 #include <dos/dos.h>
 

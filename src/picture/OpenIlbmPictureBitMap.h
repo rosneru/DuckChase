@@ -1,9 +1,9 @@
-#ifndef ILBM_BITMAP_H
-#define ILBM_BITMAP_H
+#ifndef OPEN_ILBM_PICTURE_BITMAP_H
+#define OPEN_ILBM_PICTURE_BITMAP_H
 
 #include <graphics/gfx.h>
 
-#include "BitmapPictureBase.h"
+#include "BitMapPictureBase.h"
 #include "IffParse.h"
 
 /**
@@ -13,7 +13,7 @@
  * @author Uwe Rosner
  * @date 04/04/2020
  */
-class OpenIlbmPictureBitMap : public BitmapPictureBase
+class OpenIlbmPictureBitMap : public BitMapPictureBase
 {
 public: 
   /**

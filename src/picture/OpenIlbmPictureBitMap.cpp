@@ -12,7 +12,7 @@
 OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
                        bool bLoadColors,
                        bool bLoadDisplayMode)
-  : BitmapPictureBase(),
+  : BitMapPictureBase(),
     m_MaxSrcPlanes(25)
 {
   IffParse iffParse(pFileName);

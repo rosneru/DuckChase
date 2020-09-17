@@ -11,7 +11,7 @@
  * @author Uwe Rosner
  * @date 19/04/2020
  */
-class BitmapPictureBase : public PictureBase
+class BitMapPictureBase : public PictureBase
 {
 public:
   long Width() const;
@@ -37,8 +37,8 @@ public:
   int GetBitMapPixelColorNum(long row, long column) const;
 
 protected:
-  BitmapPictureBase();
-  virtual ~BitmapPictureBase();
+  BitMapPictureBase();
+  virtual ~BitMapPictureBase();
   
   struct BitMap* m_pBitMap;
   struct BitMap* m_pBitMapMask;

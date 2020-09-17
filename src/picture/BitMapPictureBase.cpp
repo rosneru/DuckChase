@@ -3,10 +3,10 @@
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 
-#include "BitmapPictureBase.h"
+#include "BitMapPictureBase.h"
 
 
-BitmapPictureBase::BitmapPictureBase()
+BitMapPictureBase::BitMapPictureBase()
   : m_pBitMap(NULL),
     m_pBitMapMask(NULL),
     m_pColors32(NULL),
@@ -14,7 +14,7 @@ BitmapPictureBase::BitmapPictureBase()
 {
 }
 
-BitmapPictureBase::~BitmapPictureBase()
+BitMapPictureBase::~BitMapPictureBase()
 {
   if(m_pBitMap != NULL)
   {
@@ -36,13 +36,13 @@ BitmapPictureBase::~BitmapPictureBase()
 }
 
 
-const struct BitMap* BitmapPictureBase::GetBitMap() const
+const struct BitMap* BitMapPictureBase::GetBitMap() const
 {
   return m_pBitMap;
 }
 
 
-const struct BitMap* BitmapPictureBase::GetMaskBitMap()
+const struct BitMap* BitMapPictureBase::GetMaskBitMap()
 {
   if(m_pBitMap == NULL)
   {
@@ -80,7 +80,7 @@ const struct BitMap* BitmapPictureBase::GetMaskBitMap()
 }
 
 
-long BitmapPictureBase::Width() const
+long BitMapPictureBase::Width() const
 {
   if(m_pBitMap == 0)
   {
@@ -90,7 +90,7 @@ long BitmapPictureBase::Width() const
   return GetBitMapAttr(m_pBitMap, BMA_WIDTH);
 }
 
-long BitmapPictureBase::WordWidth() const
+long BitMapPictureBase::WordWidth() const
 {
   if(m_pBitMap == 0)
   {
@@ -100,7 +100,7 @@ long BitmapPictureBase::WordWidth() const
   return ((Width() + 15) & -16) >> 4;
 }
 
-long BitmapPictureBase::Height() const
+long BitMapPictureBase::Height() const
 {
   if(m_pBitMap == 0)
   {
@@ -110,7 +110,7 @@ long BitmapPictureBase::Height() const
   return GetBitMapAttr(m_pBitMap, BMA_HEIGHT);
 }
 
-long BitmapPictureBase::Depth() const
+long BitMapPictureBase::Depth() const
 {
   if(m_pBitMap == 0)
   {
@@ -122,20 +122,20 @@ long BitmapPictureBase::Depth() const
 
 
 
-const ULONG* BitmapPictureBase::GetColors32() const
+const ULONG* BitMapPictureBase::GetColors32() const
 {
   return m_pColors32;
 }
 
 
-ULONG BitmapPictureBase::GetModeId() const
+ULONG BitMapPictureBase::GetModeId() const
 {
   return m_ModeId;
 }
 
 
 // TODO: Experimental. Probably not working for Interleaved or RTG BitMaps.
-int BitmapPictureBase::GetBitMapPixelColorNum(long row, long column) const
+int BitMapPictureBase::GetBitMapPixelColorNum(long row, long column) const
 {
   if(m_pBitMap == NULL)
   {
