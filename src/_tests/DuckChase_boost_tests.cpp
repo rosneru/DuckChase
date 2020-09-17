@@ -86,6 +86,8 @@ BOOST_AUTO_TEST_CASE( test_Rect )
   BOOST_CHECK_EQUAL(b.Bottom(), 5);
   BOOST_CHECK_EQUAL(b.Area(), 12);
   BOOST_CHECK_EQUAL(b.HasSize(), true);
+  
+  BOOST_CHECK_EQUAL(b.Bottom() - b.Top(), b.Height());
 
   Rect c;
   BOOST_CHECK_EQUAL(c.HasSize(), false);

@@ -16,7 +16,7 @@
 class IffParse
 {
 public:
-  IffParse(const char* pFileName);
+  IffParse(const char* pFileName, bool isWriteMode = false);
   virtual ~IffParse();
 
   struct IFFHandle* Handle();
@@ -42,6 +42,9 @@ public:
 
 private:
   struct IFFHandle* m_pIffHandle;
+  bool m_IsIffOpen;
+
+  void cleanup();
 };
 
 #endif

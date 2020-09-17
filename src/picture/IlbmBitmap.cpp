@@ -42,7 +42,6 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
   iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
   if(iffErr != 0)
   {
-    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: Error in ParseIFF.";
   }
 
@@ -50,14 +49,12 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
   StoredProperty* pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_BMHD);
   if(pStoredProp == NULL)
   {
-    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: No BitMap header found in file.";
   }
 
   BitMapHeader* pBitMapHeader = (BitMapHeader*)pStoredProp->sp_Data;
   if(pBitMapHeader == NULL)
   {
-    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: Bitmap header of ilbm file is empty.";
   }
 
@@ -70,7 +67,6 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
 
   if (m_pBitMap == NULL)
   {
-    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: Failed to AllocBitMap.";
   }
 
@@ -92,7 +88,6 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
     {
       if(loadDisplayMode(pStoredProp, pBitMapHeader) == false)
       {
-        CloseIFF(iffParse.Handle());
         throw "IlbmBitmap: Error while loading the display mode from ILBM CAMG.";
       }
     }
@@ -106,7 +101,6 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
     {
       if(loadColors(pStoredProp) == false)
       {
-        CloseIFF(iffParse.Handle());
         throw "IlbmBitmap: Error while loading the colors from ILBM CMAP.";
       }
     }
@@ -116,12 +110,10 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
                     isCompressed,
                     pBitMapHeader->bmh_Masking) == false)
   {
-    CloseIFF(iffParse.Handle());
     throw "IlbmBitmap: Error while decoding the ilbm body.";
   }
-
-  CloseIFF(iffParse.Handle());
 }
+
 
 IlbmBitmap::~IlbmBitmap()
 {

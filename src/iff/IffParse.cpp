@@ -4,8 +4,9 @@
 
 #include "IffParse.h"
 
-IffParse::IffParse(const char* pFileName)
-  : m_pIffHandle(NULL)
+IffParse::IffParse(const char* pFileName, bool isWriteMode)
+  : m_pIffHandle(NULL),
+    m_IsIffOpen(true)
 {
   if (pFileName == NULL)
   {
@@ -21,14 +22,35 @@ IffParse::IffParse(const char* pFileName)
   m_pIffHandle->iff_Stream = Open(pFileName, MODE_OLDFILE);
   if (m_pIffHandle->iff_Stream == 0)
   {
+    cleanup();
     throw "IffParser: Failed to open file.";
   }
 
   InitIFFasDOS(m_pIffHandle);
+
+  LONG openMode = isWriteMode ? IFFF_WRITE : IFFF_READ;
+  if(OpenIFF(m_pIffHandle, openMode) != 0)
+  {
+    cleanup();
+    throw "IffParse: OpenIFF returned error.";
+  }
+
+  m_IsIffOpen = true;
 }
 
 IffParse::~IffParse()
 {
+  cleanup();
+}
+
+void IffParse::cleanup()
+{
+  if(m_IsIffOpen)
+  {
+    CloseIFF(m_pIffHandle);
+    m_IsIffOpen = false;
+  }
+
   if(m_pIffHandle != NULL)
   {
     if(m_pIffHandle->iff_Stream != 0)
