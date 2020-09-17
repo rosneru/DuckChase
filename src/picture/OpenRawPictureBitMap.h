@@ -15,7 +15,7 @@
  * @author Uwe Rosner
  * @date 04/04/2020
  */
-class RawBitMap : public BitmapPictureBase
+class OpenRawPictureBitMap : public BitmapPictureBase
 {
 public: 
   /**
@@ -23,9 +23,9 @@ public:
    * into a bitmap. Dimensions of the image have to be set in
    * constructor. 
    */
-  RawBitMap(const char* pFileName, ULONG width, ULONG height, ULONG depth);
+  OpenRawPictureBitMap(const char* pFileName, ULONG width, ULONG height, ULONG depth);
 
-  virtual ~RawBitMap();
+  virtual ~OpenRawPictureBitMap();
 
 
 private:

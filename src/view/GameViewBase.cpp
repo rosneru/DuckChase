@@ -4,7 +4,7 @@
 #include "clib/graphics_protos.h"
 #include "GameViewBase.h"
 
-GameViewBase::GameViewBase(IlbmBitmap& picture)
+GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
   : m_pBitMapArray(),
     m_BorderTop(0),
     m_BorderLeft(0),
@@ -94,7 +94,7 @@ GameViewBase::~GameViewBase()
 }
 
 
-void GameViewBase::BlitPicture(const IlbmBitmap& picture, 
+void GameViewBase::BlitPicture(const OpenIlbmPictureBitMap& picture, 
                                ULONG left, 
                                ULONG top)
 {
@@ -118,14 +118,14 @@ void GameViewBase::BlitPicture(const IlbmBitmap& picture,
   }
 }
 
-void GameViewBase::BlitPicture(const IlbmBitmap& picture)
+void GameViewBase::BlitPicture(const OpenIlbmPictureBitMap& picture)
 {
   BlitPicture(picture,
               (Width() - picture.Width()) / 2,
               (Height() - picture.Height()) / 2);
 }
 
-void GameViewBase::BlitPictureMasked(IlbmBitmap& picture, 
+void GameViewBase::BlitPictureMasked(OpenIlbmPictureBitMap& picture, 
                                      ULONG left, 
                                      ULONG top)
 {
@@ -157,7 +157,7 @@ void GameViewBase::BlitPictureMasked(IlbmBitmap& picture,
   }
 }
 
-void GameViewBase::BlitPictureMasked(IlbmBitmap& picture)
+void GameViewBase::BlitPictureMasked(OpenIlbmPictureBitMap& picture)
 {
   BlitPictureMasked(picture,
                     (Width() - picture.Width()) / 2,

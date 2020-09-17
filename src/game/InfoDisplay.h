@@ -7,7 +7,7 @@
 #include "GameColors.h"
 #include "GameVars.h"
 #include "GameViewBase.h"
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 #include "Rect.h"
 
 
@@ -38,7 +38,7 @@ public:
 private:
   GameViewBase& m_View;
   GameVars& m_GameVars;
-  IlbmBitmap m_BackgroundPicture;
+  OpenIlbmPictureBitMap m_BackgroundPicture;
   Rect m_ArrowsRect;
   Rect m_FpsRect;
   Rect m_StrainRect;

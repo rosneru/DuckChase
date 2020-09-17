@@ -5,7 +5,7 @@
 
 #include "AnimSeqGels.h"
 
-class ImageDataPicture;
+class OpenImageDataPicture;
 
 /**
  * Holds an anim sequence of ImgageData images as needed for a VSprite
@@ -24,7 +24,7 @@ public:
   virtual ~AnimSeqGelsVSprite();
 
 private:
-  ImageDataPicture* m_pImgLoaderSrc;
+  OpenImageDataPicture* m_pImgLoaderSrc;
 };
 
 #endif

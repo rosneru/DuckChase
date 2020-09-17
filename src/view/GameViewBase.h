@@ -5,7 +5,7 @@
 #include <graphics/gfx.h>
 #include <graphics/view.h>
 
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 
 /**
  * Represents the base class for all supported GameViews.
@@ -34,24 +34,24 @@ public:
   /**
    * Display the given picture at given position.
    */
-  void BlitPicture(const IlbmBitmap& picture, ULONG left, ULONG top);
+  void BlitPicture(const OpenIlbmPictureBitMap& picture, ULONG left, ULONG top);
 
   /**
    * Displaysthe given picture centered.
    */
-  void BlitPicture(const IlbmBitmap& picture);
+  void BlitPicture(const OpenIlbmPictureBitMap& picture);
 
   /**
    * Display the given picture at given position. Using the mask for
    * display, so pixels with color 0 will be transparent.
    */
-  void BlitPictureMasked(IlbmBitmap& picture, ULONG left, ULONG top);
+  void BlitPictureMasked(OpenIlbmPictureBitMap& picture, ULONG left, ULONG top);
 
   /**
    * Display the given picture centered. Using the mask for
    * display, so pixels with color 0 will be transparent.
    */
-  void BlitPictureMasked(IlbmBitmap& picture);
+  void BlitPictureMasked(OpenIlbmPictureBitMap& picture);
 
   void SetPlayfieldBorders(long top, long left, long bottom, long right);
 
@@ -101,7 +101,7 @@ protected:
    */
   struct MsgPort* m_pDispMessage;
 
-  GameViewBase(IlbmBitmap& picture);
+  GameViewBase(OpenIlbmPictureBitMap& picture);
   virtual ~GameViewBase();
 
 private:

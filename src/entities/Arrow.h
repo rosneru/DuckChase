@@ -8,7 +8,7 @@
 #include "EntityBase.h"
 #include "GameColors.h"
 #include "GameViewBase.h"
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 #include "ShapeExtSprite.h"
 
 

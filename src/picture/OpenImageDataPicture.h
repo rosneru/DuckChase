@@ -13,14 +13,14 @@
  * @author Uwe Rosner
  * @date 21/01/2020
  */
-class ImageDataPicture : public PictureBase
+class OpenImageDataPicture : public PictureBase
 {
 public: 
   /**
    * Loading the raw image of given filename into an array of WORDs.
    * Dimensions of the image have to be set in constructor.
    */
-  ImageDataPicture(const char* pFileName, 
+  OpenImageDataPicture(const char* pFileName, 
                    ULONG width, 
                    ULONG height, 
                    ULONG depth);
@@ -28,22 +28,22 @@ public:
   /**
    * Creating ImageData from a given BitMap picture.
    */
-  ImageDataPicture(struct BitMap* pSrcBitmap);
+  OpenImageDataPicture(struct BitMap* pSrcBitmap);
 
   /**
    * Creating ImageData from a given BitMap picturep. ImageData width is
    * width of srcBitMap divided by numFrames. ImagedData is composed by 
    * blitting the slice of width starting from xStart from src BitMap.
    */
-  ImageDataPicture(struct BitMap* pSrcBitmap, 
+  OpenImageDataPicture(struct BitMap* pSrcBitmap, 
                    ULONG xStart, 
                    ULONG numFrames);
 
 
-  ImageDataPicture(WORD* pExternalImageData);
+  OpenImageDataPicture(WORD* pExternalImageData);
 
 
-  virtual ~ImageDataPicture();
+  virtual ~OpenImageDataPicture();
 
 
   WORD* GetImageData();

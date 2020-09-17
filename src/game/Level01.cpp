@@ -1,7 +1,7 @@
 #include <clib/lowlevel_protos.h>
 #include <libraries/lowlevel.h>
 
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 #include "Level01.h"
 
 
@@ -206,6 +206,6 @@ void Level01::displayWinner()
   }
   
   // Display the winner picture
-  IlbmBitmap winnerPicture(pImagePath, false, false);
+  OpenIlbmPictureBitMap winnerPicture(pImagePath, false, false);
   m_GameView.BlitPictureMasked(winnerPicture);
 }

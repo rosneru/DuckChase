@@ -8,12 +8,12 @@
 
 /**
  * Class for loading an iff ilbm file into a Bitmap by using the 
- * iffparse.library. Code of newiff from Commodore is used.
+ * iffparse.library. Code of newiff39 from Commodore is used.
  *
  * @author Uwe Rosner
  * @date 04/04/2020
  */
-class IlbmBitmap : public BitmapPictureBase
+class OpenIlbmPictureBitMap : public BitmapPictureBase
 {
 public: 
   /**
@@ -21,11 +21,11 @@ public:
    * Dimensions of the image are extracted from the ilbm header an can
    * be retrieved after successful loading using the getters. 
    */
-  IlbmBitmap(const char* pFileName,
+  OpenIlbmPictureBitMap(const char* pFileName,
              bool bLoadColors,
              bool bLoadDisplayMode);
 
-  virtual ~IlbmBitmap();
+  virtual ~OpenIlbmPictureBitMap();
 
 
 

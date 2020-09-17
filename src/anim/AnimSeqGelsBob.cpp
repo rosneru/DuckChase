@@ -2,8 +2,8 @@
 #include "clib/graphics_protos.h"
 #include "exec/memory.h"
 
-#include "IlbmBitmap.h"
-#include "ImageDataPicture.h"
+#include "OpenIlbmPictureBitMap.h"
+#include "OpenImageDataPicture.h"
 #include "AnimSeqGelsBob.h"
 
 AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
@@ -15,7 +15,7 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
   }
 
   // Load the src file into a bitmap
-  IlbmBitmap srcIlbmBitmap(pFileName, false, false);
+  OpenIlbmPictureBitMap srcIlbmBitmap(pFileName, false, false);
 
   m_Width = srcIlbmBitmap.Width() / numFrames;
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
@@ -23,7 +23,7 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
   m_Depth = srcIlbmBitmap.Depth();
 
   // Create a dynamic array for all frames
-  m_ppFrames = (ImageDataPicture**)new ImageDataPicture*[numFrames];
+  m_ppFrames = (OpenImageDataPicture**)new OpenImageDataPicture*[numFrames];
   if (m_ppFrames == NULL)
   {
     throw "AnimSeqGelsBob: Failed to allocate array memory.";
@@ -54,7 +54,7 @@ AnimSeqGelsBob::AnimSeqGelsBob(const char* pFileName, size_t numFrames)
               0xff,
               NULL);
     
-    ImageDataPicture* pImg = new ImageDataPicture(m_pFrameBitMap, 0, 1);
+    OpenImageDataPicture* pImg = new OpenImageDataPicture(m_pFrameBitMap, 0, 1);
     
     m_ppFrames[i] = pImg;
     m_ppShadowMasks[i] = new ShadowMask(m_pFrameBitMap);

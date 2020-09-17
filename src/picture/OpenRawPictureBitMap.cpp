@@ -6,12 +6,12 @@
 #include <exec/memory.h>
 #include <graphics/gfxbase.h>
 
-#include "RawBitmap.h"
+#include "OpenRawPictureBitMap.h"
 
 extern struct GfxBase* GfxBase;
 
 
-RawBitMap::RawBitMap(const char* pFileName,
+OpenRawPictureBitMap::OpenRawPictureBitMap(const char* pFileName,
                      ULONG width, 
                      ULONG height, 
                      ULONG depth)
@@ -20,13 +20,13 @@ RawBitMap::RawBitMap(const char* pFileName,
 {
   if (pFileName == NULL)
   {
-    throw "RawBitMap: No file name provided.";
+    throw "OpenRawPictureBitMap: No file name provided.";
   }
 
   m_FileHandle = Open(pFileName, MODE_OLDFILE);
   if (m_FileHandle == 0)
   {
-    throw "RawBitMap: Failed to open file.";
+    throw "OpenRawPictureBitMap: Failed to open file.";
   }
 
   ULONG flags = BMF_CLEAR; //|BMF_INTERLEAVED;
@@ -34,7 +34,7 @@ RawBitMap::RawBitMap(const char* pFileName,
 
   if (m_pBitMap == NULL)
   {
-      throw "RawBitMap: Failed to allocate the BitMap for file.";
+      throw "OpenRawPictureBitMap: Failed to allocate the BitMap for file.";
   }
 
   // Check if we really got an interleaved bitmap
@@ -45,7 +45,7 @@ RawBitMap::RawBitMap(const char* pFileName,
     int planeSize = RASSIZE(width, height) * depth;
     if (Read(m_FileHandle, m_pBitMap->Planes[0], planeSize) != planeSize)
     {
-      throw "RawBitMap: Failed to read file into allocated interleaved BitMap.";
+      throw "OpenRawPictureBitMap: Failed to read file into allocated interleaved BitMap.";
     }
   }
   else
@@ -56,7 +56,7 @@ RawBitMap::RawBitMap(const char* pFileName,
     {
       if (Read(m_FileHandle, m_pBitMap->Planes[i], planeSize) != planeSize)
       {
-        throw "RawBitMap: Failed to read file into allocated planar BitMap.";
+        throw "OpenRawPictureBitMap: Failed to read file into allocated planar BitMap.";
       }
     }
   }
@@ -65,7 +65,7 @@ RawBitMap::RawBitMap(const char* pFileName,
   m_FileHandle = 0;
 }
 
-RawBitMap::~RawBitMap()
+OpenRawPictureBitMap::~OpenRawPictureBitMap()
 {
   if(m_FileHandle != 0)
   {

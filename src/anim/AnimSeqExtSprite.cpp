@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "AnimSeqExtSprite.h"
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 
 AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName, 
                                    size_t numFrames)
@@ -21,7 +21,7 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   }
 
   // Load the src image file into a bitmap
-  IlbmBitmap srcIlbmBitmap(pFileName, true, false);
+  OpenIlbmPictureBitMap srcIlbmBitmap(pFileName, true, false);
 
   m_Width = srcIlbmBitmap.Width() / numFrames;
   m_WordWidth = ((m_Width + 15) & -16) >> 4;

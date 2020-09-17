@@ -8,7 +8,7 @@
 #include <string>
 
 #include "BitMapTools.h"
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 #include "Rect.h"
 
 
@@ -36,7 +36,7 @@ private:
   std::string m_Filename;
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
-  IlbmBitmap* m_pLoadedPicture;
+  OpenIlbmPictureBitMap* m_pLoadedPicture;
   BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;

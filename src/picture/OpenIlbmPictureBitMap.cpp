@@ -6,10 +6,10 @@
                                     // 'BitMapHeader', 'ID_xyz', etc.
 #include <exec/memory.h>
 
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 
 
-IlbmBitmap::IlbmBitmap(const char* pFileName,
+OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
                        bool bLoadColors,
                        bool bLoadDisplayMode)
   : BitmapPictureBase(),
@@ -115,14 +115,14 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
 }
 
 
-IlbmBitmap::~IlbmBitmap()
+OpenIlbmPictureBitMap::~OpenIlbmPictureBitMap()
 {
 
 }
 
 
 
-bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
+bool OpenIlbmPictureBitMap::loadColors(struct StoredProperty* pCmapProp)
 {
   if(m_pColors32 != NULL)
   {
@@ -188,7 +188,7 @@ bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
   return true;
 }
 
-bool IlbmBitmap::loadDisplayMode(struct StoredProperty* pCamgProp, 
+bool OpenIlbmPictureBitMap::loadDisplayMode(struct StoredProperty* pCamgProp, 
                                  struct BitMapHeader* pBitMapHeader)
 {
   m_ModeId = (*(ULONG*)pCamgProp->sp_Data);
@@ -242,7 +242,7 @@ bool IlbmBitmap::loadDisplayMode(struct StoredProperty* pCamgProp,
   return true;
 }
 
-bool IlbmBitmap::decodeIlbmBody(IffParse& iffParse, 
+bool OpenIlbmPictureBitMap::decodeIlbmBody(IffParse& iffParse, 
                                 bool isCompressed, 
                                 UBYTE masking)
 {
@@ -395,7 +395,7 @@ bool IlbmBitmap::decodeIlbmBody(IffParse& iffParse,
 
 
 
-bool IlbmBitmap::unpackRow(BYTE** ppSource,
+bool OpenIlbmPictureBitMap::unpackRow(BYTE** ppSource,
                               BYTE** ppDest,
                               WORD srcBytes,
                               WORD dstBytes)

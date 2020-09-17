@@ -1,4 +1,4 @@
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 #include "ShapeBase.h"
 
 ShapeBase::ShapeBase(short width, short height, short depth)
@@ -77,7 +77,7 @@ const Rect& ShapeBase::IntersectRect() const
 }
 
 
-int ShapeBase::BottomToPlatformDistance(IlbmBitmap& picture, 
+int ShapeBase::BottomToPlatformDistance(OpenIlbmPictureBitMap& picture, 
                                         int dY, 
                                         int searchedColorNum,
                                         BottomDistanceMeasMode mode)

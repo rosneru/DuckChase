@@ -41,9 +41,9 @@ add_executable (DuckChase_gcc
                 main.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp
-                picture/IlbmBitmap.cpp
-                picture/ImageDataPicture.cpp
-                picture/RawBitmap.cpp
+                picture/OpenIlbmPictureBitMap.cpp
+                picture/OpenImageDataPicture.cpp
+                picture/OpenRawPictureBitMap.cpp
                 shapes/GelsLayer.cpp
                 shapes/Rect.cpp
                 shapes/ShapeBase.cpp
@@ -91,9 +91,9 @@ add_executable (AnimFrameTool
                 iff/IffParse.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp
-                picture/IlbmBitmap.cpp
-                picture/ImageDataPicture.cpp
-                picture/RawBitmap.cpp
+                picture/OpenIlbmPictureBitMap.cpp
+                picture/OpenImageDataPicture.cpp
+                picture/OpenRawPictureBitMap.cpp
                 shapes/Rect.cpp
                 _tool_anim_frame_adjust/AnimFrameTool.cpp
                 _tool_anim_frame_adjust/AslFileRequest.cpp
@@ -130,9 +130,9 @@ add_executable (Collision_test_ui
                 iff/IffParse.cpp
                 picture/BitmapPictureBase.cpp
                 picture/PictureBase.cpp
-                picture/IlbmBitmap.cpp
-                picture/ImageDataPicture.cpp
-                picture/RawBitmap.cpp
+                picture/OpenIlbmPictureBitMap.cpp
+                picture/OpenImageDataPicture.cpp
+                picture/OpenRawPictureBitMap.cpp
                 shapes/GelsLayer.cpp
                 shapes/Rect.cpp
                 shapes/ShapeBase.cpp

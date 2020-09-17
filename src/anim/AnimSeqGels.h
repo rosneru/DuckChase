@@ -6,7 +6,7 @@
 
 #include "AnimSeqBase.h"
 
-class ImageDataPicture;
+class OpenImageDataPicture;
 
 /**
  * Abstract class of a anim sequence for Bobs and VSprites of the Amiga
@@ -28,7 +28,7 @@ public:
 
 protected:
   struct BitMap* m_pFrameBitMap;
-  ImageDataPicture** m_ppFrames;
+  OpenImageDataPicture** m_ppFrames;
 };
 
 #endif

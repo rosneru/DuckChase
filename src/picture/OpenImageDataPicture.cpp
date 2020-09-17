@@ -7,9 +7,9 @@
 
 #include <stddef.h>
 
-#include "ImageDataPicture.h"
+#include "OpenImageDataPicture.h"
 
-ImageDataPicture::ImageDataPicture(const char* pFileName, 
+OpenImageDataPicture::OpenImageDataPicture(const char* pFileName, 
                                    ULONG width, 
                                    ULONG height, 
                                    ULONG depth)
@@ -24,13 +24,13 @@ ImageDataPicture::ImageDataPicture(const char* pFileName,
 {
   if (pFileName == NULL)
   {
-    throw "ImageDataPicture: No file name provided.";
+    throw "OpenImageDataPicture: No file name provided.";
   }
 
   m_FileHandle = Open(pFileName, MODE_OLDFILE);
   if (m_FileHandle == 0)
   {
-    throw "ImageDataPicture: Failed to open file.";
+    throw "OpenImageDataPicture: Failed to open file.";
   }
 
   // Determine needed memory size for image data
@@ -41,14 +41,14 @@ ImageDataPicture::ImageDataPicture(const char* pFileName,
     m_pImageData = (WORD*) AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
     if(m_pImageData == NULL)
     {
-      throw "ImageDataPicture: Failed allocate chip mem for file.";
+      throw "OpenImageDataPicture: Failed allocate chip mem for file.";
     }
   }
 
   // Read the file data into target chip memory buffer
   if (Read(m_FileHandle, m_pImageData, bufSizeBytes) != bufSizeBytes)
   {
-    throw "ImageDataPicture: failed to read file.";
+    throw "OpenImageDataPicture: failed to read file.";
   }
 
   Close(m_FileHandle);
@@ -56,7 +56,7 @@ ImageDataPicture::ImageDataPicture(const char* pFileName,
 }
 
 
-ImageDataPicture::ImageDataPicture(struct BitMap* pSrcBitmap, 
+OpenImageDataPicture::OpenImageDataPicture(struct BitMap* pSrcBitmap, 
                                    ULONG xStart, 
                                    ULONG numFrames)
   : PictureBase(),
@@ -66,7 +66,7 @@ ImageDataPicture::ImageDataPicture(struct BitMap* pSrcBitmap,
 {
   if(pSrcBitmap == NULL)
   {
-    throw "ImageDataPicture: No source BitMap provided.";
+    throw "OpenImageDataPicture: No source BitMap provided.";
   }
 
   ULONG width = GetBitMapAttr(pSrcBitmap, BMA_WIDTH) / numFrames;
@@ -85,7 +85,7 @@ ImageDataPicture::ImageDataPicture(struct BitMap* pSrcBitmap,
   m_pImageData = (WORD*)AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(m_pImageData == NULL)
   {
-    throw "ImageDataPicture: Failed allocate chip mem for image data";
+    throw "OpenImageDataPicture: Failed allocate chip mem for image data";
   }
 
   // Manually set all plane pointers to the dedicated area of 
@@ -119,7 +119,7 @@ ImageDataPicture::ImageDataPicture(struct BitMap* pSrcBitmap,
 }
 
 
-ImageDataPicture::ImageDataPicture(WORD* pExternalImageData)
+OpenImageDataPicture::OpenImageDataPicture(WORD* pExternalImageData)
   : PictureBase(),
     m_FileHandle(0),
     m_pImageData(NULL),
@@ -132,7 +132,7 @@ ImageDataPicture::ImageDataPicture(WORD* pExternalImageData)
 
 }
 
-ImageDataPicture::~ImageDataPicture()
+OpenImageDataPicture::~OpenImageDataPicture()
 {
   if(m_pImageData != NULL)
   {
@@ -151,7 +151,7 @@ ImageDataPicture::~ImageDataPicture()
 
 
 
-WORD* ImageDataPicture::GetImageData()
+WORD* OpenImageDataPicture::GetImageData()
 {
   if(m_pImageData != NULL)
   {
@@ -164,22 +164,22 @@ WORD* ImageDataPicture::GetImageData()
 }
 
 
-long ImageDataPicture::Width() const
+long OpenImageDataPicture::Width() const
 {
   return m_Width;
 }
 
-long ImageDataPicture::WordWidth() const
+long OpenImageDataPicture::WordWidth() const
 {
   return m_Height;
 }
 
-long ImageDataPicture::Height() const
+long OpenImageDataPicture::Height() const
 {
   return m_Depth;
 }
 
-long ImageDataPicture::Depth() const
+long OpenImageDataPicture::Depth() const
 {
   return m_WordWidth;
 }

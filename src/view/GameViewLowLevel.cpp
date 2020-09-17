@@ -17,7 +17,7 @@ extern struct GfxBase* GfxBase;
 // Needed for enabling display dma
 extern struct Custom custom ;
 
-GameViewLowlevel::GameViewLowlevel(IlbmBitmap& backgroundPicture,
+GameViewLowlevel::GameViewLowlevel(OpenIlbmPictureBitMap& backgroundPicture,
                                    ULONG modeId)
   : GameViewBase(backgroundPicture),
     m_LowLevelView(modeId),

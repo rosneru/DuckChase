@@ -6,7 +6,7 @@
 #include <graphics/view.h>
 #include <intuition/screens.h>
 
-#include "IlbmBitmap.h"
+#include "OpenIlbmPictureBitMap.h"
 #include "GameViewBase.h"
 
 /**
@@ -29,7 +29,7 @@ public:
    * taken from the picture.
    *
    */
-  GameViewIntui(IlbmBitmap& backgroundPicture);
+  GameViewIntui(OpenIlbmPictureBitMap& backgroundPicture);
   virtual ~GameViewIntui();
 
   virtual struct RastPort* RastPort();

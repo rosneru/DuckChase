@@ -1,5 +1,5 @@
-#include "IlbmBitmap.h"
-#include "ImageDataPicture.h"
+#include "OpenIlbmPictureBitMap.h"
+#include "OpenImageDataPicture.h"
 #include "AnimSeqGelsVSprite.h"
 
 AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
@@ -12,7 +12,7 @@ AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
   }
 
   // Load the src file into a bitmap
-  IlbmBitmap imgLoaderSrc(pFileName, false, false);
+  OpenIlbmPictureBitMap imgLoaderSrc(pFileName, false, false);
 
   m_Width = imgLoaderSrc.Width() / numFrames;
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
@@ -21,7 +21,7 @@ AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
 
   // Create a dynamic array for all images according to the number of
   // files
-  m_ppFrames = (ImageDataPicture**)new ImageDataPicture*[numFrames];
+  m_ppFrames = (OpenImageDataPicture**)new OpenImageDataPicture*[numFrames];
   if (m_ppFrames == NULL)
   {
     throw "AnimSeqGelsVSprite: Failed to allocate array memory.";
@@ -38,7 +38,7 @@ AnimSeqGelsVSprite::AnimSeqGelsVSprite(const char* pFileName, size_t numFrames)
     WORD* pSpriteImgData = m_pImgLoaderSrc->GetImageData() + i * wordIncrease;
     
     // Create Image Loader by providing sprite image data
-    ImageDataPicture* pImg = new ImageDataPicture(pSpriteImgData);
+    OpenImageDataPicture* pImg = new OpenImageDataPicture(pSpriteImgData);
 
     m_ppFrames[i] = pImg;
   }

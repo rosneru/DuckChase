@@ -409,8 +409,8 @@ void AnimFrameTool::openAnimIlbmPicture()
   {
     try
     {
-      // Creating the IlbmBitmap will throw an exception on failure
-      IlbmBitmap* pNewPicture = new IlbmBitmap(filename.c_str(), 
+      // Creating the OpenIlbmPictureBitMap will throw an exception on failure
+      OpenIlbmPictureBitMap* pNewPicture = new OpenIlbmPictureBitMap(filename.c_str(), 
                                                true,
                                                false);
 
