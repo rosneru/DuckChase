@@ -31,7 +31,7 @@ BitMapTools::~BitMapTools()
 
 
 int BitMapTools::MoveObjectLeft(const Rect& searchArea, 
-                                      size_t numPixels)
+                                size_t numPixels)
 {
   // Create an array of junky pixels of the area
   ChunkyPixelArray chunkyPixelArray(searchArea, m_pBitMap);
@@ -41,7 +41,6 @@ int BitMapTools::MoveObjectLeft(const Rect& searchArea,
 
   // Limit the number of pixels to move if the object is too near to the
   // left border.
-
   if(objectBounds.Left() < numPixels)
   {
     numPixels = objectBounds.Left();

@@ -59,7 +59,7 @@ ChunkyPixelArray::ChunkyPixelArray(const Rect& rect, struct BitMap* pPicture)
                                m_pArray,
                                &m_TempRastPort);
 
-  if(count != m_Rect.Area())
+  if(count != rect.Area())
   {
     throw "ChunkyPixelArray: Wrong number of Pixels read.";
   }

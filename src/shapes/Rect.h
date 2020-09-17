@@ -6,6 +6,10 @@
 /**
  * Represents a simple, geometric rectangle.
  *
+ * NOTE: The smallest available Rect(0, 0, 0, 0) is a 'point' which
+ * covers the 'cell' x = 0, y = 0. So, it already has a Width=1 and
+ * Height=1.
+ *
  * @author Uwe Rosner
  * @date 10/06/2020
  */

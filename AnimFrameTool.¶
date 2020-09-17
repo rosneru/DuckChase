@@ -97,7 +97,7 @@ File
 "src/anim/AnimSeqBitmap.cpp"
 "src/anim/AnimSeqBitmap.h"
 "src/anim/AnimSeqBase.h"
-"src/picture/BitmapPictureBase.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimSeqBitmap.o" "build-stormc-animframetool/AnimSeqBitmap.debug"
@@ -108,7 +108,7 @@ File
 "src/anim/AnimSeqExtSprite.cpp"
 "src/anim/AnimSeqExtSprite.h"
 "src/anim/AnimSeqBase.h"
-"src/picture/BitmapPictureBase.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimSeqExtSprite.o" "build-stormc-animframetool/AnimSeqExtSprite.debug"
@@ -127,7 +127,7 @@ Storm Shell Project (Dependencies)
 File
 1 "src/anim/AnimSeqGelsBob.cpp"
 "src/anim/AnimSeqGelsBob.cpp"
-"src/picture/BitmapPictureBase.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 "src/anim/AnimSeqGelsBob.h"
 "src/anim/AnimSeqGels.h"
@@ -153,31 +153,22 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "src/picture/BitmapPictureBase.cpp"
-"src/picture/BitmapPictureBase.cpp"
-"src/picture/BitmapPictureBase.h"
+1 "src/picture/BitMapPictureBase.cpp"
+"src/picture/BitMapPictureBase.cpp"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"build-stormc-animframetool/BitmapPictureBase.o" "build-stormc-animframetool/BitmapPictureBase.debug"
+"build-stormc-animframetool/BitMapPictureBase.o" "build-stormc-animframetool/BitMapPictureBase.debug"
 ""
 1 1
 File
-1 "src/picture/IlbmBitmap.cpp"
-"src/picture/IlbmBitmap.cpp"
-"src/picture/IlbmBitmap.h"
-"src/picture/BitmapPictureBase.h"
+1 "src/picture/OpenIlbmPictureBitMap.cpp"
+"src/picture/OpenIlbmPictureBitMap.cpp"
+"src/picture/OpenIlbmPictureBitMap.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"build-stormc-animframetool/IlbmBitmap.o" "build-stormc-animframetool/IlbmBitmap.debug"
-""
-1 1
-File
-1 "src/picture/ImageDataPicture.cpp"
-"src/picture/ImageDataPicture.cpp"
-"src/picture/ImageDataPicture.h"
-"src/picture/PictureBase.h"
-Storm Shell Project (Dependencies)
-"build-stormc-animframetool/ImageDataPicture.o" "build-stormc-animframetool/ImageDataPicture.debug"
+"build-stormc-animframetool/OpenIlbmPictureBitMap.o" "build-stormc-animframetool/OpenIlbmPictureBitMap.debug"
 ""
 1 1
 File
@@ -189,13 +180,13 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
-1 "src/picture/RawBitmap.cpp"
-"src/picture/RawBitmap.cpp"
-"src/picture/RawBitmap.h"
-"src/picture/BitmapPictureBase.h"
+1 "src/picture/SaveBitMapPictureIlbm.cpp"
+"src/picture/SaveBitMapPictureIlbm.cpp"
+"src/picture/SaveBitMapPictureIlbm.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
-"build-stormc-animframetool/RawBitmap.o" "build-stormc-animframetool/RawBitmap.debug"
+"build-stormc-animframetool/SaveBitMapPictureIlbm.o" "build-stormc-animframetool/SaveBitMapPictureIlbm.debug"
 ""
 1 1
 File
@@ -212,7 +203,7 @@ File
 "src/_tool_anim_frame_adjust/AslFileRequest.h"
 "src/_tool_anim_frame_adjust/MessageBox.h"
 "src/_tool_anim_frame_adjust/AnimFrameTool.h"
-"src/picture/BitmapPictureBase.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 "src/_tool_anim_frame_adjust/BitMapTools.h"
 Storm Shell Project (Dependencies)
@@ -231,16 +222,26 @@ File
 1 "src/_tool_anim_frame_adjust/BitMapTools.cpp"
 "src/_tool_anim_frame_adjust/BitMapTools.cpp"
 "src/_tool_anim_frame_adjust/BitMapTools.h"
+"src/_tool_anim_frame_adjust/ChunkyPixelArray.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/BitMapTools.o" "build-stormc-animframetool/BitMapTools.debug"
+""
+1 1
+File
+1 "src/_tool_anim_frame_adjust/ChunkyPixelArray.cpp"
+"src/_tool_anim_frame_adjust/ChunkyPixelArray.cpp"
+"src/_tool_anim_frame_adjust/ChunkyPixelArray.h"
+Storm Shell Project (Dependencies)
+"build-stormc-animframetool/ChunkyPixelArray.o" "build-stormc-animframetool/ChunkyPixelArray.debug"
 ""
 1 1
 File
 1 "src/_tool_anim_frame_adjust/main.cpp"
 "src/_tool_anim_frame_adjust/main.cpp"
 "src/_tool_anim_frame_adjust/AnimFrameTool.h"
-"src/picture/BitmapPictureBase.h"
+"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
+"src/_tool_anim_frame_adjust/BitMapTools.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/main.o" "build-stormc-animframetool/main.debug"
 ""
@@ -314,22 +315,15 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "src/picture/BitmapPictureBase.h"
-"src/picture/BitmapPictureBase.h"
+2 "src/picture/BitMapPictureBase.h"
+"src/picture/BitMapPictureBase.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "src/picture/IlbmBitmap.h"
-"src/picture/IlbmBitmap.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "src/picture/ImageDataPicture.h"
-"src/picture/ImageDataPicture.h"
+2 "src/picture/OpenIlbmPictureBitMap.h"
+"src/picture/OpenIlbmPictureBitMap.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -342,15 +336,8 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "src/picture/RawBitmap.h"
-"src/picture/RawBitmap.h"
-Storm Shell Project (Dependencies)
-"" ""
-""
-0 0
-File
-2 "src/shapes/Rect.h"
-"src/shapes/Rect.h"
+2 "src/picture/SaveBitMapPictureIlbm.h"
+"src/picture/SaveBitMapPictureIlbm.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -370,8 +357,21 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "src/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "src/_tool_anim_frame_adjust/BitMapTools.h"
 "src/_tool_anim_frame_adjust/BitMapTools.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/_tool_anim_frame_adjust/ChunkyPixelArray.h"
+"src/_tool_anim_frame_adjust/ChunkyPixelArray.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

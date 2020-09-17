@@ -69,25 +69,25 @@ BOOST_AUTO_TEST_CASE( test_ShadowMask )
 BOOST_AUTO_TEST_CASE( test_Rect )
 {
   Rect a(1, 1, 4, 5);
-  BOOST_CHECK_EQUAL(a.Width(), 3);
-  BOOST_CHECK_EQUAL(a.Height(), 4);
-  BOOST_CHECK_EQUAL(a.Area(), 12);
+  BOOST_CHECK_EQUAL(a.Width(), 4);
+  BOOST_CHECK_EQUAL(a.Height(), 5);
+  BOOST_CHECK_EQUAL(a.Area(), 20);
   BOOST_CHECK_EQUAL(a.HasSize(), true);
 
   a.SetLeftTop(2, 3);
-  BOOST_CHECK_EQUAL(a.Width(), 2);
-  BOOST_CHECK_EQUAL(a.Height(), 2);
-  BOOST_CHECK_EQUAL(a.Area(), 4);
+  BOOST_CHECK_EQUAL(a.Width(), 3);
+  BOOST_CHECK_EQUAL(a.Height(), 3);
+  BOOST_CHECK_EQUAL(a.Area(), 9);
   BOOST_CHECK_EQUAL(a.HasSize(), true);
 
   Rect b(1, 1);
   b.SetWidthHeight(3, 4);
-  BOOST_CHECK_EQUAL(b.Right(), 4);
-  BOOST_CHECK_EQUAL(b.Bottom(), 5);
+  BOOST_CHECK_EQUAL(b.Right(), 3);
+  BOOST_CHECK_EQUAL(b.Bottom(), 4);
   BOOST_CHECK_EQUAL(b.Area(), 12);
   BOOST_CHECK_EQUAL(b.HasSize(), true);
   
-  BOOST_CHECK_EQUAL(b.Bottom() - b.Top(), b.Height());
+  BOOST_CHECK_EQUAL(b.Bottom() - b.Top() + 1, b.Height());
 
   Rect c;
   BOOST_CHECK_EQUAL(c.HasSize(), false);
@@ -96,8 +96,8 @@ BOOST_AUTO_TEST_CASE( test_Rect )
   BOOST_CHECK_EQUAL(d.HasSize(), false);
 
   Rect e(0, 0, 2, 1);
-  BOOST_CHECK_EQUAL(e.Width(), 2);
-  BOOST_CHECK_EQUAL(e.Height(), 1);
-  BOOST_CHECK_EQUAL(e.Area(), 2);
+  BOOST_CHECK_EQUAL(e.Width(), 3);
+  BOOST_CHECK_EQUAL(e.Height(), 2);
+  BOOST_CHECK_EQUAL(e.Area(), 6);
   BOOST_CHECK_EQUAL(e.HasSize(), true);
 }
