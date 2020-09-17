@@ -46,8 +46,8 @@ ChunkyPixelArray::ChunkyPixelArray(const Rect& rect, struct BitMap* pPicture)
     throw "ChunkyPixelArray: Failed to allocate a BitMap.";
   }
 
-  // see description of WritePixelArray8 in autodocs.
-  size_t bytes = ((((rect.Width() + 15) >> 4) << 4) * (rect.Bottom() - rect.Top() + 1));
+  // See description of WritePixelArray8 in autodocs.
+  size_t bytes = ((((rect.Width() + 15) >> 4) << 4) * (rect.Height() + 1));
   m_pArray = (UBYTE*)AllocVec(bytes, MEMF_PUBLIC);
 
   // Converting the rectangular area of the bitmap into an array
