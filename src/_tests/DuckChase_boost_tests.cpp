@@ -65,3 +65,37 @@ BOOST_AUTO_TEST_CASE( test_ShadowMask )
   BOOST_CHECK_EQUAL(does_not_collide, false);
   BOOST_CHECK_EQUAL(does_collide, true);
 }
+
+BOOST_AUTO_TEST_CASE( test_Rect )
+{
+  Rect a(1, 1, 4, 5);
+  BOOST_CHECK_EQUAL(a.Width(), 3);
+  BOOST_CHECK_EQUAL(a.Height(), 4);
+  BOOST_CHECK_EQUAL(a.Area(), 12);
+  BOOST_CHECK_EQUAL(a.HasSize(), true);
+
+  a.SetLeftTop(2, 3);
+  BOOST_CHECK_EQUAL(a.Width(), 2);
+  BOOST_CHECK_EQUAL(a.Height(), 2);
+  BOOST_CHECK_EQUAL(a.Area(), 4);
+  BOOST_CHECK_EQUAL(a.HasSize(), true);
+
+  Rect b(1, 1);
+  b.SetWidthHeight(3, 4);
+  BOOST_CHECK_EQUAL(b.Right(), 4);
+  BOOST_CHECK_EQUAL(b.Bottom(), 5);
+  BOOST_CHECK_EQUAL(b.Area(), 12);
+  BOOST_CHECK_EQUAL(b.HasSize(), true);
+
+  Rect c;
+  BOOST_CHECK_EQUAL(c.HasSize(), false);
+
+  Rect d(0, 0, 1, 0);
+  BOOST_CHECK_EQUAL(d.HasSize(), false);
+
+  Rect e(0, 0, 2, 1);
+  BOOST_CHECK_EQUAL(e.Width(), 2);
+  BOOST_CHECK_EQUAL(e.Height(), 1);
+  BOOST_CHECK_EQUAL(e.Area(), 2);
+  BOOST_CHECK_EQUAL(e.HasSize(), true);
+}

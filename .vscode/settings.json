@@ -6,9 +6,7 @@
   "cSpell.enabled": true,
   "files.associations": {
     "languageId": "cpp",
-    "includeRegExpList": [
-      "CStyleComment"
-    ],
+    "includeRegExpList": "CStyleComment",
     "*.tcc": "cpp",
     "array": "cpp",
     "atomic": "cpp",
