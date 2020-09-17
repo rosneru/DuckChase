@@ -17,12 +17,6 @@ OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
 {
   IffParse iffParse(pFileName);
 
-  LONG iffErr;
-  if((iffErr = OpenIFF(iffParse.Handle(), IFFF_READ)) != 0)
-  {
-    throw "IlbmBitmap: OpenIFF returned error.";
-  }
-
   // Define which chunks to load
   PropChunk(iffParse.Handle(), ID_ILBM, ID_BMHD);
 
@@ -39,7 +33,7 @@ OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
   StopChunk(iffParse.Handle(), ID_ILBM, ID_BODY);
 
   // Parse the iff file
-  iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
+  LONG iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
   if(iffErr != 0)
   {
     throw "IlbmBitmap: Error in ParseIFF.";

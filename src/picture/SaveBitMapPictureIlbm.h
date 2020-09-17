@@ -2,6 +2,7 @@
 #define SAVE_BITMAP_ILBM_PICTURE_H
 
 #include <graphics/gfx.h>
+#include "BitMapPictureBase.h"
 
 /**
  * Class for saving a BitMap to an iff ilbm file using the
@@ -13,10 +14,17 @@
 class SaveBitMapPictureIlbm
 {
 public:
-  SaveBitMapPictureIlbm(const struct BitMap* pBitMap, 
+  SaveBitMapPictureIlbm(const BitMapPictureBase& picture, 
                         const char* pFileName);
 
   virtual ~SaveBitMapPictureIlbm();
+
+private:
+  const ULONG m_BODY_BUF_SIZE;
+  ULONG m_ModeId;
+  UBYTE* bodybuf;
+
+  void cleanup();
 };
 
 #endif
