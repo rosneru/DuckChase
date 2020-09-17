@@ -84,10 +84,20 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
     isCompressed = true;
   }
 
-  // if(loadCAMG)
-  // {
-  //   // TODO Get CAMG
-  // }
+  if(bLoadDisplayMode)
+  {
+    // Load the CAMG
+    pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_CAMG);
+    if(pStoredProp != NULL)
+    {
+      if(loadDisplayMode(pStoredProp, pBitMapHeader) == false)
+      {
+        CloseIFF(iffParse.Handle());
+        throw "IlbmBitmap: Error while loading the display mode from ILBM CAMG.";
+      }
+    }
+  }
+
   if(bLoadColors)
   {
     // Load the color map
@@ -97,7 +107,7 @@ IlbmBitmap::IlbmBitmap(const char* pFileName,
       if(loadColors(pStoredProp) == false)
       {
         CloseIFF(iffParse.Handle());
-        throw "IlbmBitmap: Error while loading the colors from ilbm cmap.";
+        throw "IlbmBitmap: Error while loading the colors from ILBM CMAP.";
       }
     }
   }
@@ -186,6 +196,59 @@ bool IlbmBitmap::loadColors(struct StoredProperty* pCmapProp)
   return true;
 }
 
+bool IlbmBitmap::loadDisplayMode(struct StoredProperty* pCamgProp, 
+                                 struct BitMapHeader* pBitMapHeader)
+{
+  m_ModeId = (*(ULONG*)pCamgProp->sp_Data);
+
+  // Filter 1: Knock bad bits out of old-style 16-bit viewmode CAMGs
+  if (((m_ModeId & MONITOR_ID_MASK) == 0) ||
+      ((m_ModeId & EXTENDED_MODE) && (!(m_ModeId & 0xFFFF0000))))
+  {
+    m_ModeId &= (~(EXTENDED_MODE | SPRITES | GENLOCK_AUDIO | GENLOCK_VIDEO | VP_HIDE));
+  }
+
+  // Filter 2: Check for bogus CAMG like DPaintII brushes with junk in
+  // upper word and extended bit not set in lower word.
+  if ((m_ModeId & 0xFFFF0000) && (!(m_ModeId & 0x00001000)))
+  {
+    // No (or bad) CAMG present; calculate the mode dependent on the 
+    // pixels
+    m_ModeId = 0L;
+    if (pBitMapHeader->bmh_Width >= 640)
+    {
+      m_ModeId = HIRES;
+    }
+
+    if (pBitMapHeader->bmh_Height >= 400)
+    {
+      m_ModeId |= LACE;
+    }
+
+    // Detect EHB, HAM, HAM8: Extra-Halfbrite files are identified by
+    // bit 7 of the CAMG chunk being set. HAM6/HAM8 files have bit 11 of
+    // the CAMG chunk set and a depth of 6 / 8.
+    ULONG readCAMG = (*(ULONG*)pCamgProp->sp_Data);
+
+    if ((pBitMapHeader->bmh_Depth == 6) && ((readCAMG & 0x40) != 0))
+    {
+      // Bit 7 of the CAMG chunk set
+      m_ModeId |= EXTRA_HALFBRITE;
+    }
+    else if ((pBitMapHeader->bmh_Depth == 6) && ((readCAMG & 0x400) != 0))
+    {
+        // Bit 11 of the CAMG chunk set
+        m_ModeId |= HAM;  
+    }
+    else if ((pBitMapHeader->bmh_Depth == 8) && ((readCAMG & 0x400) != 0))
+    {
+        // Bit 11 of the CAMG chunk set
+        m_ModeId |= HAM;  
+    }
+  }
+
+  return true;
+}
 
 bool IlbmBitmap::decodeIlbmBody(IffParse& iffParse, 
                                 bool isCompressed, 

@@ -9,7 +9,8 @@
 BitmapPictureBase::BitmapPictureBase()
   : m_pBitMap(NULL),
     m_pBitMapMask(NULL),
-    m_pColors32(NULL)
+    m_pColors32(NULL),
+    m_ModeId(0)
 {
 }
 
@@ -121,9 +122,15 @@ long BitmapPictureBase::Depth() const
 
 
 
-const ULONG* BitmapPictureBase::GetColors32()
+const ULONG* BitmapPictureBase::GetColors32() const
 {
   return m_pColors32;
+}
+
+
+ULONG BitmapPictureBase::GetModeId() const
+{
+  return m_ModeId;
 }
 
 

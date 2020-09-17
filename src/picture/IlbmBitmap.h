@@ -35,6 +35,8 @@ private:
   const ULONG m_MaxSrcPlanes;
 
   bool loadColors(struct StoredProperty* pCmapProp);
+  bool loadDisplayMode(struct StoredProperty* pCamgProp, 
+                       struct BitMapHeader* pBitMapHeader);
 
   bool decodeIlbmBody(IffParse& iffParse, 
                       bool isCompressed, 

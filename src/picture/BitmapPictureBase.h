@@ -18,7 +18,9 @@ public:
   long WordWidth() const;
   long Height() const;
   long Depth() const;
-  const ULONG* GetColors32();
+
+  const ULONG* GetColors32() const;
+  ULONG GetModeId() const;
 
   const struct BitMap* GetBitMap() const;
 
@@ -41,6 +43,7 @@ protected:
   struct BitMap* m_pBitMap;
   struct BitMap* m_pBitMapMask;
   ULONG* m_pColors32;
+  ULONG m_ModeId;
   
 };
 
