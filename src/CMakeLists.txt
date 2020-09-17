@@ -94,6 +94,7 @@ add_executable (AnimFrameTool
                 picture/OpenIlbmPictureBitMap.cpp
                 picture/OpenImageDataPicture.cpp
                 picture/OpenRawPictureBitMap.cpp
+                picture/SaveBitMapPictureIlbm.cpp
                 shapes/Rect.cpp
                 _tool_anim_frame_adjust/AnimFrameTool.cpp
                 _tool_anim_frame_adjust/AslFileRequest.cpp
