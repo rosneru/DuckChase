@@ -6,6 +6,7 @@
 
 #include <graphics/gfx.h>
 #include "BitMapPictureBase.h"
+#include "IffParse.h"
 
 /**
  * Class for saving a BitMap to an iff ilbm file using the
@@ -25,6 +26,7 @@ public:
 private:
   const BitMapPictureBase& m_Picture;
   const ULONG m_BODY_BUF_SIZE;
+  const ULONG m_MAX_SAVE_DEPTH;
   ULONG m_ModeId;
   struct BitMapHeader m_Bmhd;
   UBYTE* bodybuf;
@@ -39,7 +41,21 @@ private:
   /**
    * Write the pictures Colors32 into the ilbm files CMAP.
    */
-  long PutCmap(struct IFFHandle* iff);
+  long PutCmap(IffParse& iff);
+
+  /**
+   * Write the picture BitMap data into the ilbm files BODY.
+   */
+  long PutBody(IffParse& iff);
+
+  /**
+   * packs one row, updating the source and destination pointers.
+   * 
+   * NOTE: Given POINTERS TO POINTERS, 
+   * 
+   * @returns Count of packed bytes.
+   */
+  LONG packrow(UBYTE** ppSource, UBYTE** ppDest, LONG rowSize);
 };
 
 #endif

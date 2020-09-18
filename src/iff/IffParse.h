@@ -39,6 +39,16 @@ public:
     return pContextNode->cn_Size - pContextNode->cn_Scan;
   }
 
+  inline ULONG rowBytes(ULONG width) const
+  {
+    return ((((width) + 15) >> 4) << 1);
+  }
+
+  inline ULONG rowBits(ULONG width) const
+  {
+    return ((((width) + 15) >> 4) << 4);
+  }
+
   /**
    * Writes one chunk of data to an iffhandle
    */
