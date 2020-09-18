@@ -42,7 +42,7 @@ const struct BitMap* BitMapPictureBase::GetBitMap() const
 }
 
 
-const struct BitMap* BitMapPictureBase::GetMaskBitMap()
+const struct BitMap* BitMapPictureBase::GetMask()
 {
   if(m_pBitMap == NULL)
   {
@@ -122,7 +122,7 @@ long BitMapPictureBase::Depth() const
 
 
 
-const ULONG* BitMapPictureBase::GetColors32() const
+ULONG* BitMapPictureBase::GetColors32() const
 {
   return m_pColors32;
 }

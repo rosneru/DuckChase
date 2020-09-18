@@ -10,37 +10,37 @@
 
 
 OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
-                       bool bLoadColors,
-                       bool bLoadDisplayMode)
+                                             bool bLoadColors32,
+                                             bool bLoadModeId)
   : BitMapPictureBase(),
     m_MaxSrcPlanes(25)
 {
-  IffParse iffParse(pFileName);
+  IffParse iff(pFileName);
 
   // Define which chunks to load
-  PropChunk(iffParse.Handle(), ID_ILBM, ID_BMHD);
+  PropChunk(iff.Handle(), ID_ILBM, ID_BMHD);
 
-  if(bLoadColors)
+  if(bLoadColors32)
   {
-    PropChunk(iffParse.Handle(), ID_ILBM, ID_CMAP);
+    PropChunk(iff.Handle(), ID_ILBM, ID_CMAP);
   }
 
-  if(bLoadDisplayMode)
+  if(bLoadModeId)
   {
-    PropChunk(iffParse.Handle(), ID_ILBM, ID_CAMG);
+    PropChunk(iff.Handle(), ID_ILBM, ID_CAMG);
   }
 
-  StopChunk(iffParse.Handle(), ID_ILBM, ID_BODY);
+  StopChunk(iff.Handle(), ID_ILBM, ID_BODY);
 
   // Parse the iff file
-  LONG iffErr = ParseIFF(iffParse.Handle(), IFFPARSE_SCAN);
-  if(iffErr != 0)
+  LONG err = ParseIFF(iff.Handle(), IFFPARSE_SCAN);
+  if(err != 0)
   {
     throw "IlbmBitmap: Error in ParseIFF.";
   }
 
   // Load the BitMap header
-  StoredProperty* pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_BMHD);
+  StoredProperty* pStoredProp = FindProp(iff.Handle(), ID_ILBM, ID_BMHD);
   if(pStoredProp == NULL)
   {
     throw "IlbmBitmap: No BitMap header found in file.";
@@ -74,10 +74,10 @@ OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
     isCompressed = true;
   }
 
-  if(bLoadDisplayMode)
+  if(bLoadModeId)
   {
     // Load the CAMG
-    pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_CAMG);
+    pStoredProp = FindProp(iff.Handle(), ID_ILBM, ID_CAMG);
     if(pStoredProp != NULL)
     {
       if(loadDisplayMode(pStoredProp, pBitMapHeader) == false)
@@ -87,10 +87,10 @@ OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
     }
   }
 
-  if(bLoadColors)
+  if(bLoadColors32)
   {
     // Load the color map
-    pStoredProp = FindProp(iffParse.Handle(), ID_ILBM, ID_CMAP);
+    pStoredProp = FindProp(iff.Handle(), ID_ILBM, ID_CMAP);
     if(pStoredProp != NULL)
     {
       if(loadColors(pStoredProp) == false)
@@ -100,7 +100,7 @@ OpenIlbmPictureBitMap::OpenIlbmPictureBitMap(const char* pFileName,
     }
   }
 
-  if(decodeIlbmBody(iffParse,
+  if(decodeIlbmBody(iff,
                     isCompressed,
                     pBitMapHeader->bmh_Masking) == false)
   {

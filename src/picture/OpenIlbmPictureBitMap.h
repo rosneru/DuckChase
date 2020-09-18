@@ -17,13 +17,13 @@ class OpenIlbmPictureBitMap : public BitMapPictureBase
 {
 public: 
   /**
-   * Creates a BitMap image by loading the ILBM file with given name.
-   * Dimensions of the image are extracted from the ilbm header an can
-   * be retrieved after successful loading using the getters. 
+   * Load given iff ilbm file and optionally also its colors and
+   * screenmode id. If the ilbm picture contains a mask it is also
+   * loaded.
    */
   OpenIlbmPictureBitMap(const char* pFileName,
-             bool bLoadColors,
-             bool bLoadDisplayMode);
+                        bool bLoadColors32,
+                        bool bLoadModeId);
 
   virtual ~OpenIlbmPictureBitMap();
 

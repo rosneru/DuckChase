@@ -19,20 +19,19 @@ public:
   long Height() const;
   long Depth() const;
 
-  const ULONG* GetColors32() const;
+  ULONG* GetColors32() const;
   ULONG GetModeId() const;
 
   const struct BitMap* GetBitMap() const;
 
   /**
    * Returns the transparency mask for this picture. If the mask doesn't
-   * exists it will be craeted on firts call of this method.
-   * 
+   * exist already (e.g. has not already been load while ilbm picture
+   * loading) it will be created on first call of this method.
+   *
    * The mask is freed when this picture is destroyed.
-   * 
-   * FIXME: Isn't this already done on ilbm loading..?
    */
-  const struct BitMap* GetMaskBitMap();
+  const struct BitMap* GetMask();
 
   int GetBitMapPixelColorNum(long row, long column) const;
 

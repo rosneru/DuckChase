@@ -21,7 +21,6 @@ public:
 
   struct IFFHandle* Handle();
 
-
   /**
    * Returns the ID of the current chunk (e.g. ID_CAMG)
    */
@@ -39,6 +38,11 @@ public:
   {
     return pContextNode->cn_Size - pContextNode->cn_Scan;
   }
+
+  /**
+   * Writes one chunk of data to an iffhandle
+   */
+  long PutCk(long id, long size, void *data);
 
 private:
   struct IFFHandle* m_pIffHandle;

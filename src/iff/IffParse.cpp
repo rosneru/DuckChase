@@ -83,3 +83,24 @@ LONG IffParse::currentChunkIs(LONG type, LONG id) const
 
   return result;
 }
+
+
+long IffParse::PutCk(long id, long size, void *data)
+{
+  long error, wlen;
+
+  error = PushChunk(m_pIffHandle, 0, id, size);
+  if(error != 0)
+  {
+    return error;
+  }
+
+  wlen = WriteChunkBytes(m_pIffHandle, data, size);
+  if(wlen != size)
+  {
+    return IFFERR_WRITE;
+  }
+
+  error = PopChunk(m_pIffHandle);
+  return error;
+}

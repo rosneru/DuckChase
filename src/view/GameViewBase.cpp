@@ -129,7 +129,7 @@ void GameViewBase::BlitPictureMasked(OpenIlbmPictureBitMap& picture,
                                      ULONG left, 
                                      ULONG top)
 {
-  const struct BitMap* pMask = picture.GetMaskBitMap();
+  const struct BitMap* pMask = picture.GetMask();
   if(pMask == NULL)
   {
     return;

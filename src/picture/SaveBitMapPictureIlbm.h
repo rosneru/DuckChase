@@ -1,6 +1,9 @@
 #ifndef SAVE_BITMAP_ILBM_PICTURE_H
 #define SAVE_BITMAP_ILBM_PICTURE_H
 
+#include <datatypes/pictureclass.h> // Not using  datatypes, just for
+                                    // 'BitMapHeader', 'ID_xyz', etc.
+
 #include <graphics/gfx.h>
 #include "BitMapPictureBase.h"
 
@@ -20,11 +23,23 @@ public:
   virtual ~SaveBitMapPictureIlbm();
 
 private:
+  const BitMapPictureBase& m_Picture;
   const ULONG m_BODY_BUF_SIZE;
   ULONG m_ModeId;
+  struct BitMapHeader m_Bmhd;
   UBYTE* bodybuf;
 
   void cleanup();
+
+  /**
+   * Initialize the BitMapHeader
+   */
+  void initBitMapHeader();
+
+  /**
+   * Write the pictures Colors32 into the ilbm files CMAP.
+   */
+  long PutCmap(struct IFFHandle* iff);
 };
 
 #endif
