@@ -92,6 +92,8 @@ private:
 
   std::vector<Rect> m_FrameRects;
 
+  void markChanged();
+
   void moveFrameContentLeft();
   void moveFrameContentRight();
   void moveFrameContentUp();
@@ -104,6 +106,7 @@ private:
   void selectNextFrame();
   
   void openAnimIlbmPicture();
+  void saveIlbm();
 
   void calcFrameRects();
   void updateFrameIdxGadgets(bool bCurrentOnly);

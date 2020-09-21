@@ -14,6 +14,7 @@
 
 #include "AslFileRequest.h"
 #include "MessageBox.h"
+#include "SaveBitMapPictureIlbm.h"
 
 #include "AnimFrameTool.h"
 
@@ -240,6 +241,17 @@ void AnimFrameTool::Run()
 }
 
 
+void AnimFrameTool::markChanged()
+{
+  if(m_HasChanged == true)
+  {
+    return;
+  }
+
+  m_HasChanged = true;
+  enableMenuItem(MID_ProjectSave);
+}
+
 
 void AnimFrameTool::moveFrameContentLeft()
 {
@@ -253,6 +265,8 @@ void AnimFrameTool::moveFrameContentLeft()
   {
     return;
   }
+
+  markChanged();
 
   paintPicture();
   paintGrid();
@@ -273,6 +287,8 @@ void AnimFrameTool::moveFrameContentRight()
     return;
   }
 
+  markChanged();
+
   paintPicture();
   paintGrid();
   paintCurrentFrameToResultRect();
@@ -292,6 +308,8 @@ void AnimFrameTool::moveFrameContentUp()
     return;
   }
 
+  markChanged();
+
   paintPicture();
   paintGrid();
   paintCurrentFrameToResultRect();
@@ -310,6 +328,8 @@ void AnimFrameTool::moveFrameContentDown()
   {
     return;
   }
+
+  markChanged();
 
   paintPicture();
   paintGrid();
@@ -438,6 +458,8 @@ void AnimFrameTool::openAnimIlbmPicture()
                         TAG_DONE);
 
 
+      m_HasChanged = false;
+
       closeCanvas();
       openCanvas();
 
@@ -471,6 +493,50 @@ void AnimFrameTool::openAnimIlbmPicture()
     }
   }
 }
+
+
+void AnimFrameTool::saveIlbm()
+{
+  std::string msgString;
+  std::size_t finalPointIdx = m_Filename.find_last_of('.');
+  std::string saveFileName;
+
+  if(finalPointIdx != std::string::npos)
+  {
+    saveFileName = m_Filename.substr(0, finalPointIdx);
+    saveFileName += "_out";
+    saveFileName += m_Filename.substr(finalPointIdx, std::string::npos);
+  }
+  else
+  {
+    saveFileName = m_Filename + "_out.iff";
+  }
+
+  printf("Created output file name: %s\n", saveFileName.c_str());
+
+  try
+  {
+    // Creation of the saver object already saves the picture
+    // (or throws an exception)
+    SaveBitMapPictureIlbm ilbmSaver(*m_pLoadedPicture, saveFileName.c_str());
+
+    m_HasChanged = false;
+    disableMenuItem(MID_ProjectSave);
+  }
+  catch(const char* pMsg)
+  {
+    msgString = "Failed to to save \n  '";
+    msgString += saveFileName;
+    msgString += "'\nas ilbm picture.\n\n";
+    msgString += pMsg;
+
+    MessageBox request(m_pControlWindow);
+    request.Show("Save error",
+                 msgString.c_str(),
+                 "Ok");
+  }
+}
+
 
 void AnimFrameTool::calcFrameRects()
 {
@@ -739,7 +805,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         break;
 
       case MID_ProjectSave:
-        // TODO
+        saveIlbm();
         break;
 
       case MID_ProjectQuit:
