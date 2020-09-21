@@ -112,6 +112,7 @@ private:
   void updateFrameIdxGadgets(bool bCurrentOnly);
 
   void paintPicture();
+  void paintPictureCurrentPart();
   void paintGrid();
   void paintSelectionRect(const Rect& rect, bool isHighlighted);
   void paintCurrentFrameToResultRect();

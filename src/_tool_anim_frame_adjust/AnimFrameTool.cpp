@@ -268,8 +268,9 @@ void AnimFrameTool::moveFrameContentLeft()
 
   markChanged();
 
-  paintPicture();
-  paintGrid();
+  // paintPicture();
+  // paintGrid();
+  paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
 
@@ -289,8 +290,9 @@ void AnimFrameTool::moveFrameContentRight()
 
   markChanged();
 
-  paintPicture();
-  paintGrid();
+  // paintPicture();
+  // paintGrid();
+  paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
 
@@ -310,8 +312,9 @@ void AnimFrameTool::moveFrameContentUp()
 
   markChanged();
 
-  paintPicture();
-  paintGrid();
+  // paintPicture();
+  // paintGrid();
+  paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
 
@@ -331,8 +334,9 @@ void AnimFrameTool::moveFrameContentDown()
 
   markChanged();
 
-  paintPicture();
-  paintGrid();
+  // paintPicture();
+  // paintGrid();
+  paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
 
@@ -623,6 +627,24 @@ void AnimFrameTool::paintPicture()
   WaitBlit();
 }
 
+void AnimFrameTool::paintPictureCurrentPart()
+{
+  if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
+  {
+    return;
+  }
+
+  const Rect& rect = m_FrameRects[m_FrameId];
+
+  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+                    rect.Left() + 1, rect.Top() + 1, 
+                    &m_pCanvasScreen->RastPort, 
+                    rect.Left() + 1, rect.Top() + 1,
+                    rect.Width() - 2, rect.Height() - 2, 
+                    0xc0);
+
+  WaitBlit();
+}
 
 void AnimFrameTool::paintGrid()
 {
