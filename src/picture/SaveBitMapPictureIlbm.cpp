@@ -244,6 +244,43 @@ static char buf[256];   // [TBD] should be 128?  on stack?
 #define MaxRun 128
 #define MaxDat 128
 
+#define OutDump(nn)   dest = PutDump(dest, nn)
+#define OutRun(nn,cc) dest = PutRun(dest, nn, cc)
+
+
+
+static UBYTE *PutDump(UBYTE *dest, int nn)
+{
+  int i;
+
+  // Putting the byte nn-1
+  *dest++ = (nn-1);   
+  ++putSize;
+
+  for(i = 0;  i < nn;  i++)
+  {
+    // Putting the byte buf[i]
+    *dest++ = (buf[i]);   
+    ++putSize;
+  }
+
+  return dest;
+}
+
+
+static UBYTE *PutRun(UBYTE *dest, int nn, int cc)
+{
+  // Putting the byte -(nn-1)
+  *dest++ = (-(nn-1));   
+  ++putSize;
+
+  // Putting the byte cc
+  *dest++ = (cc);   
+  ++putSize;
+
+  return dest;
+}
+
 
 LONG SaveBitMapPictureIlbm::packrow(UBYTE** ppSource, 
                                     UBYTE** ppDest, 
@@ -258,6 +295,8 @@ LONG SaveBitMapPictureIlbm::packrow(UBYTE** ppSource,
   source = *ppSource;
   dest = *ppDest;
   putSize = 0;
+
+  // (Filling buffer with all bytes?)
   buf[0] = lastc = c = (*source++); // so have valid lastc
   nbuf = 1;
   rowSize--; /* since one byte eaten.*/
