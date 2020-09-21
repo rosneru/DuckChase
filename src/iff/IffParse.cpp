@@ -19,7 +19,8 @@ IffParse::IffParse(const char* pFileName, bool isWriteMode)
     throw "IffParser: Failed to AllocIFF.";
   }
 
-  m_pIffHandle->iff_Stream = Open(pFileName, MODE_OLDFILE);
+  LONG openFileMode = isWriteMode ? MODE_NEWFILE : MODE_OLDFILE;
+  m_pIffHandle->iff_Stream = Open(pFileName, openFileMode);
   if (m_pIffHandle->iff_Stream == 0)
   {
     cleanup();
@@ -28,8 +29,8 @@ IffParse::IffParse(const char* pFileName, bool isWriteMode)
 
   InitIFFasDOS(m_pIffHandle);
 
-  LONG openMode = isWriteMode ? IFFF_WRITE : IFFF_READ;
-  if(OpenIFF(m_pIffHandle, openMode) != 0)
+  LONG openIffMode = isWriteMode ? IFFF_WRITE : IFFF_READ;
+  if(OpenIFF(m_pIffHandle, openIffMode) != 0)
   {
     cleanup();
     throw "IffParse: OpenIFF returned error.";

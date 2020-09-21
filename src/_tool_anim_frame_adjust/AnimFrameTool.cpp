@@ -516,8 +516,6 @@ void AnimFrameTool::saveIlbm()
     saveFileName = m_Filename + "_out.iff";
   }
 
-  printf("Created output file name: %s\n", saveFileName.c_str());
-
   try
   {
     // Creation of the saver object already saves the picture
