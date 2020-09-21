@@ -40,6 +40,8 @@ private:
   BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
+
+  bool m_HasChanged;
   
   int m_NumFrames;
   int m_FrameId;
@@ -58,7 +60,7 @@ private:
   enum MenuId
   {
     MID_ProjectOpenAnim,
-    MID_ProjectSaveAnim,
+    MID_ProjectSave,
     MID_ProjectAbout,
     MID_ProjectQuit,
     MID_ToolsCenterAllFrames,
@@ -120,6 +122,38 @@ private:
 
   void openCanvas();
   void closeCanvas();
+
+  /**
+   * Disable menu item with given id.
+   * 
+   * Browses the menu associated to the given window for an item which
+   * contains the given menuId in field userdata. If such an menu item
+   * is found, it is disabled.
+   *
+   * NOTE At the moment subitems are skipped and won't be disabled.
+   */
+  void disableMenuItem(MenuId menuId);
+
+  /**
+   * Enable menu item with given id.
+   * 
+   * Browses the menu associated to the given window for an item which
+   * contains the given menuId in field userdata. If such an menu item
+   * is found, it is enabled.
+   *
+   * NOTE At the moment subitems are skipped and won't be disabled.
+   */
+  void enableMenuItem(MenuId menuId);
+  /**
+   * Browses all menu items trying to find the item with the given
+   * userdata
+   *
+   * @param
+   *
+   * NOTE At the moment subitems are skipped
+   */
+  struct MenuItem* findItemByUserData(APTR pUserDataToFind,
+                                      WORD& foundMenuNumber);
 
   struct Gadget* createGadgets(struct Gadget **ppGadgetList, 
                                APTR pVisualInfo);

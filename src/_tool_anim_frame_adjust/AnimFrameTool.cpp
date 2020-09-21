@@ -69,6 +69,7 @@ AnimFrameTool::AnimFrameTool()
     m_OScanHeight(0),
     m_pLoadedPicture(NULL),
     m_pBitMapTools(NULL),
+    m_HasChanged(false),
     m_pCanvasScreen(NULL),
     m_pControlScreen(NULL),
     m_pCanvasWindow(NULL),
@@ -96,7 +97,7 @@ AnimFrameTool::AnimFrameTool()
   {
     { NM_TITLE, "Project",             0 , 0, 0, 0, },
     {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Save anim picture",  "S", 0, 0, (APTR)MID_ProjectSaveAnim, },
+    {  NM_ITEM, "Save",               "S", 0, 0, (APTR)MID_ProjectSave, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
     {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
     {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
@@ -203,8 +204,9 @@ AnimFrameTool::AnimFrameTool()
   GT_RefreshWindow(m_pControlWindow, NULL);
   SetMenuStrip(m_pControlWindow, m_pMenu);
 
-  openCanvas();
+  disableMenuItem(MID_ProjectSave);
 
+  openCanvas();
   paintGrid();
 }
 
@@ -736,7 +738,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         openAnimIlbmPicture();
         break;
 
-      case MID_ProjectSaveAnim:
+      case MID_ProjectSave:
         // TODO
         break;
 
@@ -938,6 +940,82 @@ void AnimFrameTool::closeCanvas()
 LONG wordsToPixels(struct Gadget* pGadget, WORD level)
 {
   return ((WORD)(level * 16));
+}
+
+
+void AnimFrameTool::disableMenuItem(MenuId menuId)
+{
+  WORD menuNumber = 0;
+  struct MenuItem* pFoundItem = findItemByUserData((APTR)menuId, menuNumber);
+  if(pFoundItem == NULL)
+  {
+    return;
+  }
+
+  OffMenu(m_pControlWindow, menuNumber);
+}
+
+
+void AnimFrameTool::enableMenuItem(MenuId menuId)
+{
+  WORD menuNumber = 0;
+  struct MenuItem* pFoundItem = findItemByUserData((APTR)menuId, menuNumber);
+  if(pFoundItem == NULL)
+  {
+    return;
+  }
+
+  OnMenu(m_pControlWindow, menuNumber);
+}
+
+
+struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
+                                                   WORD& foundMenuNumber)
+{
+  if(m_pMenu == NULL)
+  {
+    return NULL;
+  }
+
+  foundMenuNumber = 0;
+
+  struct Menu* pMenu = m_pMenu;
+  struct MenuItem* pItem = pMenu->FirstItem;
+  if(pItem == NULL)
+  {
+    return NULL;
+  }
+
+  int iMenu = 0;
+  int iItem = 0;
+
+  do
+  {
+    do
+    {
+      APTR pUserData = GTMENUITEM_USERDATA(pItem);
+      if(pUserData == pUserDataToFind)
+      {
+        foundMenuNumber = FULLMENUNUM(iMenu, iItem, 0);
+        return pItem;
+      }
+
+      pItem = pItem->NextItem;
+      iItem++;
+    }
+    while(pItem != NULL);
+
+    pMenu = pMenu->NextMenu;
+    if(pMenu != NULL)
+    {
+      pItem = pMenu->FirstItem;
+      iItem = 0;
+      iMenu++;
+    }
+  }
+  while(pItem != NULL);
+
+  return NULL;
 }
 
 

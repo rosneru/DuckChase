@@ -76,10 +76,12 @@ SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
   cleanup();
 }
 
+
 SaveBitMapPictureIlbm::~SaveBitMapPictureIlbm()
 {
   cleanup();
 }
+
 
 void SaveBitMapPictureIlbm::cleanup()
 {
