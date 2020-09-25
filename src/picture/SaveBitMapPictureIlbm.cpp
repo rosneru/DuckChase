@@ -15,7 +15,7 @@
 #define OLDCAMGMASK  (~BADFLAGS)
 
 
-SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture, 
+SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
                                              const char* pFileName)
   : m_Picture(picture),
     m_BODY_BUF_SIZE(5004),
@@ -36,7 +36,7 @@ SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
   }
 
   IffParse iff(pFileName, true);
-  
+
   LONG err = PushChunk(iff.Handle(), ID_ILBM, ID_FORM, IFFSIZE_UNKNOWN);
   if(err != 0)
   {
@@ -131,7 +131,11 @@ long SaveBitMapPictureIlbm::PutCmap(IffParse& iff)
   long error;
   ULONG* pTableEntry;
   ColorRegister cmapReg;
-  ULONG ncolors = 1L << m_Picture.Depth();
+
+  pTableEntry = m_Picture.GetColors32();
+
+  // First entry is the number of colors
+  ULONG ncolors = *(pTableEntry++) >> 16;
 
   // size of CMAP is 3 bytes * ncolors
   error = PushChunk(iff.Handle(), NULL, ID_CMAP, 3 * ncolors);
@@ -140,15 +144,11 @@ long SaveBitMapPictureIlbm::PutCmap(IffParse& iff)
     return error;
   }
 
-  pTableEntry = m_Picture.GetColors32();
   for (; ncolors; --ncolors)  // at loop start ncolors has its last value
   {
-    cmapReg.red = *pTableEntry;
-    pTableEntry++;
-    cmapReg.green = *pTableEntry;
-    pTableEntry++;
-    cmapReg.blue = *pTableEntry;
-    pTableEntry++;
+    cmapReg.red   = *(pTableEntry++) >> 24;
+    cmapReg.green = *(pTableEntry++) >> 24;
+    cmapReg.blue  = *(pTableEntry++) >> 24;
 
     if ((WriteChunkBytes(iff.Handle(), (BYTE*)&cmapReg, 3)) != 3)
     {
@@ -227,7 +227,7 @@ long SaveBitMapPictureIlbm::PutBody(IffParse& iff)
         // Compress and write next row
         buf = bodybuf;
         packedRowBytes = packrow(&planes[iPlane], &buf, FileRowBytes);
-        
+
         // Note that packrow incremented planes already by FileRowBytes
         planes[iPlane] += rowBytes - FileRowBytes;  // Possibly skipping unused bytes
         numBytes = WriteChunkBytes(iff.Handle(), bodybuf, packedRowBytes);
@@ -264,13 +264,13 @@ static UBYTE *PutDump(UBYTE *dest, int nn)
   int i;
 
   // Putting the byte nn-1
-  *dest++ = (nn-1);   
+  *dest++ = (nn-1);
   ++putSize;
 
   for(i = 0;  i < nn;  i++)
   {
     // Putting the byte buf[i]
-    *dest++ = (buf[i]);   
+    *dest++ = (buf[i]);
     ++putSize;
   }
 
@@ -281,19 +281,19 @@ static UBYTE *PutDump(UBYTE *dest, int nn)
 static UBYTE *PutRun(UBYTE *dest, int nn, int cc)
 {
   // Putting the byte -(nn-1)
-  *dest++ = (-(nn-1));   
+  *dest++ = (-(nn-1));
   ++putSize;
 
   // Putting the byte cc
-  *dest++ = (cc);   
+  *dest++ = (cc);
   ++putSize;
 
   return dest;
 }
 
 
-LONG SaveBitMapPictureIlbm::packrow(UBYTE** ppSource, 
-                                    UBYTE** ppDest, 
+LONG SaveBitMapPictureIlbm::packrow(UBYTE** ppSource,
+                                    UBYTE** ppDest,
                                     LONG rowSize)
 {
   UBYTE *source, *dest;
@@ -335,13 +335,13 @@ LONG SaveBitMapPictureIlbm::packrow(UBYTE** ppSource,
           {
             OutDump(rstart);
           }
-          
+
           mode = RUN;
         }
         else if (rstart == 0)
         {
           // No dump in progress, so can't lose by making these 2 a run.
-          mode = RUN; 
+          mode = RUN;
         }
       }
       else

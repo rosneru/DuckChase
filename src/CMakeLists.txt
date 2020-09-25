@@ -80,7 +80,7 @@ add_custom_command(TARGET DuckChase_gcc
 
 
 
-add_executable (AnimFrameTool
+add_executable (AnimFrameTool_gcc
                 anim/Animator.h
                 anim/AnimSeqBase.cpp
                 anim/AnimSeqBitmap.cpp
@@ -103,7 +103,7 @@ add_executable (AnimFrameTool
                 _tool_anim_frame_adjust/MessageBox.cpp
                 _tool_anim_frame_adjust/main.cpp)
 
-target_include_directories (AnimFrameTool PUBLIC
+target_include_directories (AnimFrameTool_gcc PUBLIC
                             _tool_anim_frame_adjust
                             anim
                             iff
@@ -111,10 +111,10 @@ target_include_directories (AnimFrameTool PUBLIC
                             shapes
                             .)
 
-add_custom_command(TARGET AnimFrameTool
+add_custom_command(TARGET AnimFrameTool_gcc
                    POST_BUILD
-                   COMMAND cp AnimFrameTool ${CMAKE_CURRENT_SOURCE_DIR}/..
-                   DEPENDS AnimFrameTool)
+                   COMMAND cp AnimFrameTool_gcc ${CMAKE_CURRENT_SOURCE_DIR}/..
+                   DEPENDS AnimFrameTool_gcc)
 
 
 

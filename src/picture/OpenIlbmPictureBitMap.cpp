@@ -142,7 +142,7 @@ bool OpenIlbmPictureBitMap::loadColors(struct StoredProperty* pCmapProp)
   // Create array for the colors
   ULONG arraySize = ((2 + 3 * numAllocatedColors) * sizeof(ULONG));
   m_pColors32 = (ULONG*)AllocVec(arraySize, MEMF_PUBLIC|MEMF_CLEAR);
-  m_pColors32[0] = numAllocatedColors << 16;
+  m_pColors32[0] = numIlbmColors << 16;
 
 
   BYTE* pRgb = (BYTE*) pCmapProp->sp_Data;
@@ -182,7 +182,7 @@ bool OpenIlbmPictureBitMap::loadColors(struct StoredProperty* pCmapProp)
   return true;
 }
 
-bool OpenIlbmPictureBitMap::loadDisplayMode(struct StoredProperty* pCamgProp, 
+bool OpenIlbmPictureBitMap::loadDisplayMode(struct StoredProperty* pCamgProp,
                                  struct BitMapHeader* pBitMapHeader)
 {
   m_ModeId = (*(ULONG*)pCamgProp->sp_Data);
@@ -198,7 +198,7 @@ bool OpenIlbmPictureBitMap::loadDisplayMode(struct StoredProperty* pCamgProp,
   // upper word and extended bit not set in lower word.
   if ((m_ModeId & 0xFFFF0000) && (!(m_ModeId & 0x00001000)))
   {
-    // No (or bad) CAMG present; calculate the mode dependent on the 
+    // No (or bad) CAMG present; calculate the mode dependent on the
     // pixels
     m_ModeId = 0L;
     if (pBitMapHeader->bmh_Width >= 640)
@@ -224,20 +224,20 @@ bool OpenIlbmPictureBitMap::loadDisplayMode(struct StoredProperty* pCamgProp,
     else if ((pBitMapHeader->bmh_Depth == 6) && ((readCAMG & 0x400) != 0))
     {
         // Bit 11 of the CAMG chunk set
-        m_ModeId |= HAM;  
+        m_ModeId |= HAM;
     }
     else if ((pBitMapHeader->bmh_Depth == 8) && ((readCAMG & 0x400) != 0))
     {
         // Bit 11 of the CAMG chunk set
-        m_ModeId |= HAM;  
+        m_ModeId |= HAM;
     }
   }
 
   return true;
 }
 
-bool OpenIlbmPictureBitMap::decodeIlbmBody(IffParse& iffParse, 
-                                bool isCompressed, 
+bool OpenIlbmPictureBitMap::decodeIlbmBody(IffParse& iffParse,
+                                bool isCompressed,
                                 UBYTE masking)
 {
   if(m_pBitMap == NULL)
