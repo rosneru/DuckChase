@@ -29,7 +29,7 @@ SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
     m_ModeId &= OLDCAMGMASK;
   }
 
-  if (!(bodybuf = (UBYTE*) AllocMem(m_BODY_BUF_SIZE, MEMF_PUBLIC)))
+  if (!(bodybuf = (UBYTE*) AllocVec(m_BODY_BUF_SIZE, MEMF_PUBLIC)))
   {
     cleanup();
     throw "SaveBitMapPictureIlbm: Failed to allocate buffer.";
@@ -45,7 +45,7 @@ SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
 
   // Initialize and write the BitMapHeader BMHD
   initBitMapHeader();
-  err = iff.PutCk(ID_BMHD, sizeof(struct BitMapHeader), (BYTE*) &m_Bmhd);
+  err = iff.PutCk(ID_BMHD, sizeof(struct BitMapHeader), (BYTE*)&m_Bmhd);
   if(err != 0)
   {
     throw "SaveBitMapPictureIlbm: Failed to write BitMapHeader.";
@@ -93,6 +93,13 @@ void SaveBitMapPictureIlbm::cleanup()
 }
 
 
+/* Advisory that 8 significant bits-per-gun have been stored in CMAP
+ * i.e. that the CMAP is definitely not 4-bit values shifted left.
+ * This bit will disable nibble examination by color loading routine.
+ */
+#define BMHDB_CMAPOK	7
+#define BMHDF_CMAPOK	(1 << BMHDB_CMAPOK)
+
 void SaveBitMapPictureIlbm::initBitMapHeader()
 {
   struct DisplayInfo DI;
@@ -103,6 +110,7 @@ void SaveBitMapPictureIlbm::initBitMapHeader()
   m_Bmhd.bmh_Depth = m_Picture.Depth();
   m_Bmhd.bmh_Masking = mskHasMask;
   m_Bmhd.bmh_Compression = cmpByteRun1;
+  m_Bmhd.bmh_Pad = BMHDF_CMAPOK; // we will store 8 significant bits
   m_Bmhd.bmh_Transparent = 0;
   m_Bmhd.bmh_PageWidth = m_Picture.Width() < 320 ? 320 : m_Picture.Width();
   m_Bmhd.bmh_PageHeight = m_Picture.Height() < 200 ? 200 :  m_Picture.Height();
