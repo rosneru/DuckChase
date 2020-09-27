@@ -28,7 +28,7 @@ GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
     m_pBitMapArray[i] = AllocBitMap(picture.Width(), 
                                     picture.Height(),
                                     picture.Depth(),
-                                    BMF_STANDARD | BMF_INTERLEAVED | BMF_CLEAR,
+                                    BMF_DISPLAYABLE | BMF_INTERLEAVED | BMF_CLEAR,
                                     NULL);
 
     if(m_pBitMapArray[i] == NULL)
