@@ -4,6 +4,7 @@
 #include <graphics/sprite.h>
 #include <stdlib.h>
 #include "AnimSeqBase.h"
+#include "BitMapPictureBase.h"
 
 /**
  * Holds an anim sequence of ExtSprite images. On creation the supplied
@@ -33,6 +34,16 @@ private:
   struct BitMap* m_pFrameBitMap;
   struct ExtSprite** m_ppFrames;
   ULONG* m_pColors32;
+
+  /**
+   * Creates a copy of the color table of given picture. Allocates
+   * memory which after using must be freed with FreeVec(). The color
+   * data can be loaded with LoadRgb32().
+   *
+   * @returns On success: the address of the the color table copy, 
+   *          on error: NULL.
+   */
+  ULONG* deepCopyColors(const BitMapPictureBase& srcPicture);
 };
 
 #endif
