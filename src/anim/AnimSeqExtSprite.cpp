@@ -28,34 +28,11 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   m_Height = srcIlbmBitmap.Height();
   m_Depth = srcIlbmBitmap.Depth();
 
-  // Copy the first n colors from source image (with n = depth)
-  const ULONG* pSrcImgColors = srcIlbmBitmap.GetColors32();
-  if(pSrcImgColors != NULL)
+  // Copy the color table from source picture
+  m_pColors32 = deepCopyColors(srcIlbmBitmap);
+  if(m_pColors32 == NULL)
   {
-    size_t numColors = 1L << srcIlbmBitmap.Depth();
-
-    // Size of the Colors32 table (number of ULONG values)
-    size_t colorArraySize = 3 * numColors + 2;
-
-    // Size of the Colors32 table in bytes
-    size_t colArrByteSize = colorArraySize * sizeof(ULONG);
-
-    // Alloc color table
-    m_pColors32 = (ULONG*) AllocVec(colArrByteSize, MEMF_ANY|MEMF_CLEAR);
-    if(m_pColors32 == NULL)
-    {
-      throw "AnimSeqExtSprite: Failed to alloc memory for colors.";
-    }
-
-    // Copy starting part of the src color map to dest
-    CopyMem((APTR)pSrcImgColors, m_pColors32, colArrByteSize);
-
-    // LoadRGB32() needs the number of colors to load in the higword
-    // (the left 16 bit) of the color table's first ULONG value
-    m_pColors32[0] = numColors << 16;
-
-    // Finalize the color array
-    m_pColors32[colorArraySize-1] = 0ul;
+    throw "Failed to copy color table for sprite anim.";
   }
 
   // Create a dynamic array for all frames
@@ -73,6 +50,11 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
                                srcIlbmBitmap.Depth(),
                                BMF_CLEAR,
                                NULL);
+  
+  if(m_pFrameBitMap == NULL)
+  {
+    throw "Failed to create temporary Bitmap.";
+  }
 
   // Create all frames by copying an area of src bitmap
   for(size_t i = 0; i < numFrames; i++)
@@ -107,6 +89,7 @@ AnimSeqExtSprite::AnimSeqExtSprite(const char* pFileName,
   FreeBitMap(m_pFrameBitMap);
   m_pFrameBitMap = NULL;
 }
+
 
 AnimSeqExtSprite::~AnimSeqExtSprite()
 {
@@ -153,3 +136,39 @@ ULONG* AnimSeqExtSprite::GetColors32() const
   return m_pColors32;
 }
 
+ULONG* AnimSeqExtSprite::deepCopyColors(const BitMapPictureBase& srcPicture)
+{
+  // Copy the first n colors from source image (with n = depth)
+  ULONG* pSrcBitMapColors32 = srcPicture.GetColors32();
+  if(pSrcBitMapColors32 == NULL)
+  {
+    return NULL;
+  }
+
+  size_t numColors = 1L << srcPicture.Depth();
+
+  // Size of the Colors32 table (number of ULONG values)
+  size_t colorArraySize = 3 * numColors + 2;
+
+  // Size of the Colors32 table in bytes
+  size_t colorArrayByteSize = colorArraySize * sizeof(ULONG);
+
+  // Alloc color table
+  ULONG* pColors32 = (ULONG*) AllocVec(colorArrayByteSize, MEMF_ANY|MEMF_CLEAR);
+  if(pColors32 == NULL)
+  {
+    return NULL;
+  }
+
+  // Copy starting part of the src color map to dest
+  CopyMem((APTR)pSrcBitMapColors32, pColors32, colorArrayByteSize);
+
+  // LoadRGB32() needs the number of colors to load in the higword
+  // (the left 16 bit) of the color table's first ULONG value
+  pColors32[0] = numColors << 16;
+
+  // Finalize the color array
+  pColors32[colorArraySize-1] = 0ul;
+
+  return pColors32;
+}
