@@ -180,9 +180,12 @@ struct ViewPort* GameViewIntui::ViewPort()
 
 void GameViewIntui::Render()
 {
-  // Render the gels
-  SortGList(&(m_pScreen->RastPort));
-  DrawGList(&(m_pScreen->RastPort), &(m_pScreen->ViewPort));
+  // Render the GELS if there are some
+  if(m_pScreen->RastPort.GelsInfo != NULL)
+  {
+    SortGList(&(m_pScreen->RastPort));
+    DrawGList(&(m_pScreen->RastPort), &(m_pScreen->ViewPort));
+  }
 
   // Only to be done when using VSprites
   // MrgCop(ViewAddress());
