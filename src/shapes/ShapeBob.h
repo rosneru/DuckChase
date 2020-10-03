@@ -47,7 +47,8 @@ private:
   int m_RasterDepth;
   struct Bob* m_pBob;
   bool m_bIsVisible;
-  LONG m_RasSize;
+  LONG m_RasWidth;
+  LONG m_RasHeight;
   LONG m_LineSize;
   LONG m_PlaneSize;
   

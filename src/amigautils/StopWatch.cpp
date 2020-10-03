@@ -30,7 +30,8 @@ void StopWatch::Start()
     }
   }
 
-  // Getting and storing current eclock value
+  // Store the current eClock as start time
+  // (and also retrieve the clocks per second of current Amiga system)
   m_ClocksPerSecond = ReadEClock(&m_StartClock);
 }
 
@@ -47,14 +48,12 @@ long StopWatch::Pick(bool bKeepStartPoint)
     return -1;
   }
 
-  // Reading the eclock value again
+  // Store the current eClock as stop time
   ReadEClock(&m_StopClock);
 
-  // Calculating elapsed time in milliseconds
+  // Calculate the elapsed time in milli seconds
   long long millisecs = m_StopClock.ev_lo - m_StartClock.ev_lo;
-
   millisecs *= 1000;
-
   millisecs /= m_ClocksPerSecond;
 
   if(bKeepStartPoint == false)
@@ -90,7 +89,7 @@ void StopWatch::initTimerDevice()
     return;
   }
 
-  // Opening the timer.device
+  // Open the timer.device
   BYTE res = OpenDevice(TIMERNAME,
                         UNIT_ECLOCK,
                         (struct IORequest*) m_pTimeRequest,
@@ -103,7 +102,7 @@ void StopWatch::initTimerDevice()
 
   m_pTimeRequest->tr_node.io_Message.mn_Node.ln_Type = NT_REPLYMSG;
 
-  // Setting the timer base
+  // Set the timer base
   TimerBase = (struct Library*)m_pTimeRequest->tr_node.io_Device;
 
   m_bInitialized = true;

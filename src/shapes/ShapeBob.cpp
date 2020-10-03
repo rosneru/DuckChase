@@ -20,7 +20,8 @@ ShapeBob::ShapeBob(struct RastPort* pRastPort,
     m_RasterDepth(rasterDepth),
     m_pBob(NULL),
     m_bIsVisible(false),
-    m_RasSize(sizeof(UWORD) * m_WordWidth * m_Height * m_RasterDepth),
+    m_RasWidth(m_WordWidth * 16),
+    m_RasHeight(m_Height * rasterDepth),
     m_LineSize(sizeof(WORD) * m_WordWidth),
     m_PlaneSize(m_LineSize * m_Height)
 {
@@ -30,7 +31,7 @@ ShapeBob::ShapeBob(struct RastPort* pRastPort,
     throw "ShapeBob: Failed to allocate memory for bob.";
   }
 
-  m_pBob->SaveBuffer = (WORD*) AllocVec(m_RasSize, MEMF_CHIP);
+  m_pBob->SaveBuffer = (WORD*) AllocRaster(m_RasWidth, m_RasHeight);
   if(m_pBob->SaveBuffer == NULL)
   {
     throw "ShapeBob: Failed to allocate memory for save buffer.";
@@ -94,7 +95,7 @@ ShapeBob::ShapeBob(struct RastPort* pRastPort,
       throw "ShapeBob: Failed to allocate memory for DBufPacket.";
     }
 
-    m_pBob->DBuffer->BufBuffer = (WORD*) AllocVec(m_RasSize, MEMF_CHIP);
+    m_pBob->DBuffer->BufBuffer = (WORD*) AllocRaster(m_RasWidth, m_RasHeight);
     if(m_pBob->DBuffer->BufBuffer == NULL)
     {
       throw "ShapeBob: Failed to allocate memory for double buffer.";
@@ -114,7 +115,7 @@ ShapeBob::~ShapeBob()
     {
       if(m_pBob->DBuffer->BufBuffer != NULL)
       {
-        FreeVec(m_pBob->DBuffer->BufBuffer);
+        FreeRaster((PLANEPTR)m_pBob->DBuffer->BufBuffer, m_RasWidth, m_RasHeight);
         m_pBob->DBuffer->BufBuffer = NULL;
       }
 
@@ -142,7 +143,7 @@ ShapeBob::~ShapeBob()
     
     if(m_pBob->SaveBuffer != NULL)
     {
-      FreeVec(m_pBob->SaveBuffer);
+      FreeRaster((PLANEPTR)m_pBob->SaveBuffer, m_RasWidth, m_RasHeight);
       m_pBob->SaveBuffer = NULL;
     }
 
