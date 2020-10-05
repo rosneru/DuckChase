@@ -10,11 +10,11 @@ GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
     m_BorderLeft(0),
     m_BorderBottom(picture.Height() - 1),
     m_BorderRight(picture.Width() - 1),
-    m_bDBufSafeToChange(true),
-    m_bDBufSafeToWrite(true),
+    m_IsSafeToChange(true),
+    m_IsSafeToWrite(true),
     m_CurrentBuf(1),
-    m_pSafeMessage(NULL),
-    m_pDispMessage(NULL),
+    m_pSafePort(NULL),
+    m_pDispPort(NULL),
     m_Width(picture.Width()),
     m_WordWidth(picture.WordWidth()),
     m_Height(picture.Height()),
@@ -60,10 +60,10 @@ GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
   //
   // Create the MsgPorts needed for double buffering
   //
-  m_pSafeMessage = CreateMsgPort();
-  m_pDispMessage = CreateMsgPort();
+  m_pSafePort = CreateMsgPort();
+  m_pDispPort = CreateMsgPort();
 
-  if(m_pSafeMessage == NULL || m_pDispMessage == NULL )
+  if(m_pSafePort == NULL || m_pDispPort == NULL )
   {
     throw "GameViewBase failed to create MsgPort.";
   }
@@ -72,14 +72,14 @@ GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
 
 GameViewBase::~GameViewBase()
 {
-  if(m_pSafeMessage != NULL)
+  if(m_pSafePort != NULL)
   {
-    DeleteMsgPort(m_pSafeMessage);
+    DeleteMsgPort(m_pSafePort);
   }
 
-  if(m_pDispMessage != NULL)
+  if(m_pDispPort != NULL)
   {
-    DeleteMsgPort(m_pDispMessage);
+    DeleteMsgPort(m_pDispPort);
   }
 
   //  Free the double buffer BitMaps

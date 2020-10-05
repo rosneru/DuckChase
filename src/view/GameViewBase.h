@@ -87,19 +87,19 @@ protected:
   short m_BorderRight;
 
   // Double buffering
-  bool m_bDBufSafeToChange;
-  bool m_bDBufSafeToWrite;
+  bool m_IsSafeToChange;
+  bool m_IsSafeToWrite;
   int m_CurrentBuf;
 
   /**
    * Replied to when safe to write to old BitMap
    */
-  struct MsgPort* m_pSafeMessage;
+  struct MsgPort* m_pSafePort;
 
   /**
    * Replied to when new BitMap has been displayed at least once
    */
-  struct MsgPort* m_pDispMessage;
+  struct MsgPort* m_pDispPort;
 
   GameViewBase(OpenIlbmPictureBitMap& picture);
   virtual ~GameViewBase();

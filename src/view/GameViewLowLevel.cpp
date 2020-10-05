@@ -74,8 +74,8 @@ GameViewLowlevel::GameViewLowlevel(OpenIlbmPictureBitMap& backgroundPicture,
     throw "GameViewLowlevel failed to AllocDBufInfo.";
   }
 
-  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafeMessage;
-  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispMessage;
+  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafePort;
+  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispPort;
 }
 
 
@@ -85,11 +85,11 @@ GameViewLowlevel::~GameViewLowlevel()
   // carefully insure that all messages have been replied to before
   // calling FreeDBufInfo or calling ChangeVPBitMap with the same
   // DBufInfo.
-  if (!m_bDBufSafeToChange)
+  if (!m_IsSafeToChange)
   {
-    while (!GetMsg(m_pDispMessage)) 
+    while (!GetMsg(m_pDispPort)) 
     {
-      Wait(1l << (m_pDispMessage->mp_SigBit));
+      Wait(1l << (m_pDispPort->mp_SigBit));
     }
   }
 
@@ -147,11 +147,11 @@ void GameViewLowlevel::Render()
   //
   // Double buffering
   //
-  if (m_bDBufSafeToChange == false)
+  if (m_IsSafeToChange == false)
   {
-    while (!GetMsg(m_pDispMessage)) 
+    while (!GetMsg(m_pDispPort)) 
     {
-      Wait(1l << (m_pDispMessage->mp_SigBit));
+      Wait(1l << (m_pDispPort->mp_SigBit));
     }
   }
   
@@ -163,7 +163,7 @@ void GameViewLowlevel::Render()
                  m_pBitMapArray[m_CurrentBuf], 
                  m_pDBufInfo);
   
-  m_bDBufSafeToChange = false;
+  m_IsSafeToChange = false;
   
   // Toggle current buffer
   m_CurrentBuf ^= 1;
@@ -172,9 +172,9 @@ void GameViewLowlevel::Render()
   m_RastPort.BitMap = m_pBitMapArray[m_CurrentBuf];
 
   // Wait until drawing is allowed
-  while (!GetMsg(m_pSafeMessage)) 
+  while (!GetMsg(m_pSafePort)) 
   {
-    Wait(1l << (m_pSafeMessage->mp_SigBit));
+    Wait(1l << (m_pSafePort->mp_SigBit));
   }
 }
 

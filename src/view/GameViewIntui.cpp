@@ -86,19 +86,19 @@ GameViewIntui::GameViewIntui(OpenIlbmPictureBitMap& backgroundPicture)
     throw "GameViewIntui failed to AllocDBufInfo.";
   }
 
-  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafeMessage;
-  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispMessage;
+  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafePort;
+  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispPort;
 
   // Now wait until rendering is allowed
-  if(!m_bDBufSafeToWrite)
+  if(!m_IsSafeToWrite)
   {
-    while (!GetMsg(m_pSafeMessage)) // As long as no dbi_SafeMessage..
+    while (!GetMsg(m_pSafePort)) // As long as no dbi_SafeMessage..
     {
-      Wait(1l << (m_pSafeMessage->mp_SigBit));  // ..wait for it
+      Wait(1l << (m_pSafePort->mp_SigBit));  // ..wait for it
     }
   }
 
-  m_bDBufSafeToWrite = true;
+  m_IsSafeToWrite = true;
 }
 
 
@@ -108,19 +108,19 @@ GameViewIntui::~GameViewIntui()
   // carefully insure that all messages have been replied to before
   // calling FreeDBufInfo or calling ChangeVPBitMap with the same
   // DBufInfo.
-  if (!m_bDBufSafeToChange)
+  if (!m_IsSafeToChange)
   {
-    while (!GetMsg(m_pDispMessage)) 
+    while (!GetMsg(m_pDispPort)) 
     {
-      Wait(1l << (m_pDispMessage->mp_SigBit));
+      Wait(1l << (m_pDispPort->mp_SigBit));
     }
   }
 
-  if (!m_bDBufSafeToWrite)
+  if (!m_IsSafeToWrite)
   {
-    while (!GetMsg(m_pSafeMessage)) 
+    while (!GetMsg(m_pSafePort)) 
     {
-      Wait(1l << (m_pSafeMessage->mp_SigBit));
+      Wait(1l << (m_pSafePort->mp_SigBit));
     }
   }
 
@@ -196,15 +196,15 @@ void GameViewIntui::Render()
   //
   // Double buffering
   //
-  if (!m_bDBufSafeToChange)
+  if (!m_IsSafeToChange)
   {
-    while (!GetMsg(m_pDispMessage)) 
+    while (!GetMsg(m_pDispPort)) 
     {
-      Wait(1l << (m_pDispMessage->mp_SigBit));
+      Wait(1l << (m_pDispPort->mp_SigBit));
     }
   }
   
-  m_bDBufSafeToChange = false;
+  m_IsSafeToChange = false;
 
   // Be sure rendering has finished
   WaitBlit();
@@ -212,8 +212,8 @@ void GameViewIntui::Render()
   // Switch the displayed BitMap
   ChangeVPBitMap(&m_pScreen->ViewPort, m_pBitMapArray[m_CurrentBuf], m_pDBufInfo);
   
-  m_bDBufSafeToChange = false;
-  m_bDBufSafeToWrite = false;
+  m_IsSafeToChange = false;
+  m_IsSafeToWrite = false;
   
   // Toggle current buffer
   m_CurrentBuf ^= 1;
@@ -222,15 +222,15 @@ void GameViewIntui::Render()
   m_pScreen->RastPort.BitMap = m_pBitMapArray[m_CurrentBuf];
 
   // Now wait until rendering is allowed
-  if(!m_bDBufSafeToWrite)
+  if(!m_IsSafeToWrite)
   {
-    while (!GetMsg(m_pSafeMessage)) // As long as no dbi_SafeMessage..
+    while (!GetMsg(m_pSafePort)) // As long as no dbi_SafeMessage..
     {
-      Wait(1l << (m_pSafeMessage->mp_SigBit));  // ..wait for it
+      Wait(1l << (m_pSafePort->mp_SigBit));  // ..wait for it
     }
   }
 
-  m_bDBufSafeToWrite = true;
+  m_IsSafeToWrite = true;
 }
 
 const char* GameViewIntui::ViewName() const
