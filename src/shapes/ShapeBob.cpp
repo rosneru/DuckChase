@@ -181,7 +181,8 @@ int ShapeBob::Right() const
     return 0;
   }
 
-  return m_pBob->BobVSprite->X + Width();
+  // right = width - 1 + left
+  return  Width() - 1 + m_pBob->BobVSprite->X;
 }
 
 int ShapeBob::Bottom() const
@@ -191,7 +192,8 @@ int ShapeBob::Bottom() const
     return 0;
   }
 
-  return m_pBob->BobVSprite->Y + Height();
+  // bottom = height - 1 + top
+  return Height() - 1 + m_pBob->BobVSprite->Y;
 }
 
 

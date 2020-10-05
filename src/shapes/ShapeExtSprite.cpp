@@ -16,7 +16,7 @@ ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
               gfxResources.Depth()),
     m_pViewPort(pViewPort),
     m_pEmptySprite(NULL),
-    m_pCurrentSprite(NULL),
+    m_pSprite(NULL),
     m_SpriteNumberGot(-1)
 {
   // Allocate the empty sprite data (for setting sprite invisible)
@@ -38,8 +38,8 @@ ShapeExtSprite::ShapeExtSprite(struct ViewPort* pViewPort,
   }
 
   // Trying to get a hardware sprite
-  m_pCurrentSprite = gfxResources.DefaultImage();
-  m_SpriteNumberGot = GetExtSprite(m_pCurrentSprite, TAG_DONE);
+  m_pSprite = gfxResources.DefaultImage();
+  m_SpriteNumberGot = GetExtSprite(m_pSprite, TAG_DONE);
 
   if (m_SpriteNumberGot < 0)
   {
@@ -68,9 +68,9 @@ ShapeExtSprite::~ShapeExtSprite()
 
 void ShapeExtSprite::SetImage(ExtSprite* pNewImage)
 {
-  struct ExtSprite* pOldSprite = m_pCurrentSprite;
-  m_pCurrentSprite = pNewImage;
-  ChangeExtSprite(m_pViewPort, pOldSprite, m_pCurrentSprite, TAG_DONE);
+  struct ExtSprite* pOldSprite = m_pSprite;
+  m_pSprite = pNewImage;
+  ChangeExtSprite(m_pViewPort, pOldSprite, m_pSprite, TAG_DONE);
 }
 
 
@@ -94,81 +94,81 @@ void ShapeExtSprite::SetVPortColorsForSprite(struct ViewPort* pViewPort,
 
 int ShapeExtSprite::Left() const
 {
-  if (m_pCurrentSprite == NULL)
+  if (m_pSprite == NULL)
   {
     return 0;
   }
 
-  struct SimpleSprite* pSpr = (struct SimpleSprite*)m_pCurrentSprite;
-  return pSpr->x;
+  return m_pSprite->es_SimpleSprite.x;
 }
 
 
 int ShapeExtSprite::Top() const
 {
-  if (m_pCurrentSprite == NULL)
+  if (m_pSprite == NULL)
   {
     return 0;
   }
 
-  struct SimpleSprite* pSpr = (struct SimpleSprite*)m_pCurrentSprite;
-  return pSpr->y;
+  return m_pSprite->es_SimpleSprite.y;
 }
 
 int ShapeExtSprite::Right() const
 {
-  return ((struct SimpleSprite*)m_pCurrentSprite)->x + m_Width;
+  // right = width - 1 + left
+  return m_Width - 1 + m_pSprite->es_SimpleSprite.x;
 }
 
 int ShapeExtSprite::Bottom() const
 {
-  return ((struct SimpleSprite*)m_pCurrentSprite)->x + m_Height;
+  // bottom = height - 1 + top
+  return m_Height - 1 + m_pSprite->es_SimpleSprite.y;
 }
 
 void ShapeExtSprite::SetInvisible()
 {
-  if ((m_pCurrentSprite == NULL) || (m_pViewPort == NULL))
+  if ((m_pSprite == NULL) || (m_pViewPort == NULL))
   {
     return;
   }
 
-  ChangeExtSprite(m_pViewPort, m_pCurrentSprite, m_pEmptySprite, TAG_END);
+  ChangeExtSprite(m_pViewPort, m_pSprite, m_pEmptySprite, TAG_END);
 }
 
 
 void ShapeExtSprite::SetVisible()
 {
-  if ((m_pCurrentSprite == NULL) ||
+  if ((m_pSprite == NULL) ||
       (m_pViewPort == NULL))
   {
     return;
   }
 
-  ChangeExtSprite(m_pViewPort, m_pEmptySprite, m_pCurrentSprite, TAG_END);
+  ChangeExtSprite(m_pViewPort, m_pEmptySprite, m_pSprite, TAG_END);
 }
 
 
 bool ShapeExtSprite::IsVisible() const
 {
-  if ((m_pCurrentSprite == NULL) ||
+  if ((m_pSprite == NULL) ||
       (m_pViewPort == NULL))
   {
     return false;
   }
 
-  return m_pCurrentSprite != m_pEmptySprite;
+  return m_pSprite != m_pEmptySprite;
 }
 
 
 bool ShapeExtSprite::IsGone() const
 {
-  if ((m_pCurrentSprite == NULL) ||
+  if ((m_pSprite == NULL) ||
       (m_pViewPort == NULL))
   {
     return true;
   }
 
-  struct SimpleSprite* pSpr = (struct SimpleSprite*)m_pCurrentSprite;
+  struct SimpleSprite* pSpr = (struct SimpleSprite*)m_pSprite;
 
   if(pSpr->x < - Width() || pSpr->x > m_pViewPort->DWidth)
   {
@@ -186,11 +186,11 @@ bool ShapeExtSprite::IsGone() const
 
 void ShapeExtSprite::move(int x, int y)
 {
-  if ((m_pCurrentSprite == NULL) || (m_pViewPort == NULL))
+  if ((m_pSprite == NULL) || (m_pViewPort == NULL))
   {
     return;
   }
 
-  struct SimpleSprite* pSpr = (struct SimpleSprite*)m_pCurrentSprite;
+  struct SimpleSprite* pSpr = (struct SimpleSprite*)m_pSprite;
   MoveSprite(m_pViewPort, pSpr, x, y);
 }

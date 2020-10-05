@@ -57,7 +57,7 @@ private:
   struct ViewPort* m_pViewPort;
   long m_ImageBufSize; // Buffer for each image in bytes
   struct ExtSprite* m_pEmptySprite;
-  struct ExtSprite* m_pCurrentSprite;
+  struct ExtSprite* m_pSprite;
   int m_SpriteNumberGot; // Allocated sprite number
 
   void move(int x, int y);
