@@ -79,8 +79,6 @@ public:
 
 
 protected:
-  struct BitMap* m_pBitMapArray[2];
-
   short m_BorderTop;
   short m_BorderLeft;
   short m_BorderBottom;
@@ -101,7 +99,13 @@ protected:
    */
   struct MsgPort* m_pDispPort;
 
-  GameViewBase(OpenIlbmPictureBitMap& picture);
+  /**
+   * BitMap array for DoubleBuffering with ChangeVPBitMap()
+   */
+  struct BitMap* m_ppBitMapArray[2];
+
+
+  GameViewBase(OpenIlbmPictureBitMap& picture, bool allocBitMap = true);
   virtual ~GameViewBase();
 
 private:

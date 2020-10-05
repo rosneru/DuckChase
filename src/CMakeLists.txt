@@ -54,6 +54,7 @@ add_executable (DuckChase_gcc
                 sound/Soundfile8SVX.cpp
                 sound/SoundPlayer.cpp
                 view/GameViewBase.cpp
+                view/GameViewDBuf.cpp
                 view/GameViewIntui.cpp
                 view/GameViewLowLevel.cpp
                 view/lowlevelview.cpp

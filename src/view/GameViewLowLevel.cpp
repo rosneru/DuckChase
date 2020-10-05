@@ -26,7 +26,7 @@ GameViewLowlevel::GameViewLowlevel(OpenIlbmPictureBitMap& backgroundPicture,
                        Depth(),
                        modeId,
                        1L << Depth(), // TODO - Ensure min 32 colors?
-                       m_pBitMapArray[m_CurrentBuf],
+                       m_ppBitMapArray[m_CurrentBuf],
                        backgroundPicture.GetColors32()),
     m_RastPort(),
     m_pOldView(NULL),
@@ -160,7 +160,7 @@ void GameViewLowlevel::Render()
   
   // Switch the displayed BitMap
   ChangeVPBitMap(m_LowLevelViewPort.ViewPort(),
-                 m_pBitMapArray[m_CurrentBuf], 
+                 m_ppBitMapArray[m_CurrentBuf], 
                  m_pDBufInfo);
   
   m_IsSafeToChange = false;
@@ -169,7 +169,7 @@ void GameViewLowlevel::Render()
   m_CurrentBuf ^= 1;
 
   // Switch the BitMap to be used for drawing
-  m_RastPort.BitMap = m_pBitMapArray[m_CurrentBuf];
+  m_RastPort.BitMap = m_ppBitMapArray[m_CurrentBuf];
 
   // Wait until drawing is allowed
   while (!GetMsg(m_pSafePort)) 

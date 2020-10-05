@@ -1,24 +1,20 @@
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
-#include <exec/memory.h>
 #include <graphics/gfxbase.h>
 #include <graphics/modeid.h>
 #include <graphics/videocontrol.h>
 #include <intuition/pointerclass.h>
 
-#include "GameViewIntui.h"
+#include "GameViewDBuf.h"
 
-extern struct GfxBase* GfxBase;
-
-
-GameViewIntui::GameViewIntui(OpenIlbmPictureBitMap& backgroundPicture)
-  : GameViewBase(backgroundPicture),
+GameViewDBuf::GameViewDBuf(OpenIlbmPictureBitMap& backgroundPicture)
+  : GameViewBase(backgroundPicture, false),
     m_pScreen(NULL),
     m_pEmptyBitmap(NULL),
     m_pEmptyPointer(NULL),
     m_pWindow(NULL),
-    m_pDBufInfo(NULL)
+    m_ppScreenBuf()  // all pointers in array initialized to NULL
 {
   // Additional setting for the screen
   struct TagItem vcTags[] =
@@ -44,13 +40,13 @@ GameViewIntui::GameViewIntui(OpenIlbmPictureBitMap& backgroundPicture)
 
   if(m_pScreen == NULL)
   {
-    throw "GameViewIntui failed to open screen.";
+    throw "GameViewDBuf failed to open screen.";
   }
 
   m_pEmptyBitmap = AllocBitMap(16, 16, 2, BMF_CLEAR, NULL);
   if(m_pEmptyBitmap == NULL)
   {
-    throw "GameViewIntui failed to allocate empty pointer BitMap.";
+    throw "GameViewDBuf failed to allocate empty pointer BitMap.";
   }
 
   m_pEmptyPointer = NewObject( NULL, "pointerclass",
@@ -63,7 +59,7 @@ GameViewIntui::GameViewIntui(OpenIlbmPictureBitMap& backgroundPicture)
 
   if(m_pEmptyPointer == NULL)
   {
-    throw "GameViewIntui failed to allocate empty pointer object.";
+    throw "GameViewDBuf failed to allocate empty pointer object.";
   }
 
   m_pWindow = OpenWindowTags(NULL,
@@ -76,39 +72,35 @@ GameViewIntui::GameViewIntui(OpenIlbmPictureBitMap& backgroundPicture)
 
   if(m_pWindow == NULL)
   {
-    throw "GameViewIntui failed to open window.";
+    throw "GameViewDBuf failed to open window.";
   }
 
+  m_ppScreenBuf[0] = AllocScreenBuffer(m_pScreen, NULL, SB_SCREEN_BITMAP);
+  m_ppScreenBuf[1] = AllocScreenBuffer(m_pScreen, NULL, 0);
 
-  m_pDBufInfo = AllocDBufInfo(&(m_pScreen->ViewPort));
-  if(m_pDBufInfo == NULL)
+  for (ULONG i = 0; i < 2; i++)
   {
-    throw "GameViewIntui failed to AllocDBufInfo.";
+    m_ppScreenBuf[i]->sb_DBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispPort;
+    m_ppScreenBuf[i]->sb_DBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafePort;
   }
 
-  m_pDBufInfo->dbi_SafeMessage.mn_ReplyPort = m_pSafePort;
-  m_pDBufInfo->dbi_DispMessage.mn_ReplyPort = m_pDispPort;
+  // Display the background picture
+  BlitPicture(backgroundPicture);
+}
 
-  // Now wait until rendering is allowed
-  if(!m_IsSafeToWrite)
-  {
-    while (!GetMsg(m_pSafePort)) // As long as no dbi_SafeMessage..
-    {
-      Wait(1l << (m_pSafePort->mp_SigBit));  // ..wait for it
-    }
-  }
-
-  m_IsSafeToWrite = true;
+GameViewDBuf::~GameViewDBuf()
+{
+  cleanup();
 }
 
 
-GameViewIntui::~GameViewIntui()
+void GameViewDBuf::cleanup()
 {
   // Autodoc: When using the synchronization features, you MUST
   // carefully insure that all messages have been replied to before
   // calling FreeDBufInfo or calling ChangeVPBitMap with the same
   // DBufInfo.
-  if (!m_IsSafeToChange)
+  if ((m_pDispPort != NULL) && !m_IsSafeToChange)
   {
     while (!GetMsg(m_pDispPort)) 
     {
@@ -116,7 +108,7 @@ GameViewIntui::~GameViewIntui()
     }
   }
 
-  if (!m_IsSafeToWrite)
+  if ((m_pSafePort != NULL) && !m_IsSafeToWrite)
   {
     while (!GetMsg(m_pSafePort)) 
     {
@@ -124,10 +116,14 @@ GameViewIntui::~GameViewIntui()
     }
   }
 
-  if(m_pDBufInfo != NULL)
+  for(ULONG i = 0; i < 2; i++)
   {
-    FreeDBufInfo(m_pDBufInfo);
-    m_pDBufInfo = NULL;
+    if(m_ppScreenBuf[i] != NULL)
+    {
+      WaitBlit();
+      FreeScreenBuffer(m_pScreen, m_ppScreenBuf[i]);
+      m_ppScreenBuf[i] = NULL;
+    }
   }
 
   if(m_pWindow != NULL)
@@ -156,7 +152,7 @@ GameViewIntui::~GameViewIntui()
 }
 
 
-struct RastPort* GameViewIntui::RastPort()
+struct RastPort* GameViewDBuf::RastPort()
 {
   if(m_pScreen == NULL)
   {
@@ -167,7 +163,7 @@ struct RastPort* GameViewIntui::RastPort()
 }
 
 
-struct ViewPort* GameViewIntui::ViewPort()
+struct ViewPort* GameViewDBuf::ViewPort()
 {
   if(m_pScreen == NULL)
   {
@@ -178,7 +174,7 @@ struct ViewPort* GameViewIntui::ViewPort()
 }
 
 
-void GameViewIntui::Render()
+void GameViewDBuf::Render()
 {
   // Render the GELS if there are some
   if(m_pScreen->RastPort.GelsInfo != NULL)
@@ -209,17 +205,18 @@ void GameViewIntui::Render()
   // Be sure rendering has finished
   WaitBlit();
   
-  // Switch the displayed BitMap
-  ChangeVPBitMap(&m_pScreen->ViewPort, m_ppBitMapArray[m_CurrentBuf], m_pDBufInfo);
-  
+  // Flip the ScreenBuffer
+  if (ChangeScreenBuffer(m_pScreen, m_ppScreenBuf[m_CurrentBuf]))
+  {
+    // Flip.
+    m_CurrentBuf = m_CurrentBuf ^ 1;
+  }
+
   m_IsSafeToChange = false;
   m_IsSafeToWrite = false;
-  
-  // Toggle current buffer
-  m_CurrentBuf ^= 1;
 
-  // // Switch the BitMap to be used for drawing
-  m_pScreen->RastPort.BitMap = m_ppBitMapArray[m_CurrentBuf];
+  // // // Switch the BitMap to be used for drawing
+  // m_pScreen->RastPort.BitMap = m_ppBitMapArray[m_CurrentBuf];
 
   // Now wait until rendering is allowed
   if(!m_IsSafeToWrite)
@@ -233,7 +230,7 @@ void GameViewIntui::Render()
   m_IsSafeToWrite = true;
 }
 
-const char* GameViewIntui::ViewName() const
+const char* GameViewDBuf::ViewName() const
 {
   return "Simple (Intuition) view";
 }

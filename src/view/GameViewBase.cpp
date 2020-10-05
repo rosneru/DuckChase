@@ -4,9 +4,9 @@
 #include "clib/graphics_protos.h"
 #include "GameViewBase.h"
 
-GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
-  : m_pBitMapArray(),
-    m_BorderTop(0),
+GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture, 
+                           bool allocBitMap)
+  : m_BorderTop(0),
     m_BorderLeft(0),
     m_BorderBottom(picture.Height() - 1),
     m_BorderRight(picture.Width() - 1),
@@ -15,48 +15,12 @@ GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
     m_CurrentBuf(1),
     m_pSafePort(NULL),
     m_pDispPort(NULL),
+    m_ppBitMapArray(),  // all pointers in array initialized to NULL
     m_Width(picture.Width()),
     m_WordWidth(picture.WordWidth()),
     m_Height(picture.Height()),
     m_Depth(picture.Depth())
 {
-  //
-  // Create and initialize two BitMaps for double buffering
-  //
-  for(size_t i = 0; i < 2; i++)
-  {
-    m_pBitMapArray[i] = AllocBitMap(picture.Width(), 
-                                    picture.Height(),
-                                    picture.Depth(),
-                                    BMF_DISPLAYABLE | BMF_INTERLEAVED | BMF_CLEAR,
-                                    NULL);
-
-    if(m_pBitMapArray[i] == NULL)
-    {
-      throw "GameViewBase failed to AllocBitMap.";
-    }
-
-    if (!(GetBitMapAttr(m_pBitMapArray[i], BMA_FLAGS) & BMF_INTERLEAVED))
-    {
-      throw "GameViewBase failed to get a interleaved BitMap";
-    }
-
-    WaitBlit();
-
-    // Blit the background image into BitMap i
-    BltBitMap(picture.GetBitMap(),
-              0,
-              0,
-              m_pBitMapArray[i],
-              0,
-              0,
-              picture.Width(),
-              picture.Height(),
-              0xC0,
-              0xFF,
-              NULL);
-  }
-
   //
   // Create the MsgPorts needed for double buffering
   //
@@ -67,11 +31,64 @@ GameViewBase::GameViewBase(OpenIlbmPictureBitMap& picture)
   {
     throw "GameViewBase failed to create MsgPort.";
   }
+
+
+  if(!allocBitMap)
+  {
+    return;
+  }
+
+  //
+  // Create and initialize two BitMaps for double buffering
+  //
+  for(size_t i = 0; i < 2; i++)
+  {
+    m_ppBitMapArray[i] = AllocBitMap(picture.Width(), 
+                                    picture.Height(),
+                                    picture.Depth(),
+                                    BMF_DISPLAYABLE | BMF_INTERLEAVED | BMF_CLEAR,
+                                    NULL);
+
+    if(m_ppBitMapArray[i] == NULL)
+    {
+      throw "GameViewBase failed to AllocBitMap.";
+    }
+
+    if (!(GetBitMapAttr(m_ppBitMapArray[i], BMA_FLAGS) & BMF_INTERLEAVED))
+    {
+      throw "GameViewBase failed to get a interleaved BitMap";
+    }
+
+    WaitBlit();
+
+    // Blit the background image into BitMap i
+    BltBitMap(picture.GetBitMap(),
+              0,
+              0,
+              m_ppBitMapArray[i],
+              0,
+              0,
+              picture.Width(),
+              picture.Height(),
+              0xC0,
+              0xFF,
+              NULL);
+  }
 }
 
 
 GameViewBase::~GameViewBase()
 {
+  //  Free the double buffer BitMaps
+  for(size_t i = 0; i < 2; i++)
+  {
+    if(m_ppBitMapArray[i] != NULL)
+    {
+      FreeBitMap(m_ppBitMapArray[i]);
+      m_ppBitMapArray[i] = NULL;
+    }
+  }
+
   if(m_pSafePort != NULL)
   {
     DeleteMsgPort(m_pSafePort);
@@ -82,15 +99,6 @@ GameViewBase::~GameViewBase()
     DeleteMsgPort(m_pDispPort);
   }
 
-  //  Free the double buffer BitMaps
-  for(size_t i = 0; i < 2; i++)
-  {
-    if(m_pBitMapArray[i] != NULL)
-    {
-      FreeBitMap(m_pBitMapArray[i]);
-      m_pBitMapArray[i] = NULL;
-    }
-  }
 }
 
 
