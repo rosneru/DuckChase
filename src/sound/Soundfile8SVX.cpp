@@ -4,7 +4,7 @@
 #include <clib/exec_protos.h>
 #include <clib/iffparse_protos.h>
 #include <datatypes/soundclass.h> // Not using  datatypes, just for
-                                  // 'BitMapHeader', 'ID_xyz', etc.
+                                  // 'VoiceHeader', 'ID_xyz', etc.
 #include <exec/memory.h>
 
 #include "Soundfile8SVX.h"
