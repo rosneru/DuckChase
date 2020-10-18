@@ -108,7 +108,6 @@ File
 "src/anim/AnimSeqExtSprite.cpp"
 "src/anim/AnimSeqExtSprite.h"
 "src/anim/AnimSeqBase.h"
-"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimSeqExtSprite.o" "build-stormc-animframetool/AnimSeqExtSprite.debug"
@@ -358,6 +357,7 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "src/shapes/Rect.h"
+"src/shapes/Rect.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

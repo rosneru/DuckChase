@@ -64,9 +64,6 @@ private:
   struct RastPort m_RastPort;
 
   void printBits(size_t const size, void const * const ptr);
-
-  UBYTE* createRectPixelArray(const Rect& searchArea);
-  UBYTE* freeRectPixelArray(const Rect& searchArea);
 };
 
 

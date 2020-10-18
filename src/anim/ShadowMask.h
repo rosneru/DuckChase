@@ -44,17 +44,25 @@ public:
                    const Rect& thisRect,
                    const Rect& otherRect) const;
   
+  /**
+   * Print-out the mask into a shell window. Useful for debugging
+   * small masks dimensions.
+   */
+  void Print();
 
 private:
   UBYTE* m_pMask;
+  bool m_IsForeignMask;
 
   bool* m_pRowPixels;
+
 
   ULONG m_Width;
   ULONG m_WordWidth;
   ULONG m_Height;
 
   void calculateRowPixels(const Rect& rect, size_t row) const;
+  void printBits(size_t const size, void const * const ptr);
 };
 
 #endif

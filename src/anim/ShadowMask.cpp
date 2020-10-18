@@ -1,9 +1,11 @@
 #include <stddef.h>
+#include <stdio.h>
 
 #include "ShadowMask.h"
 
 ShadowMask::ShadowMask(const struct BitMap* pImage)
-  : m_pMask(NULL)
+  : m_pMask(NULL),
+    m_IsForeignMask(false)  // The mask is created here. It is *not* foreign.
 {
   size_t numBytes = pImage->BytesPerRow * pImage->Rows;
   m_pMask = (UBYTE*)AllocVec(numBytes, MEMF_CLEAR|MEMF_ANY); // TODO MEMF_CHIP for Blitter use
@@ -36,6 +38,7 @@ ShadowMask::ShadowMask(UBYTE* pMask,
                        ULONG width, 
                        ULONG height)
   : m_pMask(pMask),
+    m_IsForeignMask(true),  // The mask has been passed from outside. It *is* foreign.
     m_Width(width),
     m_WordWidth(((width + 15) & -16) >> 4),
     m_Height(height)
@@ -47,7 +50,7 @@ ShadowMask::~ShadowMask()
 {
   delete[] m_pRowPixels;
 
-  if(m_pMask != NULL)
+  if((!m_IsForeignMask) && (m_pMask != NULL))
   {
     FreeVec(m_pMask);
     m_pMask = NULL;
@@ -93,6 +96,24 @@ bool ShadowMask::IsCollision(const ShadowMask* pOther,
 }
 
 
+void ShadowMask::Print()
+{
+  ULONG bytesPerRow = m_WordWidth * 2;
+  PLANEPTR pPlane = m_pMask;
+  for(size_t row = 0; row < m_Height; row++)
+  {
+    for(int byte = 0; byte < bytesPerRow; byte++)
+    {
+      size_t offset = byte + (bytesPerRow * row);
+      printBits(1, pPlane + offset);
+      printf(" ");
+    }
+    printf("\n");
+  }
+  printf("\n");
+}
+
+
 void ShadowMask::calculateRowPixels(const Rect& rect, size_t row) const
 {
   for(int column = rect.Left(); column <= rect.Right(); column++)
@@ -110,6 +131,23 @@ void ShadowMask::calculateRowPixels(const Rect& rect, size_t row) const
     else
     {
       m_pRowPixels[column - rect.Left()] = false;
+    }
+  }
+}
+
+// assumes little endian
+void ShadowMask::printBits(size_t const size, void const* const ptr)
+{
+  unsigned char* p = (unsigned char*)ptr;
+  unsigned char byte;
+  int i, j;
+
+  for (i = size - 1; i >= 0; i--)
+  {
+    for (j = 7; j >= 0; j--)
+    {
+      byte = (p[i] >> j) & 1;
+      printf("%u", byte);
     }
   }
 }

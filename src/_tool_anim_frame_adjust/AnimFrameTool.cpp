@@ -14,6 +14,7 @@
 
 #include "AslFileRequest.h"
 #include "MessageBox.h"
+#include "ShadowMask.h"
 #include "SaveBitMapPictureIlbm.h"
 
 #include "AnimFrameTool.h"
@@ -96,17 +97,18 @@ AnimFrameTool::AnimFrameTool()
 
   struct NewMenu demomenu[] =
   {
-    { NM_TITLE, "Project",             0 , 0, 0, 0, },
-    {  NM_ITEM, "Open anim picture",  "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Save",               "S", 0, 0, (APTR)MID_ProjectSave, },
-    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "About",               0, 0, 0, (APTR)MID_ProjectAbout, },
-    {  NM_ITEM, NM_BARLABEL,           0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit",               "Q", 0, 0, (APTR)MID_ProjectQuit, },
-    { NM_TITLE, "Tools",               0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",   0, 0, 0, (APTR)MID_ToolsCenterAllFrames, },
-    {  NM_ITEM, "Get max width",       0, 0, 0, (APTR)MID_ToolsGetMaxWidth, },
-    { NM_END,   0,                     0 , 0, 0, 0, },
+    { NM_TITLE, "Project",               0 , 0, 0, 0, },
+    {  NM_ITEM, "Open anim picture",    "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
+    {  NM_ITEM, "Save",                 "S", 0, 0, (APTR)MID_ProjectSave, },
+    {  NM_ITEM, NM_BARLABEL,             0 , 0, 0, 0, },
+    {  NM_ITEM, "About",                 0,  0, 0, (APTR)MID_ProjectAbout, },
+    {  NM_ITEM, NM_BARLABEL,             0 , 0, 0, 0, },
+    {  NM_ITEM, "Quit",                 "Q", 0, 0, (APTR)MID_ProjectQuit, },
+    { NM_TITLE, "Tools",                 0 , 0, 0, 0, },
+    {  NM_ITEM, "Center all frames",     0,  0, 0, (APTR)MID_ToolsCenterAllFrames, },
+    {  NM_ITEM, "Get max width",         0,  0, 0, (APTR)MID_ToolsGetMaxWidth, },
+    {  NM_ITEM, "Print loaded mask",    "M", 0, 0, (APTR)MID_ToolsPrintMask, },
+    { NM_END,   0,                       0 , 0, 0, 0, },
   };
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
@@ -843,6 +845,22 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       case MID_ToolsGetMaxWidth:
         // TODO
         break;
+
+      case MID_ToolsPrintMask:
+        // TODO
+        {
+          if(m_pLoadedPicture == NULL)
+          {
+            break;
+          }
+
+          ShadowMask mask(m_pLoadedPicture->GetMask()->Planes[0], 
+                          m_pLoadedPicture->Width(), 
+                          m_pLoadedPicture->Height());
+
+          mask.Print();
+          break;
+        }
       }
       code = item->NextSelect;
     }
