@@ -854,10 +854,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
             break;
           }
 
-          ShadowMask mask(m_pLoadedPicture->GetMask()->Planes[0], 
-                          m_pLoadedPicture->Width(), 
-                          m_pLoadedPicture->Height());
-
+          ShadowMask mask(m_pLoadedPicture->GetBitMap());
           mask.Print();
           break;
         }

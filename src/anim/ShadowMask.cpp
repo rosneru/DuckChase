@@ -1,4 +1,6 @@
-#include <stddef.h>
+#include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
+
 #include <stdio.h>
 
 #include "ShadowMask.h"
@@ -7,6 +9,12 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
   : m_pMask(NULL),
     m_IsForeignMask(false)  // The mask is created here. It is *not* foreign.
 {
+  m_Width = GetBitMapAttr(pImage, BMA_WIDTH);
+  m_Height = GetBitMapAttr(pImage, BMA_HEIGHT);
+  size_t depth = GetBitMapAttr(pImage, BMA_DEPTH);
+
+  m_WordWidth = ((m_Width + 15) & -16) >> 4;
+
   size_t numBytes = pImage->BytesPerRow * pImage->Rows;
   m_pMask = (UBYTE*)AllocVec(numBytes, MEMF_CLEAR|MEMF_ANY); // TODO MEMF_CHIP for Blitter use
   if(m_pMask == NULL)
@@ -14,17 +22,13 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
     throw "ShadowMask: Failed to allocate memory for mask.";
   }
 
-  m_WordWidth = numBytes / 2;
-  m_Width = m_WordWidth * 16;
-  m_Height = pImage->Rows;
-
   m_pRowPixels = new bool[m_WordWidth * 2 * 8];
 
   for (size_t i = 0; i < numBytes; i++)
   {
     UBYTE maskByte = 0;
 
-    for (size_t j = 0; j < pImage->Depth; j++)
+    for (size_t j = 0; j < depth; j++)
     {
       UBYTE *plane = pImage->Planes[j];
       maskByte |= plane[i];

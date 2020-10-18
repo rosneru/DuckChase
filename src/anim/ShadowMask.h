@@ -1,13 +1,8 @@
 #ifndef SHADOW_MASK_H
 #define SHADOW_MASK_H
 
-#ifndef BOOST_TEST
-  #include <graphics/gfx.h>
-  #include <clib/exec_protos.h>
-  #include <exec/types.h>
-#else
-  #include "amiga_types.h"
-#endif
+#include <graphics/gfx.h>
+#include <exec/types.h>
 
 #include "Rect.h"
 
