@@ -15,12 +15,14 @@ ShadowMask::ShadowMask(const struct BitMap* pImage)
 
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
 
-  size_t numBytes = pImage->BytesPerRow * pImage->Rows;
+  size_t numBytes = m_WordWidth * 2 * m_Height;
   m_pMask = (UBYTE*)AllocVec(numBytes, MEMF_CLEAR|MEMF_ANY); // TODO MEMF_CHIP for Blitter use
   if(m_pMask == NULL)
   {
     throw "ShadowMask: Failed to allocate memory for mask.";
   }
+
+  //printf("width = %lu (wordWidth = %lu), height = %lu\n", m_Width, m_WordWidth, m_Height);
 
   m_pRowPixels = new bool[m_WordWidth * 2 * 8];
 

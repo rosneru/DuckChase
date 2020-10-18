@@ -97,18 +97,20 @@ AnimFrameTool::AnimFrameTool()
 
   struct NewMenu demomenu[] =
   {
-    { NM_TITLE, "Project",               0 , 0, 0, 0, },
-    {  NM_ITEM, "Open anim picture",    "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Save",                 "S", 0, 0, (APTR)MID_ProjectSave, },
-    {  NM_ITEM, NM_BARLABEL,             0 , 0, 0, 0, },
-    {  NM_ITEM, "About",                 0,  0, 0, (APTR)MID_ProjectAbout, },
-    {  NM_ITEM, NM_BARLABEL,             0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit",                 "Q", 0, 0, (APTR)MID_ProjectQuit, },
-    { NM_TITLE, "Tools",                 0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",     0,  0, 0, (APTR)MID_ToolsCenterAllFrames, },
-    {  NM_ITEM, "Get max width",         0,  0, 0, (APTR)MID_ToolsGetMaxWidth, },
-    {  NM_ITEM, "Print loaded mask",    "M", 0, 0, (APTR)MID_ToolsPrintMask, },
-    { NM_END,   0,                       0 , 0, 0, 0, },
+    { NM_TITLE, "Project",                       0 , 0, 0, 0, },
+    {  NM_ITEM, "Open anim picture",            "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
+    {  NM_ITEM, "Save",                         "S", 0, 0, (APTR)MID_ProjectSave, },
+    {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
+    {  NM_ITEM, "About",                         0,  0, 0, (APTR)MID_ProjectAbout, },
+    {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
+    {  NM_ITEM, "Quit",                         "Q", 0, 0, (APTR)MID_ProjectQuit, },
+    { NM_TITLE, "Tools",                         0 , 0, 0, 0, },
+    {  NM_ITEM, "Center all frames",             0,  0, 0, (APTR)MID_ToolsCenterAllFrames, },
+    {  NM_ITEM, "Get max width",                 0,  0, 0, (APTR)MID_ToolsGetMaxWidth, },
+    {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
+    {  NM_ITEM, "Print frame mask",             "F", 0, 0, (APTR)MID_ToolsPrintFrameMask, },
+    {  NM_ITEM, "Print mask of whole picture",  "M", 0, 0, (APTR)MID_ToolsPrintFullMask, },
+    { NM_END,   0,                               0 , 0, 0, 0, },
   };
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
@@ -846,9 +848,8 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         // TODO
         break;
 
-      case MID_ToolsPrintMask:
-        // TODO
-        {
+      case MID_ToolsPrintFullMask:
+        { // Print the mask of the whole animation strip image
           if(m_pLoadedPicture == NULL)
           {
             break;
@@ -856,6 +857,45 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
           ShadowMask mask(m_pLoadedPicture->GetBitMap());
           mask.Print();
+          break;
+        }
+
+      case MID_ToolsPrintFrameMask:
+        { // Print the mask of the current animation frame
+          if(m_pLoadedPicture == NULL)
+          {
+            break;
+          }
+
+          // Create a temporary BitMap for current frame
+          struct BitMap* pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
+                                              m_FrameRects[m_FrameId].Height(),
+                                              m_pLoadedPicture->Depth(),
+                                              BMF_CLEAR,
+                                              NULL);
+
+          if(pTmpBm == NULL)
+          {
+            break;
+          }
+
+          // Copy the current frame image into the temporary BitMap
+          BltBitMap(m_pLoadedPicture->GetBitMap(),
+                    m_FrameRects[m_FrameId].Left(), 
+                    m_FrameRects[m_FrameId].Top(),
+                    pTmpBm,
+                    0, 0, 
+                    m_FrameRects[m_FrameId].Width(),
+                    m_FrameRects[m_FrameId].Height(),
+                    0Xc0,
+                    0xff,
+                    NULL);
+
+          // Create and print shadow mask
+          ShadowMask mask(pTmpBm);
+          mask.Print();
+
+          FreeBitMap(pTmpBm);
           break;
         }
       }
