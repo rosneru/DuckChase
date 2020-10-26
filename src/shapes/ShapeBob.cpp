@@ -268,33 +268,3 @@ void ShapeBob::move(int x, int y)
   m_pBob->BobVSprite->X = x;
   m_pBob->BobVSprite->Y = y;
 }
-
-
-/*
-      // Create shadow mask (or'ing all bits of all bitplanes)
-      m_pImageShadow = (WORD*) AllocVec(m_NewBob.nb_WordWidth * 2
-                                          * m_NewBob.nb_LineHeight,
-                                        MEMF_CHIP);
-
-      int rasSize = m_NewBob.nb_WordWidth * 2 * m_NewBob.nb_LineHeight;
-
-      for(int i = 0; i < m_NewBob.nb_LineHeight; i++)
-      {
-        for(int j = 0; j < m_NewBob.nb_WordWidth; j++)
-        {
-          WORD word = 0;
-          int idx = i * m_NewBob.nb_WordWidth + j;
-
-          for(int k = 0; k < m_NewBob.nb_ImageDepth; k++)
-          {
-            word |= m_NewBob.nb_Image[idx + (k * rasSize)];
-          }
-
-          m_pImageShadow[idx] = word;
-        }
-      }
-
-      // Set the shadow mask to the bob
-      m_pBob->ImageShadow = m_pImageShadow;
-*/
-
