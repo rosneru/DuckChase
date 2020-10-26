@@ -1,0 +1,53 @@
+  "Create a tool to adjust frames of
+   an anim strip on a horizontal row 
+   in an iff ilbm file to a raster."
+
+  Solution will be based on the 
+  AmigaOS NDK3.1 DBuf example.
+
+  Uwe Rosner, 26.08.2020 in Xertigny.
+
+
+The display of the tool is split: a double buffered canvas screen at the top, control screen at the bottom.
+
+Canvas screen, width = 320, height = 120, top = 0:
+
+- After opening a picture it is blit to the canvas screen.
+
+- After blitting the default raster of width=16 is drawn on top of the picture. The raster rectangle of the current picture is
+
+- Picture width can be bigger than the visible screen width. Then a sider can be used to move the picture. (Use ScrollVPort or re-blit?)
+
+
+Control screen width = 320, height = 136, top = 120:
+
+- Menu Project / Open picture: open a file request to select the input file.
+
+- Menu Project / save picture: save the picture (without the raster overlay) is saved to a iff ilbm file using its original palette.
+
+- Menu Tools / Center all frames: Centers all frames in their raster rectangles. 
+
+- Menu Tools / Get max width: Calculates and displays the width of the widest frame object.
+
+- Slider to left-right-scroll the picture. Width = 320.
+
+- On the bottom right is a area of size 112 x 112 to display the *shadow mask* of the 'resulting anim frame', maybe with a bevel box as border. When Play button is hit, the anim playback is displayed in this box. When no playback is done, this box displays the current frame image. The resulting anim frame is displayed left-top-aligned in this box.
+
+- Gadget of type TEXT_KIND to display the file name of the picture. Width = 320-120-2x5.
+
+- Slider for desired raster width. Each adjustment causes re-blitting the picture to canvas screen. To get this flicker free, a double buggered screen is used. Width as above.
+
+- Button 'Play', Button 'Stop'. Summary width = 320-120-2x5.
+
+- Gadget of type STRING_KIND to display / allow to set the current frame. Gadget of type TEXT_KIND to display the number of frames. This is the picture width divided by the raster width.
+
+
+Navigation:
+- Cursor keys left, right: select the previous, next frame.
+
+- Shift + Cursor keys left, right, top, bottom: Move the current frame content by one pixel in appropriate direction.
+
+
+Possible later improvements:
+- Add a navigation menu
+- Add anim5 loader, saver
