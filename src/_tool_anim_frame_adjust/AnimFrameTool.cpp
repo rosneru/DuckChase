@@ -80,8 +80,7 @@ AnimFrameTool::AnimFrameTool()
     m_pGadScrCanvasHScroll(NULL),
     m_pGadTxtFilename(NULL),
     m_pGadSliFrameWidth(NULL),
-    m_pGadBtnPlay(NULL),
-    m_pGadBtnStop(NULL),
+    m_pGadLvAmosSheet(NULL),
     m_pGadIntCurrentFrame(NULL),
     m_pGadTxtNumFrames(NULL),
     m_pMenu(NULL),
@@ -1214,25 +1213,22 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
                                               GTTX_Border, TRUE,
                                               TAG_DONE);  
 
-  ng.ng_LeftEdge = m_ControlsRect.Left();
-  ng.ng_TopEdge = m_ControlsRect.Bottom() - rowHeight;
-  ng.ng_Width = (m_ControlsRect.Width() / 2) - UI_RASTER_WIDTH;
-  ng.ng_GadgetID = GID_BtnPlay;
-  ng.ng_GadgetText = (UBYTE*) "Play";
+  ng.ng_LeftEdge = m_ControlsRect.Left() + UI_LABEL_WIDTH;
+  ng.ng_TopEdge += UI_RASTER_HEIGHT;
+  ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
+  ng.ng_Height = m_ControlsRect.Bottom() - ng.ng_TopEdge;
+  ng.ng_GadgetID = GID_LvAmosSheet;
+  ng.ng_Flags = NG_HIGHLABEL|PLACETEXT_LEFT;
+  ng.ng_GadgetText = (UBYTE*) "AMOS Sheet:";
 
-  m_pGadBtnPlay = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
-                                         TAG_DONE);
-
-  ng.ng_LeftEdge += ng.ng_Width + UI_RASTER_WIDTH;
-  ng.ng_GadgetID = GID_BtnStop;
-  ng.ng_GadgetText = (UBYTE*) "Stop";
-
-  m_pGadBtnStop = pGadget = CreateGadget(BUTTON_KIND, pGadget, &ng,
-                                         TAG_DONE);
+  m_pGadLvAmosSheet = pGadget = CreateGadget(LISTVIEW_KIND, pGadget, &ng,
+                                             GA_Disabled, TRUE,
+                                             TAG_DONE);
 
   ng.ng_LeftEdge = 0;
   ng.ng_TopEdge = m_pControlScreen->Height - CANVAS_HEIGHT - rowHeight - 3; // Bottom of control screen
   ng.ng_Width = m_OScanWidth;
+  ng.ng_Height = rowHeight;
   ng.ng_GadgetText = NULL;
   ng.ng_GadgetID = GID_ScrCanvasHoriz;
   ng.ng_Flags = 0;
