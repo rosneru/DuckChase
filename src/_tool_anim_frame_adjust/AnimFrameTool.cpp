@@ -272,8 +272,6 @@ void AnimFrameTool::moveFrameContentLeft()
 
   markChanged();
 
-  // paintPicture();
-  // paintGrid();
   paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
@@ -294,8 +292,6 @@ void AnimFrameTool::moveFrameContentRight()
 
   markChanged();
 
-  // paintPicture();
-  // paintGrid();
   paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
@@ -316,8 +312,6 @@ void AnimFrameTool::moveFrameContentUp()
 
   markChanged();
 
-  // paintPicture();
-  // paintGrid();
   paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
@@ -338,8 +332,6 @@ void AnimFrameTool::moveFrameContentDown()
 
   markChanged();
 
-  // paintPicture();
-  // paintGrid();
   paintPictureCurrentPart();
   paintCurrentFrameToResultRect();
 }
