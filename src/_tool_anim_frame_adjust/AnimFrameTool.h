@@ -7,8 +7,8 @@
 #include <vector>
 #include <string>
 
+#include "AnimSheetContainer.h"
 #include "BitMapTools.h"
-#include "OpenIlbmPictureBitMap.h"
 #include "Rect.h"
 
 
@@ -36,7 +36,7 @@ private:
   std::string m_Filename;
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
-  OpenIlbmPictureBitMap* m_pLoadedPicture;
+  OpenAnimSheets* m_pAnimSheets;
   BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
@@ -106,7 +106,7 @@ private:
   void selectPreviousFrame();
   void selectNextFrame();
   
-  void openAnimIlbmPicture();
+  void openAnimSheets();
   void saveIlbm();
 
   void calcFrameRects();

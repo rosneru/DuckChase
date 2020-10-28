@@ -98,6 +98,7 @@ add_executable (AnimFrameTool_gcc
                 picture/SaveBitMapPictureIlbm.cpp
                 shapes/Rect.cpp
                 _tool_anim_frame_adjust/AnimFrameTool.cpp
+                _tool_anim_frame_adjust/AnimSheetContainer.cpp
                 _tool_anim_frame_adjust/AslFileRequest.cpp
                 _tool_anim_frame_adjust/BitMapTools.cpp
                 _tool_anim_frame_adjust/ChunkyPixelArray.cpp

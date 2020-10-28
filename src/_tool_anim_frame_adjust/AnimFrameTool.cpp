@@ -15,7 +15,6 @@
 #include "AslFileRequest.h"
 #include "MessageBox.h"
 #include "ShadowMask.h"
-#include "SaveBitMapPictureIlbm.h"
 
 #include "AnimFrameTool.h"
 
@@ -69,7 +68,7 @@ struct TextAttr Topaz80 =
 AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
     m_OScanHeight(0),
-    m_pLoadedPicture(NULL),
+    m_pAnimSheets(NULL),
     m_pBitMapTools(NULL),
     m_HasChanged(false),
     m_pCanvasScreen(NULL),
@@ -258,7 +257,7 @@ void AnimFrameTool::markChanged()
 
 void AnimFrameTool::moveFrameContentLeft()
 {
-  if(m_pLoadedPicture == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -278,7 +277,7 @@ void AnimFrameTool::moveFrameContentLeft()
 
 void AnimFrameTool::moveFrameContentRight()
 {
-  if(m_pLoadedPicture == NULL || m_pBitMapTools == NULL)
+  if(m_pAnimSheets == NULL || m_pBitMapTools == NULL)
   {
     return;
   }
@@ -298,7 +297,7 @@ void AnimFrameTool::moveFrameContentRight()
 
 void AnimFrameTool::moveFrameContentUp()
 {
-  if(m_pLoadedPicture == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -318,7 +317,7 @@ void AnimFrameTool::moveFrameContentUp()
 
 void AnimFrameTool::moveFrameContentDown()
 {
-  if(m_pLoadedPicture == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -419,7 +418,7 @@ void AnimFrameTool::selectNextFrame()
 }
 
 
-void AnimFrameTool::openAnimIlbmPicture()
+void AnimFrameTool::openAnimSheets()
 {
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile("Open anim picture", 
@@ -431,13 +430,11 @@ void AnimFrameTool::openAnimIlbmPicture()
     try
     {
       // Creating the OpenIlbmPictureBitMap will throw an exception on failure
-      OpenIlbmPictureBitMap* pNewPicture = new OpenIlbmPictureBitMap(filename.c_str(), 
-                                               true,
-                                               false);
+      OpenAnimSheets* pNewSheet = new OpenAnimSheets(filename.c_str());
 
-      if(m_pLoadedPicture != NULL)
+      if(m_pAnimSheets != NULL)
       {
-        delete m_pLoadedPicture;
+        delete m_pAnimSheets;
       }
 
       if(m_pBitMapTools != NULL)
@@ -445,11 +442,11 @@ void AnimFrameTool::openAnimIlbmPicture()
         delete m_pBitMapTools;
       }
 
-      m_pLoadedPicture = pNewPicture;
+      m_pAnimSheets = pNewSheet;
 
       // Now create a BitMapTools instance to allow some
       // operations to the picture. FIXME: Remove the ugly cast.
-      m_pBitMapTools = new BitMapTools((BitMap*)m_pLoadedPicture->GetBitMap());
+      m_pBitMapTools = new BitMapTools((BitMap*)m_pAnimSheets->getCurrent()->GetBitMap());
 
       m_Filename = filename;
       GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
@@ -513,9 +510,9 @@ void AnimFrameTool::saveIlbm()
 
   try
   {
-    // Creation of the saver object already saves the picture
-    // (or throws an exception)
-    SaveBitMapPictureIlbm ilbmSaver(*m_pLoadedPicture, saveFileName.c_str());
+    // Save the anim picture (or AMOS .abk)
+    // Throws an exception if it fails
+    m_pAnimSheets->save(saveFileName.c_str());
 
     m_HasChanged = false;
     disableMenuItem(MID_ProjectSave);
@@ -524,7 +521,7 @@ void AnimFrameTool::saveIlbm()
   {
     msgString = "Failed to to save \n  '";
     msgString += saveFileName;
-    msgString += "'\nas ilbm picture.\n\n";
+    msgString += "'\n\n";
     msgString += pMsg;
 
     MessageBox request(m_pControlWindow);
@@ -537,7 +534,7 @@ void AnimFrameTool::saveIlbm()
 
 void AnimFrameTool::calcFrameRects()
 {
-  if(m_pLoadedPicture == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -563,7 +560,7 @@ void AnimFrameTool::calcFrameRects()
   m_FrameRects.clear();
   
   // Create the needed number of yet uninitialized Rects
-  m_NumFrames = m_pLoadedPicture->Width() / frameWidth;
+  m_NumFrames = m_pAnimSheets->getCurrent()->Width() / frameWidth;
   for(int i = 0; i < m_NumFrames; i++)
   {
     m_FrameRects.push_back(Rect());
@@ -575,7 +572,7 @@ void AnimFrameTool::calcFrameRects()
     m_FrameRects[i].Set(i * frameWidth,                   // left
                         0,                                // top
                         ((i+1) * frameWidth) - 1,         // right
-                        m_pLoadedPicture->Height() - 1);  // bottom
+                        m_pAnimSheets->getCurrent()->Height() - 1);  // bottom
   }
 
   updateFrameIdxGadgets(false);
@@ -603,18 +600,18 @@ void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
 
 void AnimFrameTool::paintPicture()
 {
-  if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
+  if(m_pAnimSheets == NULL || m_pCanvasWindow == NULL)
   {
     return;
   }
 
   SetRast(m_pCanvasWindow->RPort, 0);
 
-  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+  BltBitMapRastPort(m_pAnimSheets->getCurrent()->GetBitMap(), 
                     0, 0, 
                     &m_pCanvasScreen->RastPort, 
                     0, 0,
-                    m_pLoadedPicture->Width(), m_pLoadedPicture->Height(), 
+                    m_pAnimSheets->getCurrent()->Width(), m_pAnimSheets->getCurrent()->Height(), 
                     0xc0);
 
   WaitBlit();
@@ -622,14 +619,14 @@ void AnimFrameTool::paintPicture()
 
 void AnimFrameTool::paintPictureCurrentPart()
 {
-  if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
+  if(m_pAnimSheets == NULL || m_pCanvasWindow == NULL)
   {
     return;
   }
 
   const Rect& rect = m_FrameRects[m_FrameId];
 
-  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+  BltBitMapRastPort(m_pAnimSheets->getCurrent()->GetBitMap(), 
                     rect.Left() + 1, rect.Top() + 1, 
                     &m_pCanvasScreen->RastPort, 
                     rect.Left() + 1, rect.Top() + 1,
@@ -641,14 +638,14 @@ void AnimFrameTool::paintPictureCurrentPart()
 
 void AnimFrameTool::paintGrid()
 {
-  if(m_pLoadedPicture == NULL || m_pCanvasWindow == NULL)
+  if(m_pAnimSheets == NULL || m_pCanvasWindow == NULL)
   {
     return;
   }
 
   // Set the pens for the grid
   m_NormalRectPen = 1;
-  m_HighlightedRectPen = (1L << m_pLoadedPicture->Depth()) - 1;
+  m_HighlightedRectPen = (1L << m_pAnimSheets->getCurrent()->Depth()) - 1;
 
   // Draw all m_FrameRect's
   for(size_t i = 0; i < m_FrameRects.size(); i++)
@@ -681,12 +678,12 @@ void AnimFrameTool::paintSelectionRect(const Rect& rect,
 
 void AnimFrameTool::paintCurrentFrameToResultRect()
 {
-  if((m_pLoadedPicture == NULL) || (m_pControlWindow == NULL))
+  if((m_pAnimSheets == NULL) || (m_pControlWindow == NULL))
   {
     return;
   }
 
-  BltBitMapRastPort(m_pLoadedPicture->GetBitMap(), 
+  BltBitMapRastPort(m_pAnimSheets->getCurrent()->GetBitMap(), 
                     m_FrameRects[m_FrameId].Left(),
                     m_FrameRects[m_FrameId].Top(), 
                     m_pControlWindow->RPort, 
@@ -816,7 +813,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-        openAnimIlbmPicture();
+        openAnimSheets();
         break;
 
       case MID_ProjectSave:
@@ -841,19 +838,19 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
       case MID_ToolsPrintFullMask:
         { // Print the mask of the whole animation strip image
-          if(m_pLoadedPicture == NULL)
+          if(m_pAnimSheets == NULL)
           {
             break;
           }
 
-          ShadowMask mask(m_pLoadedPicture->GetBitMap());
+          ShadowMask mask(m_pAnimSheets->getCurrent()->GetBitMap());
           mask.Print();
           break;
         }
 
       case MID_ToolsPrintFrameMask:
         { // Print the mask of the current animation frame
-          if(m_pLoadedPicture == NULL)
+          if(m_pAnimSheets == NULL)
           {
             break;
           }
@@ -861,7 +858,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           // Create a temporary BitMap for current frame
           struct BitMap* pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
                                               m_FrameRects[m_FrameId].Height(),
-                                              m_pLoadedPicture->Depth(),
+                                              m_pAnimSheets->getCurrent()->Depth(),
                                               BMF_CLEAR,
                                               NULL);
 
@@ -871,7 +868,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           }
 
           // Copy the current frame image into the temporary BitMap
-          BltBitMap(m_pLoadedPicture->GetBitMap(),
+          BltBitMap(m_pAnimSheets->getCurrent()->GetBitMap(),
                     m_FrameRects[m_FrameId].Left(), 
                     m_FrameRects[m_FrameId].Top(),
                     pTmpBm,
@@ -907,10 +904,10 @@ void AnimFrameTool::cleanup()
     m_pBitMapTools = NULL;
   }
 
-  if(m_pLoadedPicture != NULL)
+  if(m_pAnimSheets != NULL)
   {
-    delete m_pLoadedPicture;
-    m_pLoadedPicture = NULL;
+    delete m_pAnimSheets;
+    m_pAnimSheets = NULL;
   }
 
   if (m_pControlWindow != NULL)
@@ -968,9 +965,9 @@ void AnimFrameTool::openCanvas()
     return;
   }
 
-  if(m_pLoadedPicture != NULL)
+  if(m_pAnimSheets != NULL)
   {
-    ULONG screenWidth = m_pLoadedPicture->Width();
+    ULONG screenWidth = m_pAnimSheets->getCurrent()->Width();
     if(screenWidth < m_OScanWidth)
     {
       screenWidth = m_OScanWidth;
@@ -978,9 +975,9 @@ void AnimFrameTool::openCanvas()
 
     m_pCanvasScreen = OpenScreenTags(NULL,
                                      SA_AutoScroll, 1,
-                                     SA_Colors32, m_pLoadedPicture->GetColors32(),
+                                     SA_Colors32, m_pAnimSheets->getCurrent()->GetColors32(),
                                      SA_DisplayID, VIEW_MODE_ID,
-                                     SA_Depth, m_pLoadedPicture->Depth(),
+                                     SA_Depth, m_pAnimSheets->getCurrent()->Depth(),
                                      SA_Draggable, FALSE,
                                      SA_Interleaved, TRUE,
                                      SA_Font, &Topaz80,
@@ -1041,11 +1038,11 @@ void AnimFrameTool::openCanvas()
   LendMenus(m_pCanvasWindow, m_pControlWindow);
 
   // Adjust the scroller gadget to left<->right scroll the screen
-  if(m_pLoadedPicture != NULL)
+  if(m_pAnimSheets != NULL)
   {
     GT_SetGadgetAttrs(m_pGadScrCanvasHScroll, m_pControlWindow, NULL,
                       GTSC_Top, 0,
-                      GTSC_Total, m_pLoadedPicture->Width(),
+                      GTSC_Total, m_pAnimSheets->getCurrent()->Width(),
                       GTSC_Visible, m_pControlScreen->Width,
                       TAG_DONE);
   }
