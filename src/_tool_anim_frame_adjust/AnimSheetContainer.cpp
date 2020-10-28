@@ -1,40 +1,71 @@
+#include <clib/exec_protos.h>
+
+
 #include "SaveBitMapPictureIlbm.h"
 #include "AnimSheetContainer.h"
 
 
-OpenAnimSheets::OpenAnimSheets(const char* pFileName)
-  : m_pPicture(NULL)
+AnimSheetContainer::AnimSheetContainer(const char* pFileName)
 {
-  // Creating the OpenIlbmPictureBitMap will throw an exception on failure
-  m_pPicture = new OpenIlbmPictureBitMap(pFileName, true, false);
+  // Setup the exec list
+  m_SheetList.lh_Head = (struct Node*) &m_SheetList.lh_Tail;
+  m_SheetList.lh_Tail = 0;
+  m_SheetList.lh_TailPred = (struct Node*) &m_SheetList.lh_Head;
+  m_SheetList.lh_Type = NT_UNKNOWN;
+
+  // Add all (currently 1) items to list
+  for(int i = 0; i < 1; i++)
+  {
+    // The next line will throw an exception on failure
+    OpenIlbmPictureBitMap* pPic = new OpenIlbmPictureBitMap(pFileName, 
+                                                            true, 
+                                                            false);
+
+    struct AnimSheetItem* pItem = new AnimSheetItem();
+    pItem->ld_Node.ln_Type = NT_USER;
+    pItem->ld_Node.ln_Name = "Ilbm 1x sheet";
+    pItem->pSheetContainer = pPic;
+    AddTail(&m_SheetList, (struct Node*)pItem);
+  }
 }
 
 
-OpenAnimSheets::~OpenAnimSheets()
+AnimSheetContainer::~AnimSheetContainer()
 {
   cleanup();
 }
 
 
-void OpenAnimSheets::save(const char* pFileName)
+void AnimSheetContainer::save(const char* pFileName)
 {
+
+  OpenIlbmPictureBitMap* pPic = getCurrent();
   // Creation of the saver object already saves the picture
   // (or throws an exception)
-  SaveBitMapPictureIlbm ilbmSaver(*m_pPicture, pFileName);
+  SaveBitMapPictureIlbm ilbmSaver(*pPic, pFileName);
 }
 
 
-OpenIlbmPictureBitMap* OpenAnimSheets::getCurrent()
+OpenIlbmPictureBitMap* AnimSheetContainer::getCurrent()
 {
-  return m_pPicture;
+  struct AnimSheetItem* pItem = ((struct AnimSheetItem*)m_SheetList.lh_Head);
+  return (OpenIlbmPictureBitMap*)pItem->pSheetContainer;
 }
 
 
-void OpenAnimSheets::cleanup()
+struct List* AnimSheetContainer::getSheetList()
 {
-  if(m_pPicture != NULL)
+  return &m_SheetList;
+}
+
+
+void AnimSheetContainer::cleanup()
+{
+  OpenIlbmPictureBitMap* pPic = getCurrent();
+  if(pPic != NULL)
   {
-    delete m_pPicture;
-    m_pPicture = NULL;
+    delete pPic;
   }
+
+  // TODO Delete exec list
 }

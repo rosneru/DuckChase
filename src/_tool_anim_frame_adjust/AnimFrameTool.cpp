@@ -79,7 +79,7 @@ AnimFrameTool::AnimFrameTool()
     m_pGadScrCanvasHScroll(NULL),
     m_pGadTxtFilename(NULL),
     m_pGadSliFrameWidth(NULL),
-    m_pGadLvAmosSheet(NULL),
+    m_pGadLvSheet(NULL),
     m_pGadIntCurrentFrame(NULL),
     m_pGadTxtNumFrames(NULL),
     m_pMenu(NULL),
@@ -418,7 +418,7 @@ void AnimFrameTool::selectNextFrame()
 }
 
 
-void AnimFrameTool::openAnimSheets()
+void AnimFrameTool::openAnim()
 {
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile("Open anim picture", 
@@ -430,7 +430,7 @@ void AnimFrameTool::openAnimSheets()
     try
     {
       // Creating the OpenIlbmPictureBitMap will throw an exception on failure
-      OpenAnimSheets* pNewSheet = new OpenAnimSheets(filename.c_str());
+      AnimSheetContainer* pNewSheet = new AnimSheetContainer(filename.c_str());
 
       if(m_pAnimSheets != NULL)
       {
@@ -451,6 +451,10 @@ void AnimFrameTool::openAnimSheets()
       m_Filename = filename;
       GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
                         GTTX_Text, m_Filename.c_str(),
+                        TAG_DONE);
+
+      GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                        GTLV_Labels, m_pAnimSheets->getSheetList(),
                         TAG_DONE);
 
 
@@ -813,7 +817,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       switch ((ULONG)GTMENUITEM_USERDATA(item))
       {
       case MID_ProjectOpenAnim:
-        openAnimSheets();
+        openAnim();
         break;
 
       case MID_ProjectSave:
@@ -1214,12 +1218,11 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_TopEdge += UI_RASTER_HEIGHT;
   ng.ng_Width = m_ControlsRect.Width() - UI_LABEL_WIDTH - UI_RASTER_WIDTH;
   ng.ng_Height = m_ControlsRect.Bottom() - ng.ng_TopEdge;
-  ng.ng_GadgetID = GID_LvAmosSheet;
+  ng.ng_GadgetID = GID_LvSheet;
   ng.ng_Flags = NG_HIGHLABEL|PLACETEXT_LEFT;
   ng.ng_GadgetText = (UBYTE*) "AMOS Sheet:";
 
-  m_pGadLvAmosSheet = pGadget = CreateGadget(LISTVIEW_KIND, pGadget, &ng,
-                                             GA_Disabled, TRUE,
+  m_pGadLvSheet = pGadget = CreateGadget(LISTVIEW_KIND, pGadget, &ng,
                                              TAG_DONE);
 
   ng.ng_LeftEdge = 0;

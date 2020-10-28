@@ -36,7 +36,7 @@ private:
   std::string m_Filename;
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
-  OpenAnimSheets* m_pAnimSheets;
+  AnimSheetContainer* m_pAnimSheets;
   BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
@@ -51,7 +51,7 @@ private:
     GID_ScrCanvasHoriz,
     GID_TxtFilename,
     GID_SliFrameWordWidth,
-    GID_LvAmosSheet,
+    GID_LvSheet,
     GID_BtnStop,
     GID_IntCurrentFrame,
     GID_TxtNumFrames
@@ -78,7 +78,7 @@ private:
   struct Gadget* m_pGadScrCanvasHScroll;
   struct Gadget* m_pGadTxtFilename;
   struct Gadget* m_pGadSliFrameWidth;
-  struct Gadget* m_pGadLvAmosSheet;
+  struct Gadget* m_pGadLvSheet;
   struct Gadget* m_pGadIntCurrentFrame;
   struct Gadget* m_pGadTxtNumFrames;
 
@@ -106,7 +106,7 @@ private:
   void selectPreviousFrame();
   void selectNextFrame();
   
-  void openAnimSheets();
+  void openAnim();
   void saveIlbm();
 
   void calcFrameRects();

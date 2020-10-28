@@ -1,7 +1,22 @@
 #ifndef ANIM_SHEET_CONTAINER_H
 #define ANIM_SHEET_CONTAINER_H
 
+#include <exec/nodes.h>
+#include <exec/lists.h>
+#include <graphics/gfx.h>
+
 #include "OpenIlbmPictureBitMap.h"
+
+
+/**
+ * A defaukt exec list, extended by the data needed for anim sheets
+ */
+struct AnimSheetItem
+{
+  struct Node ld_Node;
+  void* pSheetContainer;
+};
+
 
 /**
  * A container to load, change and save collection of
@@ -15,11 +30,11 @@
  * @author Uwe Rosner
  * @date 28/10/2020
  */
-class OpenAnimSheets
+class AnimSheetContainer
 {
 public:
-  OpenAnimSheets(const char* pFileName);
-  virtual ~OpenAnimSheets();
+  AnimSheetContainer(const char* pFileName);
+  virtual ~AnimSheetContainer();
 
   /**
    * Save the current animation to the given name. If no name is given
@@ -31,9 +46,10 @@ public:
 
   OpenIlbmPictureBitMap* getCurrent();
 
-private:
-  OpenIlbmPictureBitMap* m_pPicture;
+  struct List* getSheetList();
 
+private:
+  struct List m_SheetList;
   void cleanup();
 };
 
