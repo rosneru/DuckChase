@@ -26,7 +26,7 @@
 #define UI_RASTER_HEIGHT          20
 #define UI_LABEL_WIDTH            96
 #define UI_BEVBOX_BORDERS_WIDTH   4
-#define UI_BEVBOX_WIDTH           96
+#define UI_BEVBOX_WIDTH           89
 
 #define OK_REDRAW 1  // Buffer fully detached, ready for redraw
 #define OK_SWAPIN 2  // Buffer redrawn, ready for swap-in
@@ -429,35 +429,12 @@ void AnimFrameTool::openAnim()
   {
     try
     {
-      // Creating the OpenIlbmPictureBitMap will throw an exception on failure
+      // Create the new AnimSheet
       AnimSheetContainer* pNewSheet = new AnimSheetContainer(filename.c_str());
 
-      if(m_pAnimSheets != NULL)
-      {
-        delete m_pAnimSheets;
-      }
-
-      if(m_pBitMapTools != NULL)
-      {
-        delete m_pBitMapTools;
-      }
-
-      m_pAnimSheets = pNewSheet;
-
-      // Now create a BitMapTools instance to allow some
-      // operations to the picture. FIXME: Remove the ugly cast.
-      m_pBitMapTools = new BitMapTools((BitMap*)m_pAnimSheets->getCurrent()->GetBitMap());
+      selectAnimSheet(pNewSheet);
 
       m_Filename = filename;
-      GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
-                        GTTX_Text, m_Filename.c_str(),
-                        TAG_DONE);
-
-      GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
-                        GTLV_Labels, m_pAnimSheets->getSheetList(),
-                        TAG_DONE);
-
-
       m_HasChanged = false;
 
       closeCanvas();
@@ -492,6 +469,34 @@ void AnimFrameTool::openAnim()
                    "Ok");
     }
   }
+}
+
+void AnimFrameTool::selectAnimSheet(AnimSheetContainer* pNewSheet)
+{
+      if(m_pAnimSheets != NULL)
+      {
+        delete m_pAnimSheets;
+      }
+
+      if(m_pBitMapTools != NULL)
+      {
+        delete m_pBitMapTools;
+      }
+
+      m_pAnimSheets = pNewSheet;
+
+      // Now create a BitMapTools instance to allow some operations to
+      // the picture.
+      m_pBitMapTools = new BitMapTools((BitMap*)m_pAnimSheets->getCurrent()->GetBitMap());
+
+      GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
+                        GTTX_Text, m_Filename.c_str(),
+                        TAG_DONE);
+
+      GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                        GTLV_Labels, m_pAnimSheets->getSheetList(),
+                        GTLV_Selected, 0,
+                        TAG_DONE);
 }
 
 
@@ -1220,10 +1225,11 @@ struct Gadget* AnimFrameTool::createGadgets(struct Gadget **ppGadgetList,
   ng.ng_Height = m_ControlsRect.Bottom() - ng.ng_TopEdge;
   ng.ng_GadgetID = GID_LvSheet;
   ng.ng_Flags = NG_HIGHLABEL|PLACETEXT_LEFT;
-  ng.ng_GadgetText = (UBYTE*) "AMOS Sheet:";
+  ng.ng_GadgetText = (UBYTE*) "Anim sheet:";
 
   m_pGadLvSheet = pGadget = CreateGadget(LISTVIEW_KIND, pGadget, &ng,
-                                             TAG_DONE);
+                                         GTLV_ShowSelected, NULL,
+                                         TAG_DONE);
 
   ng.ng_LeftEdge = 0;
   ng.ng_TopEdge = m_pControlScreen->Height - CANVAS_HEIGHT - rowHeight - 3; // Bottom of control screen

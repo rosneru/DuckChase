@@ -1,5 +1,6 @@
 #include <clib/exec_protos.h>
 
+#include <stdio.h>
 
 #include "SaveBitMapPictureIlbm.h"
 #include "AnimSheetContainer.h"
@@ -21,11 +22,19 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
                                                             true, 
                                                             false);
 
-    struct AnimSheetItem* pItem = new AnimSheetItem();
-    pItem->ld_Node.ln_Type = NT_USER;
-    pItem->ld_Node.ln_Name = "Ilbm 1x sheet";
-    pItem->pSheetContainer = pPic;
-    AddTail(&m_SheetList, (struct Node*)pItem);
+    struct SheetItemNode* pItemNode = new SheetItemNode();
+    pItemNode->ld_Node.ln_Type = NT_USER;
+
+    pItemNode->ld_Node.ln_Name = (char*)AllocVec(32, MEMF_PUBLIC|MEMF_CLEAR);
+    sprintf(pItemNode->ld_Node.ln_Name, 
+            "%02d: %dx%dx%d", 
+            (i+1), 
+            pPic->Width(), 
+            pPic->Height(), 
+            pPic->Depth());
+    
+    pItemNode->pSheetContainer = pPic;
+    AddTail(&m_SheetList, (struct Node*)pItemNode);
   }
 }
 
@@ -48,7 +57,7 @@ void AnimSheetContainer::save(const char* pFileName)
 
 OpenIlbmPictureBitMap* AnimSheetContainer::getCurrent()
 {
-  struct AnimSheetItem* pItem = ((struct AnimSheetItem*)m_SheetList.lh_Head);
+  struct SheetItemNode* pItem = ((struct SheetItemNode*)m_SheetList.lh_Head);
   return (OpenIlbmPictureBitMap*)pItem->pSheetContainer;
 }
 
@@ -67,5 +76,23 @@ void AnimSheetContainer::cleanup()
     delete pPic;
   }
 
-  // TODO Delete exec list
+  struct SheetItemNode* pWorkNode = (struct SheetItemNode*)(m_SheetList.lh_Head);
+  struct SheetItemNode* pNextNode;
+  while(pNextNode = (struct SheetItemNode*)pWorkNode->ld_Node.ln_Succ)
+  {
+    // Store the next node
+    pNextNode = (struct SheetItemNode*)(pWorkNode->ld_Node.ln_Succ);
+
+    // Remove all work node allocations
+    if(pWorkNode->ld_Node.ln_Name != NULL)
+    {
+      FreeVec(pWorkNode->ld_Node.ln_Name);
+      pWorkNode->ld_Node.ln_Name = NULL;
+    }
+
+    delete pWorkNode;
+
+    // Stored nextNode will be next workNode
+    pWorkNode = pNextNode;
+  }
 }

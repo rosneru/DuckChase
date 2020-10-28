@@ -205,8 +205,19 @@ File
 "src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 "src/_tool_anim_frame_adjust/BitMapTools.h"
+"src/_tool_anim_frame_adjust/AnimSheetContainer.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimFrameTool.o" "build-stormc-animframetool/AnimFrameTool.debug"
+""
+1 1
+File
+1 "src/_tool_anim_frame_adjust/AnimSheetContainer.cpp"
+"src/_tool_anim_frame_adjust/AnimSheetContainer.cpp"
+"src/picture/BitMapPictureBase.h"
+"src/picture/PictureBase.h"
+"src/_tool_anim_frame_adjust/AnimSheetContainer.h"
+Storm Shell Project (Dependencies)
+"build-stormc-animframetool/AnimSheetContainer.o" "build-stormc-animframetool/AnimSheetContainer.debug"
 ""
 1 1
 File
@@ -241,6 +252,7 @@ File
 "src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 "src/_tool_anim_frame_adjust/BitMapTools.h"
+"src/_tool_anim_frame_adjust/AnimSheetContainer.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/main.o" "build-stormc-animframetool/main.debug"
 ""
@@ -342,6 +354,13 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "src/shapes/Rect.h"
+"src/shapes/Rect.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "src/_tool_anim_frame_adjust/AnimFrameTool.h"
 "src/_tool_anim_frame_adjust/AnimFrameTool.h"
 Storm Shell Project (Dependencies)
@@ -349,15 +368,15 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
-2 "src/_tool_anim_frame_adjust/AslFileRequest.h"
-"src/_tool_anim_frame_adjust/AslFileRequest.h"
+2 "src/_tool_anim_frame_adjust/AnimSheetContainer.h"
+"src/_tool_anim_frame_adjust/AnimSheetContainer.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
-2 "src/shapes/Rect.h"
-"src/shapes/Rect.h"
+2 "src/_tool_anim_frame_adjust/AslFileRequest.h"
+"src/_tool_anim_frame_adjust/AslFileRequest.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""

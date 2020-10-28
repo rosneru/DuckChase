@@ -11,7 +11,7 @@
 /**
  * A defaukt exec list, extended by the data needed for anim sheets
  */
-struct AnimSheetItem
+struct SheetItemNode
 {
   struct Node ld_Node;
   void* pSheetContainer;
