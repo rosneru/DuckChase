@@ -1,4 +1,5 @@
 #include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
 
 #include <stdio.h>
 
@@ -8,7 +9,9 @@
 
 
 AnimSheetContainer::AnimSheetContainer(const char* pFileName)
-  : m_SheetDataType(SDT_None)
+  : m_SheetDataType(SDT_None),
+    m_SheetListSize(0),
+    m_pColors32(NULL)
 {
   // Initialize the exec list
   m_SheetList.lh_Head = (struct Node*) &m_SheetList.lh_Tail;
@@ -20,18 +23,18 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   try
   {
     // At first try to open the given file as an ilbm picture
-    OpenIlbmPictureBitMap* pPic = new OpenIlbmPictureBitMap(pFileName, 
-                                                            true, 
-                                                            false);
+    OpenIlbmPictureBitMap pic(pFileName, true, false);
 
     // Open as ILBM worked
     m_SheetDataType = SDT_IlbmPicture;
 
     // now add the single node
-    if(addItemNode(pPic, 0) == false)
+    if(addItemNode(pic, 0) == false)
     {
       throw "Failed to create node for ILBM sheet.\n";
     }
+
+    m_pColors32 = deepCopyColors(pic);
   }
   catch(const char* pErr)
   {
@@ -41,7 +44,7 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   // Now try to open it as AMOS .abk file
   try
   {
-    OpenAmosAbk* pPic = new OpenAmosAbk(pFileName);
+    OpenAmosAbk pic(pFileName);
 
     m_SheetDataType = SDT_AmosBank;
 
@@ -67,17 +70,45 @@ AnimSheetContainer::~AnimSheetContainer()
 void AnimSheetContainer::save(const char* pFileName)
 {
 
-  OpenIlbmPictureBitMap* pPic = getCurrent();
-  // Creation of the saver object already saves the picture
-  // (or throws an exception)
-  SaveBitMapPictureIlbm ilbmSaver(*pPic, pFileName);
+  // TODO
+  // OpenIlbmPictureBitMap* pPic = getSheetItem();
+  // // Creation of the saver object already saves the picture
+  // // (or throws an exception)
+  // SaveBitMapPictureIlbm ilbmSaver(*pPic, pFileName);
 }
 
 
-OpenIlbmPictureBitMap* AnimSheetContainer::getCurrent()
+struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
 {
-  struct SheetItemNode* pItem = ((struct SheetItemNode*)m_SheetList.lh_Head);
-  return (OpenIlbmPictureBitMap*)pItem->pSheetContainer;
+  ULONG i = 0;
+
+  // Point pNode to the header node (which contains no data)
+  struct Node* pNode = m_SheetList.lh_Head;
+
+  if(index >= m_SheetListSize)
+  { 
+    // Wanted index is outside list bounds
+    return NULL;
+  }
+
+  // As long there is a successor node
+  while((pNode = pNode->ln_Succ) != NULL)
+  {
+    if(index == i)
+    {
+      // This is the wanted node
+      return (struct SheetItemNode*) pNode;
+    }
+
+    i++;
+    if(i >= m_SheetListSize)
+    { 
+      // Not found
+      return NULL;
+    }
+  }
+
+  return NULL;
 }
 
 
@@ -87,8 +118,14 @@ struct List* AnimSheetContainer::getSheetList()
 }
 
 
-bool AnimSheetContainer::addItemNode(BitMapPictureBase* pPic, 
-                                     size_t initialIndex)
+ULONG* AnimSheetContainer::getColors32()
+{
+  return m_pColors32;
+}
+
+
+bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic, 
+                                     ULONG initialIndex)
 {
   struct SheetItemNode* pItemNode;
   pItemNode = (struct SheetItemNode*) AllocVec(sizeof(SheetItemNode), 
@@ -100,6 +137,7 @@ bool AnimSheetContainer::addItemNode(BitMapPictureBase* pPic,
 
   pItemNode->ld_Node.ln_Type = NT_USER;
 
+  // Alloc memory for node name
   pItemNode->ld_Node.ln_Name = (char*)AllocVec(32, MEMF_PUBLIC|MEMF_CLEAR);
   if(pItemNode->ld_Node.ln_Name == NULL)
   {
@@ -107,15 +145,87 @@ bool AnimSheetContainer::addItemNode(BitMapPictureBase* pPic,
     return false;
   }
 
+  // Copy current sheet dimensions into node name
   sprintf(pItemNode->ld_Node.ln_Name, 
           "%02d: %dx%dx%d", 
           (initialIndex + 1), 
-          pPic->Width(), 
-          pPic->Height(), 
-          pPic->Depth());
+          pic.Width(), 
+          pic.Height(), 
+          pic.Depth());
   
-  pItemNode->pSheetContainer = pPic;
+  pItemNode->pBitMap = AllocBitMap(pic.Width(),
+                                   pic.Height(),
+                                   pic.Depth(),
+                                   BMF_CLEAR,
+                                   pic.GetBitMap());
+
+  if(pItemNode->pBitMap == NULL)
+  {
+    // Failed to allocate BitMap for this sheet
+    FreeVec(pItemNode->ld_Node.ln_Name);
+    FreeVec(pItemNode);
+    return false;
+  }
+
+  BltBitMap(pic.GetBitMap(),
+            0, 0,
+            pItemNode->pBitMap,
+            0, 0, 
+            pic.Width(),
+            pic.Width(),
+            0Xc0,
+            0xff,
+            NULL);
+
+  pItemNode->Width = pic.Width();
+  pItemNode->Height = pic.Height();
+  pItemNode->Depth = pic.Depth();
+
   AddTail(&m_SheetList, (struct Node*)pItemNode);
+  m_SheetListSize++;
+  return true;
+}
+
+
+ULONG* AnimSheetContainer::deepCopyColors(const BitMapPictureBase& pic)
+{
+  ULONG numColors, colorArraySize, colorArrayByteSize;
+  ULONG* pSrcBitMapColors32;
+  ULONG* pColors32;
+
+  // Copy the first n colors from source image (with n = depth)
+  pSrcBitMapColors32 = pic.GetColors32();
+  if(pSrcBitMapColors32 == NULL)
+  {
+    return NULL;
+  }
+
+  numColors = 1L << GetBitMapAttr(pic.GetBitMap(), BMA_DEPTH);
+
+  // Size of the Colors32 table (number of ULONG values)
+  colorArraySize = 3 * numColors + 2;
+
+  // Size of the Colors32 table in bytes
+  colorArrayByteSize = colorArraySize * sizeof(ULONG);
+
+  // Alloc color table
+  pColors32 = (ULONG*) AllocVec(colorArrayByteSize, MEMF_PUBLIC|MEMF_CLEAR);
+  if(pColors32 == NULL)
+  {
+    return NULL;
+  }
+
+  // Copy starting part of the src color map to dest
+  CopyMem((APTR)pSrcBitMapColors32, pColors32, colorArrayByteSize);
+
+  // LoadRGB32() needs the number of colors to load in the higword
+  // (the left 16 bit) of the color table's first ULONG value
+  pColors32[0] = numColors << 16;
+
+  // Finalize the color array
+  pColors32[colorArraySize-1] = 0ul;
+
+  return pColors32;
 }
 
 
@@ -128,31 +238,30 @@ void AnimSheetContainer::cleanup()
     // Store the next node
     pNextNode = (struct SheetItemNode*)(pWorkNode->ld_Node.ln_Succ);
 
-    if(pWorkNode->pSheetContainer != NULL)
+    // Free all allocations of this node
+    if(pWorkNode->pBitMap != NULL)
     {
-      if(m_SheetDataType == SDT_IlbmPicture)
-      {
-        OpenIlbmPictureBitMap* pPic;
-        pPic = (OpenIlbmPictureBitMap*) pWorkNode->pSheetContainer;
-        delete pPic;
-        pWorkNode->pSheetContainer = NULL;
-      }
-      else if(m_SheetDataType == SDT_AmosBank)
-      {
-        // TODO delete amos data
-      }
+      FreeBitMap(pWorkNode->pBitMap);
+      pWorkNode->pBitMap = NULL;
     }
-
-    // Remove all work node allocations
+    
     if(pWorkNode->ld_Node.ln_Name != NULL)
     {
       FreeVec(pWorkNode->ld_Node.ln_Name);
       pWorkNode->ld_Node.ln_Name = NULL;
     }
 
+
     FreeVec(pWorkNode);
 
     // Stored nextNode will be next workNode
     pWorkNode = pNextNode;
   }
+
+  if(m_pColors32 != NULL)
+  {
+    FreeVec(m_pColors32);
+  }
+
+  m_SheetListSize = 0;
 }

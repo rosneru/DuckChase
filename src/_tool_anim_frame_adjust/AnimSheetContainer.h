@@ -21,7 +21,10 @@ enum SheetDataType
 struct SheetItemNode
 {
   struct Node ld_Node;
-  void* pSheetContainer;
+  struct BitMap* pBitMap;
+  ULONG Width;
+  ULONG Height;
+  ULONG Depth;
 };
 
 
@@ -51,15 +54,30 @@ public:
    */
   void save(const char* pFileName = NULL);
 
-  OpenIlbmPictureBitMap* getCurrent();
+  struct SheetItemNode* getSheetItem(ULONG index);
 
   struct List* getSheetList();
+
+  ULONG* getColors32();
 
 private:
   SheetDataType m_SheetDataType;
   struct List m_SheetList;
+  ULONG m_SheetListSize;
+  ULONG* m_pColors32;
 
-  bool addItemNode(BitMapPictureBase* pPic, size_t initialIndex);
+  bool addItemNode(const BitMapPictureBase& pic, ULONG initialIndex);
+
+/**
+ * Creates a copy of the color table of given BitMapPicture. Allocates
+ * memory which after using must be freed with FreeVec(). The color data
+ * can be used with LoadRgb32().
+ *
+ * @returns On success: the address of the the color table copy,
+ *          on error: NULL.
+ */
+  ULONG* deepCopyColors(const BitMapPictureBase& pic);
+
   void cleanup();
 };
 

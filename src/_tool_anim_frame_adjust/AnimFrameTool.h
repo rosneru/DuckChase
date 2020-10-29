@@ -43,8 +43,9 @@ private:
 
   bool m_HasChanged;
   
-  int m_NumFrames;
-  int m_FrameId;
+  ULONG m_SheedId;
+  ULONG m_SheetNumFrames;
+  ULONG m_FrameId;
 
   enum GadgetId
   {

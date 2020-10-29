@@ -71,6 +71,9 @@ AnimFrameTool::AnimFrameTool()
     m_pAnimSheets(NULL),
     m_pBitMapTools(NULL),
     m_HasChanged(false),
+    m_SheedId(0),
+    m_SheetNumFrames(0),
+    m_FrameId(0),
     m_pCanvasScreen(NULL),
     m_pControlScreen(NULL),
     m_pCanvasWindow(NULL),
@@ -473,30 +476,30 @@ void AnimFrameTool::openAnim()
 
 void AnimFrameTool::selectAnimSheet(AnimSheetContainer* pNewSheet)
 {
-      if(m_pAnimSheets != NULL)
-      {
-        delete m_pAnimSheets;
-      }
+  if(m_pAnimSheets != NULL)
+  {
+    delete m_pAnimSheets;
+  }
 
-      if(m_pBitMapTools != NULL)
-      {
-        delete m_pBitMapTools;
-      }
+  if(m_pBitMapTools != NULL)
+  {
+    delete m_pBitMapTools;
+  }
 
-      m_pAnimSheets = pNewSheet;
+  m_pAnimSheets = pNewSheet;
 
-      // Now create a BitMapTools instance to allow some operations to
-      // the picture.
-      m_pBitMapTools = new BitMapTools((BitMap*)m_pAnimSheets->getCurrent()->GetBitMap());
+  // Now create a BitMapTools instance to allow some operations to
+  // the picture.
+  m_pBitMapTools = new BitMapTools((BitMap*)m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap);
 
-      GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
-                        GTTX_Text, m_Filename.c_str(),
-                        TAG_DONE);
+  GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
+                    GTTX_Text, m_Filename.c_str(),
+                    TAG_DONE);
 
-      GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
-                        GTLV_Labels, m_pAnimSheets->getSheetList(),
-                        GTLV_Selected, 0,
-                        TAG_DONE);
+  GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                    GTLV_Labels, m_pAnimSheets->getSheetList(),
+                    GTLV_Selected, 0,
+                    TAG_DONE);
 }
 
 
@@ -569,19 +572,21 @@ void AnimFrameTool::calcFrameRects()
   m_FrameRects.clear();
   
   // Create the needed number of yet uninitialized Rects
-  m_NumFrames = m_pAnimSheets->getCurrent()->Width() / frameWidth;
-  for(int i = 0; i < m_NumFrames; i++)
+  m_SheetNumFrames = m_pAnimSheets->getSheetItem(m_SheedId)->Width 
+                   / frameWidth;
+
+  for(int i = 0; i < m_SheetNumFrames; i++)
   {
     m_FrameRects.push_back(Rect());
   }
 
   // Initialize the rects
-  for(int i = 0; i < m_NumFrames; i++)
+  for(int i = 0; i < m_SheetNumFrames; i++)
   {
     m_FrameRects[i].Set(i * frameWidth,                   // left
                         0,                                // top
                         ((i+1) * frameWidth) - 1,         // right
-                        m_pAnimSheets->getCurrent()->Height() - 1);  // bottom
+                        m_pAnimSheets->getSheetItem(m_SheedId)->Height - 1);  // bottom
   }
 
   updateFrameIdxGadgets(false);
@@ -600,7 +605,7 @@ void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
   }
 
   char buf[16];
-  sprintf(buf, "%d", m_NumFrames);
+  sprintf(buf, "%d", m_SheetNumFrames);
   GT_SetGadgetAttrs(m_pGadTxtNumFrames, m_pControlWindow, NULL,
                     GTTX_Text, buf,
                     GTTX_CopyText, TRUE,
@@ -616,11 +621,11 @@ void AnimFrameTool::paintPicture()
 
   SetRast(m_pCanvasWindow->RPort, 0);
 
-  BltBitMapRastPort(m_pAnimSheets->getCurrent()->GetBitMap(), 
+  BltBitMapRastPort(m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap, 
                     0, 0, 
                     &m_pCanvasScreen->RastPort, 
                     0, 0,
-                    m_pAnimSheets->getCurrent()->Width(), m_pAnimSheets->getCurrent()->Height(), 
+                    m_pAnimSheets->getSheetItem(m_SheedId)->Width, m_pAnimSheets->getSheetItem(m_SheedId)->Height, 
                     0xc0);
 
   WaitBlit();
@@ -635,7 +640,7 @@ void AnimFrameTool::paintPictureCurrentPart()
 
   const Rect& rect = m_FrameRects[m_FrameId];
 
-  BltBitMapRastPort(m_pAnimSheets->getCurrent()->GetBitMap(), 
+  BltBitMapRastPort(m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap, 
                     rect.Left() + 1, rect.Top() + 1, 
                     &m_pCanvasScreen->RastPort, 
                     rect.Left() + 1, rect.Top() + 1,
@@ -654,7 +659,7 @@ void AnimFrameTool::paintGrid()
 
   // Set the pens for the grid
   m_NormalRectPen = 1;
-  m_HighlightedRectPen = (1L << m_pAnimSheets->getCurrent()->Depth()) - 1;
+  m_HighlightedRectPen = (1L << m_pAnimSheets->getSheetItem(m_SheedId)->Depth) - 1;
 
   // Draw all m_FrameRect's
   for(size_t i = 0; i < m_FrameRects.size(); i++)
@@ -692,7 +697,7 @@ void AnimFrameTool::paintCurrentFrameToResultRect()
     return;
   }
 
-  BltBitMapRastPort(m_pAnimSheets->getCurrent()->GetBitMap(), 
+  BltBitMapRastPort(m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap, 
                     m_FrameRects[m_FrameId].Left(),
                     m_FrameRects[m_FrameId].Top(), 
                     m_pControlWindow->RPort, 
@@ -852,7 +857,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
             break;
           }
 
-          ShadowMask mask(m_pAnimSheets->getCurrent()->GetBitMap());
+          ShadowMask mask(m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap);
           mask.Print();
           break;
         }
@@ -867,7 +872,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           // Create a temporary BitMap for current frame
           struct BitMap* pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
                                               m_FrameRects[m_FrameId].Height(),
-                                              m_pAnimSheets->getCurrent()->Depth(),
+                                              m_pAnimSheets->getSheetItem(m_SheedId)->Depth,
                                               BMF_CLEAR,
                                               NULL);
 
@@ -877,7 +882,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           }
 
           // Copy the current frame image into the temporary BitMap
-          BltBitMap(m_pAnimSheets->getCurrent()->GetBitMap(),
+          BltBitMap(m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap,
                     m_FrameRects[m_FrameId].Left(), 
                     m_FrameRects[m_FrameId].Top(),
                     pTmpBm,
@@ -976,7 +981,7 @@ void AnimFrameTool::openCanvas()
 
   if(m_pAnimSheets != NULL)
   {
-    ULONG screenWidth = m_pAnimSheets->getCurrent()->Width();
+    ULONG screenWidth = m_pAnimSheets->getSheetItem(m_SheedId)->Width;
     if(screenWidth < m_OScanWidth)
     {
       screenWidth = m_OScanWidth;
@@ -984,9 +989,9 @@ void AnimFrameTool::openCanvas()
 
     m_pCanvasScreen = OpenScreenTags(NULL,
                                      SA_AutoScroll, 1,
-                                     SA_Colors32, m_pAnimSheets->getCurrent()->GetColors32(),
+                                     SA_Colors32, m_pAnimSheets->getColors32(),
                                      SA_DisplayID, VIEW_MODE_ID,
-                                     SA_Depth, m_pAnimSheets->getCurrent()->Depth(),
+                                     SA_Depth, m_pAnimSheets->getSheetItem(m_SheedId)->Depth,
                                      SA_Draggable, FALSE,
                                      SA_Interleaved, TRUE,
                                      SA_Font, &Topaz80,
@@ -1051,7 +1056,7 @@ void AnimFrameTool::openCanvas()
   {
     GT_SetGadgetAttrs(m_pGadScrCanvasHScroll, m_pControlWindow, NULL,
                       GTSC_Top, 0,
-                      GTSC_Total, m_pAnimSheets->getCurrent()->Width(),
+                      GTSC_Total, m_pAnimSheets->getSheetItem(m_SheedId)->Width,
                       GTSC_Visible, m_pControlScreen->Width,
                       TAG_DONE);
   }
