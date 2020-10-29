@@ -8,6 +8,13 @@
 #include "OpenIlbmPictureBitMap.h"
 
 
+enum SheetDataType
+{
+  SDT_None,
+  SDT_IlbmPicture,
+  SDT_AmosBank,
+};
+
 /**
  * A defaukt exec list, extended by the data needed for anim sheets
  */
@@ -49,7 +56,10 @@ public:
   struct List* getSheetList();
 
 private:
+  SheetDataType m_SheetDataType;
   struct List m_SheetList;
+
+  bool addItemNode(BitMapPictureBase* pPic, size_t initialIndex);
   void cleanup();
 };
 
