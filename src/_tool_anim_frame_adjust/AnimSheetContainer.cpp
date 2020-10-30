@@ -29,12 +29,12 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
     m_SheetDataType = SDT_IlbmPicture;
 
     // now add the single node
-    if(addItemNode(pic, 0) == false)
+    if(addItemNode(pic.GetBitMap(), 0) == false)
     {
       throw "Failed to create node for ILBM sheet.\n";
     }
 
-    m_pColors32 = deepCopyColors(pic);
+    m_pColors32 = deepCopyColors(pic.GetColors32(), pic.Depth());
   }
   catch(const char* pErr)
   {
@@ -48,10 +48,15 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
 
     m_SheetDataType = SDT_AmosBank;
 
-    // while(pSheet = pPic.parseNextSheet())
-    //   addItemNode()
-    //
-    // m_pColors32 = deepCopy(pPic.parseColors32)
+    struct BitMap* pBitMap;
+    ULONG idx = 0;
+    while((pBitMap = pic.parseNextAnimSheet()) != NULL)
+    {
+      addItemNode(pBitMap, idx);
+      idx++;
+    }
+    
+    m_pColors32 = deepCopyColors(pic.parseColors32(), 5); // AMOS sprite bank depth = 5
   }
   catch(const char* pErr)
   {
@@ -128,10 +133,21 @@ ULONG AnimSheetContainer::getNumSheets()
   return m_NumSheets;
 }
 
-bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic, 
+bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap, 
                                      ULONG initialIndex)
 {
   struct SheetItemNode* pItemNode;
+  ULONG width, height, depth;
+
+  if(pBitMap == NULL)
+  {
+    return false;
+  }
+
+  width = GetBitMapAttr(pBitMap, BMA_WIDTH);
+  height = GetBitMapAttr(pBitMap, BMA_HEIGHT);
+  depth = GetBitMapAttr(pBitMap, BMA_DEPTH);
+
   pItemNode = (struct SheetItemNode*) AllocVec(sizeof(SheetItemNode), 
                                                MEMF_PUBLIC|MEMF_CLEAR);
   if(pItemNode == NULL)
@@ -153,15 +169,15 @@ bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic,
   sprintf(pItemNode->ld_Node.ln_Name, 
           "%02d: %dx%dx%d", 
           (initialIndex + 1), 
-          pic.Width(), 
-          pic.Height(), 
-          pic.Depth());
+          width, 
+          height, 
+          depth);
   
-  pItemNode->pBitMap = AllocBitMap(pic.Width(),
-                                   pic.Height(),
-                                   pic.Depth(),
+  pItemNode->pBitMap = AllocBitMap(width,
+                                   height,
+                                   depth,
                                    BMF_CLEAR,
-                                   pic.GetBitMap());
+                                   pBitMap);
 
   if(pItemNode->pBitMap == NULL)
   {
@@ -171,19 +187,18 @@ bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic,
     return false;
   }
 
-  BltBitMap(pic.GetBitMap(),
+  BltBitMap(pBitMap,
             0, 0,
             pItemNode->pBitMap,
             0, 0, 
-            pic.Width(),
-            pic.Width(),
+            width, height,
             0Xc0,
             0xff,
             NULL);
 
-  pItemNode->Width = pic.Width();
-  pItemNode->Height = pic.Height();
-  pItemNode->Depth = pic.Depth();
+  pItemNode->Width = width;
+  pItemNode->Height = height;
+  pItemNode->Depth = depth;
 
   AddTail(&m_SheetList, (struct Node*)pItemNode);
   m_NumSheets++;
@@ -191,20 +206,18 @@ bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic,
 }
 
 
-ULONG* AnimSheetContainer::deepCopyColors(const BitMapPictureBase& pic)
+ULONG* AnimSheetContainer::deepCopyColors(ULONG* pSrcColors32, ULONG srcDepth)
 {
   ULONG numColors, colorArraySize, colorArrayByteSize;
-  ULONG* pSrcBitMapColors32;
-  ULONG* pColors32;
+  ULONG* pDstColors32;
 
   // Copy the first n colors from source image (with n = depth)
-  pSrcBitMapColors32 = pic.GetColors32();
-  if(pSrcBitMapColors32 == NULL)
+  if(pSrcColors32 == NULL)
   {
     return NULL;
   }
 
-  numColors = 1L << GetBitMapAttr(pic.GetBitMap(), BMA_DEPTH);
+  numColors = 1L << srcDepth;
 
   // Size of the Colors32 table (number of ULONG values)
   colorArraySize = 3 * numColors + 2;
@@ -213,23 +226,23 @@ ULONG* AnimSheetContainer::deepCopyColors(const BitMapPictureBase& pic)
   colorArrayByteSize = colorArraySize * sizeof(ULONG);
 
   // Alloc color table
-  pColors32 = (ULONG*) AllocVec(colorArrayByteSize, MEMF_PUBLIC|MEMF_CLEAR);
-  if(pColors32 == NULL)
+  pDstColors32 = (ULONG*) AllocVec(colorArrayByteSize, MEMF_PUBLIC|MEMF_CLEAR);
+  if(pDstColors32 == NULL)
   {
     return NULL;
   }
 
   // Copy starting part of the src color map to dest
-  CopyMem((APTR)pSrcBitMapColors32, pColors32, colorArrayByteSize);
+  CopyMem((APTR)pSrcColors32, pDstColors32, colorArrayByteSize);
 
   // LoadRGB32() needs the number of colors to load in the higword
   // (the left 16 bit) of the color table's first ULONG value
-  pColors32[0] = numColors << 16;
+  pDstColors32[0] = numColors << 16;
 
   // Finalize the color array
-  pColors32[colorArraySize-1] = 0ul;
+  pDstColors32[colorArraySize-1] = 0ul;
 
-  return pColors32;
+  return pDstColors32;
 }
 
 

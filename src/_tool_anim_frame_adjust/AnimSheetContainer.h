@@ -68,7 +68,7 @@ private:
   ULONG m_NumSheets;
   ULONG* m_pColors32;
 
-  bool addItemNode(const BitMapPictureBase& pic, ULONG initialIndex);
+  bool addItemNode(const struct BitMap* pBitMap, ULONG initialIndex);
 
 /**
  * Creates a copy of the color table of given BitMapPicture. Allocates
@@ -78,7 +78,7 @@ private:
  * @returns On success: the address of the the color table copy,
  *          on error: NULL.
  */
-  ULONG* deepCopyColors(const BitMapPictureBase& pic);
+  ULONG* deepCopyColors(ULONG* pSrcColors32, ULONG srcDepth);
 
   void cleanup();
 };
