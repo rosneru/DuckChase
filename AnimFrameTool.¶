@@ -216,6 +216,7 @@ File
 "src/picture/PictureBase.h"
 "src/_tool_anim_frame_adjust/AnimSheetContainer.h"
 "src/_tool_anim_frame_adjust/OpenAmosAbk.h"
+"src/picture/BitMapPictureBase.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimSheetContainer.o" "build-stormc-animframetool/AnimSheetContainer.debug"
 ""
@@ -269,7 +270,6 @@ File
 1 "src/_tool_anim_frame_adjust/OpenAmosAbk.cpp"
 "src/_tool_anim_frame_adjust/OpenAmosAbk.cpp"
 "src/_tool_anim_frame_adjust/OpenAmosAbk.h"
-"src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/OpenAmosAbk.o" "build-stormc-animframetool/OpenAmosAbk.debug"
 ""

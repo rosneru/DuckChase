@@ -35,6 +35,7 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
     }
 
     m_pColors32 = deepCopyColors(pic.GetColors32(), pic.Depth());
+    return;
   }
   catch(const char* pErr)
   {
