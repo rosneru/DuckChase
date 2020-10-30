@@ -86,9 +86,7 @@ void AnimSheetContainer::save(const char* pFileName)
 struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
 {
   ULONG i = 0;
-
-  // Point pNode to the header node (which contains no data)
-  struct Node* pNode = m_SheetList.lh_Head;
+  struct Node* pNode;
 
   if(index >= m_NumSheets)
   { 
@@ -96,8 +94,14 @@ struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
     return NULL;
   }
 
-  // As long there is a successor node
-  while((pNode = pNode->ln_Succ) != NULL)
+  // Point pNode to the header node (which contains no data)
+  pNode = m_SheetList.lh_Head;
+  if(pNode == NULL)
+  {
+    return NULL;
+  }
+
+  do
   {
     if(index == i)
     {
@@ -112,6 +116,7 @@ struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
       return NULL;
     }
   }
+  while((pNode = pNode->ln_Succ) != NULL);  // As long there is a successor
 
   return NULL;
 }

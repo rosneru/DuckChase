@@ -467,7 +467,7 @@ void AnimFrameTool::openAnim()
     {
       msgString = "Failed to load file\n  '";
       msgString += filename;
-      msgString += "'as IFF / ILBM or AMOS .abk\n\n";
+      msgString += "'\nas IFF / ILBM or AMOS .abk\n\n";
       msgString += pMsg;
 
       MessageBox request(m_pControlWindow);
@@ -491,17 +491,17 @@ void AnimFrameTool::selectAnimSheet(ULONG index)
     return;
   }
 
-  if(m_pBitMapTools != NULL)
-  {
-    delete m_pBitMapTools;
-  }
-
   // Get the sheet item addressed by given index
   struct SheetItemNode* pSheetNode = m_pAnimSheets->getSheetItem(index);
   if(pSheetNode == NULL)
   {
     // Failed to get indexed Sheet item
     return;
+  }
+
+  if(m_pBitMapTools != NULL)
+  {
+    delete m_pBitMapTools;
   }
 
   // Create BitMapTools for this sheet. Needed for picture processing.

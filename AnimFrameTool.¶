@@ -213,9 +213,9 @@ Storm Shell Project (Dependencies)
 File
 1 "src/_tool_anim_frame_adjust/AnimSheetContainer.cpp"
 "src/_tool_anim_frame_adjust/AnimSheetContainer.cpp"
-"src/picture/BitMapPictureBase.h"
 "src/picture/PictureBase.h"
 "src/_tool_anim_frame_adjust/AnimSheetContainer.h"
+"src/_tool_anim_frame_adjust/OpenAmosAbk.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimSheetContainer.o" "build-stormc-animframetool/AnimSheetContainer.debug"
 ""
@@ -263,6 +263,15 @@ File
 "src/_tool_anim_frame_adjust/MessageBox.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/MessageBox.o" "build-stormc-animframetool/MessageBox.debug"
+""
+1 1
+File
+1 "src/_tool_anim_frame_adjust/OpenAmosAbk.cpp"
+"src/_tool_anim_frame_adjust/OpenAmosAbk.cpp"
+"src/_tool_anim_frame_adjust/OpenAmosAbk.h"
+"src/picture/PictureBase.h"
+Storm Shell Project (Dependencies)
+"build-stormc-animframetool/OpenAmosAbk.o" "build-stormc-animframetool/OpenAmosAbk.debug"
 ""
 1 1
 Section
@@ -398,6 +407,13 @@ Storm Shell Project (Dependencies)
 File
 2 "src/_tool_anim_frame_adjust/MessageBox.h"
 "src/_tool_anim_frame_adjust/MessageBox.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/_tool_anim_frame_adjust/OpenAmosAbk.h"
+"src/_tool_anim_frame_adjust/OpenAmosAbk.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
