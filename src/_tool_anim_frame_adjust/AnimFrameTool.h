@@ -107,7 +107,7 @@ private:
   void selectPreviousFrame();
   void selectNextFrame();
 
-  void selectAnimSheet(AnimSheetContainer* pNewSheet);
+  void selectAnimSheet(ULONG index);
   
   void openAnim();
   void saveIlbm();

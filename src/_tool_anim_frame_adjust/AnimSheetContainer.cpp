@@ -10,7 +10,7 @@
 
 AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   : m_SheetDataType(SDT_None),
-    m_SheetListSize(0),
+    m_NumSheets(0),
     m_pColors32(NULL)
 {
   // Initialize the exec list
@@ -85,7 +85,7 @@ struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
   // Point pNode to the header node (which contains no data)
   struct Node* pNode = m_SheetList.lh_Head;
 
-  if(index >= m_SheetListSize)
+  if(index >= m_NumSheets)
   { 
     // Wanted index is outside list bounds
     return NULL;
@@ -101,7 +101,7 @@ struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
     }
 
     i++;
-    if(i >= m_SheetListSize)
+    if(i >= m_NumSheets)
     { 
       // Not found
       return NULL;
@@ -123,6 +123,10 @@ ULONG* AnimSheetContainer::getColors32()
   return m_pColors32;
 }
 
+ULONG AnimSheetContainer::getNumSheets()
+{
+  return m_NumSheets;
+}
 
 bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic, 
                                      ULONG initialIndex)
@@ -182,7 +186,7 @@ bool AnimSheetContainer::addItemNode(const BitMapPictureBase& pic,
   pItemNode->Depth = pic.Depth();
 
   AddTail(&m_SheetList, (struct Node*)pItemNode);
-  m_SheetListSize++;
+  m_NumSheets++;
   return true;
 }
 
@@ -263,5 +267,5 @@ void AnimSheetContainer::cleanup()
     FreeVec(m_pColors32);
   }
 
-  m_SheetListSize = 0;
+  m_NumSheets = 0;
 }

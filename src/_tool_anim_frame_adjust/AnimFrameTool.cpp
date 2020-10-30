@@ -424,7 +424,7 @@ void AnimFrameTool::selectNextFrame()
 void AnimFrameTool::openAnim()
 {
   AslFileRequest request(m_pControlWindow);
-  std::string filename = request.SelectFile("Open anim picture", 
+  std::string filename = request.SelectFile("Open .iff/.ilbm or .abk file", 
                                             "", 
                                             false);
   std::string msgString;
@@ -432,53 +432,63 @@ void AnimFrameTool::openAnim()
   {
     try
     {
-      // Create the new AnimSheet
-      AnimSheetContainer* pNewSheet = new AnimSheetContainer(filename.c_str());
+      // Load the IFF ILBM picture (or AMOS sprite bank) and create a 
+      // container of AnimSheets of it
+      AnimSheetContainer* pNewSheetContainer;
+      pNewSheetContainer = new AnimSheetContainer(filename.c_str());
 
-      selectAnimSheet(pNewSheet);
+      // New SheetContainer created sucessfully. Now Replace the
+      // formerly laoded one with the new one.
+      if(m_pAnimSheets != NULL)
+      {
+        delete m_pAnimSheets;
+      }
+
+      m_pAnimSheets = pNewSheetContainer;
+
+      // Select the first sheet. Every instance of AnimSheetContainer
+      // should contain a fisrt sheet.
+      selectAnimSheet(0);
+
+      GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
+                        GTTX_Text, m_Filename.c_str(),
+                        TAG_DONE);
+
+      GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                        GTLV_Labels, m_pAnimSheets->getSheetList(),
+                        GTLV_Selected, 0,
+                        TAG_DONE);
 
       m_Filename = filename;
       m_HasChanged = false;
 
-      closeCanvas();
-      openCanvas();
-
-      paintPicture();
-
-      calcFrameRects();
-      paintGrid();
-
-      // Clear result rect
-      SetAPen(m_pControlWindow->RPort, 0);
-      RectFill(m_pControlWindow->RPort, 
-               m_ResultFrameRect.Left(),
-               m_ResultFrameRect.Top(),
-               m_ResultFrameRect.Right(),
-               m_ResultFrameRect.Bottom());
-
-      paintCurrentFrameToResultRect();
-
     }
     catch(const char* pMsg)
     {
-      msgString = "Failed to load \n  '";
+      msgString = "Failed to load file\n  '";
       msgString += filename;
-      msgString += "'\nas ilbm picture.\n\n";
+      msgString += "'as IFF / ILBM or AMOS .abk\n\n";
       msgString += pMsg;
 
       MessageBox request(m_pControlWindow);
-      request.Show("Loading error",
+      request.Show("Open error",
                    msgString.c_str(),
                    "Ok");
     }
   }
 }
 
-void AnimFrameTool::selectAnimSheet(AnimSheetContainer* pNewSheet)
+void AnimFrameTool::selectAnimSheet(ULONG index)
 {
-  if(m_pAnimSheets != NULL)
+  if(m_pAnimSheets == NULL)
   {
-    delete m_pAnimSheets;
+    return;
+  }
+
+  if(index >= m_pAnimSheets->getNumSheets())
+  {
+    // Index to big
+    return;
   }
 
   if(m_pBitMapTools != NULL)
@@ -486,20 +496,34 @@ void AnimFrameTool::selectAnimSheet(AnimSheetContainer* pNewSheet)
     delete m_pBitMapTools;
   }
 
-  m_pAnimSheets = pNewSheet;
+  // Get the sheet item addressed by given index
+  struct SheetItemNode* pSheetNode = m_pAnimSheets->getSheetItem(index);
+  if(pSheetNode == NULL)
+  {
+    // Failed to get indexed Sheet item
+    return;
+  }
 
-  // Now create a BitMapTools instance to allow some operations to
-  // the picture.
-  m_pBitMapTools = new BitMapTools((BitMap*)m_pAnimSheets->getSheetItem(m_SheedId)->pBitMap);
+  // Create BitMapTools for this sheet. Needed for picture processing.
+  m_pBitMapTools = new BitMapTools(pSheetNode->pBitMap);
 
-  GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
-                    GTTX_Text, m_Filename.c_str(),
-                    TAG_DONE);
+  closeCanvas();
+  openCanvas();
 
-  GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
-                    GTLV_Labels, m_pAnimSheets->getSheetList(),
-                    GTLV_Selected, 0,
-                    TAG_DONE);
+  paintPicture();
+
+  calcFrameRects();
+  paintGrid();
+
+  // Clear result rect
+  SetAPen(m_pControlWindow->RPort, 0);
+  RectFill(m_pControlWindow->RPort, 
+            m_ResultFrameRect.Left(),
+            m_ResultFrameRect.Top(),
+            m_ResultFrameRect.Right(),
+            m_ResultFrameRect.Bottom());
+
+  paintCurrentFrameToResultRect();
 }
 
 
@@ -575,13 +599,13 @@ void AnimFrameTool::calcFrameRects()
   m_SheetNumFrames = m_pAnimSheets->getSheetItem(m_SheedId)->Width 
                    / frameWidth;
 
-  for(int i = 0; i < m_SheetNumFrames; i++)
+  for(ULONG i = 0; i < m_SheetNumFrames; i++)
   {
     m_FrameRects.push_back(Rect());
   }
 
   // Initialize the rects
-  for(int i = 0; i < m_SheetNumFrames; i++)
+  for(ULONG i = 0; i < m_SheetNumFrames; i++)
   {
     m_FrameRects[i].Set(i * frameWidth,                   // left
                         0,                                // top
@@ -591,6 +615,7 @@ void AnimFrameTool::calcFrameRects()
 
   updateFrameIdxGadgets(false);
 }
+
 
 void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
 {

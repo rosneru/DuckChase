@@ -60,10 +60,12 @@ public:
 
   ULONG* getColors32();
 
+  ULONG getNumSheets();
+
 private:
   SheetDataType m_SheetDataType;
   struct List m_SheetList;
-  ULONG m_SheetListSize;
+  ULONG m_NumSheets;
   ULONG* m_pColors32;
 
   bool addItemNode(const BitMapPictureBase& pic, ULONG initialIndex);
