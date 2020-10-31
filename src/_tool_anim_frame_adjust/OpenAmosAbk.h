@@ -1,6 +1,7 @@
 #ifndef OPEN_AMOS_ABK_H
 #define OPEN_AMOS_ABK_H
 
+#include <dos/dos.h>
 #include <exec/types.h>
 
 class OpenAmosAbk
@@ -22,6 +23,11 @@ public:
    * and return it.
    */
   ULONG* parseColors32();
+
+private:
+  BPTR m_FileHandle;
+
+  void cleanup();
 };
 
 #endif
