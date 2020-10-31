@@ -690,7 +690,7 @@ void AnimFrameTool::paintGrid()
   for(size_t i = 0; i < m_FrameRects.size(); i++)
   {
     // For current frame set a different pen color (the highest pen available)
-    bool isHighlighted = ((int)i == m_FrameId ? true : false);
+    bool isHighlighted = ((size_t)i == m_FrameId ? true : false);
     paintSelectionRect(m_FrameRects[i], isHighlighted);
   }
 }
@@ -760,6 +760,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
       break;
 
     }
+
+    case GID_LvSheet:
+      {
+        selectAnimSheet(code);
+        break;
+      }    
 
     case GID_SliFrameWordWidth:
       {
