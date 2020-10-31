@@ -25,6 +25,7 @@ public:
   ULONG* parseColors32();
 
 private:
+  BYTE* m_pFileBuf;
   BPTR m_FileHandle;
 
   void cleanup();
