@@ -577,18 +577,18 @@ void AnimFrameTool::calcFrameRects()
 
   m_FrameId = 0;
 
-  LONG wordWidth;
+  LONG selectedFrameWordWidth;
   if(1 != GT_GetGadgetAttrs(m_pGadSliFrameWidth, 
                             m_pControlWindow, 
                             NULL,
-                            GTSL_Level, &wordWidth,
+                            GTSL_Level, &selectedFrameWordWidth,
                             TAG_DONE))
   {
     return;
   }
 
-  int frameWidth = wordWidth * 16;
-  if(frameWidth == 0)
+  int selectedFrameWidth = selectedFrameWordWidth * 16;
+  if(selectedFrameWidth == 0)
   {
     return;
   }
@@ -597,7 +597,7 @@ void AnimFrameTool::calcFrameRects()
   
   // Create the needed number of yet uninitialized Rects
   m_SheetNumFrames = m_pAnimSheets->getSheetItem(m_SheedId)->Width 
-                   / frameWidth;
+                   / selectedFrameWidth;
 
   for(ULONG i = 0; i < m_SheetNumFrames; i++)
   {
@@ -607,9 +607,9 @@ void AnimFrameTool::calcFrameRects()
   // Initialize the rects
   for(ULONG i = 0; i < m_SheetNumFrames; i++)
   {
-    m_FrameRects[i].Set(i * frameWidth,                   // left
-                        0,                                // top
-                        ((i+1) * frameWidth) - 1,         // right
+    m_FrameRects[i].Set(i * selectedFrameWidth,                               // left
+                        0,                                                    // top
+                        ((i+1) * selectedFrameWidth) - 1,                     // right
                         m_pAnimSheets->getSheetItem(m_SheedId)->Height - 1);  // bottom
   }
 
