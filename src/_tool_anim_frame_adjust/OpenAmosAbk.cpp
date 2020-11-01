@@ -19,7 +19,7 @@ OpenAmosAbk::OpenAmosAbk(const char* pFileName)
     m_SheetFramesWordWidth(0),
     m_SheetFramesHeight(0),
     m_SheetFramesDepth(0),
-    m_pSheetFramesBitMap(NULL)
+    m_pSheetBitMap(NULL)
 {
   if(m_FileHandle == 0)
   {
@@ -80,7 +80,13 @@ OpenAmosAbk::~OpenAmosAbk()
 
 struct BitMap* OpenAmosAbk::parseNextAnimSheet()
 {
-  std::vector<struct BitMap*> sheetBitMaps;
+  std::vector<struct BitMap*> frameVec;
+
+  if(m_AbkFrameId == m_NumAbkFrames)
+  {
+    // Already read all frames
+    return NULL;
+  }
 
   try
   {
@@ -102,10 +108,10 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
         m_SheetFramesHeight = height;
         m_SheetFramesDepth = depth;
         
-        if(m_pSheetFramesBitMap != NULL)
+        if(m_pSheetBitMap != NULL)
         {
-          FreeBitMap(m_pSheetFramesBitMap);
-          m_pSheetFramesBitMap = NULL;
+          FreeBitMap(m_pSheetBitMap);
+          m_pSheetBitMap = NULL;
         }
       }
       else
@@ -115,30 +121,46 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
         || (wordWidth != m_SheetFramesWordWidth))
         {
           // This image has an other dimension than the current script.
+
+          // Rewind the counter by 10 Bytes (the 5 x readNextWord()
+          // calls above). These reads must be re-done when the next,
+          // new sheet is parsed.
+          m_ParseByteCounter -= 10;
           break;
         }
       }
 
+      struct BitMap* pFrameBitMap = createFrameBitMap();
+      if(pFrameBitMap == NULL)
+      {
+        // Failed to create a BitMap for a abk frame
+        return NULL;
+      }
+
+      frameVec.push_back(pFrameBitMap);
       m_AbkFrameId++;
     }
 
+    //
     // Finsih the current sheet.
+    //
 
-    // TODO
-    //createSheetFramesBitMap();
-    //clearSheetBitMapVector();
+    // First create the resulting BitMap which contains all frames of
+    // this sheet.
+    if(createSheetBitMap(frameVec) == false)
+    {
+      return NULL;
+    }
+    
+    // Now clean up
+    clearBitMapVector(frameVec);
 
     // Mark start of a new sheet
     m_SheetFramesWordWidth = 0;
     m_SheetFramesHeight = 0;
     m_SheetFramesDepth = 0;
 
-    // Rewind the counter by 10 Bytes (the 5 x readNextWord()
-    // calls above). These reads must be re-done when the next,
-    // new sheet is parsed.
-    m_ParseByteCounter -= 10;
-
-    return m_pSheetFramesBitMap;
+    return m_pSheetBitMap;
  
     // printf("File contains %d pictures\n", m_NumAbkFrames);
 
@@ -147,6 +169,7 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
   }
   catch(const char* pErrMsg)
   {
+    printf("Exception\n");
     return NULL;
   }
  
@@ -159,7 +182,25 @@ ULONG* OpenAmosAbk::parseColors32()
   return NULL;
 }
 
-struct BitMap* OpenAmosAbk::createCurrentFrameBitMap()
+
+ULONG OpenAmosAbk::readNextWord()
+{
+  ULONG value;
+
+  if((m_ParseByteCounter + 2) >= m_FileBufByteSize)
+  {
+    throw "OpenAmosAbk::readNextWord() reached end of buffer.";  
+  }
+
+  value = 256 * m_pFileBuf[m_ParseByteCounter] 
+        + m_pFileBuf[m_ParseByteCounter + 1];
+  
+  m_ParseByteCounter += 2;
+  return value;
+}
+
+
+struct BitMap* OpenAmosAbk::createFrameBitMap()
 {
   ULONG planeSize = m_SheetFramesWordWidth * 2 * m_SheetFramesHeight;
   ULONG allPlanesSize = planeSize * m_SheetFramesDepth;
@@ -210,34 +251,71 @@ struct BitMap* OpenAmosAbk::createCurrentFrameBitMap()
 }
 
 
-bool OpenAmosAbk::createSheetFramesBitmap(const std::vector<struct BitMap*>& frames)
+bool OpenAmosAbk::createSheetBitMap(std::vector<struct BitMap*>& frameVec)
 {
-  return false;
-}
+  ULONG frameWidth = m_SheetFramesWordWidth * 16;
+  ULONG width = frameWidth * frameVec.size();
 
-ULONG OpenAmosAbk::readNextWord()
-{
-  ULONG value;
-
-  if((m_ParseByteCounter + 2) >= m_FileBufByteSize)
+  if(m_pSheetBitMap != NULL)
   {
-    throw "OpenAmosAbk::readNextWord() reached end of buffer.";  
+    FreeBitMap(m_pSheetBitMap);
   }
 
-  value = 256 * m_pFileBuf[m_ParseByteCounter] 
-        + m_pFileBuf[m_ParseByteCounter + 1];
-  
-  m_ParseByteCounter += 2;
-  return value;
+  m_pSheetBitMap = AllocBitMap(width, 
+                               m_SheetFramesHeight, 
+                               m_SheetFramesDepth,
+                               BMF_CLEAR,
+                               NULL);
+
+  if(m_pSheetBitMap == NULL)
+  {
+    return false;
+  }
+
+  ULONG xStart = 0;
+  for(std::vector<struct BitMap*>::iterator it = frameVec.begin(); it != frameVec.end(); ++it)
+  {
+    struct BitMap* pSrcBitMap = *it;
+
+    // Blit given portion of the source Bitmap to destination BitMap
+    BltBitMap(pSrcBitMap,
+              0,
+              0,
+              m_pSheetBitMap,
+              xStart,
+              0,
+              frameWidth,
+              m_SheetFramesHeight,
+              0xC0, 
+              0xFF, 
+              NULL);
+
+    xStart += frameWidth;
+  }
+
+  return true;
 }
 
+
+void OpenAmosAbk::clearBitMapVector(std::vector<struct BitMap*>& v)
+{
+  for(std::vector<struct BitMap*>::iterator it = v.begin(); it != v.end(); ++it)
+  {
+    if((*it) != NULL)
+    {
+      FreeBitMap(*it);
+    }
+  }
+
+  v.clear();
+}
 
 void OpenAmosAbk::cleanup()
 {
-  if(m_pSheetFramesBitMap != NULL)
+  if(m_pSheetBitMap != NULL)
   {
-    FreeBitMap(m_pSheetFramesBitMap);
-    m_pSheetFramesBitMap = NULL;
+    FreeBitMap(m_pSheetBitMap);
+    m_pSheetBitMap = NULL;
   }
 
   if(m_FileHandle != 0)

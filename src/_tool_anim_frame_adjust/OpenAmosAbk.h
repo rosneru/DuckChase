@@ -39,12 +39,15 @@ private:
   ULONG m_SheetFramesHeight;
   ULONG m_SheetFramesDepth;
 
-  struct BitMap* m_pSheetFramesBitMap;
-
-  struct BitMap* createCurrentFrameBitMap();
-  bool createSheetFramesBitmap(const std::vector<struct BitMap*>& frames);
+  struct BitMap* m_pSheetBitMap;
 
   ULONG readNextWord();
+
+  struct BitMap* createFrameBitMap();
+  bool createSheetBitMap(std::vector<struct BitMap*>& frameVec);
+
+  void clearBitMapVector(std::vector<struct BitMap*>& v);
+
   void cleanup();
 };
 
