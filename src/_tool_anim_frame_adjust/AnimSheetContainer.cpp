@@ -57,9 +57,9 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
       idx++;
     }
     
-    // // Deep copy 32 colors (depth = 5) because AMOS sprite bank depth is
-    // //always = 5. 
-    // m_pColors32 = deepCopyColors(pic.parseColors32(), 5);
+    // Deep copy 32 colors (depth = 5) because AMOS sprite bank depth is
+    // always = 5. 
+    m_pColors32 = deepCopyColors(pic.parseColors32(), 5);
   }
   catch(const char* pErr)
   {

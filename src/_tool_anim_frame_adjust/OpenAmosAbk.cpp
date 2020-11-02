@@ -12,6 +12,7 @@
 OpenAmosAbk::OpenAmosAbk(const char* pFileName)
   : m_pFileBuf(NULL),
     m_FileHandle(Open(pFileName, MODE_OLDFILE)),
+    m_pColors32(NULL),
     m_FileBufByteSize(0),
     m_ParseByteCounter(0),
     m_NumAbkFrames(0),
@@ -59,6 +60,7 @@ OpenAmosAbk::OpenAmosAbk(const char* pFileName)
   {
     if(m_pFileBuf[i] != identifier[i])
     {
+      cleanup();
       throw "OpenAmosAbk: File is no AMOS sprite bank.";
     }
 
@@ -68,6 +70,7 @@ OpenAmosAbk::OpenAmosAbk(const char* pFileName)
   m_NumAbkFrames = readNextWord();
   if(m_NumAbkFrames < 1)
   {
+    cleanup();
     throw "OpenAmosAbk: Found no pictures in AMOS sprite bank.";
   }
 }
@@ -178,8 +181,33 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
 
 ULONG* OpenAmosAbk::parseColors32()
 {
+  if(m_pColors32 != NULL)
+  {
+    // Already done
+    return m_pColors32;
+  }
 
-  return NULL;
+  // Parse the 32 colors of the AMOS abk
+  const ULONG numColors = 32;
+  m_pColors32 = (ULONG*) AllocVec(2 + 3 * numColors * sizeof(ULONG), 
+                                  MEMF_PUBLIC|MEMF_CLEAR);
+  if(m_pColors32 == NULL)
+  {
+    return NULL;
+  }
+
+  for(size_t i = 0; i < numColors; i++)
+  {
+    ULONG colorWord = readNextWord();
+
+    ULONG red = (colorWord & 0xf00) >> 8;
+    ULONG green = (colorWord & 0xf0) >> 4;
+    ULONG red = (colorWord & 0xf);
+
+
+  }
+
+  return m_pColors32;
 }
 
 
@@ -312,6 +340,12 @@ void OpenAmosAbk::clearBitMapVector(std::vector<struct BitMap*>& v)
 
 void OpenAmosAbk::cleanup()
 {
+  if(m_pColors32 != NULL)
+  {
+    FreeVec(m_pColors32);
+    m_pColors32 = NULL;
+  }
+
   if(m_pSheetBitMap != NULL)
   {
     FreeBitMap(m_pSheetBitMap);

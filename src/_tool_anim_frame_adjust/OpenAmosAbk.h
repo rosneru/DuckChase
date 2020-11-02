@@ -29,6 +29,7 @@ public:
 private:
   BYTE* m_pFileBuf;
   BPTR m_FileHandle;
+  ULONG* m_pColors32;
   ULONG m_FileBufByteSize;
   ULONG m_ParseByteCounter;
   
