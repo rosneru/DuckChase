@@ -43,7 +43,7 @@ private:
 
   bool m_HasChanged;
   
-  ULONG m_SheedId;
+  ULONG m_SheetId;
   ULONG m_SheetNumFrames;
   ULONG m_FrameId;
 
