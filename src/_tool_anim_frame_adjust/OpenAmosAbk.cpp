@@ -196,6 +196,14 @@ ULONG* OpenAmosAbk::parseColors32()
     return NULL;
   }
 
+  // Header item: Write number of colors in the left word of
+  // m_pCOlors[0] (The right word is left at '0' so that LoadRgb32()
+  // starts loading from Color00)
+  m_pColors32[0] = numColors << 16;
+
+  // To fill the colors use another pointer and skip the header item
+  ULONG* pCol = m_pColors32 + 1;
+
   for(size_t i = 0; i < numColors; i++)
   {
     ULONG colorWord = readNextWord();
@@ -204,6 +212,27 @@ ULONG* OpenAmosAbk::parseColors32()
     ULONG green = (colorWord & 0xf0) >> 4;
     ULONG blue = (colorWord & 0xf);
 
+    // Convert this 4-bit-value to an 8-bit-value using the formula
+    //   cNew = cOld * 16 + 4
+    // This will give the these values:
+    //
+    //  cOld | cNew
+    //  -----|-----
+    //     0 |   0
+    //     1 |  17
+    //     2 |  34
+    //
+    //      ...
+    //
+    //    15 | 255
+
+    red = (red << 4) + red;
+    green = (green << 4) + green;
+    blue = (blue << 4) + blue;
+
+    pCol[(i + 1) * 3 - 3] = red;
+    pCol[(i + 1) * 3 - 2] = green;
+    pCol[(i + 1) * 3 - 1] = blue;
 
   }
 
