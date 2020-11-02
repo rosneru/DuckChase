@@ -202,7 +202,7 @@ ULONG* OpenAmosAbk::parseColors32()
 
     ULONG red = (colorWord & 0xf00) >> 8;
     ULONG green = (colorWord & 0xf0) >> 4;
-    ULONG red = (colorWord & 0xf);
+    ULONG blue = (colorWord & 0xf);
 
 
   }
