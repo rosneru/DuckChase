@@ -280,7 +280,7 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
   struct BitMap abkBitmap;
   InitBitMap(&abkBitmap, 
              m_SheetFramesDepth, 
-             m_SheetFramesWordWidth * 2, 
+             m_SheetFramesWordWidth * 16, 
              m_SheetFramesHeight);
 
   // Manually set all plane pointers to the dedicated area of 
