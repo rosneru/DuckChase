@@ -38,7 +38,7 @@ OpenAmosAbk::OpenAmosAbk(const char* pFileName)
   }
 
   // Allocate memory for the whole file
-  m_pFileBuf = (BYTE*)AllocVec(m_FileBufByteSize, MEMF_PUBLIC);
+  m_pFileBuf = (BYTE*)AllocVec(m_FileBufByteSize, MEMF_PUBLIC|MEMF_CHIP);
   if(m_pFileBuf == NULL)
   {
     cleanup();
