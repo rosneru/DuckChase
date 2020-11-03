@@ -262,6 +262,10 @@ ULONG OpenAmosAbk::readNextWord()
 }
 
 
+// TODO: Change this method. It could be enough to create the abkBitmap
+// dynamically (AllocVec! not AllocBitmap), then do InitBitMap, set the
+// ptr's i  the foor loop and return this. The AllocBitMap() and
+// BltBitMap seem to be reduntant steps.
 struct BitMap* OpenAmosAbk::createFrameBitMap()
 {
   ULONG planeSize = m_SheetFramesWordWidth * 2 * m_SheetFramesHeight;
