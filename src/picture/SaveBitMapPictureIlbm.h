@@ -5,7 +5,6 @@
                                     // 'BitMapHeader', 'ID_xyz', etc.
 
 #include <graphics/gfx.h>
-#include "BitMapPictureBase.h"
 #include "IffParse.h"
 
 /**
@@ -18,16 +17,24 @@
 class SaveBitMapPictureIlbm
 {
 public:
-  SaveBitMapPictureIlbm(const BitMapPictureBase& picture, 
-                        const char* pFileName);
+  SaveBitMapPictureIlbm(const char* pFileName,
+                        struct BitMap* pBitMap,
+                        ULONG* pColors32,
+                        ULONG modeId);
 
   virtual ~SaveBitMapPictureIlbm();
 
 private:
-  const BitMapPictureBase& m_Picture;
+  struct BitMap* m_pBitMap;
+  ULONG* m_pColors32;
+  ULONG m_ModeId;
+
+  ULONG m_SrcWidth;
+  ULONG m_SrcHeight;
+  ULONG m_SrcDepth;
+
   const ULONG m_BODY_BUF_SIZE;
   const ULONG m_MAX_SAVE_DEPTH;
-  ULONG m_ModeId;
   struct BitMapHeader m_Bmhd;
   UBYTE* bodybuf;
 

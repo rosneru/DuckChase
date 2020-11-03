@@ -67,6 +67,7 @@ private:
   struct List m_SheetList;
   ULONG m_NumSheets;
   ULONG* m_pColors32;
+  ULONG m_ModeId;
 
   bool addItemNode(const struct BitMap* pBitMap, ULONG initialIndex);
 

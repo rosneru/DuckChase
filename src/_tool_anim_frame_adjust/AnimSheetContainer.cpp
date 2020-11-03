@@ -11,7 +11,8 @@
 AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   : m_SheetDataType(SDT_None),
     m_NumSheets(0),
-    m_pColors32(NULL)
+    m_pColors32(NULL),
+    m_ModeId(0)
 {
   // Initialize the exec list
   m_SheetList.lh_Head = (struct Node*) &m_SheetList.lh_Tail;
@@ -25,16 +26,23 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
     // At first try to open the given file as an ilbm picture
     OpenIlbmPictureBitMap pic(pFileName, true, false);
 
-    // Open as ILBM worked
-    m_SheetDataType = SDT_IlbmPicture;
 
     // now add the single node
     if(addItemNode(pic.GetBitMap(), 0) == false)
     {
-      throw "Failed to create node for ILBM sheet.\n";
+      throw "Failed to create node for ILBM sheet.";
     }
 
     m_pColors32 = deepCopyColors(pic.GetColors32(), pic.Depth());
+    if(m_pColors32 == NULL)
+    {
+      throw "Failed to deep-copy the colors from source ilbm file.";
+    }
+
+    m_ModeId = pic.GetModeId();
+
+    // Opened IFF ILBM sucessfully
+    m_SheetDataType = SDT_IlbmPicture;
     return;
   }
   catch(const char* pErr)
@@ -47,19 +55,29 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   {
     OpenAmosAbk pic(pFileName);
 
-    m_SheetDataType = SDT_AmosBank;
-
     struct BitMap* pBitMap;
     ULONG idx = 0;
     while((pBitMap = pic.parseNextAnimSheet()) != NULL)
     {
-      addItemNode(pBitMap, idx);
+      if(addItemNode(pBitMap, idx) == false)
+      {
+        throw "Failed to create node for ABK sheet.";
+      }
+
       idx++;
     }
     
     // Deep copy 32 colors (depth = 5) because AMOS sprite bank depth is
     // always = 5. 
     m_pColors32 = deepCopyColors(pic.parseColors32(), 5);
+    if(m_pColors32 == NULL)
+    {
+      throw "Failed to deep-copy the colors from source ilbm file.";
+    }
+
+    // Opened AMOS ABK sucessfully
+    m_SheetDataType = SDT_AmosBank;
+    return;
   }
   catch(const char* pErr)
   {
@@ -77,12 +95,17 @@ AnimSheetContainer::~AnimSheetContainer()
 
 void AnimSheetContainer::save(const char* pFileName)
 {
+  if(m_SheetDataType == SDT_IlbmPicture)
+  {
+    SheetItemNode* pItem = getSheetItem(0);
 
-  // TODO
-  // OpenIlbmPictureBitMap* pPic = getSheetItem();
-  // // Creation of the saver object already saves the picture
-  // // (or throws an exception)
-  // SaveBitMapPictureIlbm ilbmSaver(*pPic, pFileName);
+    // Creation of the saver object already saves the picture
+    // (or throws an exception)
+    SaveBitMapPictureIlbm ilbmSaver(pFileName, 
+                                    pItem->pBitMap, 
+                                    m_pColors32,
+                                    m_ModeId);
+  }
 }
 
 

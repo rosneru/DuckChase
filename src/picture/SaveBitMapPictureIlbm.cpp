@@ -15,19 +15,31 @@
 #define OLDCAMGMASK  (~BADFLAGS)
 
 
-SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
-                                             const char* pFileName)
-  : m_Picture(picture),
+SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const char* pFileName,
+                                             struct BitMap* pBitMap,
+                                             ULONG* pColors32,
+                                             ULONG modeId)
+  : m_pBitMap(pBitMap),
+    m_pColors32(pColors32),
+    m_ModeId(modeId),
     m_BODY_BUF_SIZE(5004),
     m_MAX_SAVE_DEPTH(24),
-    m_ModeId(picture.GetModeId()),
     m_Bmhd(),
     bodybuf(NULL)
 {
+  if(pBitMap == NULL)
+  {
+    throw "SaveBitMapPictureIlbm: Given BitMap is nullptr.";
+  }
+
   if (!(m_ModeId & 0xFFFF0000))
   {
     m_ModeId &= OLDCAMGMASK;
   }
+
+  m_SrcWidth = GetBitMapAttr(pBitMap, BMA_WIDTH);
+  m_SrcHeight = GetBitMapAttr(pBitMap, BMA_HEIGHT);
+  m_SrcDepth = GetBitMapAttr(pBitMap, BMA_DEPTH);
 
   if (!(bodybuf = (UBYTE*) AllocVec(m_BODY_BUF_SIZE, MEMF_PUBLIC)))
   {
@@ -52,7 +64,7 @@ SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
   }
 
   // Write the ColorMap CMAP
-  if(m_Picture.GetColors32() != NULL)
+  if(m_pColors32 != NULL)
   {
     err = PutCmap(iff);
     if(err != 0)
@@ -62,7 +74,7 @@ SaveBitMapPictureIlbm::SaveBitMapPictureIlbm(const BitMapPictureBase& picture,
   }
 
   // Write the screen mode id CAMG
-  iff.PutCk(ID_CAMG, sizeof(ULONG),(BYTE*) m_Picture.GetModeId());
+  iff.PutCk(ID_CAMG, sizeof(ULONG),(BYTE*) m_ModeId);
 
   // Write the body
   err = PutBody(iff);
@@ -104,21 +116,22 @@ void SaveBitMapPictureIlbm::initBitMapHeader()
 {
   struct DisplayInfo DI;
 
-  m_Bmhd.bmh_Width = m_Picture.Width();
-  m_Bmhd.bmh_Height = m_Picture.Height();
+  m_Bmhd.bmh_Width = m_SrcWidth;
+  m_Bmhd.bmh_Height = m_SrcHeight;
   m_Bmhd.bmh_Left = m_Bmhd.bmh_Top = 0;   // Default position is (0,0)
-  m_Bmhd.bmh_Depth = m_Picture.Depth();
+  m_Bmhd.bmh_Depth = m_SrcDepth;
   m_Bmhd.bmh_Masking = mskHasMask;
   m_Bmhd.bmh_Compression = cmpByteRun1;
   m_Bmhd.bmh_Pad = BMHDF_CMAPOK; // we will store 8 significant bits
   m_Bmhd.bmh_Transparent = 0;
-  m_Bmhd.bmh_PageWidth = m_Picture.Width() < 320 ? 320 : m_Picture.Width();
-  m_Bmhd.bmh_PageHeight = m_Picture.Height() < 200 ? 200 :  m_Picture.Height();
+  m_Bmhd.bmh_PageWidth = m_SrcWidth < 320 ? 320 : m_SrcWidth;
+  m_Bmhd.bmh_PageHeight = m_SrcHeight < 200 ? 200 :  m_SrcHeight;
   m_Bmhd.bmh_XAspect = 0;
   m_Bmhd.bmh_YAspect = 0;
 
-  if (GetDisplayInfoData(NULL, (UBYTE*)&DI, sizeof(struct DisplayInfo),
-                          DTAG_DISP, m_Picture.GetModeId()))
+  if (GetDisplayInfoData(NULL, (UBYTE*)&DI, 
+                         sizeof(struct DisplayInfo),
+                         DTAG_DISP, m_ModeId))
   {
     m_Bmhd.bmh_XAspect = DI.Resolution.x;
     m_Bmhd.bmh_YAspect = DI.Resolution.y;
@@ -132,7 +145,7 @@ long SaveBitMapPictureIlbm::PutCmap(IffParse& iff)
   ULONG* pTableEntry;
   ColorRegister cmapReg;
 
-  pTableEntry = m_Picture.GetColors32();
+  pTableEntry = m_pColors32;
 
   // First entry is the number of colors
   ULONG ncolors = *(pTableEntry++) >> 16;
@@ -165,19 +178,15 @@ long SaveBitMapPictureIlbm::PutBody(IffParse& iff)
 {
   long numBytes;
   long error;
-  LONG rowBytes = m_Picture.GetBitMap()->BytesPerRow;   // for source modulo only
-  LONG FileRowBytes = iff.rowBytes(m_Picture.Width());  // width to write in bytes
-  ULONG dstDepth = m_Picture.Depth();
+  LONG rowBytes = m_pBitMap->BytesPerRow;   // for source modulo only
+  LONG FileRowBytes = iff.rowBytes(m_SrcWidth);  // width to write in bytes
+  ULONG dstDepth = m_SrcDepth;
   UBYTE compression = m_Bmhd.bmh_Compression;
   ULONG planeCnt;                         // number of bit planes including mask
   ULONG iPlane, iRow;
   LONG packedRowBytes;
   PLANEPTR buf;
   PLANEPTR planes[m_MAX_SAVE_DEPTH + 1];   // array of ptrs to planes & mask
-
-  // TODO FIXME cast
-  PLANEPTR mask = const_cast<BitMapPictureBase&>(m_Picture).GetMask()->Planes[0];
-
 
   if (m_BODY_BUF_SIZE < iff.maxPackedSize(FileRowBytes) ||  // Must buffer a comprsd row
       compression > cmpByteRun1 ||                          // Not supported
@@ -186,17 +195,12 @@ long SaveBitMapPictureIlbm::PutBody(IffParse& iff)
     return -1;
   }
 
-  planeCnt = dstDepth + (mask == NULL ? 0 : 1);
+  planeCnt = dstDepth;
 
   // Copy the ptrs to bit & mask planes into local array "planes"
   for (iPlane = 0; iPlane < dstDepth; iPlane++)
   {
-    planes[iPlane] = m_Picture.GetBitMap()->Planes[iPlane];
-  }
-
-  if (mask != NULL)
-  {
-    planes[dstDepth] = mask;
+    planes[iPlane] = m_pBitMap->Planes[iPlane];
   }
 
   // Write a BODY chunk header
@@ -207,7 +211,7 @@ long SaveBitMapPictureIlbm::PutBody(IffParse& iff)
   }
 
   // Write the BODY contents
-  for (iRow = m_Picture.Height(); iRow > 0; iRow--)
+  for (iRow = m_SrcHeight; iRow > 0; iRow--)
   {
     for (iPlane = 0; iPlane < planeCnt; iPlane++)
     {
