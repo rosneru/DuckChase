@@ -15,6 +15,8 @@ public:
   /**
    * Parses the next AnimSheet and returns its BitMap.
    *
+   * NOTE: This BitMap must be freed with FreeBitMap() finished using it.
+   *
    * An AnimSheet consits of a number of succeeding pictures with equal
    * width and height.
    */
@@ -45,6 +47,7 @@ private:
   ULONG readNextWord();
 
   struct BitMap* createFrameBitMap();
+
   bool createSheetBitMap(std::vector<struct BitMap*>& frameVec);
 
   void clearBitMapVector(std::vector<struct BitMap*>& v);

@@ -262,12 +262,21 @@ ULONG OpenAmosAbk::readNextWord()
 }
 
 
-// TODO: Change this method. It could be enough to create the abkBitmap
-// dynamically (AllocVec! not AllocBitmap), then do InitBitMap, set the
-// ptr's i  the foor loop and return this. The AllocBitMap() and
-// BltBitMap seem to be reduntant steps.
 struct BitMap* OpenAmosAbk::createFrameBitMap()
 {
+  /**
+   * NOTE: Theoritically!! this method could be changed. It would be
+   * enough to create the abkBitmap dynamically (AllocVec! not
+   * AllocBitmap), then do InitBitMap to it, set the ptr's in the for
+   * loop and return that BitMap. No pFrameBitMap allocation and no
+   * blitting to it would be needed.
+   *
+   * But practically that wouldn't work: The BitMap here is not freed
+   * after use from within this class. It has to be freed from outside
+   * with FreeBitMap() and that would crash if the BitMap would've been
+   * created with AllocVec().
+   */
+
   ULONG planeSize = m_SheetFramesWordWidth * 2 * m_SheetFramesHeight;
   ULONG allPlanesSize = planeSize * m_SheetFramesDepth;
 
@@ -276,6 +285,7 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
                                             m_SheetFramesDepth,
                                             BMF_CLEAR,
                                             NULL);
+
   if(pFrameBitMap == NULL)
   {
     throw "OpenAmosAbk: failed to allocate memory for SheetFrames BitMap.";
