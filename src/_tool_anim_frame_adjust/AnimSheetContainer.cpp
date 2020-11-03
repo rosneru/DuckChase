@@ -49,7 +49,7 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   {
     // Open as ILBM didn't work
   }
-  
+
   // Now try to open it as AMOS .abk file
   try
   {
@@ -66,9 +66,9 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
 
       idx++;
     }
-    
+
     // Deep copy 32 colors (depth = 5) because AMOS sprite bank depth is
-    // always = 5. 
+    // always = 5.
     m_pColors32 = deepCopyColors(pic.parseColors32(), 5);
     if(m_pColors32 == NULL)
     {
@@ -81,9 +81,9 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   }
   catch(const char* pErr)
   {
-    
+
   }
-  
+
 }
 
 
@@ -101,8 +101,8 @@ void AnimSheetContainer::save(const char* pFileName)
 
     // Creation of the saver object already saves the picture
     // (or throws an exception)
-    SaveBitMapPictureIlbm ilbmSaver(pFileName, 
-                                    pItem->pBitMap, 
+    SaveBitMapPictureIlbm ilbmSaver(pFileName,
+                                    pItem->pBitMap,
                                     m_pColors32,
                                     m_ModeId);
   }
@@ -115,7 +115,7 @@ struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
   struct Node* pNode;
 
   if(index >= m_NumSheets)
-  { 
+  {
     // Wanted index is outside list bounds
     return NULL;
   }
@@ -137,7 +137,7 @@ struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
 
     i++;
     if(i >= m_NumSheets)
-    { 
+    {
       // Not found
       return NULL;
     }
@@ -164,7 +164,7 @@ ULONG AnimSheetContainer::getNumSheets()
   return m_NumSheets;
 }
 
-bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap, 
+bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
                                      ULONG initialIndex)
 {
   struct SheetItemNode* pItemNode;
@@ -179,7 +179,7 @@ bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
   height = GetBitMapAttr(pBitMap, BMA_HEIGHT);
   depth = GetBitMapAttr(pBitMap, BMA_DEPTH);
 
-  pItemNode = (struct SheetItemNode*) AllocVec(sizeof(SheetItemNode), 
+  pItemNode = (struct SheetItemNode*) AllocVec(sizeof(SheetItemNode),
                                                MEMF_PUBLIC|MEMF_CLEAR);
   if(pItemNode == NULL)
   {
@@ -197,13 +197,13 @@ bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
   }
 
   // Copy current sheet dimensions into node name
-  sprintf(pItemNode->ld_Node.ln_Name, 
-          "%02d: %dx%dx%d", 
-          (initialIndex + 1), 
-          width, 
-          height, 
+  sprintf(pItemNode->ld_Node.ln_Name,
+          "%02d: %dx%dx%d",
+          (initialIndex + 1),
+          width,
+          height,
           depth);
-  
+
   pItemNode->pBitMap = AllocBitMap(width,
                                    height,
                                    depth,
@@ -221,7 +221,7 @@ bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
   BltBitMap(pBitMap,
             0, 0,
             pItemNode->pBitMap,
-            0, 0, 
+            0, 0,
             width, height,
             0Xc0,
             0xff,
@@ -292,7 +292,7 @@ void AnimSheetContainer::cleanup()
       FreeBitMap(pWorkNode->pBitMap);
       pWorkNode->pBitMap = NULL;
     }
-    
+
     if(pWorkNode->ld_Node.ln_Name != NULL)
     {
       FreeVec(pWorkNode->ld_Node.ln_Name);
@@ -313,3 +313,4 @@ void AnimSheetContainer::cleanup()
 
   m_NumSheets = 0;
 }
+

@@ -102,15 +102,15 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
       readNextWord();  // skip hotSpotX
       readNextWord();  // skip hotSpotY
 
-      if(m_SheetFramesWordWidth == 0 
-      && m_SheetFramesHeight == 0 
+      if(m_SheetFramesWordWidth == 0
+      && m_SheetFramesHeight == 0
       && m_SheetFramesDepth == 0)
       {
         // Start of a new sheet
         m_SheetFramesWordWidth = wordWidth;
         m_SheetFramesHeight = height;
         m_SheetFramesDepth = depth;
-        
+
         if(m_pSheetBitMap != NULL)
         {
           FreeBitMap(m_pSheetBitMap);
@@ -154,7 +154,7 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
     {
       return NULL;
     }
-    
+
     // Now clean up
     clearBitMapVector(frameVec);
 
@@ -164,18 +164,18 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
     m_SheetFramesDepth = 0;
 
     return m_pSheetBitMap;
- 
+
     // printf("File contains %d pictures\n", m_NumAbkFrames);
 
     // printf("The first one has a size of %d x %d\n", wordWidth, height);
-    
+
   }
   catch(const char* pErrMsg)
   {
     printf("Exception\n");
     return NULL;
   }
- 
+
 
 }
 
@@ -189,7 +189,7 @@ ULONG* OpenAmosAbk::parseColors32()
 
   // Parse the 32 colors of the AMOS abk
   const ULONG numColors = 32;
-  m_pColors32 = (ULONG*) AllocVec(2 + 3 * numColors * sizeof(ULONG), 
+  m_pColors32 = (ULONG*) AllocVec(2 + 3 * numColors * sizeof(ULONG),
                                   MEMF_PUBLIC|MEMF_CLEAR);
   if(m_pColors32 == NULL)
   {
@@ -249,14 +249,14 @@ ULONG OpenAmosAbk::readNextWord()
 {
   ULONG value;
 
-  if((m_ParseByteCounter + 2) >= m_FileBufByteSize)
+  if((m_ParseByteCounter + 1) >= m_FileBufByteSize)
   {
-    throw "OpenAmosAbk::readNextWord() reached end of buffer.";  
+    throw "OpenAmosAbk::readNextWord() reached end of buffer.";
   }
 
-  value = 256 * m_pFileBuf[m_ParseByteCounter] 
+  value = 256 * m_pFileBuf[m_ParseByteCounter]
         + m_pFileBuf[m_ParseByteCounter + 1];
-  
+
   m_ParseByteCounter += 2;
   return value;
 }
@@ -273,7 +273,7 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
 
   struct BitMap* pFrameBitMap = AllocBitMap(m_SheetFramesWordWidth * 16,
                                             m_SheetFramesHeight,
-                                            m_SheetFramesDepth, 
+                                            m_SheetFramesDepth,
                                             BMF_CLEAR,
                                             NULL);
   if(pFrameBitMap == NULL)
@@ -282,12 +282,12 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
   }
 
   struct BitMap abkBitmap;
-  InitBitMap(&abkBitmap, 
-             m_SheetFramesDepth, 
-             m_SheetFramesWordWidth * 16, 
+  InitBitMap(&abkBitmap,
+             m_SheetFramesDepth,
+             m_SheetFramesWordWidth * 16,
              m_SheetFramesHeight);
 
-  // Manually set all plane pointers to the dedicated area of 
+  // Manually set all plane pointers to the dedicated area of
   // destination Bitmap
   PLANEPTR ptr = (PLANEPTR)(m_pFileBuf + m_ParseByteCounter);
   for(size_t i = 0; i < m_SheetFramesDepth; i++)
@@ -297,7 +297,7 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
   }
 
   // Blit abk Bitmap to destination BitMap
-  BltBitMap(&abkBitmap, 
+  BltBitMap(&abkBitmap,
             0,
             0,
             pFrameBitMap,
@@ -305,8 +305,8 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
             0,
             m_SheetFramesWordWidth * 16,
             m_SheetFramesHeight,
-            0xC0, 
-            0xFF, 
+            0xC0,
+            0xFF,
             NULL);
 
   // Don't forget to forward the parse counter by the amount of bytes
@@ -327,8 +327,8 @@ bool OpenAmosAbk::createSheetBitMap(std::vector<struct BitMap*>& frameVec)
     FreeBitMap(m_pSheetBitMap);
   }
 
-  m_pSheetBitMap = AllocBitMap(width, 
-                               m_SheetFramesHeight, 
+  m_pSheetBitMap = AllocBitMap(width,
+                               m_SheetFramesHeight,
                                m_SheetFramesDepth,
                                BMF_CLEAR,
                                NULL);
@@ -352,8 +352,8 @@ bool OpenAmosAbk::createSheetBitMap(std::vector<struct BitMap*>& frameVec)
               0,
               frameWidth,
               m_SheetFramesHeight,
-              0xC0, 
-              0xFF, 
+              0xC0,
+              0xFF,
               NULL);
 
     xStart += frameWidth;
@@ -389,6 +389,13 @@ void OpenAmosAbk::cleanup()
     FreeBitMap(m_pSheetBitMap);
     m_pSheetBitMap = NULL;
   }
+
+  if(m_pFileBuf != NULL)
+  {
+    FreeVec(m_pFileBuf);
+    m_pFileBuf = NULL;
+  }
+
 
   if(m_FileHandle != 0)
   {
