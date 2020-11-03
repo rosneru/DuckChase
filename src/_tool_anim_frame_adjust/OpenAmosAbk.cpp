@@ -230,10 +230,15 @@ ULONG* OpenAmosAbk::parseColors32()
     green = (green << 4) + green;
     blue = (blue << 4) + blue;
 
-    pCol[(i + 1) * 3 - 3] = red;
-    pCol[(i + 1) * 3 - 2] = green;
-    pCol[(i + 1) * 3 - 1] = blue;
+    // Calculate the indeces in color table
+    size_t iRed = (i + 1) * 3 - 3;
+    size_t iGreen = (i + 1) * 3 - 2;
+    size_t iBlue = (i + 1) * 3 - 1;
 
+    // Write the colors to the Colors32 table
+    pCol[iRed] = red | (red << 8) | (red << 16) | (red << 24);
+    pCol[iGreen] = green | (green << 8) | (green << 16) | (green << 24);
+    pCol[iBlue] = blue | (blue << 8) | (blue << 16) | (blue << 24);
   }
 
   return m_pColors32;
