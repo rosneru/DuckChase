@@ -120,7 +120,7 @@ void SaveBitMapPictureIlbm::initBitMapHeader()
   m_Bmhd.bmh_Height = m_SrcHeight;
   m_Bmhd.bmh_Left = m_Bmhd.bmh_Top = 0;   // Default position is (0,0)
   m_Bmhd.bmh_Depth = m_SrcDepth;
-  m_Bmhd.bmh_Masking = mskHasMask;
+  m_Bmhd.bmh_Masking = mskNone;
   m_Bmhd.bmh_Compression = cmpByteRun1;
   m_Bmhd.bmh_Pad = BMHDF_CMAPOK; // we will store 8 significant bits
   m_Bmhd.bmh_Transparent = 0;
