@@ -2,6 +2,7 @@
 #define ASL_FILE_REQUEST_H
 
 #include <string>
+#include <exec/types.h>
 #include <intuition/intuition.h>
 
 /**
@@ -14,6 +15,13 @@ class AslFileRequest
 {
 public:
   AslFileRequest(struct Window*& pIntuiWindow);
+
+  AslFileRequest(struct Window*& pIntuiWindow, 
+                 ULONG left, 
+                 ULONG top,
+                 ULONG width,
+                 ULONG height);
+
   virtual ~AslFileRequest();
 
   /**
@@ -42,6 +50,18 @@ public:
 
 private:
   struct Window*& m_pIntuiWindow;
+
+  ULONG m_LeftTag;
+  ULONG m_LeftVal;
+
+  ULONG m_TopTag;
+  ULONG m_TopVal;
+
+  ULONG m_WidthTag;
+  ULONG m_WidthVal;
+
+  ULONG m_HeightTag;
+  ULONG m_HeightVal;
 };
 
 #endif

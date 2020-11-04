@@ -9,15 +9,44 @@
 #include "AslFileRequest.h"
 
 AslFileRequest::AslFileRequest(struct Window*& pIntuiWindow)
-  : m_pIntuiWindow(pIntuiWindow)
+  : m_pIntuiWindow(pIntuiWindow),
+    m_LeftTag(ASL_Dummy),
+    m_LeftVal(0),
+    m_TopTag(ASL_Dummy),
+    m_TopVal(0),
+    m_WidthTag(ASL_Dummy),
+    m_WidthVal(0),
+    m_HeightTag(ASL_Dummy),
+    m_HeightVal(0)
 {
 
 }
+
+
+AslFileRequest::AslFileRequest(struct Window*& pIntuiWindow, 
+                               ULONG left, 
+                               ULONG top,
+                               ULONG width,
+                               ULONG height)
+  : m_pIntuiWindow(pIntuiWindow),
+    m_LeftTag(ASL_LeftEdge),
+    m_LeftVal(left),
+    m_TopTag(ASL_TopEdge),
+    m_TopVal(top),
+    m_WidthTag(ASL_Width),
+    m_WidthVal(width),
+    m_HeightTag(ASL_Height),
+    m_HeightVal(height)
+{
+
+}
+
 
 AslFileRequest::~AslFileRequest()
 {
 
 }
+
 
 std::string AslFileRequest::SelectFile(const std::string& title,
                                        const std::string& initialFileFullPath,
@@ -56,6 +85,10 @@ std::string AslFileRequest::SelectFile(const std::string& title,
   // Allocate data structure for the ASL requester
   struct FileRequester* pFileRequest = (struct FileRequester*)
     AllocAslRequestTags(ASL_FileRequest,
+                        m_LeftTag, m_LeftVal,
+                        m_TopTag, m_TopVal,
+                        m_WidthTag, m_WidthVal,
+                        m_HeightTag, m_HeightVal,
                         ASL_Hail, (ULONG) title.c_str(),
                         ASL_Dir, (ULONG) initialPathPart.c_str(),
                         ASL_File, (ULONG) initialFilePart.c_str(),

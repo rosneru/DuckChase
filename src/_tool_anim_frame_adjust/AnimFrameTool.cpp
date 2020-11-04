@@ -445,7 +445,12 @@ void AnimFrameTool::selectNextFrame()
 
 void AnimFrameTool::open()
 {
-  AslFileRequest request(m_pControlWindow);
+  AslFileRequest request(m_pControlWindow, 
+                         m_pControlWindow->LeftEdge,
+                         m_pControlWindow->TopEdge,
+                         m_pControlWindow->Width,
+                         m_ControlsRect.Bottom() + 10);
+
   std::string filename = request.SelectFile("Select an IFF ILBM or AMOS ABK file", 
                                             "", 
                                             false);
