@@ -61,7 +61,8 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
     ULONG idx = 0;
     while((pBitMap = pic.parseNextAnimSheet()) != NULL)
     {
-      if(addItemNode(pBitMap, idx) == false)
+      ULONG sheetWordWidth = pic.getSheetWordWidth();
+      if(addItemNode(pBitMap, idx, sheetWordWidth) == false)
       {
         throw "Failed to create node for ABK sheet.";
       }
@@ -217,8 +218,9 @@ bool AnimSheetContainer::isAmosSheet()
 }
 
 
-bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
-                                     ULONG initialIndex)
+bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap, 
+                                     ULONG initialIndex, 
+                                     ULONG wordWidth)
 {
   struct SheetItemNode* pItemNode;
   ULONG width, height, depth;
@@ -280,7 +282,7 @@ bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
             0xff,
             NULL);
 
-  pItemNode->FrameWordWidth = 1;  // Default, to be changed
+  pItemNode->FrameWordWidth = wordWidth > 0 ? wordWidth : 1;
   pItemNode->SheetWidth = width;
   pItemNode->SheetHeight = height;
   pItemNode->SheetDepth = depth;

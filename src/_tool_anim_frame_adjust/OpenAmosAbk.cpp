@@ -20,6 +20,7 @@ OpenAmosAbk::OpenAmosAbk(const char* pFileName)
     m_SheetFramesWordWidth(0),
     m_SheetFramesHeight(0),
     m_SheetFramesDepth(0),
+    m_LastParsedWordWidth(0),
     m_pSheetBitMap(NULL)
 {
   if(m_FileHandle == 0)
@@ -159,6 +160,7 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
     clearBitMapVector(frameVec);
 
     // Mark start of a new sheet
+    m_LastParsedWordWidth = m_SheetFramesWordWidth;
     m_SheetFramesWordWidth = 0;
     m_SheetFramesHeight = 0;
     m_SheetFramesDepth = 0;
@@ -177,6 +179,11 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
   }
 
 
+}
+
+ULONG OpenAmosAbk::getSheetWordWidth()
+{
+  return m_LastParsedWordWidth;
 }
 
 ULONG* OpenAmosAbk::parseColors32()

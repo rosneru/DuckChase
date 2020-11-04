@@ -23,10 +23,19 @@ public:
   struct BitMap* parseNextAnimSheet();
 
   /**
+   * Returns the word width of the last parsed anim sheet.
+   */
+  ULONG getSheetWordWidth();
+
+  /**
    * Parses the colors of this AMOS bank, convert it to Colors32 format
    * and return it.
+   *
+   * IMPORTANT: Only call this onetime and directly after
+   * parseNextAnimSheet() returned NULL.
    */
   ULONG* parseColors32();
+
 
 private:
   BYTE* m_pFileBuf;
@@ -41,6 +50,8 @@ private:
   ULONG m_SheetFramesWordWidth;
   ULONG m_SheetFramesHeight;
   ULONG m_SheetFramesDepth;
+
+  ULONG m_LastParsedWordWidth;
 
   struct BitMap* m_pSheetBitMap;
 

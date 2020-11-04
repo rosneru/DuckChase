@@ -79,7 +79,9 @@ private:
 
   std::string m_Filename;
 
-  bool addItemNode(const struct BitMap* pBitMap, ULONG initialIndex);
+  bool addItemNode(const struct BitMap* pBitMap, 
+                   ULONG initialIndex, 
+                   ULONG wordWidth = 0);
 
 /**
  * Creates a copy of the color table of given BitMapPicture. Allocates
