@@ -35,7 +35,7 @@ public:
 private:
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
-  AnimSheetContainer* m_pAnimSheetContainer;
+  AnimSheetContainer* m_pAnimSheets;
   BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
@@ -113,7 +113,7 @@ private:
   void save();
   void saveAs();
 
-  void calcFrameRects();
+  void calcFrameRects(LONG selectedFrameWordWidth);
   void updateFrameIdxGadgets(bool bCurrentOnly);
 
   void paintPicture();

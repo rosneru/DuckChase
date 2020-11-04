@@ -18,15 +18,17 @@ enum SheetDataType
 };
 
 /**
- * A defaukt exec list, extended by the data needed for anim sheets
+ * A default exec list node, extended by the data needed for an
+ * AnimSheet
  */
 struct SheetItemNode
 {
   struct Node ld_Node;
   struct BitMap* pBitMap;
-  ULONG Width;
-  ULONG Height;
-  ULONG Depth;
+  ULONG FrameWordWidth;
+  ULONG SheetWidth;
+  ULONG SheetHeight;
+  ULONG SheetDepth;
 };
 
 
@@ -54,7 +56,7 @@ public:
    */
   bool save(const char* pFileName = NULL);
 
-  struct SheetItemNode* getSheetItem(ULONG index);
+  struct SheetItemNode* getSheet(ULONG index);
 
   struct List* getSheetList();
 

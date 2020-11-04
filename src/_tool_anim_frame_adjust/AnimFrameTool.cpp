@@ -68,7 +68,7 @@ struct TextAttr Topaz80 =
 AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
     m_OScanHeight(0),
-    m_pAnimSheetContainer(NULL),
+    m_pAnimSheets(NULL),
     m_pBitMapTools(NULL),
     m_HasChanged(false),
     m_SheetId(0),
@@ -262,7 +262,7 @@ void AnimFrameTool::markChanged()
 
 void AnimFrameTool::moveFrameContentLeft()
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -282,7 +282,7 @@ void AnimFrameTool::moveFrameContentLeft()
 
 void AnimFrameTool::moveFrameContentRight()
 {
-  if(m_pAnimSheetContainer == NULL || m_pBitMapTools == NULL)
+  if(m_pAnimSheets == NULL || m_pBitMapTools == NULL)
   {
     return;
   }
@@ -302,7 +302,7 @@ void AnimFrameTool::moveFrameContentRight()
 
 void AnimFrameTool::moveFrameContentUp()
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -322,7 +322,7 @@ void AnimFrameTool::moveFrameContentUp()
 
 void AnimFrameTool::moveFrameContentDown()
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
@@ -342,7 +342,17 @@ void AnimFrameTool::moveFrameContentDown()
 
 void AnimFrameTool::gadgetFrameWidthChanged()
 {
-  calcFrameRects();
+  LONG selectedFrameWordWidth = 1;
+  if(1 != GT_GetGadgetAttrs(m_pGadSliFrameWidth, 
+                            m_pControlWindow, 
+                            NULL,
+                            GTSL_Level, &selectedFrameWordWidth,
+                            TAG_DONE))
+  {
+    return;
+  }
+
+  calcFrameRects(selectedFrameWordWidth);
   paintPicture();
   paintGrid();
 
@@ -355,6 +365,16 @@ void AnimFrameTool::gadgetFrameWidthChanged()
           m_ResultFrameRect.Bottom());
 
   paintCurrentFrameToResultRect();
+
+  // Update the new frame width value in the current anim sheet
+  struct SheetItemNode* pSheetNode = m_pAnimSheets->getSheet(m_SheetId);
+  if(pSheetNode == NULL)
+  {
+    // Failed to get indexed Sheet item
+    return;
+  }
+
+  pSheetNode->FrameWordWidth = selectedFrameWordWidth;
 }
 
 
@@ -442,23 +462,23 @@ void AnimFrameTool::open()
 
       // New AnimSheetContainer created sucessfully. Now Replace the
       // formerly laoded one with the new one.
-      if(m_pAnimSheetContainer != NULL)
+      if(m_pAnimSheets != NULL)
       {
-        delete m_pAnimSheetContainer;
+        delete m_pAnimSheets;
       }
 
-      m_pAnimSheetContainer = pNewSheetContainer;
+      m_pAnimSheets = pNewSheetContainer;
 
       // Select the first sheet. Every instance of AnimSheetContainer
       // should contain at least one sheet.
       selectAnimSheet(0);
 
       GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
-                        GTTX_Text, m_pAnimSheetContainer->getFileName(),
+                        GTTX_Text, m_pAnimSheets->getFileName(),
                         TAG_DONE);
 
       GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
-                        GTLV_Labels, m_pAnimSheetContainer->getSheetList(),
+                        GTLV_Labels, m_pAnimSheets->getSheetList(),
                         GTLV_Selected, 0,
                         TAG_DONE);
 
@@ -484,12 +504,12 @@ void AnimFrameTool::open()
 
 void AnimFrameTool::selectAnimSheet(ULONG index)
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
 
-  if(index >= m_pAnimSheetContainer->getNumSheets())
+  if(index >= m_pAnimSheets->getNumSheets())
   {
     // Index to big
     return;
@@ -498,7 +518,7 @@ void AnimFrameTool::selectAnimSheet(ULONG index)
   m_SheetId = index;
 
   // Get the sheet item addressed by given index
-  struct SheetItemNode* pSheetNode = m_pAnimSheetContainer->getSheetItem(index);
+  struct SheetItemNode* pSheetNode = m_pAnimSheets->getSheet(index);
   if(pSheetNode == NULL)
   {
     // Failed to get indexed Sheet item
@@ -518,7 +538,7 @@ void AnimFrameTool::selectAnimSheet(ULONG index)
 
   paintPicture();
 
-  calcFrameRects();
+  calcFrameRects(pSheetNode->FrameWordWidth);
   paintGrid();
 
   // Clear result rect
@@ -530,17 +550,22 @@ void AnimFrameTool::selectAnimSheet(ULONG index)
             m_ResultFrameRect.Bottom());
 
   paintCurrentFrameToResultRect();
+
+  // Set the FWidth slider gadget to the value from the selected sheet
+  GT_SetGadgetAttrs(m_pGadSliFrameWidth, m_pControlWindow, NULL,
+                    GTSL_Level, pSheetNode->FrameWordWidth,
+                    TAG_DONE);
 }
 
 
 void AnimFrameTool::save()
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
 
-  if(m_pAnimSheetContainer->save() == false)
+  if(m_pAnimSheets->save() == false)
   {
     MessageBox request(m_pControlWindow);
     request.Show("Save error",
@@ -556,24 +581,24 @@ void AnimFrameTool::save()
 
 void AnimFrameTool::saveAs()
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
 
   std::string requestTitle;
-  if(m_pAnimSheetContainer->isIlbmSheet())
+  if(m_pAnimSheets->isIlbmSheet())
   {
     requestTitle = "Select IFF file name to save..";
   }
-  else if(m_pAnimSheetContainer->isIlbmSheet())
+  else if(m_pAnimSheets->isIlbmSheet())
   {
     requestTitle = "Select AMOS abk file name to save..";
   }
 
   AslFileRequest request(m_pControlWindow);
   std::string filename = request.SelectFile(requestTitle, 
-                                            m_pAnimSheetContainer->getFileName(), 
+                                            m_pAnimSheets->getFileName(), 
                                             true,
                                             true);
 
@@ -583,7 +608,7 @@ void AnimFrameTool::saveAs()
     return;
   }
 
-  if(m_pAnimSheetContainer->save(filename.c_str()) == false)
+  if(m_pAnimSheets->save(filename.c_str()) == false)
   {
     MessageBox request(m_pControlWindow);
     request.Show("Save error",
@@ -594,11 +619,11 @@ void AnimFrameTool::saveAs()
   }
 
   // Save as changes the current file name
-  m_pAnimSheetContainer->setFilename(filename.c_str());
+  m_pAnimSheets->setFilename(filename.c_str());
 
   // Set the new file name also in the gadget
   GT_SetGadgetAttrs(m_pGadTxtFilename, m_pControlWindow, NULL,
-                    GTTX_Text, m_pAnimSheetContainer->getFileName(),
+                    GTTX_Text, m_pAnimSheets->getFileName(),
                     TAG_DONE);
 
   m_HasChanged = false;
@@ -606,25 +631,14 @@ void AnimFrameTool::saveAs()
 
 }
 
-void AnimFrameTool::calcFrameRects()
+void AnimFrameTool::calcFrameRects(LONG selectedFrameWordWidth)
 {
-  if(m_pAnimSheetContainer == NULL)
+  if(m_pAnimSheets == NULL)
   {
     return;
   }
 
   m_FrameId = 0;
-
-  LONG selectedFrameWordWidth;
-  if(1 != GT_GetGadgetAttrs(m_pGadSliFrameWidth, 
-                            m_pControlWindow, 
-                            NULL,
-                            GTSL_Level, &selectedFrameWordWidth,
-                            TAG_DONE))
-  {
-    return;
-  }
-
   int selectedFrameWidth = selectedFrameWordWidth * 16;
   if(selectedFrameWidth == 0)
   {
@@ -633,14 +647,14 @@ void AnimFrameTool::calcFrameRects()
 
   m_FrameRects.clear();
 
-  struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+  struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
   if(pSheet == NULL)
   {
     return;
   }
   
   // Create the needed number of yet uninitialized Rects
-  m_SheetNumFrames = pSheet->Width / selectedFrameWidth;
+  m_SheetNumFrames = pSheet->SheetWidth / selectedFrameWidth;
 
   for(ULONG i = 0; i < m_SheetNumFrames; i++)
   {
@@ -653,7 +667,7 @@ void AnimFrameTool::calcFrameRects()
     m_FrameRects[i].Set(i * selectedFrameWidth,             // left
                         0,                                  // top
                         ((i+1) * selectedFrameWidth) - 1,   // right
-                        pSheet->Height - 1);                // bottom
+                        pSheet->SheetHeight - 1);                // bottom
   }
 
   updateFrameIdxGadgets(false);
@@ -682,12 +696,12 @@ void AnimFrameTool::updateFrameIdxGadgets(bool bCurrentOnly)
 
 void AnimFrameTool::paintPicture()
 {
-  if(m_pAnimSheetContainer == NULL || m_pCanvasWindow == NULL)
+  if(m_pAnimSheets == NULL || m_pCanvasWindow == NULL)
   {
     return;
   }
 
-  struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+  struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
   if((pSheet == NULL) || (pSheet->pBitMap == NULL))
   {
     return;
@@ -699,7 +713,7 @@ void AnimFrameTool::paintPicture()
                     0, 0, 
                     &m_pCanvasScreen->RastPort, 
                     0, 0,
-                    pSheet->Width, pSheet->Height, 
+                    pSheet->SheetWidth, pSheet->SheetHeight, 
                     0xc0);
 
   WaitBlit();
@@ -707,12 +721,12 @@ void AnimFrameTool::paintPicture()
 
 void AnimFrameTool::paintPictureCurrentPart()
 {
-  if(m_pAnimSheetContainer == NULL || m_pCanvasWindow == NULL)
+  if(m_pAnimSheets == NULL || m_pCanvasWindow == NULL)
   {
     return;
   }
 
-  struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+  struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
   if((pSheet == NULL) || (pSheet->pBitMap == NULL))
   {
     return;
@@ -732,12 +746,12 @@ void AnimFrameTool::paintPictureCurrentPart()
 
 void AnimFrameTool::paintGrid()
 {
-  if(m_pAnimSheetContainer == NULL || m_pCanvasWindow == NULL)
+  if(m_pAnimSheets == NULL || m_pCanvasWindow == NULL)
   {
     return;
   }
 
-  struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+  struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
   if(pSheet == NULL)
   {
     return;
@@ -745,7 +759,7 @@ void AnimFrameTool::paintGrid()
 
   // Set the pens for the grid
   m_NormalRectPen = 1;
-  m_HighlightedRectPen = (1L << pSheet->Depth) - 1;
+  m_HighlightedRectPen = (1L << pSheet->SheetDepth) - 1;
 
   // Draw all m_FrameRect's
   for(size_t i = 0; i < m_FrameRects.size(); i++)
@@ -778,12 +792,12 @@ void AnimFrameTool::paintSelectionRect(const Rect& rect,
 
 void AnimFrameTool::paintCurrentFrameToResultRect()
 {
-  if((m_pAnimSheetContainer == NULL) || (m_pControlWindow == NULL))
+  if((m_pAnimSheets == NULL) || (m_pControlWindow == NULL))
   {
     return;
   }
 
-  struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+  struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
   if((pSheet == NULL) || (pSheet->pBitMap == NULL))
   {
     return;
@@ -954,12 +968,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
       case MID_ToolsPrintFullMask:
         { // Print the mask of the whole animation strip image
-          if(m_pAnimSheetContainer == NULL)
+          if(m_pAnimSheets == NULL)
           {
             break;
           }
 
-          struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+          struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
           if((pSheet == NULL) || (pSheet->pBitMap == NULL))
           {
             break;
@@ -972,12 +986,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
       case MID_ToolsPrintFrameMask:
         { // Print the mask of the current animation frame
-          if(m_pAnimSheetContainer == NULL)
+          if(m_pAnimSheets == NULL)
           {
             break;
           }
 
-          struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+          struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
           if((pSheet == NULL) || (pSheet->pBitMap == NULL))
           {
             break;
@@ -986,7 +1000,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           // Create a temporary BitMap for current frame
           struct BitMap* pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
                                               m_FrameRects[m_FrameId].Height(),
-                                              pSheet->Depth,
+                                              pSheet->SheetDepth,
                                               BMF_CLEAR,
                                               NULL);
 
@@ -1032,10 +1046,10 @@ void AnimFrameTool::cleanup()
     m_pBitMapTools = NULL;
   }
 
-  if(m_pAnimSheetContainer != NULL)
+  if(m_pAnimSheets != NULL)
   {
-    delete m_pAnimSheetContainer;
-    m_pAnimSheetContainer = NULL;
+    delete m_pAnimSheets;
+    m_pAnimSheets = NULL;
   }
 
   if (m_pControlWindow != NULL)
@@ -1093,15 +1107,15 @@ void AnimFrameTool::openCanvas()
     return;
   }
 
-  if(m_pAnimSheetContainer != NULL)
+  if(m_pAnimSheets != NULL)
   {
-    struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+    struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
     if(pSheet == NULL)
     {
       return;
     }
 
-    ULONG screenWidth = pSheet->Width;
+    ULONG screenWidth = pSheet->SheetWidth;
     if(screenWidth < m_OScanWidth)
     {
       screenWidth = m_OScanWidth;
@@ -1109,9 +1123,9 @@ void AnimFrameTool::openCanvas()
 
     m_pCanvasScreen = OpenScreenTags(NULL,
                                      SA_AutoScroll, 1,
-                                     SA_Colors32, m_pAnimSheetContainer->getColors32(),
+                                     SA_Colors32, m_pAnimSheets->getColors32(),
                                      SA_DisplayID, VIEW_MODE_ID,
-                                     SA_Depth, pSheet->Depth,
+                                     SA_Depth, pSheet->SheetDepth,
                                      SA_Draggable, FALSE,
                                      SA_Interleaved, TRUE,
                                      SA_Font, &Topaz80,
@@ -1172,9 +1186,9 @@ void AnimFrameTool::openCanvas()
   LendMenus(m_pCanvasWindow, m_pControlWindow);
 
   // Adjust the scroller gadget to left<->right scroll the screen
-  if(m_pAnimSheetContainer != NULL)
+  if(m_pAnimSheets != NULL)
   {
-    struct SheetItemNode* pSheet = m_pAnimSheetContainer->getSheetItem(m_SheetId);
+    struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
     if(pSheet == NULL)
     {
       return;
@@ -1182,7 +1196,7 @@ void AnimFrameTool::openCanvas()
 
     GT_SetGadgetAttrs(m_pGadScrCanvasHScroll, m_pControlWindow, NULL,
                       GTSC_Top, 0,
-                      GTSC_Total, pSheet->Width,
+                      GTSC_Total, pSheet->SheetWidth,
                       GTSC_Visible, m_pControlScreen->Width,
                       TAG_DONE);
   }

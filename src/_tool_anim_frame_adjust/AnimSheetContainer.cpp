@@ -114,7 +114,7 @@ bool AnimSheetContainer::save(const char* pFileName)
   {
     if(m_SheetDataType == SDT_IlbmPicture)
     {
-      SheetItemNode* pItem = getSheetItem(0);
+      SheetItemNode* pItem = getSheet(0);
 
       // Creation of the saver object already saves the picture
       // (or throws an exception)
@@ -138,7 +138,7 @@ bool AnimSheetContainer::save(const char* pFileName)
 }
 
 
-struct SheetItemNode* AnimSheetContainer::getSheetItem(ULONG index)
+struct SheetItemNode* AnimSheetContainer::getSheet(ULONG index)
 {
   ULONG i = 0;
   struct Node* pNode;
@@ -280,9 +280,10 @@ bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
             0xff,
             NULL);
 
-  pItemNode->Width = width;
-  pItemNode->Height = height;
-  pItemNode->Depth = depth;
+  pItemNode->FrameWordWidth = 1;  // Default, to be changed
+  pItemNode->SheetWidth = width;
+  pItemNode->SheetHeight = height;
+  pItemNode->SheetDepth = depth;
 
   AddTail(&m_SheetList, (struct Node*)pItemNode);
   m_NumSheets++;
