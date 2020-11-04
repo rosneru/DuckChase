@@ -20,8 +20,9 @@ AslFileRequest::~AslFileRequest()
 }
 
 std::string AslFileRequest::SelectFile(const std::string& title,
-  const std::string& initialFileFullPath,
-  bool bPreselectPathOnly)
+                                       const std::string& initialFileFullPath,
+                                       bool isOnlyPathPreSelected,
+                                       bool isSaveRequester)
 {
   std::string selectedFileFullPath = "";
 
@@ -43,11 +44,14 @@ std::string AslFileRequest::SelectFile(const std::string& title,
     initialFilePart = pFilePart;
   }
 
-  if(bPreselectPathOnly)
+  if(isOnlyPathPreSelected)
   {
     // Only take the path-part for pre-selection, not the file name
     initialFilePart = "";
   }
+
+  // Apply the save requester flag regarding the parameter
+  ULONG doSaveModeValue = isSaveRequester ? TRUE : FALSE;
 
   // Allocate data structure for the ASL requester
   struct FileRequester* pFileRequest = (struct FileRequester*)
@@ -55,6 +59,7 @@ std::string AslFileRequest::SelectFile(const std::string& title,
                         ASL_Hail, (ULONG) title.c_str(),
                         ASL_Dir, (ULONG) initialPathPart.c_str(),
                         ASL_File, (ULONG) initialFilePart.c_str(),
+                        ASLFR_DoSaveMode, doSaveModeValue,
                         TAG_DONE);
 
   if(pFileRequest == NULL)

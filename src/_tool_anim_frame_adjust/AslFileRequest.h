@@ -17,27 +17,28 @@ public:
   virtual ~AslFileRequest();
 
   /**
-   * Opens a file requester and let the user select a file
+   * Open a file requester and let the user select a file
    *
-   * @param title
-   * Text to be displayed in the file requesters title bar
+   * @param title Text to be displayed in the file requesters title bar
    *
-   * @param initialFileFullPath
-   * A string with a full path and file name to pre-select this file
-   * at request opening time. If empty or invalid, no file is pre-
-   * selected.
+   * @param initialFileFullPath A string with a full path and file name
+   * to pre-select this file at request opening time. If empty or
+   * invalid, no file is pre- selected.
    *
-   * @param bPreselectPathOnly
-   * When set to true, only the path of initialFileFullPath will be
-   * pre-selected but not the file itself.
+   * @param isOnlyPathPreSelected When set to true, only the path of
+   * initialFileFullPath will be pre-selected but not the file itself.
+   *
+  * @param isSaveRequester When set to true the requester will be opened
+   * as save file selector.
    *
    * @returns
    * Full path to the selected file or an empty string if dialog was
    * canceled by the user.
    */
   std::string SelectFile(const std::string& title,
-                          const std::string& initialFileFullPath,
-                          bool bPreselectPathOnly = false);
+                         const std::string& initialFileFullPath,
+                         bool isOnlyPathPreSelected = false,
+                         bool isSaveRequester = false);
 
 private:
   struct Window*& m_pIntuiWindow;

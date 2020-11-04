@@ -5,6 +5,8 @@
 #include <exec/lists.h>
 #include <graphics/gfx.h>
 
+#include <string>
+
 #include "OpenIlbmPictureBitMap.h"
 
 
@@ -48,11 +50,9 @@ public:
 
   /**
    * Save the current animation to the given name. If no name is given
-   * it creates one.
-   *
-   * Throws an exception on error.
+   * it overwrites the current file
    */
-  void save(const char* pFileName = NULL);
+  bool save(const char* pFileName = NULL);
 
   struct SheetItemNode* getSheetItem(ULONG index);
 
@@ -62,12 +62,20 @@ public:
 
   ULONG getNumSheets();
 
+  const char* getFileName();
+  void setFilename(const char* pFileName);
+
+  bool isIlbmSheet();
+  bool isAmosSheet();
+
 private:
   SheetDataType m_SheetDataType;
   struct List m_SheetList;
   ULONG m_NumSheets;
   ULONG* m_pColors32;
   ULONG m_ModeId;
+
+  std::string m_Filename;
 
   bool addItemNode(const struct BitMap* pBitMap, ULONG initialIndex);
 

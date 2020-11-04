@@ -42,12 +42,14 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
     m_ModeId = pic.GetModeId();
 
     // Opened IFF ILBM sucessfully
+    m_Filename = pFileName;
     m_SheetDataType = SDT_IlbmPicture;
     return;
   }
   catch(const char* pErr)
   {
     // Open as ILBM didn't work
+    m_Filename = "Failed to open.";
   }
 
   // Now try to open it as AMOS .abk file
@@ -76,12 +78,13 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
     }
 
     // Opened AMOS ABK sucessfully
+    m_Filename = pFileName;
     m_SheetDataType = SDT_AmosBank;
     return;
   }
   catch(const char* pErr)
   {
-
+    m_Filename = "Failed to open.";
   }
 
 }
@@ -93,18 +96,44 @@ AnimSheetContainer::~AnimSheetContainer()
 }
 
 
-void AnimSheetContainer::save(const char* pFileName)
+bool AnimSheetContainer::save(const char* pFileName)
 {
-  if(m_SheetDataType == SDT_IlbmPicture)
+  if(pFileName == NULL)
   {
-    SheetItemNode* pItem = getSheetItem(0);
+    // No filename given
+    if(m_Filename.length() == 0)
+    {
+      return false;
+    }
 
-    // Creation of the saver object already saves the picture
-    // (or throws an exception)
-    SaveBitMapPictureIlbm ilbmSaver(pFileName,
-                                    pItem->pBitMap,
-                                    m_pColors32,
-                                    m_ModeId);
+    // Use the original file name
+    pFileName = m_Filename.c_str();
+  }
+
+  try
+  {
+    if(m_SheetDataType == SDT_IlbmPicture)
+    {
+      SheetItemNode* pItem = getSheetItem(0);
+
+      // Creation of the saver object already saves the picture
+      // (or throws an exception)
+      SaveBitMapPictureIlbm ilbmSaver(pFileName,
+                                      pItem->pBitMap,
+                                      m_pColors32,
+                                      m_ModeId);
+
+      return true;
+
+    }
+    else if(m_SheetDataType == SDT_AmosBank)
+    {
+      return false;
+    }
+  }
+  catch(const char* pErrorMsg)
+  {
+    return false;
   }
 }
 
@@ -163,6 +192,30 @@ ULONG AnimSheetContainer::getNumSheets()
 {
   return m_NumSheets;
 }
+
+const char* AnimSheetContainer::getFileName()
+{
+  return m_Filename.c_str();
+}
+
+
+void AnimSheetContainer::setFilename(const char* pFileName)
+{
+  m_Filename = pFileName;
+}
+
+
+bool AnimSheetContainer::isIlbmSheet()
+{
+  return m_SheetDataType == SDT_IlbmPicture;
+}
+
+
+bool AnimSheetContainer::isAmosSheet()
+{
+  return m_SheetDataType == SDT_AmosBank;
+}
+
 
 bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
                                      ULONG initialIndex)

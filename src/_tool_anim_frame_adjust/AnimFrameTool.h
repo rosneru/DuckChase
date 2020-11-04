@@ -33,10 +33,9 @@ public:
   void Run();
 
 private:
-  std::string m_Filename;
   ULONG m_OScanWidth;
   ULONG m_OScanHeight;
-  AnimSheetContainer* m_pAnimSheets;
+  AnimSheetContainer* m_pAnimSheetContainer;
   BitMapTools* m_pBitMapTools;
   ULONG m_NormalRectPen;
   ULONG m_HighlightedRectPen;
@@ -62,6 +61,7 @@ private:
   {
     MID_ProjectOpenAnim,
     MID_ProjectSave,
+    MID_ProjectSaveAs,
     MID_ProjectAbout,
     MID_ProjectQuit,
     MID_ToolsCenterAllFrames,
@@ -109,8 +109,9 @@ private:
 
   void selectAnimSheet(ULONG index);
   
-  void openAnim();
-  void saveIlbm();
+  void open();
+  void save();
+  void saveAs();
 
   void calcFrameRects();
   void updateFrameIdxGadgets(bool bCurrentOnly);
