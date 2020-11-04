@@ -189,7 +189,7 @@ ULONG* OpenAmosAbk::parseColors32()
 
   // Parse the 32 colors of the AMOS abk
   const ULONG numColors = 32;
-  m_pColors32 = (ULONG*) AllocVec(2 + 3 * numColors * sizeof(ULONG),
+  m_pColors32 = (ULONG*) AllocVec((2 + 3 * numColors) * sizeof(ULONG),
                                   MEMF_PUBLIC|MEMF_CLEAR);
   if(m_pColors32 == NULL)
   {
