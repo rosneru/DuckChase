@@ -591,7 +591,7 @@ void AnimFrameTool::saveAs()
   {
     requestTitle = "Select IFF file name to save..";
   }
-  else if(m_pAnimSheets->isIlbmSheet())
+  else if(m_pAnimSheets->isAmosSheet())
   {
     requestTitle = "Select AMOS abk file name to save..";
   }
