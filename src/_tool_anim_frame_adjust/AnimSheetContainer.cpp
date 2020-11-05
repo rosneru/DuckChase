@@ -144,9 +144,6 @@ bool AnimSheetContainer::save(const char* pFileName)
 
 struct SheetItemNode* AnimSheetContainer::getSheet(ULONG index)
 {
-  ULONG i = 0;
-  struct Node* pNode;
-
   if(index >= m_SheetVector.size())
   {
     // Wanted index is outside list bounds
@@ -154,32 +151,6 @@ struct SheetItemNode* AnimSheetContainer::getSheet(ULONG index)
   }
 
   return m_SheetVector.at(index);
-
-  // // Point pNode to the header node (which contains no data)
-  // pNode = m_SheetList.lh_Head;
-  // if(pNode == NULL)
-  // {
-  //   return NULL;
-  // }
-
-  // do
-  // {
-  //   if(index == i)
-  //   {
-  //     // This is the wanted node
-  //     return (struct SheetItemNode*) pNode;
-  //   }
-
-  //   i++;
-  //   if(i >= m_NumSheets)
-  //   {
-  //     // Not found
-  //     return NULL;
-  //   }
-  // }
-  // while((pNode = pNode->ln_Succ) != NULL);  // As long there is a successor
-
-  // return NULL;
 }
 
 
