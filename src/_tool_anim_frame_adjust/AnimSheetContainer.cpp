@@ -11,7 +11,6 @@
 
 AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   : m_SheetDataType(SDT_None),
-    m_NumSheets(0),
     m_pColors32(NULL),
     m_ModeId(0)
 {
@@ -145,37 +144,39 @@ struct SheetItemNode* AnimSheetContainer::getSheet(ULONG index)
   ULONG i = 0;
   struct Node* pNode;
 
-  if(index >= m_NumSheets)
+  if(index >= m_SheetVector.size())
   {
     // Wanted index is outside list bounds
     return NULL;
   }
 
-  // Point pNode to the header node (which contains no data)
-  pNode = m_SheetList.lh_Head;
-  if(pNode == NULL)
-  {
-    return NULL;
-  }
+  return m_SheetVector.at(index);
 
-  do
-  {
-    if(index == i)
-    {
-      // This is the wanted node
-      return (struct SheetItemNode*) pNode;
-    }
+  // // Point pNode to the header node (which contains no data)
+  // pNode = m_SheetList.lh_Head;
+  // if(pNode == NULL)
+  // {
+  //   return NULL;
+  // }
 
-    i++;
-    if(i >= m_NumSheets)
-    {
-      // Not found
-      return NULL;
-    }
-  }
-  while((pNode = pNode->ln_Succ) != NULL);  // As long there is a successor
+  // do
+  // {
+  //   if(index == i)
+  //   {
+  //     // This is the wanted node
+  //     return (struct SheetItemNode*) pNode;
+  //   }
 
-  return NULL;
+  //   i++;
+  //   if(i >= m_NumSheets)
+  //   {
+  //     // Not found
+  //     return NULL;
+  //   }
+  // }
+  // while((pNode = pNode->ln_Succ) != NULL);  // As long there is a successor
+
+  // return NULL;
 }
 
 
@@ -192,7 +193,7 @@ ULONG* AnimSheetContainer::getColors32()
 
 ULONG AnimSheetContainer::getNumSheets()
 {
-  return m_NumSheets;
+  return m_SheetVector.size();
 }
 
 const char* AnimSheetContainer::getFileName()
@@ -288,8 +289,13 @@ bool AnimSheetContainer::addItemNode(const struct BitMap* pBitMap,
   pItemNode->SheetHeight = height;
   pItemNode->SheetDepth = depth;
 
+  // Add SheetItemNode to exec list (e.g. for ListView use of the
+  // node->name field)
   AddTail(&m_SheetList, (struct Node*)pItemNode);
-  m_NumSheets++;
+
+  // Add it also to the vector (for easier access on all other purposes)
+  m_SheetVector.push_back(pItemNode);
+
   return true;
 }
 
@@ -336,6 +342,8 @@ ULONG* AnimSheetContainer::deepCopyColors(ULONG* pSrcColors32, ULONG srcDepth)
 
 void AnimSheetContainer::cleanup()
 {
+  m_SheetVector.clear();
+
   struct SheetItemNode* pWorkNode = (struct SheetItemNode*)(m_SheetList.lh_Head);
   struct SheetItemNode* pNextNode;
   while((pNextNode = (struct SheetItemNode*)pWorkNode->ld_Node.ln_Succ) != NULL)
@@ -367,7 +375,5 @@ void AnimSheetContainer::cleanup()
   {
     FreeVec(m_pColors32);
   }
-
-  m_NumSheets = 0;
 }
 

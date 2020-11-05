@@ -6,6 +6,7 @@
 #include <graphics/gfx.h>
 
 #include <string>
+#include <vector>
 
 #include "OpenIlbmPictureBitMap.h"
 
@@ -58,7 +59,13 @@ public:
 private:
   SheetDataType m_SheetDataType;
   struct List m_SheetList;
-  ULONG m_NumSheets;
+
+  /**
+   * Also use a vector of SheetItemNode pointers. Makes a easier
+   * interface when passed to other objects.
+   */
+  std::vector<SheetItemNode*> m_SheetVector;
+
   ULONG* m_pColors32;
   ULONG m_ModeId;
 
