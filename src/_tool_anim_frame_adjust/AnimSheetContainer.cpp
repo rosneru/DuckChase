@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "OpenAmosAbk.h"
+#include "SaveAmosAbk.h"
 #include "SaveBitMapPictureIlbm.h"
 #include "SheetItemNode.h"
 #include "AnimSheetContainer.h"
@@ -129,13 +130,15 @@ bool AnimSheetContainer::save(const char* pFileName)
     }
     else if(m_SheetDataType == SDT_AmosBank)
     {
-      return false;
+      SaveAmosAbk amosSaver(pFileName, m_SheetVector, m_pColors32);
+      return true;
     }
   }
   catch(const char* pErrorMsg)
   {
-    return false;
   }
+  
+  return false;
 }
 
 

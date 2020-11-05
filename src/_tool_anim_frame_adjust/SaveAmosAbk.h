@@ -1,7 +1,10 @@
 #ifndef SAVE_AMOS_ABK_H
 #define SAVE_AMOS_ABK_H
 
+#include <dos/dos.h>
+#include <exec/types.h>
 #include <graphics/gfx.h>
+
 #include <vector>
 
 #include "SheetItemNode.h"
@@ -16,6 +19,9 @@
 class SaveAmosAbk
 {
 public:
+  /**
+   * Creating the saver object already saves the file.
+   */
   SaveAmosAbk(const char* pFileName,
               std::vector<SheetItemNode*> sheets,
               ULONG* pColors32);
@@ -23,7 +29,13 @@ public:
   virtual ~SaveAmosAbk();
 
 private:
+  BPTR m_FileHandle;
+  ULONG* m_pOCSColorTable;
+
+  ULONG* colors32ToOCSColorTable(ULONG* pColors32);
   void cleanup();
+
+  ULONG numDigits(ULONG number);
 };
 
 #endif
