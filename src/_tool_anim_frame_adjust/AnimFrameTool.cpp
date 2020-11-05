@@ -448,9 +448,11 @@ void AnimFrameTool::open()
 {
   AslFileRequest request(m_pControlWindow, 
                          m_pControlWindow->LeftEdge,
-                         m_pControlWindow->TopEdge,
+                         m_pControlScreen->BarHeight + 1,
                          m_pControlWindow->Width,
-                         m_ControlsRect.Bottom() + 10);
+                         m_pControlScreen->Height - CANVAS_HEIGHT 
+                                                  - m_pControlScreen->BarHeight 
+                                                  - 4);
 
   std::string filename = request.SelectFile("Select an IFF ILBM or AMOS ABK file", 
                                             "", 
@@ -602,7 +604,14 @@ void AnimFrameTool::saveAs()
     requestTitle = "Select AMOS abk file name to save..";
   }
 
-  AslFileRequest request(m_pControlWindow);
+  AslFileRequest request(m_pControlWindow, 
+                         m_pControlWindow->LeftEdge,
+                         m_pControlScreen->BarHeight + 1,
+                         m_pControlWindow->Width,
+                         m_pControlScreen->Height - CANVAS_HEIGHT 
+                                                  - m_pControlScreen->BarHeight 
+                                                  - 4);
+
   std::string filename = request.SelectFile(requestTitle, 
                                             m_pAnimSheets->getFileName(), 
                                             true,
