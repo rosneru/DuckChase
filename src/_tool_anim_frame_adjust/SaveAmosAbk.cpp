@@ -25,12 +25,24 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
     throw "SaveAmosAbk: Wrong size of bytes written.";
   }
 
+  // Calculate the total number of frames
+  ULONG numFrames = 0;
+  for(std::vector<SheetItemNode*>::iterator it = sheets.begin(); it != sheets.end(); ++it)
+  {
+    if((*it) != NULL)
+    {
+      ULONG sheetNumFrames = (*it)->SheetWidth / ((*it)->FrameWordWidth * 16);
+      numFrames += sheetNumFrames;
+    }
+  }
 
+  // Write the total number of frames
+  if(writeWord(numFrames) == false)
+  {
+    throw "SaveAmosAbk: Wrong size of bytes written.";
+  }
 
-  // Write number of frames
-  ULONG numFrames = sheets.size();
-  ULONG numFrameDigits = numDigits(numFrames);
-
+  // Write all the frames pictures
   for(std::vector<SheetItemNode*>::iterator it = sheets.begin(); it != sheets.end(); ++it)
   {
     if((*it) != NULL)
@@ -39,7 +51,7 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
     }
   }
 
-  // Write the colors32
+  // Create and write the OCS color table
   m_pOCSColorTable = colors32ToOCSColorTable(pColors32);
   
 }
@@ -47,6 +59,22 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
 SaveAmosAbk::~SaveAmosAbk()
 {
   cleanup();
+}
+
+
+void SaveAmosAbk::cleanup()
+{
+  if(m_pOCSColorTable != NULL)
+  {
+    FreeVec(m_pOCSColorTable);
+    m_pOCSColorTable = NULL;
+  }
+
+  if(m_FileHandle != 0)
+  {
+    Close(m_FileHandle);
+    m_FileHandle = 0;
+  }
 }
 
 
@@ -100,30 +128,11 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
 }
 
 
-void SaveAmosAbk::cleanup()
+bool SaveAmosAbk::writeWord(ULONG value)
 {
-  if(m_pOCSColorTable != NULL)
-  {
-    FreeVec(m_pOCSColorTable);
-    m_pOCSColorTable = NULL;
-  }
+  UBYTE buf[2];
+  buf[0] = (value & 0xff00) >> 8;
+  buf[1] = value & 0xff;
 
-  if(m_FileHandle != 0)
-  {
-    Close(m_FileHandle);
-    m_FileHandle = 0;
-  }
-}
-
-
-
-ULONG SaveAmosAbk::numDigits(ULONG number)
-{
-  ULONG digits = 1;
-  if ( number >= 100000000 ) { digits += 8; number /= 100000000; }
-  if ( number >= 10000     ) { digits += 4; number /= 10000; }
-  if ( number >= 100       ) { digits += 2; number /= 100; }
-  if ( number >= 10        ) { digits += 1; }
-
-  return digits;
+  return Write(m_FileHandle, &buf, 2) == 2;
 }

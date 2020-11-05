@@ -146,7 +146,7 @@ struct SheetItemNode* AnimSheetContainer::getSheet(ULONG index)
 {
   if(index >= m_SheetVector.size())
   {
-    // Wanted index is outside list bounds
+    // Index is outside list bounds
     return NULL;
   }
 

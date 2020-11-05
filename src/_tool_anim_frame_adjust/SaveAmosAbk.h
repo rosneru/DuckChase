@@ -32,10 +32,13 @@ private:
   BPTR m_FileHandle;
   ULONG* m_pOCSColorTable;
 
-  ULONG* colors32ToOCSColorTable(ULONG* pColors32);
+  
   void cleanup();
+  
+  ULONG* colors32ToOCSColorTable(ULONG* pColors32);
+  
+  bool writeWord(ULONG value);
 
-  ULONG numDigits(ULONG number);
 };
 
 #endif
