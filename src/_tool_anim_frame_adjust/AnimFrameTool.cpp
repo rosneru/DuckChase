@@ -15,6 +15,7 @@
 #include "AslFileRequest.h"
 #include "MessageBox.h"
 #include "ShadowMask.h"
+#include "SheetItemNode.h"
 
 #include "AnimFrameTool.h"
 

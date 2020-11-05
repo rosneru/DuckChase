@@ -5,6 +5,7 @@
 
 #include "OpenAmosAbk.h"
 #include "SaveBitMapPictureIlbm.h"
+#include "SheetItemNode.h"
 #include "AnimSheetContainer.h"
 
 

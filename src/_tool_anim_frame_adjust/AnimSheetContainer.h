@@ -18,21 +18,6 @@ enum SheetDataType
 };
 
 /**
- * A default exec list node, extended by the data needed for an
- * AnimSheet
- */
-struct SheetItemNode
-{
-  struct Node ld_Node;
-  struct BitMap* pBitMap;
-  ULONG FrameWordWidth;
-  ULONG SheetWidth;
-  ULONG SheetHeight;
-  ULONG SheetDepth;
-};
-
-
-/**
  * A container to load, change and save collection of
  * OpenIlbmPictureBitMap's.
  *

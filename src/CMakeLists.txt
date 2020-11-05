@@ -104,6 +104,7 @@ add_executable (AnimFrameTool_gcc
                 _tool_anim_frame_adjust/ChunkyPixelArray.cpp
                 _tool_anim_frame_adjust/MessageBox.cpp
                 _tool_anim_frame_adjust/OpenAmosAbk.cpp
+                _tool_anim_frame_adjust/SaveAmosAbk.cpp
                 _tool_anim_frame_adjust/main.cpp)
 
 target_include_directories (AnimFrameTool_gcc PUBLIC
