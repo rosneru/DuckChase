@@ -113,6 +113,8 @@ private:
   void save();
   void saveAs();
   bool quit();
+  bool askContinueWhenChanged(std::string continueActionText, 
+                              std::string continueButtonText);
 
   void calcFrameRects(LONG selectedFrameWordWidth);
   void updateFrameIdxGadgets(bool bCurrentOnly);

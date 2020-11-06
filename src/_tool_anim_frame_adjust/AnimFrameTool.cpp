@@ -448,6 +448,11 @@ void AnimFrameTool::selectNextFrame()
 
 void AnimFrameTool::open()
 {
+  if(askContinueWhenChanged("Open a new file anyway?", "Open") == false)
+  {
+    return;
+  }
+
   AslFileRequest request(m_pControlWindow, 
                          m_pControlWindow->LeftEdge,
                          m_pControlScreen->BarHeight + 1,
@@ -670,16 +675,29 @@ void AnimFrameTool::saveAs()
 
 bool AnimFrameTool::quit()
 {
+  return askContinueWhenChanged("Quit anyway?", "Quit");
+}
+
+
+bool AnimFrameTool::askContinueWhenChanged(std::string continueActionText,
+                                           std::string continueButtonText)
+{
   if(m_HasChanged)
   {
-      MessageBox request(m_pControlWindow);
-      if(request.Show("Unsaved changes",
-                      "There are changes in current file that have not \
-                       been saved.\n\nQuit anyway?",
-                      "Quit|Cancel") == 0)
-      {
-        return false;
-      }
+    std::string msg;
+    msg += "Changes in current file have\n";
+    msg += "not been saved.\n\n";
+    msg += continueActionText;
+
+    std::string buttonTexts = continueButtonText + "|Cancel";
+
+    MessageBox request(m_pControlWindow);
+    if(request.Show("Unsaved changes",
+                    msg.c_str(),
+                    buttonTexts.c_str()) == 0)
+    {
+      return false;
+    }
   }
 
   return true;
