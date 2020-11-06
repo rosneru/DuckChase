@@ -91,7 +91,7 @@ OpenImageDataPicture::OpenImageDataPicture(struct BitMap* pSrcBitmap,
   // Manually set all plane pointers to the dedicated area of 
   // destination Bitmap
   PLANEPTR ptr = (PLANEPTR)m_pImageData;
-  for(size_t i = 0;i < depth;i++)
+  for(size_t i = 0; i < depth; i++)
   {
     bitmap.Planes[i] = ptr;
     ptr += planeSize;

@@ -32,12 +32,24 @@ private:
   BPTR m_FileHandle;
   ULONG* m_pOCSColorTable;
 
+
   
   void cleanup();
   
+  /**
+   * Create a planar image data in a way that all BitPlanes are locate
+   * one after another.
+   *
+   * The full size of the allocated Imagedata will be written to the
+   * provided byteSize variable.
+   *
+   * IMPORTANT: Must be freed with FreeVec() after use.
+   */
+  WORD* createPlanarGraphicData(struct BitMap* pBitMap, ULONG& bufSizeBytes);
+
   ULONG* colors32ToOCSColorTable(ULONG* pColors32);
   
-  bool writeWord(ULONG value);
+  void writeWord(ULONG value);
 
 };
 

@@ -1,5 +1,6 @@
 #include <clib/dos_protos.h>
 #include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
 #include <exec/memory.h>
 
 #include "SaveAmosAbk.h"
@@ -37,23 +38,47 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
   }
 
   // Write the total number of frames
-  if(writeWord(numFrames) == false)
-  {
-    throw "SaveAmosAbk: Wrong size of bytes written.";
-  }
+  writeWord(numFrames);
 
   // Write all the frames pictures
   for(std::vector<SheetItemNode*>::iterator it = sheets.begin(); it != sheets.end(); ++it)
   {
     if((*it) != NULL)
     {
-      // write the frame
+      writeWord((*it)->FrameWordWidth);
+      writeWord((*it)->SheetHeight);
+      writeWord((*it)->SheetDepth);
+      writeWord(0); // Write 0 for x hot-spot
+      writeWord(0); // Write 0 for y hot-spot
+
+      // Convert frame BitMap into ImageData where all planes are
+      // located one after another.
+      ULONG imgDataSize;
+      WORD* pImageData = createPlanarGraphicData((*it)->pBitMap, imgDataSize);
+      if(pImageData == NULL)
+      {
+        cleanup();
+        throw "SaveAmosAbk: Failed to create ImageData to save.";
+      }
+
+      // Write the frame ImageData
+      if(Write(m_FileHandle, (APTR)pImageData, imgDataSize) != imgDataSize)
+      {
+        FreeVec(pImageData);
+        cleanup();
+        throw "SaveAmosAbk: Wrong size of bytes written.";
+      }
+
+      FreeVec(pImageData);
     }
   }
 
   // Create and write the OCS color table
   m_pOCSColorTable = colors32ToOCSColorTable(pColors32);
-  
+  for(ULONG i = 0; i < 32; i++)
+  {
+    writeWord(pColors32[i]);
+  }
 }
 
 SaveAmosAbk::~SaveAmosAbk()
@@ -75,6 +100,57 @@ void SaveAmosAbk::cleanup()
     Close(m_FileHandle);
     m_FileHandle = 0;
   }
+}
+
+WORD* SaveAmosAbk::createPlanarGraphicData(struct BitMap* pSrcBitmap, 
+                                           ULONG& bufSizeBytes)
+{
+  if(pSrcBitmap == NULL)
+  {
+    throw "OpenImageDataPicture: No source BitMap provided.";
+  }
+
+  ULONG width = GetBitMapAttr(pSrcBitmap, BMA_WIDTH);
+  ULONG height = GetBitMapAttr(pSrcBitmap, BMA_HEIGHT);
+  ULONG depth = GetBitMapAttr(pSrcBitmap, BMA_DEPTH);
+
+  // Create a destination BitMap
+  struct BitMap bitmap;
+  InitBitMap(&bitmap, depth, width, height);
+
+  // Allocate memory for the planes of destination Bitmap
+  ULONG planeSize = RASSIZE(width, height);
+  bufSizeBytes = planeSize * depth;
+
+  WORD* pImageData = (WORD*)AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
+  if(pImageData == NULL)
+  {
+    return NULL;
+  }
+
+  // Manually set all plane pointers to the dedicated area of 
+  // destination Bitmap
+  PLANEPTR ptr = (PLANEPTR)pImageData;
+  for(ULONG i = 0; i < depth; i++)
+  {
+    bitmap.Planes[i] = ptr;
+    ptr += planeSize;
+  }
+
+  // Blit source BitMap to destination BitMap
+  BltBitMap(pSrcBitmap, 
+            0,
+            0,
+            &bitmap,
+            0,
+            0,
+            width,
+            height,
+            0xC0, 
+            0xFF, 
+            NULL);
+
+  return pImageData;
 }
 
 
@@ -128,11 +204,15 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
 }
 
 
-bool SaveAmosAbk::writeWord(ULONG value)
+void SaveAmosAbk::writeWord(ULONG value)
 {
   UBYTE buf[2];
   buf[0] = (value & 0xff00) >> 8;
   buf[1] = value & 0xff;
 
-  return Write(m_FileHandle, &buf, 2) == 2;
+  if(Write(m_FileHandle, &buf, 2) != 2)
+  {
+    cleanup();
+    throw "SaveAmosAbk: Wrong size of bytes written.";
+  }
 }

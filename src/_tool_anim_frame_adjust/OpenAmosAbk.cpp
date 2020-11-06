@@ -272,8 +272,8 @@ ULONG OpenAmosAbk::readNextWord()
 struct BitMap* OpenAmosAbk::createFrameBitMap()
 {
   /**
-   * NOTE: Theoritically!! this method could be changed. It would be
-   * enough to create the abkBitmap dynamically (AllocVec! not
+   * NOTE: Theoritically!! this method could be changed. It would
+   * suffice to create the abkBitmap dynamically (AllocVec! not
    * AllocBitmap), then do InitBitMap to it, set the ptr's in the for
    * loop and return that BitMap. No pFrameBitMap allocation and no
    * blitting to it would be needed.
