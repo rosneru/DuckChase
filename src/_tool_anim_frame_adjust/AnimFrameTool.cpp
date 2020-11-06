@@ -654,7 +654,7 @@ void AnimFrameTool::saveAs()
     return;
   }
 
-  // Save as changes the current file name
+  // 'Save as' changes the current file name, apply it
   m_pAnimSheets->setFilename(filename.c_str());
 
   // Set the new file name also in the gadget
