@@ -45,7 +45,7 @@ private:
    *
    * IMPORTANT: Must be freed with FreeVec() after use.
    */
-  WORD* createPlanarGraphicData(struct BitMap* pBitMap, ULONG& bufSizeBytes);
+  WORD* bitmapToImageData(struct BitMap* pBitMap, ULONG& bufSizeBytes);
 
   ULONG* colors32ToOCSColorTable(ULONG* pColors32);
   

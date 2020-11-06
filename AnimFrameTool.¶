@@ -274,6 +274,12 @@ Storm Shell Project (Dependencies)
 "build-stormc-animframetool/OpenAmosAbk.o" "build-stormc-animframetool/OpenAmosAbk.debug"
 ""
 1 1
+File
+1 "src/_tool_anim_frame_adjust/SaveAmosAbk.cpp"
+Storm Shell Project (Dependencies)
+"build-stormc-animframetool/SaveAmosAbk.o" "build-stormc-animframetool/SaveAmosAbk.debug"
+""
+1 1
 Section
 2 1 95
 0 1 1 0
@@ -418,13 +424,24 @@ Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
+File
+2 "src/_tool_anim_frame_adjust/SaveAmosAbk.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
+2 "src/_tool_anim_frame_adjust/SheetItemNode.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
 Section
 10 1 40
 0 0 0 0
 7
 File
 10 "AnimFrameTool_stormc"
-"AnimFrameTool_stormc"
 Storm Shell Project (Dependencies)
 "" ""
 ""

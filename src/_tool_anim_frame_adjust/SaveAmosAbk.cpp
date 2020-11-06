@@ -5,6 +5,7 @@
 
 #include "SaveAmosAbk.h"
 
+#include <stdio.h>
 
 SaveAmosAbk::SaveAmosAbk(const char* pFileName,
                          std::vector<SheetItemNode*> sheets,
@@ -45,31 +46,40 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
   {
     if((*it) != NULL)
     {
-      writeWord((*it)->FrameWordWidth);
-      writeWord((*it)->SheetHeight);
-      writeWord((*it)->SheetDepth);
-      writeWord(0); // Write 0 for x hot-spot
-      writeWord(0); // Write 0 for y hot-spot
-
-      // Convert frame BitMap into ImageData where all planes are
-      // located one after another.
-      ULONG imgDataSize;
-      WORD* pImageData = createPlanarGraphicData((*it)->pBitMap, imgDataSize);
-      if(pImageData == NULL)
+      ULONG frameWidth = ((*it)->FrameWordWidth * 16);
+      ULONG sheetNumFrames = (*it)->SheetWidth / frameWidth;
+      for(ULONG xStart = 0; xStart < sheetNumFrames * frameWidth; xStart += frameWidth)
       {
-        cleanup();
-        throw "SaveAmosAbk: Failed to create ImageData to save.";
-      }
+        writeWord((*it)->FrameWordWidth);
+        writeWord((*it)->SheetHeight);
+        writeWord((*it)->SheetDepth);
+        writeWord(0); // Write 0 for x hot-spot
+        writeWord(0); // Write 0 for y hot-spot
 
-      // Write the frame ImageData
-      if(Write(m_FileHandle, (APTR)pImageData, imgDataSize) != imgDataSize)
-      {
+        // ImagedataSize is needed to determine how many bytes to write;
+        // Will be set in bitmapToImageData()
+        ULONG imgDataSize;
+
+        // Convert frame BitMap into ImageData where all planes are
+        // located one after another.
+        WORD* pImageData = bitmapToImageData((*it)->pBitMap, xStart, imgDataSize);
+        if(pImageData == NULL)
+        {
+          cleanup();
+          throw "SaveAmosAbk: Failed to create ImageData to save.";
+        }
+
+        // Write the frame ImageData
+        printf("Write ImgDataSize = %d\n", imgDataSize);
+        if(Write(m_FileHandle, (APTR)pImageData, imgDataSize) != imgDataSize)
+        {
+          FreeVec(pImageData);
+          cleanup();
+          throw "SaveAmosAbk: Wrong size of bytes written.";
+        }
+
         FreeVec(pImageData);
-        cleanup();
-        throw "SaveAmosAbk: Wrong size of bytes written.";
       }
-
-      FreeVec(pImageData);
     }
   }
 
@@ -102,7 +112,8 @@ void SaveAmosAbk::cleanup()
   }
 }
 
-WORD* SaveAmosAbk::createPlanarGraphicData(struct BitMap* pSrcBitmap, 
+#include <stdio.h>
+WORD* SaveAmosAbk::bitmapToImageData(struct BitMap* pSrcBitmap, 
                                            ULONG& bufSizeBytes)
 {
   if(pSrcBitmap == NULL)
@@ -121,6 +132,7 @@ WORD* SaveAmosAbk::createPlanarGraphicData(struct BitMap* pSrcBitmap,
   // Allocate memory for the planes of destination Bitmap
   ULONG planeSize = RASSIZE(width, height);
   bufSizeBytes = planeSize * depth;
+printf("Size of one plane %d x %d = %d bytes.\n", width, height, planeSize);
 
   WORD* pImageData = (WORD*)AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(pImageData == NULL)
