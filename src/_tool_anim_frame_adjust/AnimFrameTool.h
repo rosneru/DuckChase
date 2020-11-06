@@ -112,6 +112,7 @@ private:
   void open();
   void save();
   void saveAs();
+  bool quit();
 
   void calcFrameRects(LONG selectedFrameWordWidth);
   void updateFrameIdxGadgets(bool bCurrentOnly);

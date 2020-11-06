@@ -101,15 +101,15 @@ AnimFrameTool::AnimFrameTool()
   {
     { NM_TITLE, "Project",                       0 , 0, 0, 0, },
     {  NM_ITEM, "Open anim picture",            "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Save",                         "S", 0, 0, (APTR)MID_ProjectSave, },
+    {  NM_ITEM, "Save",                          0 , 0, 0, (APTR)MID_ProjectSave, },
     {  NM_ITEM, "Save as..",                    "S", 0, 0, (APTR)MID_ProjectSaveAs, },
     {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
-    {  NM_ITEM, "About",                         0,  0, 0, (APTR)MID_ProjectAbout, },
+    {  NM_ITEM, "About",                         0 , 0, 0, (APTR)MID_ProjectAbout, },
     {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
     {  NM_ITEM, "Quit",                         "Q", 0, 0, (APTR)MID_ProjectQuit, },
     { NM_TITLE, "Tools",                         0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",             0,  0, 0, (APTR)MID_ToolsCenterAllFrames, },
-    {  NM_ITEM, "Get max width",                 0,  0, 0, (APTR)MID_ToolsGetMaxWidth, },
+    {  NM_ITEM, "Center all frames",             0 , 0, 0, (APTR)MID_ToolsCenterAllFrames, },
+    {  NM_ITEM, "Get max width",                 0 , 0, 0, (APTR)MID_ToolsGetMaxWidth, },
     {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
     {  NM_ITEM, "Print frame mask",             "F", 0, 0, (APTR)MID_ToolsPrintFrameMask, },
     {  NM_ITEM, "Print mask of whole picture",  "M", 0, 0, (APTR)MID_ToolsPrintFullMask, },
@@ -646,6 +646,25 @@ void AnimFrameTool::saveAs()
 
 }
 
+
+bool AnimFrameTool::quit()
+{
+  if(m_HasChanged)
+  {
+      MessageBox request(m_pControlWindow);
+      if(request.Show("Unsaved changes",
+                      "There are changes in current file that have not \
+                       been saved.\n\nQuit anyway?",
+                      "Quit|Cancel") == 0)
+      {
+        return false;
+      }
+  }
+
+  return true;
+}
+
+
 void AnimFrameTool::calcFrameRects(LONG selectedFrameWordWidth)
 {
   if(m_pAnimSheets == NULL)
@@ -882,18 +901,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
     {
     case 'S':
     case 's':
-      // TODO
-      break;
-
-    case 'R':
-    case 'r':
-      // TODO
+      saveAs();
       break;
 
     case 'Q':
     case 'q':
-      // TODO
-      hasTerminated = true;
+      hasTerminated = quit();
       break;
     }
     break;
@@ -966,7 +979,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         break;
 
       case MID_ProjectQuit:
-        hasTerminated = TRUE;
+        hasTerminated = quit();
         break;
 
       case MID_ProjectAbout:
