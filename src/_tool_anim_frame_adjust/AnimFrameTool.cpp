@@ -1,7 +1,9 @@
+#include <dos/dos.h>
 #include <exec/types.h>
 #include <libraries/gadtools.h>
 #include <graphics/videocontrol.h>
 
+#include <clib/dos_protos.h>
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
@@ -621,6 +623,25 @@ void AnimFrameTool::saveAs()
   {
     // FileRequester cancelled
     return;
+  }
+
+  bool doesFileExist = false;
+  BPTR fh = Open(filename.c_str(), MODE_OLDFILE);
+  if(fh != 0)
+  {
+    doesFileExist = true;
+    Close(fh);
+  }
+
+  if(doesFileExist)
+  {
+      MessageBox request(m_pControlWindow);
+      if(request.Show("Overwrite file?",
+                      "The selected file already exists.\n\nOverwrite it?",
+                      "Overwrite|Cancel") == 0)
+      {
+        return;
+      }
   }
 
   if(m_pAnimSheets->save(filename.c_str()) == false)
