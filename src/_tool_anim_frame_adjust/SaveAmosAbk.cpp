@@ -5,8 +5,6 @@
 
 #include "SaveAmosAbk.h"
 
-#include <stdio.h>
-
 SaveAmosAbk::SaveAmosAbk(const char* pFileName,
                          std::vector<SheetItemNode*> sheets,
                          ULONG* pColors32)
@@ -57,12 +55,12 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
         writeWord(0); // Write 0 for y hot-spot
 
         // ImagedataSize is needed to determine how many bytes to write;
-        // Will be set in bitmapToImageData()
+        // Will be set in sheetBitmapToFrameImage()
         ULONG imgDataSize;
 
         // Convert frame BitMap into ImageData where all planes are
         // located one after another.
-        WORD* pImageData = bitmapToImageData((*it)->pBitMap, xStart, imgDataSize);
+        WORD* pImageData = sheetBitmapToFrameImage((*it)->pBitMap, xStart, sheetNumFrames, imgDataSize);
         if(pImageData == NULL)
         {
           cleanup();
@@ -70,7 +68,6 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
         }
 
         // Write the frame ImageData
-        printf("Write ImgDataSize = %d\n", imgDataSize);
         if(Write(m_FileHandle, (APTR)pImageData, imgDataSize) != imgDataSize)
         {
           FreeVec(pImageData);
@@ -87,7 +84,7 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
   m_pOCSColorTable = colors32ToOCSColorTable(pColors32);
   for(ULONG i = 0; i < 32; i++)
   {
-    writeWord(pColors32[i]);
+    writeWord(m_pOCSColorTable[i]);
   }
 }
 
@@ -112,8 +109,10 @@ void SaveAmosAbk::cleanup()
   }
 }
 
-#include <stdio.h>
-WORD* SaveAmosAbk::bitmapToImageData(struct BitMap* pSrcBitmap, 
+
+WORD* SaveAmosAbk::sheetBitmapToFrameImage(struct BitMap* pSrcBitmap, 
+                                           ULONG xStart,
+                                           ULONG sheetNumFrames,
                                            ULONG& bufSizeBytes)
 {
   if(pSrcBitmap == NULL)
@@ -121,7 +120,7 @@ WORD* SaveAmosAbk::bitmapToImageData(struct BitMap* pSrcBitmap,
     throw "OpenImageDataPicture: No source BitMap provided.";
   }
 
-  ULONG width = GetBitMapAttr(pSrcBitmap, BMA_WIDTH);
+  ULONG width = GetBitMapAttr(pSrcBitmap, BMA_WIDTH) / sheetNumFrames;
   ULONG height = GetBitMapAttr(pSrcBitmap, BMA_HEIGHT);
   ULONG depth = GetBitMapAttr(pSrcBitmap, BMA_DEPTH);
 
@@ -132,7 +131,6 @@ WORD* SaveAmosAbk::bitmapToImageData(struct BitMap* pSrcBitmap,
   // Allocate memory for the planes of destination Bitmap
   ULONG planeSize = RASSIZE(width, height);
   bufSizeBytes = planeSize * depth;
-printf("Size of one plane %d x %d = %d bytes.\n", width, height, planeSize);
 
   WORD* pImageData = (WORD*)AllocVec(bufSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(pImageData == NULL)
@@ -151,7 +149,7 @@ printf("Size of one plane %d x %d = %d bytes.\n", width, height, planeSize);
 
   // Blit source BitMap to destination BitMap
   BltBitMap(pSrcBitmap, 
-            0,
+            xStart,
             0,
             &bitmap,
             0,
@@ -165,7 +163,7 @@ printf("Size of one plane %d x %d = %d bytes.\n", width, height, planeSize);
   return pImageData;
 }
 
-
+#include <stdio.h>
 ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
 {
   ULONG i, red, green, blue;
@@ -209,6 +207,8 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
     colorWord = (red << 8) | (green << 4) | blue;
 
     pColorTable[i] = colorWord;
+
+    printf("Converted color 0x%08x to 0x%08x.\n", pCol[i], colorWord);
   }
 
 

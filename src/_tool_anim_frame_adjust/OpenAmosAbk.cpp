@@ -286,7 +286,6 @@ struct BitMap* OpenAmosAbk::createFrameBitMap()
   ULONG planeSize = m_SheetFramesWordWidth * 2 * m_SheetFramesHeight;
   ULONG allPlanesSize = planeSize * m_SheetFramesDepth;
 
-printf("AllocBitMap (w x h x d) = (%d x %d x %d)\n", m_SheetFramesWordWidth * 16, m_SheetFramesHeight, m_SheetFramesDepth);
   struct BitMap* pFrameBitMap = AllocBitMap(m_SheetFramesWordWidth * 16,
                                             m_SheetFramesHeight,
                                             m_SheetFramesDepth,

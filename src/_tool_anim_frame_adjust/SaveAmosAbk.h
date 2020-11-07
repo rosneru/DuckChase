@@ -45,7 +45,10 @@ private:
    *
    * IMPORTANT: Must be freed with FreeVec() after use.
    */
-  WORD* bitmapToImageData(struct BitMap* pBitMap, ULONG& bufSizeBytes);
+  WORD* sheetBitmapToFrameImage(struct BitMap* pSrcBitmap, 
+                          ULONG xStart,
+                          ULONG sheetNumFrames,
+                          ULONG& bufSizeBytes);
 
   ULONG* colors32ToOCSColorTable(ULONG* pColors32);
   

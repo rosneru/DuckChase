@@ -102,7 +102,7 @@ AnimFrameTool::AnimFrameTool()
   struct NewMenu demomenu[] =
   {
     { NM_TITLE, "Project",                       0 , 0, 0, 0, },
-    {  NM_ITEM, "Open anim picture",            "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
+    {  NM_ITEM, "Open",                         "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
     {  NM_ITEM, "Save",                          0 , 0, 0, (APTR)MID_ProjectSave, },
     {  NM_ITEM, "Save as..",                    "S", 0, 0, (APTR)MID_ProjectSaveAs, },
     {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
