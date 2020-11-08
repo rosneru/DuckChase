@@ -50,7 +50,7 @@ Defines (End)
 0 0 1 0 1 0 0
 0 0 0 0
 0 ""
-2 0 0 0
+0 0 0 0
 1 0 0 1 0 1 0 1 0 1
 1 1 0 1 0 1
 0 1 1 1 1 0 0
@@ -182,8 +182,6 @@ File
 1 "src/picture/SaveBitMapPictureIlbm.cpp"
 "src/picture/SaveBitMapPictureIlbm.cpp"
 "src/picture/SaveBitMapPictureIlbm.h"
-"src/picture/BitMapPictureBase.h"
-"src/picture/PictureBase.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/SaveBitMapPictureIlbm.o" "build-stormc-animframetool/SaveBitMapPictureIlbm.debug"
 ""
@@ -206,6 +204,7 @@ File
 "src/picture/PictureBase.h"
 "src/_tool_anim_frame_adjust/BitMapTools.h"
 "src/_tool_anim_frame_adjust/AnimSheetContainer.h"
+"src/_tool_anim_frame_adjust/SheetItemNode.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimFrameTool.o" "build-stormc-animframetool/AnimFrameTool.debug"
 ""
@@ -217,6 +216,8 @@ File
 "src/_tool_anim_frame_adjust/AnimSheetContainer.h"
 "src/_tool_anim_frame_adjust/OpenAmosAbk.h"
 "src/picture/BitMapPictureBase.h"
+"src/_tool_anim_frame_adjust/SaveAmosAbk.h"
+"src/_tool_anim_frame_adjust/SheetItemNode.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/AnimSheetContainer.o" "build-stormc-animframetool/AnimSheetContainer.debug"
 ""
@@ -276,6 +277,9 @@ Storm Shell Project (Dependencies)
 1 1
 File
 1 "src/_tool_anim_frame_adjust/SaveAmosAbk.cpp"
+"src/_tool_anim_frame_adjust/SaveAmosAbk.cpp"
+"src/_tool_anim_frame_adjust/SaveAmosAbk.h"
+"src/_tool_anim_frame_adjust/SheetItemNode.h"
 Storm Shell Project (Dependencies)
 "build-stormc-animframetool/SaveAmosAbk.o" "build-stormc-animframetool/SaveAmosAbk.debug"
 ""
@@ -426,12 +430,14 @@ Storm Shell Project (Dependencies)
 0 0
 File
 2 "src/_tool_anim_frame_adjust/SaveAmosAbk.h"
+"src/_tool_anim_frame_adjust/SaveAmosAbk.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
 0 0
 File
 2 "src/_tool_anim_frame_adjust/SheetItemNode.h"
+"src/_tool_anim_frame_adjust/SheetItemNode.h"
 Storm Shell Project (Dependencies)
 "" ""
 ""
@@ -442,6 +448,7 @@ Section
 7
 File
 10 "AnimFrameTool_stormc"
+"AnimFrameTool_stormc"
 Storm Shell Project (Dependencies)
 "" ""
 ""

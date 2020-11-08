@@ -506,7 +506,7 @@ void AnimFrameTool::open()
     {
       msgString = "Failed to load file\n  '";
       msgString += filename;
-      msgString += "'\nas IFF / ILBM or AMOS .abk\n\n";
+      msgString += "'\nas IFF ILBM or AMOS ABK.\n\n";
       msgString += pMsg;
 
       MessageBox request(m_pControlWindow);

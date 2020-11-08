@@ -50,7 +50,6 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   catch(const char* pErr)
   {
     // Open as ILBM didn't work
-    m_Filename = "Failed to open.";
   }
 
   // Now try to open it as AMOS .abk file
@@ -86,8 +85,10 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   }
   catch(const char* pErr)
   {
-    m_Filename = "Failed to open.";
+    // Open as AMOS ABK didn't work
   }
+
+  throw "Wrong file selected?";
 
 }
 

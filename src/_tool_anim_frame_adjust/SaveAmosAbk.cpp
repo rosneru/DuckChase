@@ -163,7 +163,7 @@ WORD* SaveAmosAbk::sheetBitmapToFrameImage(struct BitMap* pSrcBitmap,
   return pImageData;
 }
 
-#include <stdio.h>
+
 ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
 {
   ULONG i, red, green, blue;
@@ -207,8 +207,6 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
     colorWord = (red << 8) | (green << 4) | blue;
 
     pColorTable[i] = colorWord;
-
-    printf("Converted color 0x%08x to 0x%08x.\n", pCol[i], colorWord);
   }
 
 

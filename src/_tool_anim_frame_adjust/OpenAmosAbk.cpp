@@ -39,7 +39,7 @@ OpenAmosAbk::OpenAmosAbk(const char* pFileName)
   }
 
   // Allocate memory for the whole file
-  m_pFileBuf = (BYTE*)AllocVec(m_FileBufByteSize, MEMF_PUBLIC|MEMF_CHIP);
+  m_pFileBuf = (UBYTE*)AllocVec(m_FileBufByteSize, MEMF_PUBLIC|MEMF_CHIP);
   if(m_pFileBuf == NULL)
   {
     cleanup();
@@ -166,11 +166,6 @@ struct BitMap* OpenAmosAbk::parseNextAnimSheet()
     m_SheetFramesDepth = 0;
 
     return m_pSheetBitMap;
-
-    // printf("File contains %d pictures\n", m_NumAbkFrames);
-
-    // printf("The first one has a size of %d x %d\n", wordWidth, height);
-
   }
   catch(const char* pErrMsg)
   {
@@ -185,6 +180,7 @@ ULONG OpenAmosAbk::getSheetWordWidth()
 {
   return m_LastParsedWordWidth;
 }
+
 
 ULONG* OpenAmosAbk::parseColors32()
 {
@@ -261,10 +257,9 @@ ULONG OpenAmosAbk::readNextWord()
     throw "OpenAmosAbk::readNextWord() reached end of buffer.";
   }
 
-  value = 256 * m_pFileBuf[m_ParseByteCounter]
-        + m_pFileBuf[m_ParseByteCounter + 1];
+  value = (m_pFileBuf[m_ParseByteCounter++] << 8);
+  value |= m_pFileBuf[m_ParseByteCounter++];
 
-  m_ParseByteCounter += 2;
   return value;
 }
 
