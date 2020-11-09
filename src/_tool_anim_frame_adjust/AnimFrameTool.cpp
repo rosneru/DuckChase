@@ -1373,7 +1373,6 @@ void AnimFrameTool::enableMenuItem(MenuId menuId)
   OnMenu(m_pControlWindow, menuNumber);
 }
 
-
 struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
                                                    WORD& foundMenuNumber)
 {
@@ -1393,6 +1392,7 @@ struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
 
   int iMenu = 0;
   int iItem = 0;
+  int iSub = 0;
 
   do
   {
@@ -1401,12 +1401,20 @@ struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
       APTR pUserData = GTMENUITEM_USERDATA(pItem);
       if(pUserData == pUserDataToFind)
       {
-        foundMenuNumber = FULLMENUNUM(iMenu, iItem, 0);
+        foundMenuNumber = FULLMENUNUM(iMenu, iItem, iSub);
         return pItem;
       }
 
-      pItem = pItem->NextItem;
-      iItem++;
+      if(pItem->SubItem != NULL)
+      {
+        pItem = pItem->SubItem;
+        iSub++;
+      }
+      else
+      {
+        pItem = pItem->NextItem;
+        iItem++;
+      }
     }
     while(pItem != NULL);
 
