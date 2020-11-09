@@ -62,6 +62,8 @@ private:
     MID_ProjectOpenAnim,
     MID_ProjectSave,
     MID_ProjectSaveAs,
+    MID_ProjectExportToIlbm,
+    MID_ProjectExportToAbk,
     MID_ProjectAbout,
     MID_ProjectQuit,
     MID_ToolsCenterAllFrames,
@@ -112,9 +114,14 @@ private:
   void open();
   void save();
   void saveAs();
+  void exportToAbk();
+  void exportToIlbm();
   bool quit();
-  bool askContinueWhenChanged(std::string continueActionText, 
-                              std::string continueButtonText);
+
+  std::string askSaveFilename(std::string requestTitle);
+
+  bool askContinueIfChanged(std::string continueActionText, 
+                            std::string continueButtonText);
 
   void calcFrameRects(LONG selectedFrameWordWidth);
   void updateFrameIdxGadgets(bool bCurrentOnly);

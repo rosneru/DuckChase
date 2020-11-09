@@ -101,21 +101,24 @@ AnimFrameTool::AnimFrameTool()
 
   struct NewMenu demomenu[] =
   {
-    { NM_TITLE, "Project",                       0 , 0, 0, 0, },
-    {  NM_ITEM, "Open",                         "O", 0, 0, (APTR)MID_ProjectOpenAnim, },
-    {  NM_ITEM, "Save",                          0 , 0, 0, (APTR)MID_ProjectSave, },
-    {  NM_ITEM, "Save as..",                    "S", 0, 0, (APTR)MID_ProjectSaveAs, },
-    {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
-    {  NM_ITEM, "About",                         0 , 0, 0, (APTR)MID_ProjectAbout, },
-    {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
-    {  NM_ITEM, "Quit",                         "Q", 0, 0, (APTR)MID_ProjectQuit, },
-    { NM_TITLE, "Tools",                         0 , 0, 0, 0, },
-    {  NM_ITEM, "Center all frames",             0 , 0, 0, (APTR)MID_ToolsCenterAllFrames, },
-    {  NM_ITEM, "Get max width",                 0 , 0, 0, (APTR)MID_ToolsGetMaxWidth, },
-    {  NM_ITEM, NM_BARLABEL,                     0 , 0, 0, 0, },
-    {  NM_ITEM, "Print frame mask",             "F", 0, 0, (APTR)MID_ToolsPrintFrameMask, },
-    {  NM_ITEM, "Print mask of whole picture",  "M", 0, 0, (APTR)MID_ToolsPrintFullMask, },
-    { NM_END,   0,                               0 , 0, 0, 0, },
+    { NM_TITLE,  "Project",                      0 , 0, 0, 0 },
+    {  NM_ITEM,  "Open",                        "O", 0, 0, (APTR)MID_ProjectOpenAnim },
+    {  NM_ITEM,  "Save",                         0 , 0, 0, (APTR)MID_ProjectSave },
+    {  NM_ITEM,  "Save as..",                   "S", 0, 0, (APTR)MID_ProjectSaveAs },
+    {  NM_ITEM,  "Export",                       0,  0, 0, 0 },
+    {    NM_SUB, "IFF ILBM Sheet",               0,  0, 0, (APTR)MID_ProjectExportToIlbm },
+    {    NM_SUB, "AMOS ABK",                     0,  0, 0, (APTR)MID_ProjectExportToAbk },
+    {  NM_ITEM,  NM_BARLABEL,                    0 , 0, 0, 0, },
+    {  NM_ITEM,  "About",                        0 , 0, 0, (APTR)MID_ProjectAbout },
+    {  NM_ITEM,  NM_BARLABEL,                    0 , 0, 0, 0, },
+    {  NM_ITEM,  "Quit",                        "Q", 0, 0, (APTR)MID_ProjectQuit },
+    { NM_TITLE,  "Tools",                        0 , 0, 0, 0, },
+    {  NM_ITEM,  "Center all frames",            0 , 0, 0, (APTR)MID_ToolsCenterAllFrames },
+    {  NM_ITEM,  "Get max width",                0 , 0, 0, (APTR)MID_ToolsGetMaxWidth },
+    {  NM_ITEM,  NM_BARLABEL,                    0 , 0, 0, 0, },
+    {  NM_ITEM,  "Print frame mask",            "F", 0, 0, (APTR)MID_ToolsPrintFrameMask },
+    {  NM_ITEM,  "Print mask of whole picture", "M", 0, 0, (APTR)MID_ToolsPrintFullMask },
+    { NM_END,    0,                              0 , 0, 0, 0, },
   };
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
@@ -216,6 +219,8 @@ AnimFrameTool::AnimFrameTool()
 
   disableMenuItem(MID_ProjectSave);
   disableMenuItem(MID_ProjectSaveAs);
+  disableMenuItem(MID_ProjectExportToAbk);
+  disableMenuItem(MID_ProjectExportToIlbm);
 
   openCanvas();
   paintGrid();
@@ -448,7 +453,7 @@ void AnimFrameTool::selectNextFrame()
 
 void AnimFrameTool::open()
 {
-  if(askContinueWhenChanged("Open a new file anyway?", "Open") == false)
+  if(askContinueIfChanged("Open a new file anyway?", "Open") == false)
   {
     return;
   }
@@ -499,6 +504,19 @@ void AnimFrameTool::open()
 
       disableMenuItem(MID_ProjectSave);
       enableMenuItem(MID_ProjectSaveAs);
+
+      if(m_pAnimSheets->isIlbmSheet())
+      {
+        enableMenuItem(MID_ProjectExportToAbk);
+        disableMenuItem(MID_ProjectExportToIlbm);
+      }
+      else
+      {
+        disableMenuItem(MID_ProjectExportToAbk);
+        enableMenuItem(MID_ProjectExportToIlbm);
+      }
+      
+
       m_HasChanged = false;
 
     }
@@ -611,43 +629,7 @@ void AnimFrameTool::saveAs()
     requestTitle = "Select AMOS abk file name to save..";
   }
 
-  AslFileRequest request(m_pControlWindow, 
-                         m_pControlWindow->LeftEdge,
-                         m_pControlScreen->BarHeight + 1,
-                         m_pControlWindow->Width,
-                         m_pControlScreen->Height - CANVAS_HEIGHT 
-                                                  - m_pControlScreen->BarHeight 
-                                                  - 4);
-
-  std::string filename = request.SelectFile(requestTitle, 
-                                            m_pAnimSheets->getFileName(), 
-                                            true,
-                                            true);
-
-  if(filename.length() < 1)
-  {
-    // FileRequester cancelled
-    return;
-  }
-
-  bool doesFileExist = false;
-  BPTR fh = Open(filename.c_str(), MODE_OLDFILE);
-  if(fh != 0)
-  {
-    doesFileExist = true;
-    Close(fh);
-  }
-
-  if(doesFileExist)
-  {
-      MessageBox request(m_pControlWindow);
-      if(request.Show("Overwrite file?",
-                      "The selected file already exists.\n\nOverwrite it?",
-                      "Overwrite|Cancel") == 0)
-      {
-        return;
-      }
-  }
+  std::string filename = askSaveFilename(requestTitle);
 
   if(m_pAnimSheets->save(filename.c_str()) == false)
   {
@@ -673,14 +655,87 @@ void AnimFrameTool::saveAs()
 }
 
 
-bool AnimFrameTool::quit()
+void AnimFrameTool::exportToAbk()
 {
-  return askContinueWhenChanged("Quit anyway?", "Quit");
+  if(m_pAnimSheets == NULL)
+  {
+    return;
+  }
+
+  std::string filename = askSaveFilename("Select AMOS abk file name to export..");
+  if(filename.length() < 1)
+  {
+    return;
+  }
+}
+
+void AnimFrameTool::exportToIlbm()
+{
+  if(m_pAnimSheets == NULL)
+  {
+    return;
+  }
+
+  std::string filename = askSaveFilename("Select IFF ILBM file name to export..");
+  if(filename.length() < 1)
+  {
+    return;
+  }
 }
 
 
-bool AnimFrameTool::askContinueWhenChanged(std::string continueActionText,
-                                           std::string continueButtonText)
+bool AnimFrameTool::quit()
+{
+  return askContinueIfChanged("Quit anyway?", "Quit");
+}
+
+
+std::string AnimFrameTool::askSaveFilename(std::string requestTitle)
+{
+  AslFileRequest request(m_pControlWindow, 
+                         m_pControlWindow->LeftEdge,
+                         m_pControlScreen->BarHeight + 1,
+                         m_pControlWindow->Width,
+                         m_pControlScreen->Height - CANVAS_HEIGHT 
+                                                  - m_pControlScreen->BarHeight 
+                                                  - 4);
+
+  std::string filename = request.SelectFile(requestTitle, 
+                                            m_pAnimSheets->getFileName(), 
+                                            true,
+                                            true);
+
+  if(filename.length() < 1)
+  {
+    // FileRequester cancelled
+    return "";
+  }
+
+  bool doesFileExist = false;
+  BPTR fh = Open(filename.c_str(), MODE_OLDFILE);
+  if(fh != 0)
+  {
+    doesFileExist = true;
+    Close(fh);
+  }
+
+  if(doesFileExist)
+  {
+    MessageBox request(m_pControlWindow);
+    if(request.Show("Overwrite file?",
+                    "The selected file already exists.\n\nOverwrite it?",
+                    "Overwrite|Cancel") == 0)
+    {
+      return "";
+    }
+  }
+
+  return filename;
+}
+
+
+bool AnimFrameTool::askContinueIfChanged(std::string continueActionText,
+                                         std::string continueButtonText)
 {
   if(m_HasChanged)
   {
