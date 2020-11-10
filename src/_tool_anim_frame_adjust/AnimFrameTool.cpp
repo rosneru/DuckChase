@@ -712,11 +712,12 @@ void AnimFrameTool::about()
   // aboutMsg = VERSTAG + 7;   // Skip the first 7 chars of pVersTag
   //                           // which is only "\0$VER: "
   aboutMsg += "\n\n";
-  aboutMsg += "Copyright(c) 2020 Uwe Rosner (u.rosner@ymail.com)";
+  aboutMsg += "Copyright(c) 2020 Uwe Rosner\n(u.rosner@ymail.com)";
   aboutMsg += "\n\n";
-  aboutMsg += "This release of AnimFrameTool may be freely distributed.\n";
-  aboutMsg += "It may not be comercially distributed without the\n";
-  aboutMsg += "explicit permission of the author.\n";
+  aboutMsg += "This release of AnimFrameTool may\n";
+  aboutMsg += "be freely distributed It may not be\n";
+  aboutMsg += "comercially distributed without the\n";
+  aboutMsg += "explicit permission of the author.";
 
   MessageBox request(m_pControlWindow);
   request.Show("About",
