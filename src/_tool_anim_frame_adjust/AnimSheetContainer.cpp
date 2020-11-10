@@ -21,7 +21,6 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
   m_SheetList.lh_TailPred = (struct Node*) &m_SheetList.lh_Head;
   m_SheetList.lh_Type = NT_UNKNOWN;
 
-
   try
   {
     // At first try to open the given file as an ilbm picture

@@ -116,6 +116,7 @@ private:
   void saveAs();
   void exportToAbk();
   void exportToIlbm();
+  void about();
   bool quit();
 
   std::string askSaveFilename(std::string requestTitle);

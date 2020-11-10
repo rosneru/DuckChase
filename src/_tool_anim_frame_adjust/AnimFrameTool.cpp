@@ -684,6 +684,26 @@ void AnimFrameTool::exportToIlbm()
 }
 
 
+void AnimFrameTool::about()
+{
+  std::string aboutMsg = "AnimFrameTool";
+  // // Create the message to be displayed in the about dialog
+  // aboutMsg = VERSTAG + 7;   // Skip the first 7 chars of pVersTag
+  //                           // which is only "\0$VER: "
+  aboutMsg += "\n\n";
+  aboutMsg += "Copyright(c) 2020 Uwe Rosner (u.rosner@ymail.com)";
+  aboutMsg += "\n\n";
+  aboutMsg += "This release of AnimFrameTool may be freely distributed.\n";
+  aboutMsg += "It may not be comercially distributed without the\n";
+  aboutMsg += "explicit permission of the author.\n";
+
+  MessageBox request(m_pControlWindow);
+  request.Show("About",
+                aboutMsg.c_str(),
+                "Ok");
+}
+
+
 bool AnimFrameTool::quit()
 {
   return askContinueIfChanged("Quit anyway?", "Quit");
@@ -1085,7 +1105,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         break;
 
       case MID_ProjectAbout:
-        // TODO
+        about();
         break;
 
       case MID_ToolsCenterAllFrames:
