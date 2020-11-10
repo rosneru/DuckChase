@@ -154,17 +154,12 @@ bool AnimSheetContainer::exportToAbk(const char* pFileName)
   {
     // Creation of the saver object already saves the picture
     // (or throws an exception)
-    SaveBitMapPictureIlbm ilbmSaver(pFileName,
-                                    pItem->pBitMap,
-                                    m_pColors32,
-                                    m_ModeId);
-    
+    SaveAmosAbk amosSaver(pFileName, m_SheetVector, m_pColors32);
     return true;
   }
   catch(const char* pErrMsg)
   {
-    SaveAmosAbk amosSaver(pFileName, m_SheetVector, m_pColors32);
-    return true;
+
   }
 
   return false;
@@ -182,7 +177,14 @@ bool AnimSheetContainer::exportToIlbm(const char* pFileName, ULONG sheetId)
 
   try
   {
-    
+    // Creation of the saver object already saves the picture
+    // (or throws an exception)
+    SaveBitMapPictureIlbm ilbmSaver(pFileName,
+                                    pItem->pBitMap,
+                                    m_pColors32,
+                                    m_ModeId);
+
+    return true;
   }
   catch(const char* pErrMsg)
   {
