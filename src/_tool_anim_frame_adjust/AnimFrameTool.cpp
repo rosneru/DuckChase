@@ -1474,6 +1474,7 @@ struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
 
   struct Menu* pMenu = m_pMenu;
   struct MenuItem* pItem = pMenu->FirstItem;
+  struct MenuItem* pSubItem = pItem->SubItem;
   if(pItem == NULL)
   {
     return NULL;
@@ -1489,6 +1490,8 @@ struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
     // search in all items of this menu
     do
     {
+      pSubItem = pItem->SubItem;
+      
       APTR pUserData = GTMENUITEM_USERDATA(pItem);
       if(pUserData == pUserDataToFind)
       {
@@ -1497,25 +1500,25 @@ struct MenuItem* AnimFrameTool::findItemByUserData(APTR pUserDataToFind,
       }
 
       // Not found in item; now check in sub item if one exists
-      if(pItem->SubItem != NULL)
+      if(pSubItem != NULL)
       {
-        pItem = pItem->SubItem;
-        iSub++;
+        
+        // iSub++;
 
         // search in all sub items of this item
         do
         {
-          pUserData = GTMENUITEM_USERDATA(pItem);
+          pUserData = GTMENUITEM_USERDATA(pSubItem);
           if(pUserData == pUserDataToFind)
           {
             foundMenuNumber = FULLMENUNUM(iMenu, iItem, iSub);
-            return pItem;
+            return pSubItem;
           }
 
-          pItem = pItem->NextItem;
+          pSubItem = pSubItem->NextItem;
           iSub++;
         }
-        while (pItem != NULL);
+        while (pSubItem != NULL);
       }
 
       pItem = pItem->NextItem;
