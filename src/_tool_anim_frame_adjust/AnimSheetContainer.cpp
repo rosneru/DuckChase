@@ -193,6 +193,27 @@ bool AnimSheetContainer::exportToIlbm(const char* pFileName, ULONG sheetId)
 }
 
 
+bool AnimSheetContainer::appendSheet(const char* pFileName)
+{
+  if(isAmosSheet() == false)
+  {
+    return false;
+  }
+
+  // Try to open the given file as an ilbm picture
+  OpenIlbmPictureBitMap pic(pFileName, false, false);
+
+
+  // now add the single node
+  if(addItemNode(pic.GetBitMap(), getNumSheets() - 1) == false)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+
 struct SheetItemNode* AnimSheetContainer::getSheet(ULONG index)
 {
   if(index >= m_SheetVector.size())

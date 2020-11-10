@@ -52,6 +52,12 @@ public:
    */
   bool exportToIlbm(const char* pFileName, ULONG sheetId);
 
+  /**
+   * Appends an (IFF ILBM) sheet to the current AMOS ABK sheet
+   * 
+   */
+  bool appendSheet(const char* pFileName);
+
   struct SheetItemNode* getSheet(ULONG index);
 
   struct List* getSheetList();

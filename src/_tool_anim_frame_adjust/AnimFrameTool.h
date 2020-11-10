@@ -14,13 +14,16 @@
 
 
 /**
- * A tool to adjust frames of an anim strip on a horizontal row in an
- * iff ilbm file to a raster.
+ * Anim Sheet Adjust
+ * Adjust anim frames in IFF ILBM or AMOS sprite banks (abk) files
  *
- * Solution is based on the AmigaOS NDK3.1 DBuf example.
+ * A tool to adjust frames of an anim strip on a horizontal row to a
+ * raster.
+ * 
+ * Supported file formats for the anim strip are IFF ILBM and AMOS ABK.
  *
  * Rough idea write up done on 26.08.2020 in Xertigny.
- * 
+ *
  * @author Uwe Rosner
  * @date 29/08/2020
  */
@@ -66,6 +69,7 @@ private:
     MID_ProjectExportToIlbm,
     MID_ProjectAbout,
     MID_ProjectQuit,
+    MID_EditAppendSheet,
     MID_ToolsCenterAllFrames,
     MID_ToolsGetMaxWidth,
     MID_ToolsPrintFullMask,
@@ -118,6 +122,8 @@ private:
   void exportToIlbm();
   void about();
   bool quit();
+
+  void appendSheet();
 
   std::string askSaveFilename(std::string requestTitle);
 

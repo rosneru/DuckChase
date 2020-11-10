@@ -102,7 +102,7 @@ AnimFrameTool::AnimFrameTool()
   struct NewMenu demomenu[] =
   {
     { NM_TITLE,  "Project",                      0 , 0, 0, 0 },
-    {  NM_ITEM,  "Open",                        "O", 0, 0, (APTR)MID_ProjectOpenAnim },
+    {  NM_ITEM,  "Open..",                      "O", 0, 0, (APTR)MID_ProjectOpenAnim },
     {  NM_ITEM,  "Save",                         0 , 0, 0, (APTR)MID_ProjectSave },
     {  NM_ITEM,  "Save as..",                   "S", 0, 0, (APTR)MID_ProjectSaveAs },
     {  NM_ITEM,  "Export",                       0,  0, 0, 0 },
@@ -112,6 +112,8 @@ AnimFrameTool::AnimFrameTool()
     {  NM_ITEM,  "About",                        0 , 0, 0, (APTR)MID_ProjectAbout },
     {  NM_ITEM,  NM_BARLABEL,                    0 , 0, 0, 0, },
     {  NM_ITEM,  "Quit",                        "Q", 0, 0, (APTR)MID_ProjectQuit },
+    { NM_TITLE,  "Edit",                         0 , 0, 0, 0, },
+    {  NM_ITEM,  "Append sheet..",               0 , 0, 0, (APTR)MID_EditAppendSheet },
     { NM_TITLE,  "Tools",                        0 , 0, 0, 0, },
     {  NM_ITEM,  "Center all frames",            0 , 0, 0, (APTR)MID_ToolsCenterAllFrames },
     {  NM_ITEM,  "Get max width",                0 , 0, 0, (APTR)MID_ToolsGetMaxWidth },
@@ -221,6 +223,7 @@ AnimFrameTool::AnimFrameTool()
   disableMenuItem(MID_ProjectSaveAs);
   disableMenuItem(MID_ProjectExportToAbk);
   disableMenuItem(MID_ProjectExportToIlbm);
+  disableMenuItem(MID_EditAppendSheet);
 
   openCanvas();
   paintGrid();
@@ -466,7 +469,7 @@ void AnimFrameTool::open()
                                                   - m_pControlScreen->BarHeight 
                                                   - 4);
 
-  std::string filename = request.SelectFile("Select an IFF ILBM or AMOS ABK file", 
+  std::string filename = request.SelectFile("Open IFF ILBM or AMOS ABK file", 
                                             "", 
                                             false);
   std::string msgString;
@@ -509,11 +512,13 @@ void AnimFrameTool::open()
       {
         enableMenuItem(MID_ProjectExportToAbk);
         disableMenuItem(MID_ProjectExportToIlbm);
+        disableMenuItem(MID_EditAppendSheet);
       }
       else
       {
         disableMenuItem(MID_ProjectExportToAbk);
         enableMenuItem(MID_ProjectExportToIlbm);
+        enableMenuItem(MID_EditAppendSheet);
       }
       
 
@@ -667,6 +672,14 @@ void AnimFrameTool::exportToAbk()
   {
     return;
   }
+
+  if(m_pAnimSheets->exportToAbk(filename.c_str()) == false)
+  {
+    MessageBox request(m_pControlWindow);
+    request.Show("Export error",
+                 "Failed to export current sheet as AMOS sprite bank.",
+                 "Ok");
+  }
 }
 
 void AnimFrameTool::exportToIlbm()
@@ -680,6 +693,14 @@ void AnimFrameTool::exportToIlbm()
   if(filename.length() < 1)
   {
     return;
+  }
+
+  if(m_pAnimSheets->exportToIlbm(filename.c_str(), m_SheetId) == false)
+  {
+    MessageBox request(m_pControlWindow);
+    request.Show("Export error",
+                 "Failed to export current sheet as ILBM picture.",
+                 "Ok");
   }
 }
 
@@ -699,14 +720,50 @@ void AnimFrameTool::about()
 
   MessageBox request(m_pControlWindow);
   request.Show("About",
-                aboutMsg.c_str(),
-                "Ok");
+               aboutMsg.c_str(),
+               "Ok");
 }
 
 
 bool AnimFrameTool::quit()
 {
   return askContinueIfChanged("Quit anyway?", "Quit");
+}
+
+
+void AnimFrameTool::appendSheet()
+{
+  AslFileRequest request(m_pControlWindow, 
+                         m_pControlWindow->LeftEdge,
+                         m_pControlScreen->BarHeight + 1,
+                         m_pControlWindow->Width,
+                         m_pControlScreen->Height - CANVAS_HEIGHT 
+                                                  - m_pControlScreen->BarHeight 
+                                                  - 4);
+
+  std::string filename = request.SelectFile("Append IFF ILBM file", 
+                                            "");
+
+  if(filename.length() < 1)
+  {
+    // File selection aborted
+    return;
+  }
+
+  if(m_pAnimSheets->appendSheet(filename.c_str()) == false)
+  {
+    MessageBox request(m_pControlWindow);
+    request.Show("Append error",
+                 "Failed to append the selected\nfile to current sheet.",
+                 "Ok");
+
+    return;
+  }
+
+  // TODO Update ListView- and and Integer Gadgets
+  // TODO select appended frame
+
+  m_HasChanged = true;
 }
 
 
@@ -1100,12 +1157,16 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         exportToIlbm();
         break;
 
+      case MID_ProjectAbout:
+        about();
+        break;
+
       case MID_ProjectQuit:
         hasTerminated = quit();
         break;
 
-      case MID_ProjectAbout:
-        about();
+      case MID_EditAppendSheet:
+        appendSheet();
         break;
 
       case MID_ToolsCenterAllFrames:
