@@ -1072,6 +1072,14 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         saveAs();
         break;
 
+      case MID_ProjectExportToAbk:
+        exportToAbk();
+        break;
+
+      case MID_ProjectExportToIlbm:
+        exportToIlbm();
+        break;
+
       case MID_ProjectQuit:
         hasTerminated = quit();
         break;

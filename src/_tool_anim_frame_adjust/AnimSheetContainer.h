@@ -38,9 +38,19 @@ public:
 
   /**
    * Save the current animation to the given name. If no name is given
-   * it overwrites the current file
+   * it overwrites the file which was given at creation time.
    */
   bool save(const char* pFileName = NULL);
+
+  /**
+   * Export current (ILBM) sheet BitMap to  AMOS ABK.
+   */
+  bool exportToAbk(const char* pFileName);
+
+  /**
+   * Export given (AMOS ABK) sheet BitMap to ILBM.
+   */
+  bool exportToIlbm(const char* pFileName, ULONG sheetId);
 
   struct SheetItemNode* getSheet(ULONG index);
 
@@ -61,7 +71,7 @@ private:
   struct List m_SheetList;
 
   /**
-   * Also use a vector of SheetItemNode pointers. Makes a easier
+   * Also use a vector of SheetItemNode pointers. Makes an easier
    * interface when passed to other objects.
    */
   std::vector<SheetItemNode*> m_SheetVector;
