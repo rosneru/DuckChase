@@ -751,6 +751,12 @@ void AnimFrameTool::appendSheet()
     return;
   }
 
+  // Detach exec list from ListView as it will be changed in appendSheet()
+  GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                    GTLV_Labels, ~0,
+                    GTLV_Selected, ~0,
+                    TAG_DONE);
+
   if(m_pAnimSheets->appendSheet(filename.c_str()) == false)
   {
     MessageBox request(m_pControlWindow);
@@ -758,11 +764,23 @@ void AnimFrameTool::appendSheet()
                  "Failed to append the selected\nfile to current sheet.",
                  "Ok");
 
+    // Re-attach exec list to ListView and select formerly selected sheet node
+    GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                      GTLV_Labels, m_pAnimSheets->getSheetList(),
+                      GTLV_Selected, m_SheetId,
+                      TAG_DONE);
     return;
   }
 
-  // TODO Update ListView- and and Integer Gadgets
-  // TODO select appended frame
+  // Select the appended sheet as the current one.
+  // This also updates m_SheetId.
+  selectAnimSheet(m_pAnimSheets->getNumSheets() - 1);
+
+  // Re-attach exec list to ListView and select appended sheet node
+  GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
+                    GTLV_Labels, m_pAnimSheets->getSheetList(),
+                    GTLV_Selected, m_SheetId,
+                    TAG_DONE);
 
   m_HasChanged = true;
 }
