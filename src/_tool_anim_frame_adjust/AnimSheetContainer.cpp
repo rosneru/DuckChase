@@ -207,7 +207,7 @@ bool AnimSheetContainer::appendSheet(const char* pFileName)
 
 
   // now add the single node
-  if(addItemNode(pic.GetBitMap(), getNumSheets() - 1) == false)
+  if(addItemNode(pic.GetBitMap(), getNumSheets()) == false)
   {
     return false;
   }

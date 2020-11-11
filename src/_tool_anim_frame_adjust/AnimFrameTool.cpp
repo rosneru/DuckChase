@@ -715,7 +715,7 @@ void AnimFrameTool::about()
   aboutMsg += "Copyright(c) 2020 Uwe Rosner\n(u.rosner@ymail.com)";
   aboutMsg += "\n\n";
   aboutMsg += "This release of AnimFrameTool may\n";
-  aboutMsg += "be freely distributed It may not be\n";
+  aboutMsg += "be freely distributed. It may not be\n";
   aboutMsg += "comercially distributed without the\n";
   aboutMsg += "explicit permission of the author.";
 
