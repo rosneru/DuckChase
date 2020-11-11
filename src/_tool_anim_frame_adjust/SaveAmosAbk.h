@@ -50,6 +50,12 @@ private:
                           ULONG sheetNumFrames,
                           ULONG& bufSizeBytes);
 
+  /**
+   * Create an OCS color table from the given colors32 table. The
+   * created table will always have 32 entries. If the source colors32
+   * table has less than 32 entries the remaining ones in destination
+   * will be set to color 0.
+   */
   ULONG* colors32ToOCSColorTable(ULONG* pColors32);
   
   void writeWord(ULONG value);

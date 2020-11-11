@@ -82,6 +82,11 @@ SaveAmosAbk::SaveAmosAbk(const char* pFileName,
 
   // Create and write the OCS color table
   m_pOCSColorTable = colors32ToOCSColorTable(pColors32);
+  if(m_pOCSColorTable == NULL)
+  {
+    throw "SaveAmosAbk: Failed to create the color table.";
+  }
+
   for(ULONG i = 0; i < 32; i++)
   {
     writeWord(m_pOCSColorTable[i]);
@@ -169,7 +174,8 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
   ULONG i, red, green, blue;
   ULONG* pCol;
   ULONG colorWord, iRed, iGreen, iBlue;
-  ULONG numColors;
+  const ULONG numColorsOcsColorTable = 32;
+  ULONG numSrcColors;
   ULONG* pColorTable;
 
   if(pColors32 == NULL)
@@ -177,14 +183,15 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
     return NULL;
   }
 
-  numColors = (pColors32[0] & 0xffff0000) >> 16;
-  if(numColors != 32)
+  /* get the number of colors of src colors 32 table */
+  numSrcColors = (pColors32[0] & 0xffff0000) >> 16;
+  if(numSrcColors > numColorsOcsColorTable)
   {
-    /* Invalid; OCS color table must have 32 entries */
-    return NULL;
+    /* Only convert as many colors as fit into the ocs color table */
+    numSrcColors = numColorsOcsColorTable;
   }
 
-  pColorTable = (ULONG*) AllocVec(numColors * sizeof(ULONG), 
+  pColorTable = (ULONG*) AllocVec(numColorsOcsColorTable * sizeof(ULONG), 
                                   MEMF_PUBLIC|MEMF_CLEAR);
   if(pColorTable == NULL)
   {
@@ -194,17 +201,21 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
   /* Use another pointer to skip Colors32 header item */
   pCol = pColors32 + 1;
 
-  for(i = 0; i < numColors; i++)
+  for(i = 0; i < numColorsOcsColorTable; i++)
   {
-    iRed = (i + 1) * 3 - 3;
-    iGreen = (i + 1) * 3 - 2;
-    iBlue = (i + 1) * 3 - 1;
+    colorWord = 0;
+    if(i < numSrcColors)
+    {
+      iRed = (i + 1) * 3 - 3;
+      iGreen = (i + 1) * 3 - 2;
+      iBlue = (i + 1) * 3 - 1;
 
-    red = ((pCol[iRed] & 0xff000000) >> 24) & 0xf;
-    green = ((pCol[iGreen] & 0xff000000) >> 24) & 0xf;
-    blue = ((pCol[iBlue] & 0xff000000) >> 24) & 0xf;
+      red = ((pCol[iRed] & 0xff000000) >> 24) & 0xf;
+      green = ((pCol[iGreen] & 0xff000000) >> 24) & 0xf;
+      blue = ((pCol[iBlue] & 0xff000000) >> 24) & 0xf;
 
-    colorWord = (red << 8) | (green << 4) | blue;
+      colorWord = (red << 8) | (green << 4) | blue;
+    }
 
     pColorTable[i] = colorWord;
   }
