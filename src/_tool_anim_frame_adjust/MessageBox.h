@@ -17,7 +17,7 @@ public:
    * Creates a Requester on given window. If window is NULL the
    * requester is created on the Workbench.
    */
-  MessageBox(struct Window* pWindow = NULL);
+  MessageBox(struct Window* pWindow);
   virtual ~MessageBox();
 
   LONG Show(const char* pWindowTitle,

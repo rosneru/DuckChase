@@ -4,7 +4,6 @@
 MessageBox::MessageBox(struct Window* pWindow)
   : m_pWindow(pWindow)
 {
-
   m_EasyStruct.es_StructSize = sizeof(EasyStruct);
   m_EasyStruct.es_Flags = 0;
   m_EasyStruct.es_Title = NULL;

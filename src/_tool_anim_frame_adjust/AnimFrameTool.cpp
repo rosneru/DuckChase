@@ -44,29 +44,6 @@ struct TextAttr Topaz80 =
 };
 
 
-  struct TagItem vctags[] =
-  {
-      VTAG_BORDERSPRITE_SET, TRUE,
-      TAG_DONE, 0,
-  };
-
-  UWORD pens[] =
-  {
-      0, // DETAILPEN
-      1, // BLOCKPEN
-      1, // TEXTPEN
-      2, // SHINEPEN
-      1, // SHADOWPEN
-      3, // FILLPEN
-      1, // FILLTEXTPEN
-      0, // BACKGROUNDPEN
-      2, // HIGHLIGHTTEXTPEN
-      1, // BARDETAILPEN
-      2, // BARBLOCKPEN
-      1, // BARTRIMPEN
-
-      (UWORD)~0,
-  };
 
 AnimFrameTool::AnimFrameTool()
   : m_OScanWidth(0),
@@ -124,12 +101,11 @@ AnimFrameTool::AnimFrameTool()
   };
 
   if (!(m_pControlScreen = OpenScreenTags(NULL,
+    SA_LikeWorkbench, TRUE,
     SA_DisplayID, VIEW_MODE_ID,
     SA_Overscan, OSCAN_TEXT,
     SA_Depth, 2,
-    SA_Pens, pens,
     SA_Title, "Animation frame adjustment tool",
-    SA_VideoControl, vctags,
     SA_Font, &Topaz80,
     TAG_DONE)))
   {
@@ -1363,7 +1339,6 @@ void AnimFrameTool::openCanvas()
                                      SA_Quiet, TRUE,
                                      SA_ShowTitle, FALSE,
                                      SA_Top, m_pControlScreen->Height - CANVAS_HEIGHT,
-                                     SA_VideoControl, vctags,
                                      SA_Width, screenWidth,
                                      TAG_DONE);
   }
@@ -1378,11 +1353,9 @@ void AnimFrameTool::openCanvas()
                                      SA_Font, &Topaz80,
                                      SA_Overscan, OSCAN_TEXT,
                                      SA_Parent, m_pControlScreen,
-                                     SA_Pens, pens,
                                      SA_Quiet, TRUE,
                                      SA_ShowTitle, FALSE,
                                      SA_Top, m_pControlScreen->Height - CANVAS_HEIGHT,
-                                     SA_VideoControl, vctags,
                                      TAG_DONE);
   }
   
