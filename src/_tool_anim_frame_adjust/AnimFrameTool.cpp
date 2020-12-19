@@ -512,6 +512,9 @@ void AnimFrameTool::open()
       request.Show("Open error",
                    msgString.c_str(),
                    "Ok");
+
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
     }
   }
 }
@@ -586,6 +589,9 @@ void AnimFrameTool::save()
                  "An error occured while saving the file.",
                  "Ok");
 
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
+
     return;
   }
 
@@ -618,6 +624,9 @@ void AnimFrameTool::saveAs()
     request.Show("Save error",
                  "An error occured while saving the file.",
                  "Ok");
+
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
 
     return;
   }
@@ -655,6 +664,9 @@ void AnimFrameTool::exportToAbk()
     request.Show("Export error",
                  "Failed to export current sheet as AMOS sprite bank.",
                  "Ok");
+
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
   }
 }
 
@@ -677,6 +689,9 @@ void AnimFrameTool::exportToIlbm()
     request.Show("Export error",
                  "Failed to export current sheet as ILBM picture.",
                  "Ok");
+
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
   }
 }
 
@@ -696,9 +711,10 @@ void AnimFrameTool::about()
   aboutMsg += "explicit permission of the author.";
 
   MessageBox request(m_pControlWindow);
-  request.Show("About",
-               aboutMsg.c_str(),
-               "Ok");
+  request.Show("About", aboutMsg.c_str(), "Ok");
+
+  // TODO: Find a better workaround for easyRequest not working on attached screens
+  ScreenToFront(m_pControlScreen);
 }
 
 
@@ -739,6 +755,9 @@ void AnimFrameTool::appendSheet()
     request.Show("Append error",
                  "Failed to append the selected\nfile to current sheet.",
                  "Ok");
+
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
 
     // Re-attach exec list to ListView and select formerly selected sheet node
     GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
@@ -794,12 +813,18 @@ std::string AnimFrameTool::askSaveFilename(std::string requestTitle)
   if(doesFileExist)
   {
     MessageBox request(m_pControlWindow);
-    if(request.Show("Overwrite file?",
-                    "The selected file already exists.\n\nOverwrite it?",
-                    "Overwrite|Cancel") == 0)
+    LONG res = request.Show("Overwrite file?",
+                            "The selected file already exists.\n\nOverwrite it?",
+                            "Overwrite|Cancel");
+
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
+
+    if(res == 0)
     {
       return "";
     }
+
   }
 
   return filename;
@@ -819,9 +844,12 @@ bool AnimFrameTool::askContinueIfChanged(std::string continueActionText,
     std::string buttonTexts = continueButtonText + "|Cancel";
 
     MessageBox request(m_pControlWindow);
-    if(request.Show("Unsaved changes",
-                    msg.c_str(),
-                    buttonTexts.c_str()) == 0)
+    LONG res = request.Show("Unsaved changes", msg.c_str(), buttonTexts.c_str());
+    
+    // TODO: Find a better workaround for easyRequest not working on attached screens
+    ScreenToFront(m_pControlScreen);
+
+    if(res == 0)
     {
       return false;
     }
