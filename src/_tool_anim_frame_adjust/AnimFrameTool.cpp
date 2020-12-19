@@ -617,6 +617,10 @@ void AnimFrameTool::saveAs()
   }
 
   std::string filename = askSaveFilename(requestTitle);
+  if(filename.length() < 1)
+  {
+    return;
+  }
 
   if(m_pAnimSheets->save(filename.c_str()) == false)
   {
