@@ -171,7 +171,7 @@ WORD* SaveAmosAbk::sheetBitmapToFrameImage(struct BitMap* pSrcBitmap,
 
 ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
 {
-  ULONG i, red, green, blue;
+  ULONG i, red32, green32, blue32, red, green, blue;
   ULONG* pCol;
   ULONG colorWord, iRed, iGreen, iBlue;
   const ULONG numColorsOcsColorTable = 32;
@@ -210,9 +210,13 @@ ULONG* SaveAmosAbk::colors32ToOCSColorTable(ULONG* pColors32)
       iGreen = (i + 1) * 3 - 2;
       iBlue = (i + 1) * 3 - 1;
 
-      red = ((pCol[iRed] & 0xff000000) >> 24) & 0xf;
-      green = ((pCol[iGreen] & 0xff000000) >> 24) & 0xf;
-      blue = ((pCol[iBlue] & 0xff000000) >> 24) & 0xf;
+      red32 = pCol[iRed] >> 24;
+      green32 = pCol[iGreen] >> 24;
+      blue32 = pCol[iBlue] >> 24;
+
+      red = red32 * 15.0f / 255.0f + 0.5f;
+      green = green32 * 15.0f / 255.0f + 0.5f;
+      blue = blue32 * 15.0f / 255.0f + 0.5f;
 
       colorWord = (red << 8) | (green << 4) | blue;
     }
