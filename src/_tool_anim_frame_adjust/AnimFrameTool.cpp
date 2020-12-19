@@ -514,7 +514,7 @@ void AnimFrameTool::open()
                    "Ok");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
     }
   }
 }
@@ -590,7 +590,7 @@ void AnimFrameTool::save()
                  "Ok");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
 
     return;
   }
@@ -630,7 +630,7 @@ void AnimFrameTool::saveAs()
                  "Ok");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
 
     return;
   }
@@ -670,7 +670,7 @@ void AnimFrameTool::exportToAbk()
                  "Ok");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
   }
 }
 
@@ -695,7 +695,7 @@ void AnimFrameTool::exportToIlbm()
                  "Ok");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
   }
 }
 
@@ -718,7 +718,7 @@ void AnimFrameTool::about()
   request.Show("About", aboutMsg.c_str(), "Ok");
 
   // TODO: Find a better workaround for easyRequest not working on attached screens
-  ScreenToFront(m_pControlScreen);
+  // ScreenToFront(m_pControlScreen);
 }
 
 
@@ -761,7 +761,7 @@ void AnimFrameTool::appendSheet()
                  "Ok");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
 
     // Re-attach exec list to ListView and select formerly selected sheet node
     GT_SetGadgetAttrs(m_pGadLvSheet, m_pControlWindow, NULL,
@@ -822,7 +822,7 @@ std::string AnimFrameTool::askSaveFilename(std::string requestTitle)
                             "Overwrite|Cancel");
 
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
 
     if(res == 0)
     {
@@ -851,7 +851,7 @@ bool AnimFrameTool::askContinueIfChanged(std::string continueActionText,
     LONG res = request.Show("Unsaved changes", msg.c_str(), buttonTexts.c_str());
     
     // TODO: Find a better workaround for easyRequest not working on attached screens
-    ScreenToFront(m_pControlScreen);
+    // ScreenToFront(m_pControlScreen);
 
     if(res == 0)
     {
