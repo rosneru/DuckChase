@@ -781,7 +781,7 @@ void AnimFrameTool::appendSheet()
                     GTLV_Selected, m_SheetId,
                     TAG_DONE);
 
-  m_HasChanged = true;
+  markChanged();
 }
 
 

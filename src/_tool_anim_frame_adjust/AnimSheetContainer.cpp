@@ -23,9 +23,8 @@ AnimSheetContainer::AnimSheetContainer(const char* pFileName)
 
   try
   {
-    // At first try to open the given file as an ilbm picture
+    // First try to open the given file as an ilbm picture
     OpenIlbmPictureBitMap pic(pFileName, true, false);
-
 
     // now add the single node
     if(addItemNode(pic.GetBitMap(), 0) == false)
