@@ -89,6 +89,7 @@ add_executable (AnimFrameTool_gcc
                 anim/AnimSeqGels.cpp
                 anim/AnimSeqGelsBob.cpp
                 anim/ShadowMask.cpp
+                anim/ShadowMaskInterleaved.cpp
                 iff/IffParse.cpp
                 picture/BitMapPictureBase.cpp
                 picture/PictureBase.cpp

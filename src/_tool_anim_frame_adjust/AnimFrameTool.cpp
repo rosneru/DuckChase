@@ -17,6 +17,7 @@
 #include "AslFileRequest.h"
 #include "MessageBox.h"
 #include "ShadowMask.h"
+#include "ShadowMaskInterleaved.h"
 #include "SheetItemNode.h"
 
 #include "AnimFrameTool.h"
@@ -1264,6 +1265,42 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
           mask.Print();
 
           FreeBitMap(pTmpBm);
+
+
+          // Now the interleaved variant
+          printf("\n**Interleaved**\n");
+
+          pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
+                                              m_FrameRects[m_FrameId].Height(),
+                                              pSheet->SheetDepth,
+                                              BMF_CLEAR|BMF_INTERLEAVED,
+                                              NULL);
+
+          if(pTmpBm == NULL)
+          {
+            break;
+          }
+
+          // Copy the current frame image into the temporary BitMap
+          BltBitMap(pSheet->pBitMap,
+                    m_FrameRects[m_FrameId].Left(), 
+                    m_FrameRects[m_FrameId].Top(),
+                    pTmpBm,
+                    0, 0, 
+                    m_FrameRects[m_FrameId].Width(),
+                    m_FrameRects[m_FrameId].Height(),
+                    0Xc0,
+                    0xff,
+                    NULL);
+
+          // Create and print shadow mask
+          ShadowMaskInterleaved maskInterleaved(pTmpBm);
+          maskInterleaved.Print();
+
+          FreeBitMap(pTmpBm);
+
+
+
           break;
         }
       }
