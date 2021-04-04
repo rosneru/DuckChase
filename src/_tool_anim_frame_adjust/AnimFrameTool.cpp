@@ -96,7 +96,8 @@ AnimFrameTool::AnimFrameTool()
     {  NM_ITEM,  "Center all frames",            0 , 0, 0, (APTR)MID_ToolsCenterAllFrames },
     {  NM_ITEM,  "Get max width",                0 , 0, 0, (APTR)MID_ToolsGetMaxWidth },
     {  NM_ITEM,  NM_BARLABEL,                    0 , 0, 0, 0, },
-    {  NM_ITEM,  "Print frame mask",            "F", 0, 0, (APTR)MID_ToolsPrintFrameMask },
+    {  NM_ITEM,  "Print frame mask (planar)",   "P", 0, 0, (APTR)MID_ToolsPrintFrameMask },
+    {  NM_ITEM,  "Print frame mask (interl.)",  "I", 0, 0, (APTR)MID_ToolsPrintInterleavedFrameMask },
     {  NM_ITEM,  "Print mask of whole picture", "M", 0, 0, (APTR)MID_ToolsPrintFullMask },
     { NM_END,    0,                              0 , 0, 0, 0, },
   };
@@ -1224,7 +1225,9 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
         }
 
       case MID_ToolsPrintFrameMask:
-        { // Print the mask of the current animation frame
+        {  // Print the mask of the current animation frame using the 
+          // *planar* algorithm
+
           if(m_pAnimSheets == NULL)
           {
             break;
@@ -1236,7 +1239,7 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
             break;
           }
 
-          // Create a temporary BitMap for current frame
+          // Create a temporary *planar* BitMap for current frame
           struct BitMap* pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
                                               m_FrameRects[m_FrameId].Height(),
                                               pSheet->SheetDepth,
@@ -1262,15 +1265,32 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
           // Create and print shadow mask
           ShadowMask mask(pTmpBm);
+
+          printf("**Frame mask planar algorithm**\n");
           mask.Print();
+          printf("\n");
 
           FreeBitMap(pTmpBm);
 
+          break;
+        }
+      case MID_ToolsPrintInterleavedFrameMask:
+        { // Print the mask of the current animation frame using the 
+          // *interleaved* algorithm
+          
+          if(m_pAnimSheets == NULL)
+          {
+            break;
+          }
 
-          // Now the interleaved variant
-          printf("\n**Interleaved**\n");
+          struct SheetItemNode* pSheet = m_pAnimSheets->getSheet(m_SheetId);
+          if((pSheet == NULL) || (pSheet->pBitMap == NULL))
+          {
+            break;
+          }
 
-          pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
+          // Create a temporary *interleaved* BitMap for current frame
+          struct BitMap* pTmpBm = AllocBitMap(m_FrameRects[m_FrameId].Width(),
                                               m_FrameRects[m_FrameId].Height(),
                                               pSheet->SheetDepth,
                                               BMF_CLEAR|BMF_INTERLEAVED,
@@ -1295,11 +1315,12 @@ bool AnimFrameTool::handleIntuiMessage(struct IntuiMessage* pIntuiMsg)
 
           // Create and print shadow mask
           ShadowMaskInterleaved maskInterleaved(pTmpBm);
+          
+          printf("**Frame mask interleaved algorithm**\n");
           maskInterleaved.Print();
+          printf("\n");
 
           FreeBitMap(pTmpBm);
-
-
 
           break;
         }

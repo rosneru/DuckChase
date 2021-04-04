@@ -73,7 +73,8 @@ private:
     MID_ToolsCenterAllFrames,
     MID_ToolsGetMaxWidth,
     MID_ToolsPrintFullMask,
-    MID_ToolsPrintFrameMask
+    MID_ToolsPrintFrameMask,
+    MID_ToolsPrintInterleavedFrameMask
   };
 
   struct Screen* m_pCanvasScreen;
