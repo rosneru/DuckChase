@@ -36,6 +36,7 @@ public:
 
 private:
   UBYTE* m_pMask;
+  ULONG m_MaskSizeBytes;
   bool m_IsForeignMask;
 
   bool* m_pRowPixels;

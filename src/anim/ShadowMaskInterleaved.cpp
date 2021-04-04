@@ -9,6 +9,7 @@
 
 ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   : m_pMask(NULL),
+    m_MaskSizeBytes(0),
     m_IsForeignMask(false)  // The mask is created here. It is *not* foreign.
 {
   struct BitMap *pMaskBitMap, *pTempBitMap;
@@ -39,8 +40,10 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
     numMaskCopies = m_Depth;
   }
 
+  m_MaskSizeBytes = planeSize * numMaskCopies;
+
   // Allocate memory for the final mask (m_Depth * m_Height because interleaved)
-  m_pMask = (UBYTE*)AllocVec(planeSize * numMaskCopies, MEMF_CHIP|MEMF_CLEAR);
+  m_pMask = (UBYTE*)AllocVec(m_MaskSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(m_pMask == NULL)
   {
     throw "ShadowMaskInterleaved: Failed to allocate memory for frame mask.";
@@ -163,18 +166,16 @@ ShadowMaskInterleaved::~ShadowMaskInterleaved()
 void ShadowMaskInterleaved::Print()
 {
   ULONG bytesPerRow = m_WordWidth * 2;
-  PLANEPTR pPlane = m_pMask;
-  for(size_t row = 0; row < m_Height; row++)
+  for(ULONG i = 0; i < m_MaskSizeBytes; i++)
   {
-    for(int byte = 0; byte < bytesPerRow; byte++)
+    printBits(1, m_pMask + i);
+    printf(" ");
+
+    if((i + 1) % bytesPerRow == 0)
     {
-      size_t offset = byte + (bytesPerRow * row);
-      printBits(1, pPlane + offset);
-      printf(" ");
+      printf("\n");
     }
-    printf("\n");
   }
-  printf("\n");
 }
 
 
