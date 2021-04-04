@@ -7,7 +7,7 @@
 #include "Rect.h"
 
 /**
- * Represent the shadow / collision mask of a BitMap picture.
+ * Represent the *interleaved* shadow mask of a BitMap picture.
  *
  * @author Uwe Rosner
  * @date 03/04/2021
@@ -21,11 +21,6 @@ public:
    */
   ShadowMaskInterleaved(struct BitMap* pImage);
 
-  /**
-   * Uses a given mask of given size. Given mask must be valid for the
-   * life time of the created ShadowMaskInterleaved.
-   */
-  ShadowMaskInterleaved(UBYTE* pMask, ULONG width, ULONG height);
   virtual ~ShadowMaskInterleaved();
 
   /**
@@ -37,7 +32,6 @@ public:
 private:
   UBYTE* m_pMask;
   ULONG m_MaskSizeBytes;
-  bool m_IsForeignMask;
 
   bool* m_pRowPixels;
 
@@ -47,7 +41,6 @@ private:
   ULONG m_Height;
   ULONG m_Depth;
 
-  void calculateRowPixels(const Rect& rect, size_t row) const;
   void printBits(size_t const size, void const * const ptr);
 };
 

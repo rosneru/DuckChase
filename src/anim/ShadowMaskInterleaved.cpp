@@ -9,8 +9,7 @@
 
 ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   : m_pMask(NULL),
-    m_MaskSizeBytes(0),
-    m_IsForeignMask(false)  // The mask is created here. It is *not* foreign.
+    m_MaskSizeBytes(0)
 {
   struct BitMap *pMaskBitMap, *pTempBitMap;
   struct RastPort rp, temprp;
@@ -139,23 +138,12 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   FreeBitMap(pMaskBitMap);
 }
 
-ShadowMaskInterleaved::ShadowMaskInterleaved(UBYTE* m_pMask, 
-                       ULONG m_Width, 
-                       ULONG m_Height)
-  : m_pMask(m_pMask),
-    m_IsForeignMask(true),  // The mask has been passed from outside. It *is* foreign.
-    m_Width(m_Width),
-    m_WordWidth(((m_Width + 15) & -16) >> 4),
-    m_Height(m_Height)
-{
-  m_pRowPixels = new bool[m_WordWidth * 2 * 8];
-}
 
 ShadowMaskInterleaved::~ShadowMaskInterleaved()
 {
   delete[] m_pRowPixels;
 
-  if((!m_IsForeignMask) && (m_pMask != NULL))
+  if(m_pMask != NULL)
   {
     FreeVec(m_pMask);
     m_pMask = NULL;
@@ -178,27 +166,6 @@ void ShadowMaskInterleaved::Print()
   }
 }
 
-
-void ShadowMaskInterleaved::calculateRowPixels(const Rect& rect, size_t row) const
-{
-  for(int column = rect.Left(); column <= rect.Right(); column++)
-  {
-    size_t rowByte = column >> 3;
-    size_t byteId = row * (m_WordWidth * 2) + rowByte;
-    size_t bitInByte = 7 - (column - rowByte * 8);
-    UBYTE byteValue = m_pMask[byteId];
-    size_t bitValue = byteValue & (1 << bitInByte);
-
-    if(bitValue != 0)
-    {
-      m_pRowPixels[column - rect.Left()] = true;
-    }
-    else
-    {
-      m_pRowPixels[column - rect.Left()] = false;
-    }
-  }
-}
 
 // assumes little endian
 void ShadowMaskInterleaved::printBits(size_t const size, void const* const ptr)
