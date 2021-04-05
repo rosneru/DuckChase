@@ -13,9 +13,8 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
 {
   struct BitMap *pMaskBitMap, *pTempBitMap;
   struct RastPort rp, temprp;
-  UBYTE *pPixelArray, *pY, *pX, *pSrcRow, *pDstRow;
-  ULONG x, y, ySrc, yDst, numMaskCopies;
-  ULONG bytesPerRow, arrayBytes;
+  UBYTE *pPixelArray, *pY, *pX, *pSrcByte, *pDstByte;
+  ULONG x, y, numMaskCopies, bytesPerRow, arrayBytes, i, iSrcCol, iSrcRow, iDstRow;
   long transparentPen = 0;
 
   if(pImage == NULL)
@@ -123,15 +122,29 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   // mask BitMap
   bytesPerRow = pMaskBitMap->BytesPerRow;
 
-  for(ySrc = 0; ySrc < m_Height; ySrc++)
+  iSrcRow = 0;
+  iDstRow = 0;
+  do
   {
-    pSrcRow = pMaskBitMap->Planes[0] + (ySrc * bytesPerRow);
-    for(yDst = ySrc * bytesPerRow; yDst < (ySrc * bytesPerRow) + numMaskCopies; yDst++)
+    for(iSrcCol = 0; iSrcCol < bytesPerRow; iSrcCol++)
     {
-      pDstRow = m_pMask + (yDst * bytesPerRow);
-      CopyMem(pSrcRow, pDstRow, bytesPerRow);
+      // Address the correct byte in planar source mask
+      pSrcByte = pMaskBitMap->Planes[0] + ((iSrcRow * bytesPerRow) + iSrcCol);
+
+      // Address the correct byte in interleaved destination mask
+      pDstByte = m_pMask + ((iDstRow * bytesPerRow) + iSrcCol);
+
+      // Perform the needed number of copies vertically in this row
+      for(i = 0; i < numMaskCopies; i++)
+      {
+        *pDstByte = *pSrcByte;
+        pDstByte += bytesPerRow;  // Address the byte below the current one
+      }
     }
-  }
+
+    iSrcRow++;
+    iDstRow += numMaskCopies; // Address the row below the last copy destination row
+  } while (iSrcRow < m_Height);
 
   FreeVec(pPixelArray);
   FreeBitMap(pTempBitMap);
