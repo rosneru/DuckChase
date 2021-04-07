@@ -11,11 +11,9 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   : m_pMask(NULL),
     m_MaskSizeBytes(0)
 {
-  struct BitMap *pMaskBitMap, *pTempBitMap;
-  struct RastPort rp, temprp;
-  UBYTE *pPixelArray, *pY, *pX, *pSrcByte, *pDstByte;
-  ULONG x, y, numMaskCopies, bytesPerRow, arrayBytes, i, iSrcCol, iSrcRow, iDstRow;
-  long transparentPen = 0;
+  UBYTE *pMaskPlanar, *pSrcByte, *pDstByte, *pPlane;
+  UBYTE maskedByte;
+  ULONG numMaskCopies, bytesPerRow, i, j, iSrcCol, iSrcRow, iDstRow;
 
   if(pImage == NULL)
   {
@@ -26,7 +24,7 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
   m_Height = GetBitMapAttr(pImage, BMA_HEIGHT);
   m_Depth = GetBitMapAttr(pImage, BMA_DEPTH);
-  ULONG planeSize = RASSIZE(m_Width, m_Height);
+  ULONG planeSizeBytes = RASSIZE(m_Width, m_Height);
 
   // Default: Source BitMap is planar, only one copy of the mask needed
   numMaskCopies = 1;
@@ -38,90 +36,40 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
     numMaskCopies = m_Depth;
   }
 
-  m_MaskSizeBytes = planeSize * numMaskCopies;
+  m_MaskSizeBytes = planeSizeBytes * numMaskCopies;
 
+  // Allocate memory for the temporary planar mask
+  pMaskPlanar = (UBYTE*) AllocVec(planeSizeBytes, MEMF_ANY|MEMF_CLEAR);
+  if(pMaskPlanar == NULL)
+  {
+    throw "ShadowMaskInterleaved: Failed to allocate memory for (temporary) planar mask";
+  }
+  
   // Allocate memory for the final mask (m_Depth * m_Height because interleaved)
   m_pMask = (UBYTE*)AllocVec(m_MaskSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(m_pMask == NULL)
   {
-    throw "ShadowMaskInterleaved: Failed to allocate memory for frame mask.";
+    FreeVec(pMaskPlanar);
+    throw "ShadowMaskInterleaved: Failed to allocate memory for interleaved mask.";
   }
 
-  // Allocate temporary Bitmap to write the mask
-  pMaskBitMap = AllocBitMap (m_Width, m_Height, 1, BMF_CLEAR, NULL);
-  if(pMaskBitMap == NULL)
+  // Create the planar mask
+  for (i = 0; i < planeSizeBytes; i++)
   {
-    FreeRaster(m_pMask, m_Width, m_Depth * m_Height);
-    throw "ShadowMaskInterleaved: Failed to allocate temporary mask BitMap.";
-  }
+    maskedByte = 0;
 
-
-  pTempBitMap = AllocBitMap (m_Width, m_Height, m_Depth, BMF_CLEAR, NULL);
-  if(pTempBitMap == NULL)
-  {
-    FreeBitMap(pMaskBitMap);
-    FreeRaster(m_pMask, m_Width, m_Depth * m_Height);
-    throw "ShadowMaskInterleaved: Failed to allocate temporary BitMap.";
-  }
-
-  // See autodocs for Read/WritePixelArray8
-  arrayBytes = ((((m_Width + 15) >> 4) << 4) * (m_Height + 1));
-  bytesPerRow = arrayBytes / m_Height;
-
-  // Allocate memory for PixelArray
-  pPixelArray = (UBYTE*)AllocVec (arrayBytes, MEMF_PUBLIC);
-  if(pPixelArray == NULL)
-  {
-    FreeBitMap(pTempBitMap);
-    FreeBitMap(pMaskBitMap);
-    FreeRaster(m_pMask, m_Width, m_Depth * m_Height);
-    throw "ShadowMaskInterleaved: Failed to allocate memory for pixel array.";
-  }
-
-  InitRastPort (&rp);
-  rp.BitMap = pImage;  // Point the RastPort to source BitMap to create
-                        // the PixelArray from it
-
-  // as defined in autodocs for Read/WritePixelArray8
-  temprp = rp;
-  temprp.Layer = NULL;
-  temprp.BitMap = pTempBitMap;
-
-  ReadPixelArray8 (&rp, 0, 0, m_Width - 1, m_Height - 1, pPixelArray, &temprp);
-
-  pY = pPixelArray;
-  for (y = 0; y < m_Height; y++)
-  {
-    pX = pY;
-
-    for (x = 0; x < m_Width; x++)
+    for (j = 0; j < m_Depth; j++)
     {
-      // set transparent pixels to 0, others to 1
-      if(*pX == transparentPen)
-      {
-        *pX = 0;
-      }
-      else
-      {
-        *pX = 1;
-      }
-
-      pX++;
+      pPlane = pImage->Planes[j];
+      maskedByte |= pPlane[i];
     }
 
-    pY += bytesPerRow;
+    pMaskPlanar[i] = maskedByte;
   }
 
-  // Set destination for WritePixelArray8 to mask BitMap
-  rp.BitMap = pMaskBitMap;
 
-  // Write the mask
-	WritePixelArray8 (&rp, 0, 0, m_Width - 1, m_Height - 1, pPixelArray, &temprp);
-
-  // Now use the 'real' BytesPerRow from the planar / non-interleaved
-  // mask BitMap
-  bytesPerRow = pMaskBitMap->BytesPerRow;
-
+  // Convert the planar mask into the interleaved mask
+  bytesPerRow = m_WordWidth * 2;
   iSrcRow = 0;
   iDstRow = 0;
   do
@@ -129,7 +77,8 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
     for(iSrcCol = 0; iSrcCol < bytesPerRow; iSrcCol++)
     {
       // Address the correct byte in planar source mask
-      pSrcByte = pMaskBitMap->Planes[0] + ((iSrcRow * bytesPerRow) + iSrcCol);
+      // pSrcByte = pMaskBitMap->Planes[0] + ((iSrcRow * bytesPerRow) + iSrcCol);
+      pSrcByte = pMaskPlanar + ((iSrcRow * bytesPerRow) + iSrcCol);
 
       // Address the correct byte in interleaved destination mask
       pDstByte = m_pMask + ((iDstRow * bytesPerRow) + iSrcCol);
@@ -146,9 +95,7 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
     iDstRow += numMaskCopies; // Address the row below the last copy destination row
   } while (iSrcRow < m_Height);
 
-  FreeVec(pPixelArray);
-  FreeBitMap(pTempBitMap);
-  FreeBitMap(pMaskBitMap);
+  FreeVec(pMaskPlanar);
 }
 
 

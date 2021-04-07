@@ -1,5 +1,5 @@
 TEMPLATE = app
-CONFIG += console c++11
+CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 
@@ -15,10 +15,8 @@ INCLUDEPATH +=  . \
 
 SOURCES += \
     DuckChase_boost_tests.cpp \
-    ../anim/ShadowMask.cpp \
     ../shapes/Rect.cpp
 
 HEADERS += \
     amiga_types.h \
-    ../anim/ShadowMask.h \
     ../shapes/Rect.h

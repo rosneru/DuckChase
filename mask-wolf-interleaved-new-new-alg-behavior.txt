@@ -1,0 +1,144 @@
+SRC ADDRESS Byte 0
+DST ADDRESS Byte 0
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 1
+DST ADDRESS Byte 1
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 2
+DST ADDRESS Byte 8
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 3
+DST ADDRESS Byte 9
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 4
+DST ADDRESS Byte 16
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 5
+DST ADDRESS Byte 17
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 6
+DST ADDRESS Byte 24
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 7
+DST ADDRESS Byte 25
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 8
+DST ADDRESS Byte 32
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 9
+DST ADDRESS Byte 33
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 10
+DST ADDRESS Byte 40
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 11
+DST ADDRESS Byte 41
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 12
+DST ADDRESS Byte 48
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 13
+DST ADDRESS Byte 49
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 14
+DST ADDRESS Byte 56
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 15
+DST ADDRESS Byte 57
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 16
+DST ADDRESS Byte 64
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 17
+DST ADDRESS Byte 65
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 18
+DST ADDRESS Byte 72
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 19
+DST ADDRESS Byte 73
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 20
+DST ADDRESS Byte 80
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 21
+DST ADDRESS Byte 81
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 22
+DST ADDRESS Byte 88
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 23
+DST ADDRESS Byte 89
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 24
+DST ADDRESS Byte 96
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 25
+DST ADDRESS Byte 97
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 26
+DST ADDRESS Byte 104
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 27
+DST ADDRESS Byte 105
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 28
+DST ADDRESS Byte 112
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 29
+DST ADDRESS Byte 113
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+
+SRC ADDRESS Byte 30
+DST ADDRESS Byte 120
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+SRC ADDRESS Byte 31
+DST ADDRESS Byte 121
+  Copy Src Byte to DST ADDRESS Byte
+    0    2    4    6
+

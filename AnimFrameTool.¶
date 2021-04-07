@@ -144,6 +144,12 @@ Storm Shell Project (Dependencies)
 ""
 1 1
 File
+1 "src/anim/ShadowMaskInterleaved.cpp"
+Storm Shell Project (Dependencies)
+"build-stormc-animframetool/ShadowMaskInterleaved.o" "build-stormc-animframetool/ShadowMaskInterleaved.debug"
+""
+1 1
+File
 1 "src/iff/IffParse.cpp"
 "src/iff/IffParse.cpp"
 "src/iff/IffParse.h"
@@ -338,6 +344,12 @@ Storm Shell Project (Dependencies)
 ""
 0 0
 File
+2 "src/anim/ShadowMaskInterleaved.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+0 0
+File
 2 "src/iff/IffParse.h"
 "src/iff/IffParse.h"
 Storm Shell Project (Dependencies)
@@ -448,7 +460,6 @@ Section
 7
 File
 10 "AnimFrameTool_stormc"
-"AnimFrameTool_stormc"
 Storm Shell Project (Dependencies)
 "" ""
 ""
