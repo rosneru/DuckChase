@@ -89,7 +89,7 @@ ShadowMaskInterleaved::~ShadowMaskInterleaved()
 void ShadowMaskInterleaved::Print()
 {
   ULONG bytesPerRow = m_WordWidth * 2;
-  for(ULONG i = 0; i < m_MaskSizeBytes / m_Depth; i++)
+  for(ULONG i = 0; i < m_MaskSizeBytes; i++)
   {
     printBits(1, m_pMask + i);
     printf(" ");
