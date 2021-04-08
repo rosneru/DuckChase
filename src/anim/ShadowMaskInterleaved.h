@@ -31,6 +31,7 @@ public:
 
 private:
   UBYTE* m_pMask;
+  UBYTE *pMaskPlanar;
   ULONG m_MaskSizeBytes;
 
   bool* m_pRowPixels;

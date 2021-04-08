@@ -11,7 +11,7 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   : m_pMask(NULL),
     m_MaskSizeBytes(0)
 {
-  UBYTE *pMaskPlanar, *pSrcByte, *pDstByte, *pPlane;
+  UBYTE *pSrcByte, *pDstByte, *pPlane;
   UBYTE maskedByte;
   ULONG numMaskCopies, bytesPerRow, i, j, iSrcCol, iSrcRow, iDstRow;
 
@@ -95,7 +95,7 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
     iDstRow += numMaskCopies; // Address the row below the last copy destination row
   } while (iSrcRow < m_Height);
 
-  FreeVec(pMaskPlanar);
+  // FreeVec(pMaskPlanar);
 }
 
 
@@ -114,14 +114,16 @@ ShadowMaskInterleaved::~ShadowMaskInterleaved()
 void ShadowMaskInterleaved::Print()
 {
   ULONG bytesPerRow = m_WordWidth * 2;
-  for(ULONG i = 0; i < m_MaskSizeBytes; i++)
+  printf("bytesPerRow = %lu\n", bytesPerRow);
+  printf("%4lu) ", 0);
+  for(ULONG i = 0; i < m_MaskSizeBytes / m_Depth; i++)
   {
-    printBits(1, m_pMask + i);
+    printBits(1, pMaskPlanar + i);
     printf(" ");
 
     if((i + 1) % bytesPerRow == 0)
     {
-      printf("\n");
+      printf("\n%4lu) ", (i+1));
     }
   }
 }
