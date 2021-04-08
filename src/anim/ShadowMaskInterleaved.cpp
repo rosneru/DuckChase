@@ -11,9 +11,9 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   : m_pMask(NULL),
     m_MaskSizeBytes(0)
 {
-  UBYTE *pSrcByte, *pDstByte, *pPlane;
-  UBYTE maskedByte;
-  ULONG numMaskCopies, bytesPerRow, i, j, iSrcCol, iSrcRow, iDstRow;
+  UBYTE maskByteValue;
+  ULONG byteWidth, bytesPerRow, planeSizeBytes, iSrcPlaneByte, iDstMaskByte, iRow, iByte, iPlane, i;
+  UBYTE* pBitplaneData;
 
   if(pImage == NULL)
   {
@@ -24,78 +24,53 @@ ShadowMaskInterleaved::ShadowMaskInterleaved(struct BitMap* pImage)
   m_WordWidth = ((m_Width + 15) & -16) >> 4;
   m_Height = GetBitMapAttr(pImage, BMA_HEIGHT);
   m_Depth = GetBitMapAttr(pImage, BMA_DEPTH);
-  ULONG planeSizeBytes = RASSIZE(m_Width, m_Height);
 
-  // Default: Source BitMap is planar, only one copy of the mask needed
-  numMaskCopies = 1;
+  byteWidth = m_WordWidth * 2;
+  planeSizeBytes = RASSIZE(m_Width, m_Height);
 
   // But check if source BitMap is interleaved
-  if(GetBitMapAttr(pImage, BMA_FLAGS) & BMF_INTERLEAVED)
+  if((GetBitMapAttr(pImage, BMA_FLAGS) & BMF_INTERLEAVED) == 0)
   {
-    // Source BitMap is interleaved; must copy mask m_Depth times
-    numMaskCopies = m_Depth;
+    // Source BitMap must be interleaved.
+    throw "ShadowMaskInterleaved: This mask creation algorithm only works for interleaved BitMaps.";
   }
 
-  m_MaskSizeBytes = planeSizeBytes * numMaskCopies;
+  // mask must be replicated for each src Bitmap plane
+  m_MaskSizeBytes = planeSizeBytes * m_Depth;
 
-  // Allocate memory for the temporary planar mask
-  pMaskPlanar = (UBYTE*) AllocVec(planeSizeBytes, MEMF_ANY|MEMF_CLEAR);
-  if(pMaskPlanar == NULL)
-  {
-    throw "ShadowMaskInterleaved: Failed to allocate memory for (temporary) planar mask";
-  }
-  
   // Allocate memory for the final mask (m_Depth * m_Height because interleaved)
   m_pMask = (UBYTE*)AllocVec(m_MaskSizeBytes, MEMF_CHIP|MEMF_CLEAR);
   if(m_pMask == NULL)
   {
-    FreeVec(pMaskPlanar);
     throw "ShadowMaskInterleaved: Failed to allocate memory for interleaved mask.";
   }
 
-  // Create the planar mask
-  for (i = 0; i < planeSizeBytes; i++)
+  pBitplaneData = pImage->Planes[0];
+  bytesPerRow = pImage->BytesPerRow;  // BytesPerRow in interleaved image
+  iSrcPlaneByte = 0;
+  iDstMaskByte = 0;
+  for(iRow = 0; iRow < m_Height; iRow++)
   {
-    maskedByte = 0;
-
-    for (j = 0; j < m_Depth; j++)
+    for(iByte = 0; iByte < byteWidth; iByte++)
     {
-      pPlane = pImage->Planes[j];
-      maskedByte |= pPlane[i];
-    }
-
-    pMaskPlanar[i] = maskedByte;
-  }
-
-
-  // Convert the planar mask into the interleaved mask
-  bytesPerRow = m_WordWidth * 2;
-  iSrcRow = 0;
-  iDstRow = 0;
-  do
-  {
-    for(iSrcCol = 0; iSrcCol < bytesPerRow; iSrcCol++)
-    {
-      // Address the correct byte in planar source mask
-      // pSrcByte = pMaskBitMap->Planes[0] + ((iSrcRow * bytesPerRow) + iSrcCol);
-      pSrcByte = pMaskPlanar + ((iSrcRow * bytesPerRow) + iSrcCol);
-
-      // Address the correct byte in interleaved destination mask
-      pDstByte = m_pMask + ((iDstRow * bytesPerRow) + iSrcCol);
-
-      // Perform the needed number of copies vertically in this row
-      for(i = 0; i < numMaskCopies; i++)
+      // Create the mask value for this byte by or'ing over all planes
+      maskByteValue = 0;
+      iSrcPlaneByte = iRow * bytesPerRow + iByte;
+      iDstMaskByte = iSrcPlaneByte; // also the start of the destination mask byte
+      for(iPlane = 0; iPlane < m_Depth; iPlane++)
       {
-        *pDstByte = *pSrcByte;
-        pDstByte += bytesPerRow;  // Address the byte below the current one
+        maskByteValue |= pBitplaneData[iSrcPlaneByte];
+        iSrcPlaneByte += byteWidth;
+      }
+
+      // Set mask byte into destination mask and replicate 'depth' times
+      for(i = 0; i < m_Depth; i++)
+      {
+        m_pMask[iDstMaskByte] = maskByteValue;
+        iDstMaskByte += byteWidth;
       }
     }
-
-    iSrcRow++;
-    iDstRow += numMaskCopies; // Address the row below the last copy destination row
-  } while (iSrcRow < m_Height);
-
-  // FreeVec(pMaskPlanar);
+  }
 }
 
 
@@ -114,16 +89,14 @@ ShadowMaskInterleaved::~ShadowMaskInterleaved()
 void ShadowMaskInterleaved::Print()
 {
   ULONG bytesPerRow = m_WordWidth * 2;
-  printf("bytesPerRow = %lu\n", bytesPerRow);
-  printf("%4lu) ", 0);
   for(ULONG i = 0; i < m_MaskSizeBytes / m_Depth; i++)
   {
-    printBits(1, pMaskPlanar + i);
+    printBits(1, m_pMask + i);
     printf(" ");
 
     if((i + 1) % bytesPerRow == 0)
     {
-      printf("\n%4lu) ", (i+1));
+      printf("\n");
     }
   }
 }
