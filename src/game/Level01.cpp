@@ -46,7 +46,7 @@ Level01::Level01(GameViewBase& gameView,
   m_InfoDisplay.UpdateArrows();
 
   // *Must* be done after all sprites are allocated. Intuition then
-  // re-adjustes everything (maybe also reduces gfx bandwitht) to ensure
+  // re-adjusts everything (maybe also reduces gfx bandwidth) to ensure
   // that the sprites can be displayed.
   RemakeDisplay();
 }

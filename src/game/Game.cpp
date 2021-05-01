@@ -26,12 +26,6 @@ void Game::Run()
                 TAG_END);
 
 
-  // AABoing: set task priority to 30 so that beam-synchronized stuff
-  // will happen reliably. It is NOT SAFE to call intuition with this
-  // high task priority.
-  UWORD oldTaskPriority = 65535;
-  oldTaskPriority = SetTaskPri(FindTask(0), 30);
-
   // Render again to be on the other double buf (avoids flickering)
   m_GameView.Render();
 
@@ -50,12 +44,6 @@ void Game::Run()
   } 
   while (bContinue);
   
-
-  if(oldTaskPriority != 65535)
-  {
-    SetTaskPri(FindTask(0), oldTaskPriority);
-  }
-
   SystemControl(SCON_TakeOverSys, FALSE,
                 TAG_END);
 }
